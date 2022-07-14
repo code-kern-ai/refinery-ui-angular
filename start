@@ -1,0 +1,15 @@
+#!/bin/bash
+trap "echo -ne '\nstopping container...' && docker stop frontend > /dev/null 2>&1 && echo -ne '\t\t [done]\n'" EXIT
+
+docker stop frontend
+
+docker build -t frontend-dev -f dev.Dockerfile .
+
+docker run --rm -d \
+--name frontend \
+-p 7050:80 \
+--mount type=bind,source="$(pwd)"/,target=/app \
+--network dev-setup_default \
+frontend-dev
+
+docker logs -f frontend

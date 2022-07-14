@@ -1,0 +1,32 @@
+.animate {
+  animation: rotate cubic-bezier(0.48, 0.64, 0.64, 0.48) 2.2s both infinite;
+}
+
+// .animate {
+//     animation: rotate cubic-bezier(0.48, 0.64, 0.64, 0.48) 2.2s both infinite,
+//       color cubic-bezier(0.48, 0.64, 0.64, 0.48) 8.8s both infinite;
+//   }
+
+@keyframes rotate {
+  0% {
+    transform: rotateY(0deg);
+  }
+  50% {
+    transform: rotateY(180deg);
+  }
+  100% {
+    transform: rotateY(0deg);
+  }
+}
+
+@keyframes color {
+  0% {
+    color: #7bed8d;
+  }
+  50% {
+    color: #9ca3af;
+  }
+  100% {
+    color: #7bed8d;
+  }
+}

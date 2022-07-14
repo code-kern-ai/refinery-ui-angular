@@ -1,0 +1,142 @@
+<div #gameBoard class="font-dmMono absolute top-0 left-0 right-0 bottom-0" style="z-index:999">
+    <ng-template [ngIf]="menuActive">
+        <div class="h-full bg-white items-center justify-center flex-col flex text-center">
+            <svg width="150" height="65.125" viewBox="0 0 1200 521" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                    d="M122 401.8C96.6667 401.8 76.1333 395.933 60.4 384.2C44.9333 372.2 36.2667 355.8 34.4 335H69.2C70.8 345.933 76.1333 354.867 85.2 361.8C94.5333 368.733 107.067 372.2 122.8 372.2C137.733 372.2 148.8 369 156 362.6C163.467 356.2 167.2 348.867 167.2 340.6C167.2 329.4 162.8 321.8 154 317.8C145.2 313.533 132 310.333 114.4 308.2C93.3333 305.8 75.8667 300.067 62 291C48.1333 281.933 41.2 268.333 41.2 250.2C41.2 233.933 48 220.467 61.6 209.8C75.2 199.133 93.7333 193.8 117.2 193.8C140.4 193.8 158.667 199.133 172 209.8C185.333 220.2 192.933 235.133 194.8 254.6H161.6C160.8 245 156.133 237.4 147.6 231.8C139.333 225.933 128.933 223 116.4 223C103.333 223 93.2 225.533 86 230.6C78.8 235.4 75.2 241.8 75.2 249.8C75.2 257.8 79.2 264.467 87.2 269.8C95.4667 274.867 108.4 278.2 126 279.8C139.867 281.4 152.533 284.067 164 287.8C175.467 291.533 184.533 297.4 191.2 305.4C198.133 313.4 201.6 324.6 201.6 339C201.867 351 198.533 361.8 191.6 371.4C184.933 380.733 175.6 388.2 163.6 393.8C151.6 399.133 137.733 401.8 122 401.8ZM275.044 397V198.6H303.044L306.644 228.6H308.644C313.977 219 322.377 210.867 333.844 204.2C345.31 197.267 358.51 193.8 373.444 193.8C397.71 193.8 415.844 201 427.844 215.4C440.11 229.8 446.244 250.6 446.244 277.8V397H412.644V281.8C412.644 264.2 408.777 250.467 401.044 240.6C393.31 230.467 381.31 225.4 365.044 225.4C349.31 225.4 335.977 230.867 325.044 241.8C314.11 252.467 308.644 267.933 308.644 288.2V397H275.044ZM763.931 397V109H797.531V282.6L880.331 198.6H923.131L834.731 287V289.4L933.931 397H892.331L797.531 293.8V397H763.931ZM1081.38 401.8C1062.71 401.8 1046.18 397.533 1031.78 389C1017.64 380.2 1006.44 368.067 998.175 352.6C989.908 336.867 985.775 318.6 985.775 297.8C985.775 277 989.775 258.867 997.775 243.4C1006.04 227.667 1017.38 215.533 1031.78 207C1046.18 198.2 1062.98 193.8 1082.18 193.8C1101.38 193.8 1117.78 198.2 1131.38 207C1144.98 215.533 1155.38 226.867 1162.58 241C1169.78 255.133 1173.38 270.333 1173.38 286.6C1173.38 289.533 1173.24 292.467 1172.98 295.4C1172.98 298.333 1172.98 301.667 1172.98 305.4H1018.98C1019.78 320.067 1023.11 332.333 1028.98 342.2C1035.11 351.8 1042.71 359 1051.78 363.8C1061.11 368.6 1070.98 371 1081.38 371C1096.04 371 1107.51 367.933 1115.78 361.8C1124.04 355.667 1130.31 347.133 1134.58 336.2H1167.78C1163.24 354.6 1153.78 370.2 1139.38 383C1124.98 395.533 1105.64 401.8 1081.38 401.8ZM1081.38 223.8C1065.91 223.8 1052.31 228.467 1040.58 237.8C1029.11 247.133 1022.04 260.2 1019.38 277H1140.18C1139.11 260.467 1133.11 247.533 1122.18 238.2C1111.51 228.6 1097.91 223.8 1081.38 223.8Z"
+                    fill="black" />
+                <path
+                    d="M529.562 273.342H491V392.139C491 394.561 492.964 396.526 495.387 396.526H689.063C691.486 396.526 693.45 394.561 693.45 392.139V316.188H654.888V353.577C654.888 356 652.924 357.964 650.501 357.964H533.949C531.526 357.964 529.562 356 529.562 353.577V273.342Z"
+                    fill="url(#paint0_linear_393_416)" />
+                <path
+                    d="M669.883 316.184H708.445V197.387C708.445 194.964 706.481 193 704.058 193L510.382 193C507.96 193 505.995 194.964 505.995 197.387V273.337H544.557V235.949C544.557 233.526 546.521 231.562 548.944 231.562H665.496C667.919 231.562 669.883 233.526 669.883 235.949V316.184Z"
+                    fill="url(#paint1_linear_393_416)" />
+                <defs>
+                    <linearGradient id="paint0_linear_393_416" x1="532.645" y1="334.598" x2="650.084" y2="334.598"
+                        gradientUnits="userSpaceOnUse">
+                        <stop stop-color="#5DE079" />
+                        <stop offset="1" stop-color="#75EA8E" />
+                    </linearGradient>
+                    <linearGradient id="paint1_linear_393_416" x1="668.407" y1="254.635" x2="546.804" y2="254.635"
+                        gradientUnits="userSpaceOnUse">
+                        <stop stop-color="#5DE079" />
+                        <stop offset="1" stop-color="#75EA8E" />
+                    </linearGradient>
+                </defs>
+            </svg>
+            <h3 class="mt-2 text-sm font-medium text-gray-900">Take a break, play a game of snake</h3>
+            <div class="mt-4">
+                <div>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-artboard inline-block"
+                        width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                        <rect x="8" y="8" width="8" height="8" rx="1"></rect>
+                        <line x1="3" y1="8" x2="4" y2="8"></line>
+                        <line x1="3" y1="16" x2="4" y2="16"></line>
+                        <line x1="8" y1="3" x2="8" y2="4"></line>
+                        <line x1="16" y1="3" x2="16" y2="4"></line>
+                        <line x1="20" y1="8" x2="21" y2="8"></line>
+                        <line x1="20" y1="16" x2="21" y2="16"></line>
+                        <line x1="8" y1="20" x2="8" y2="21"></line>
+                        <line x1="16" y1="20" x2="16" y2="21"></line>
+                    </svg>
+                    Size
+                </div>
+                <select #size class="mt-1 select select select-bordered w-64">
+                    <option *ngFor="let size of boardSizes" [value]="size.name">
+                        {{size.name}}</option>
+                </select>
+                <div class="mt-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-speedboat inline-block"
+                        width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                        <path
+                            d="M3 17h13.4a3 3 0 0 0 2.5 -1.34l3.1 -4.66h0h-6.23a4 4 0 0 0 -1.49 .29l-3.56 1.42a4 4 0 0 1 -1.49 .29h-3.73h0h-1l-1.5 4z">
+                        </path>
+                        <line x1="6" y1="13" x2="7.5" y2="8"></line>
+                        <path d="M6 8h8l2 3"></path>
+                    </svg>
+                    Speed
+                </div>
+                <select #speed class="mt-1 select select select-bordered w-64">
+                    <option *ngFor="let speed of boardSpeed" [value]="speed.name">
+                        {{speed.name}}</option>
+                </select>
+            </div>
+            <div class="mt-6">
+                <button (click)="startGame(size.selectedIndex,speed.selectedIndex)"
+                    class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Start game
+                </button>
+            </div>
+            <p class="mt-4">Reload the page to close snake.</p>
+        </div>
+    </ng-template>
+    <ng-template [ngIf]="!menuActive && blockPixelSize && snakeBoard">
+        <div class="w-full h-full flex items-center justify-center">
+            <div class="flex items-center justify-center" [ngClass]="heightBigger? 'flex-col':'flex-row'">
+                <div class="flex items-center justify-center gap-4"
+                    [ngClass]="heightBigger? 'flex-row mb-4':'flex-col mr-4'">
+
+                    <div class="cursor-pointer inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        (click)="menuActive=true">Back to
+                        menu</div>
+                    <div *ngIf="snakeBoard.players[0].tail.length>4">
+                        Score:
+                        <span class="border border-0 border-gray-200 float-right inline-flex items-center px-2.5
+                            py-0.5 rounded-md text-sm font-medium bg-gray-100 text-gray-800">
+                            {{snakeBoard.players[0].tail.length-4}}
+                        </span>
+                    </div>
+                    <div *ngIf="snakeBoard.countDown>0" class="text-lg ">{{snakeBoard.countDown}}...</div>
+                    <div *ngIf="snakeBoard.countDown==0 && snakeBoard.players[0].tail.length==4" class="text-lg">
+                        Goooo!!!!</div>
+                    <p class="ml-4 text-center">Reload the page to close snake.</p>
+                </div>
+                <div class="relative">
+                    <div class="bg-white border border-gray-400">
+                        <div class="flex flex-row" *ngFor="let row of rows; let y = index">
+                            <div *ngFor="let col of cols; let x = index">
+                                <div class="border border-gray-100 flex items-center justify-center"
+                                    [style.width]="blockPixelSize +'px'" [style.height]="blockPixelSize +'px'">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <ng-template ngFor let-player [ngForOf]="snakeBoard.players">
+                        <div *ngFor="let tail of player.tail;let i=index" class="absolute"
+                            [style.background]="player.color" [style.opacity]="player.opacity[i]"
+                            [style.left]="tail.x * blockPixelSize + 'px'" [style.top]="tail.y * blockPixelSize + 'px'"
+                            [style.width]="blockPixelSize +'px'" [style.height]="blockPixelSize +'px'"></div>
+
+                        <div class="absolute" [style.background]="player.color"
+                            [style.left]="player.headPosition.x * blockPixelSize + 'px'"
+                            [style.top]="player.headPosition.y * blockPixelSize + 'px'"
+                            [style.width]="blockPixelSize +'px'" [style.height]="blockPixelSize +'px'"></div>
+
+                    </ng-template>
+                    <ng-template [ngIf]="snakeBoard.applePos">
+                        <div class="absolute flex h-full w-full items-center justify-center"
+                            [style.left]="snakeBoard.applePos.x * blockPixelSize + 'px'"
+                            [style.top]="snakeBoard.applePos.y * blockPixelSize + 'px'"
+                            [style.width]="blockPixelSize +'px'" [style.height]="blockPixelSize +'px'">
+                            <!-- <div class="flex items-center justify-center" style="width:50%;height:50%"
+                                [style.background]="'#ef4444'"></div> -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-apple"
+                                width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="#ef4444"
+                                fill="#fecaca" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <circle cx="12" cy="14" r="7"></circle>
+                                <path d="M12 11v-6a2 2 0 0 1 2 -2h2v1a2 2 0 0 1 -2 2h-2"></path>
+                                <path d="M10 10.5c1.333 .667 2.667 .667 4 0"></path>
+                            </svg>
+                        </div>
+
+                    </ng-template>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+</div>

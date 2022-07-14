@@ -1,0 +1,476 @@
+<div *ngIf="projectId" class="bg-white p-4 h-full">
+    <div *ngIf="knowledgeBase$ | async as base">
+        <div #stickyHeader class="pt-2 sticky -top-2 z-10 h-12">
+            <div class="bg-white flex-grow " [ngClass]="isHeaderNormal?'':'shadow'">
+                <div class="flex-row justify-start items-center inline-block" style="transition: all .25s ease-in-out;"
+                    (dblclick)="openName(true,project.id)" [ngClass]="isHeaderNormal?'p-0':'flex py-2'">
+
+                    <button [routerLink]="['../']" class="text-green-800 text-sm font-medium">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M7 16l-4-4m0 0l4-4m-4 4h18" />
+                        </svg>
+                        <span class="leading-5">Go back</span>
+                    </button>
+
+                    <div *ngIf="!isHeaderNormal" class="mx-4 text-sm leading-5 font-medium text-gray-500 inline-block">
+                        {{base.name}}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid gap-4 " [ngClass]="isHeaderNormal ? 'grid-cols-2' : 'grid-cols-1'">
+            <div class="flex items-center mt-2" *ngIf="isHeaderNormal">
+                <button (click)="openName(true,projectId)" data-tip="Edit your lookup list name"
+                    class="tooltip tooltip-right flex-shrink-0 bg-white text-gray-700 text-xs font-semibold mr-3 px-4 py-2 rounded-md border border-gray-300 block float-left hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Edit name
+                </button>
+
+                <div class="inline-block" (dblclick)="openName(true,projectId)" class="inline-flex w-full">
+                    <ng-template [ngIf]="isNameOpen()" [ngIfElse]="displayName">
+                        <input #nameArea type="text" class="p-2 flex-grow input input-sm"
+                            (input)="changeKnowledgeBaseName($event)" (blur)="openName(false,projectId)"
+                            (keydown.enter)="openName(false,projectId)" [(ngModel)]="knowledgeBaseName">
+                    </ng-template>
+
+                    <ng-template #displayName>
+                        <div class="mr-4 text-sm leading-5 font-medium text-gray-500 inline-block">
+                            {{base.name}}</div>
+                    </ng-template>
+                </div>
+            </div>
+
+            <div class="flex items-center mt-2">
+                <button (click)="openDescription(true,projectId)" data-tip="Edit your lookup list description"
+                    class="tooltip tooltip-right flex-shrink-0 bg-white text-gray-700 text-xs font-semibold mr-3 px-4 py-2 rounded-md border border-gray-300 block float-left hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Edit description
+                </button>
+                <div class="inline-block" (dblclick)="openDescription(true,projectId)" class="inline-flex w-full">
+                    <ng-template [ngIf]="isDescriptionOpen()" [ngIfElse]="displayDescription">
+                        <input #descriptionArea type="text" class="p-2 flex-grow input input-sm"
+                            (input)="openDescription($event)" (blur)="openDescription(false,projectId)"
+                            (keydown.enter)="openDescription(false,projectId)" [(ngModel)]="knowledgeBaseDescription">
+                    </ng-template>
+                    <ng-template #displayDescription>
+                        <div
+                            class="font-normal text-gray-400 leading-9 text-sm flex-row justify-start items-center italic">
+                            {{base.description}}
+                        </div>
+                    </ng-template>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex rounded-md mt-4 w-full">
+            <span data-tip="The variable name can be used inside a labeling function"
+                class="tooltip tooltip-label inline-flex items-center px-2 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-xs">
+                Python variable
+            </span>
+            <span data-tip="Copy to clipboard" (click)="copyToClipboard(asPythonVariable(base.name))"
+                class="tooltip font-dmMono px-4 py-2 rounded-none rounded-r-md border border-0 border-gray-300 text-gray-500 sm:text-sm bg-gray-100 cursor-pointer">
+                {{asPythonVariable(base.name)}}</span>
+
+            <div class="w-full">
+                <div class="float-right">
+                    <button data-tip="Please ensure that the column of your upload is called 'value'"
+                        class="tooltip tooltip-bottom">
+                        <label
+                            class="ml-3 mr-1 inline-flex items-center px-4 py-2 border border-gray-200 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer"
+                            for="list-upload-modal">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 icon icon-tabler icon-tabler-upload"
+                                width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+                                fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2"></path>
+                                <polyline points="7 9 12 4 17 9"></polyline>
+                                <line x1="12" y1="4" x2="12" y2="16"></line>
+                            </svg>
+                            Upload terms
+                        </label>
+                    </button>
+
+                    <button (click)="requestFileExport(projectId)"
+                        data-tip="Download your lookup list to your local machine"
+                        class="tooltip tooltip-bottom ml-2 mr-1 inline-flex items-center px-4 py-2 border border-gray-200 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 h-4 w-4" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        Download list
+                        <span
+                            *ngIf="downloadMessage == DownloadStateType.PREPARATION || downloadMessage == DownloadStateType.DOWNLOAD"
+                            class="ml-2 inline-flex items-center rounded text-xs font-medium bg-gray-100 text-gray-800">
+                            <kern-loading color="gray"></kern-loading>
+                        </span>
+                    </button>
+
+                    <label for="paste-list-modal"
+                        class="ml-2 mr-1 inline-flex items-center px-4 py-2 border border-gray-200 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 h-4 w-4" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                        </svg>
+                        Paste list
+
+                    </label>
+
+                    <label for="remove-list-modal"
+                        class="ml-2 mr-1 inline-flex items-center px-4 py-2 border border-red-400 shadow-sm text-xs font-semibold rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 icon icon-tabler icon-tabler-clipboard-off"
+                            width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+                            fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                            <path
+                                d="M5.575 5.597a1.994 1.994 0 0 0 -.575 1.403v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2m0 -4v-8a2 2 0 0 0 -2 -2h-2">
+                            </path>
+                            <path d="M9 5a2 2 0 0 1 2 -2h2a2 2 0 1 1 0 4h-2"></path>
+                            <path d="M3 3l18 18"></path>
+                        </svg>
+                        Remove list
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white flex-1 min-w-0 mb-2 mt-8 flow-root">
+
+            <span class="text-gray-900 text-lg leading-6 font-medium mr-4">Terms</span>
+            <div class="float-right">
+                <input type="text" placeholder="Term" (keyup)="checkTermNameUniqe($event.target.value,addButton)"
+                    (keyup.enter)="addTermToKnowledgeBase()" class="input input-sm input-bordered w-96"
+                    [(ngModel)]="termToAdd">
+                <input type="text" placeholder="Description - optional" class="input input-sm input-bordered w-96 ml-2"
+                    (keyup.enter)="addTermToKnowledgeBase()" [(ngModel)]="commentToAdd">
+                <button #addButton disabled (click)="addTermToKnowledgeBase()"
+                    [ngClass]="addButton.disabled ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
+                    class="bg-indigo-700 text-white text-xs font-semibold px-4 py-2 rounded-md cursor-pointer ml-2 hover:bg-indigo-800 focus:outline-none">Add
+                    term</button>
+            </div>
+        </div>
+
+        <div *ngIf="terms" class="grid grid-cols-1 gap-6 mt-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3">
+            <ng-container *ngFor="let term of terms; let i = index">
+                <ng-template [ngIf]="!isTermEditorOpen()" [ngIfElse]="editTerm">
+                    <div *ngIf="!(term.blacklisted)"
+                        class="relative rounded-lg border border-gray-300 bg-white px-4 py-3 shadow-sm items-center text-sm hover:border-gray-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
+                        <div class="flow-root">
+                            <div class="text-gray-900 font-medium float-left">{{term.value}}</div>
+                            <svg (isMenuOpen)="toggleVisible($event, termsMenu)" appDropdown
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="h-5 w-5 float-right cursor-pointer text-gray-500" viewBox="0 0 20 20"
+                                fill="currentColor">
+                                <path
+                                    d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                            </svg>
+                            <div #termsMenu
+                                class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none hidden"
+                                role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
+                                <div class="py-1 cursor-pointer" role="none">
+                                    <label (click)="openTermEditor(true, term.id)"
+                                        class="text-gray-700 block px-4 py-2 text-sm hover:bg-kernindigo hover:text-white cursor-pointer"
+                                        role="menuitem" tabindex="-1" id="menu-item-0">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block"
+                                            viewBox="0 0 20 20" fill="currentColor">
+                                            <path
+                                                d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
+                                            <path fill-rule="evenodd"
+                                                d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
+                                                clip-rule="evenodd" />
+                                        </svg>
+                                        Edit term
+                                    </label>
+                                    <label (click)="deleteTerm(term.id)"
+                                        class="text-gray-700 block px-4 py-2 text-sm hover:bg-kernindigo hover:text-white cursor-pointer"
+                                        role="menuitem" tabindex="-1" id="menu-item-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block"
+                                            viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd"
+                                                d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                                clip-rule="evenodd" />
+                                        </svg>
+                                        Remove term
+                                    </label>
+                                    <label (click)="blackListTerm(term.id)"
+                                        class="text-gray-700 block px-4 py-2 text-sm hover:bg-kernindigo hover:text-white cursor-pointer"
+                                        role="menuitem" tabindex="-1" id="menu-item-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block"
+                                            viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd"
+                                                d="M10 1.944A11.954 11.954 0 012.166 5C2.056 5.649 2 6.319 2 7c0 5.225 3.34 9.67 8 11.317C14.66 16.67 18 12.225 18 7c0-.682-.057-1.35-.166-2.001A11.954 11.954 0 0110 1.944zM11 14a1 1 0 11-2 0 1 1 0 012 0zm0-7a1 1 0 10-2 0v3a1 1 0 102 0V7z"
+                                                clip-rule="evenodd" />
+                                        </svg>
+                                        Blacklist term
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-gray-500 font-normal italic">{{term.comment}}</div>
+                    </div>
+                </ng-template>
+
+                <ng-template #editTerm id="editTerm">
+                    <ng-template [ngIf]="editableTerm==term.id" [ngIfElse]="displayTermInEditableTable">
+                        <div *ngIf="!(term.blacklisted)"
+                            class="relative rounded-lg border border-gray-300 bg-white px-4 py-3 shadow-sm items-center text-sm">
+                            <div><input name="termValue" #termValue id="termValue" type="text" [value]="term.value"
+                                    class="w-full input input-sm input-bordered"></div>
+                            <div class="mt-2">
+                                <input name="termComment" #termComment id="termComment" type="text"
+                                    placeholder="Description - optional" [value]="term.comment"
+                                    class="w-full input input-sm input-bordered">
+                            </div>
+                            <div class="mt-2">
+                                <button data-tip="Submit" class="mx-2 tooltip"
+                                    (click)="openTermEditor(false, term.id, termValue.value, termComment.value)">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
+                                        fill="currentColor">
+                                        <path fill-rule="evenodd"
+                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                </button>
+                                <button class="mx-2 tooltip" (click)="cancelTermEditor()" data-tip="Cancel">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
+                                        fill="currentColor">
+                                        <path fill-rule="evenodd"
+                                            d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </ng-template>
+                    <ng-template #displayTermInEditableTable>
+                        <div *ngIf="!(term.blacklisted)"
+                            class="relative rounded-lg border border-gray-300 bg-white px-4 py-3 shadow-sm items-center text-sm hover:border-gray-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
+                            <div class="flow-root">
+                                <div class="text-gray-900 font-medium float-left">{{term.value}}</div>
+                                <svg (isMenuOpen)="toggleVisible($event, termsMenu)" appDropdown
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    class="h-5 w-5 float-right cursor-pointer text-gray-500" viewBox="0 0 20 20"
+                                    fill="currentColor">
+                                    <path
+                                        d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                                </svg>
+                                <div #termsMenu
+                                    class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none hidden"
+                                    role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
+                                    <div class="py-1 cursor-pointer" role="none">
+                                        <label (click)="openTermEditor(true, term.id)"
+                                            class="text-gray-700 block px-4 py-2 text-sm hover:bg-kernindigo hover:text-white"
+                                            role="menuitem" tabindex="-1" id="menu-item-0">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block"
+                                                viewBox="0 0 20 20" fill="currentColor">
+                                                <path
+                                                    d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
+                                                <path fill-rule="evenodd"
+                                                    d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                            Edit term
+                                        </label>
+                                        <label (click)="deleteTerm(term.id)"
+                                            class="text-gray-700 block px-4 py-2 text-sm hover:bg-kernindigo hover:text-white"
+                                            role="menuitem" tabindex="-1" id="menu-item-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block"
+                                                viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd"
+                                                    d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                            Remove term
+                                        </label>
+                                        <label (click)="blackListTerm(term.id)"
+                                            class="text-gray-700 block px-4 py-2 text-sm hover:bg-kernindigo hover:text-white"
+                                            role="menuitem" tabindex="-1" id="menu-item-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block"
+                                                viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd"
+                                                    d="M10 1.944A11.954 11.954 0 012.166 5C2.056 5.649 2 6.319 2 7c0 5.225 3.34 9.67 8 11.317C14.66 16.67 18 12.225 18 7c0-.682-.057-1.35-.166-2.001A11.954 11.954 0 0110 1.944zM11 14a1 1 0 11-2 0 1 1 0 012 0zm0-7a1 1 0 10-2 0v3a1 1 0 102 0V7z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                            Blacklist term
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="text-gray-500 font-normal italic">{{term.comment}}</div>
+                        </div>
+                    </ng-template>
+                </ng-template>
+
+
+
+            </ng-container>
+        </div>
+
+        <div class="mt-8">
+            <span class="text-gray-900 text-lg leading-6 font-medium mr-4">Blacklisted terms</span>
+            <span class="text-sm leading-5 font-medium text-gray-500">Not part of the lookuplist in a function and
+                won't
+                be added any longer on text selection</span>
+            <div *ngIf="terms$ | async as terms"
+                class="grid grid-cols-1 gap-6 mt-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3">
+                <ng-container *ngFor="let term of terms; let i = index">
+                    <div *ngIf="(term.blacklisted)"
+                        class="relative rounded-lg border border-gray-300 bg-white px-4 py-3 shadow-sm items-center text-sm hover:border-gray-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
+                        <div class="flow-root">
+                            <div class="text-gray-900 font-medium float-left">{{term.value}}</div>
+                            <svg (isMenuOpen)="toggleVisible($event, termsMenu)" appDropdown
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="h-5 w-5 float-right cursor-pointer text-gray-500" viewBox="0 0 20 20"
+                                fill="currentColor">
+                                <path
+                                    d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                            </svg>
+                            <div #termsMenu
+                                class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none hidden"
+                                role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
+                                <div class="py-1 cursor-pointer" role="none">
+                                    <label (click)="deleteTerm(term.id)"
+                                        class="text-gray-700 block px-4 py-2 text-sm hover:bg-kernindigo hover:text-white"
+                                        role="menuitem" tabindex="-1" id="menu-item-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block"
+                                            viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd"
+                                                d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                                clip-rule="evenodd" />
+                                        </svg>
+                                        Remove term
+                                    </label>
+                                    <label (click)="blackListTerm(term.id)"
+                                        class="text-gray-700 block px-4 py-2 text-sm hover:bg-kernindigo hover:text-white"
+                                        role="menuitem" tabindex="-1" id="menu-item-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block"
+                                            viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd"
+                                                d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                clip-rule="evenodd" />
+                                        </svg>
+                                        Whitelist term
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-gray-500 font-normal block">{{term.comment}}</div>
+                    </div>
+                </ng-container>
+            </div>
+        </div>
+        <div class="mt-8 pb-8">
+            <div class="text-gray-900 text-lg leading-6 font-medium">Danger zone</div>
+            <div class="text-sm leading-5 font-normal mt-2 text-gray-500 inline-block">This action can not be
+                reversed.
+                Are you sure you want to delete this lookup list?</div>
+
+            <div data-tip="This can't be reverted!" class="tooltip tooltip-right">
+                <label [for]="'delete-modal-'+base.id"
+                    class="bg-red-100 text-red-700 border border-red-400 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer ml-6 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 inline-block">
+                    Delete {{base.name}}
+                </label>
+            </div>
+            <input type="checkbox" [id]="'delete-modal-'+base.id" class="modal-toggle">
+            <div class="modal text-center items-center">
+                <div class="modal-box">
+                    <h1 class="text-lg text-gray-900 mb-2">Delete lookup list</h1>
+                    <div class="text-sm text-gray-500 my-2">
+                        Are you sure you want to delete this lookup list?
+                    </div>
+
+                    <div class="modal-action text-center">
+                        <label [for]="'delete-modal-'+base.id"
+                            class="bg-red-100 text-red-700 border border-red-400 text-xs font-semibold mr-2 px-4 py-2 rounded flex cursor-pointer hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 inline-block"
+                            (click)="deleteKnowledgeBase(projectId, base.id)">Delete</label>
+                        <label [for]="'delete-modal-'+base.id"
+                            class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Close</label>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+
+        <input type="checkbox" id="paste-list-modal" class="modal-toggle">
+        <div class="modal text-center items-center">
+            <div class="modal-box">
+                <h1 class="text-lg text-gray-900 mb-2 font-bold">Paste your list</h1>
+
+                <div class="grid justify-center items-center gap-x-2 gap-y-1 justify-items-start"
+                    style="grid-template-columns: max-content min-content;">
+                    <span>Split On</span><input #inputSplit type="text" class="input input-sm input-bordered w-10"
+                        value="\n">
+                </div>
+                <div style="max-height:80vh;overflow-x: auto;">
+                    <textarea #inputArea
+                        class="mt-4 textarea border-gray-200 placeholder-italic h-72 w-full p-4 leading-4 focus:outline-none"
+                        style="line-height:1rem"
+                        placeholder="Paste your values here.&#10;&#10;No need to check for duplication, we do that for you."></textarea>
+                </div>
+                <div class="modal-action text-center mt-0">
+                    <label for="paste-list-modal"
+                        class="bg-green-100 border border-green-400 text-green-700 hover:bg-green-200 focus:ring-green-500 text-xs font-semibold mr-2 px-4 py-2 rounded flex mt-4 cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 inline-block"
+                        (click)="pasteLookupList(projectId, base.id,inputArea.value,inputSplit.value, false)">Add</label>
+                    <label for="paste-list-modal"
+                        class="bg-white text-gray-700 text-xs font-semibold mr-4 mt-4 px-4 py-2 rounded-md border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Cancel</label>
+                </div>
+            </div>
+        </div>
+
+        <input type="checkbox" id="remove-list-modal" class="modal-toggle">
+        <div class="modal text-center items-center">
+            <div class="modal-box">
+                <h1 class="text-lg text-gray-900 mb-2 font-bold">Remove from your list</h1>
+
+                <div class="grid justify-center items-center gap-x-2 gap-y-1 justify-items-start"
+                    style="grid-template-columns: max-content min-content;">
+                    <span>Split On</span><input #rmInputSplit type="text" class="input input-sm input-bordered w-10"
+                        value="\n">
+                </div>
+                <div style="max-height:80vh;overflow-x: auto;">
+                    <textarea #rmInputArea
+                        class="mt-4 textarea border-gray-200 placeholder-italic h-72 w-full p-4 leading-4 focus:outline-none"
+                        style="line-height:1rem"
+                        placeholder="Paste your values here.&#10;&#10;No need to check for duplication, we do that for you."></textarea>
+                </div>
+                <div class="modal-action text-center mt-0">
+                    <label for="remove-list-modal"
+                        class="bg-red-100 border border-red-400 text-red-700 hover:bg-red-200 focus:ring-red-500 text-xs font-semibold mr-2 px-4 py-2 rounded-md flex mt-4 cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 inline-block"
+                        (click)="pasteLookupList(projectId, base.id,rmInputArea.value,rmInputSplit.value, true)">Remove</label>
+                    <label for="remove-list-modal"
+                        class="bg-white text-gray-700 text-xs font-semibold mr-4 mt-4 px-4 py-2 rounded-md border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Cancel</label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<input #inputUpload type="checkbox" id="list-upload-modal" class="modal-toggle">
+<div class="modal text-center items-center">
+    <div class="modal-box modal_content text-black bg-white justify-center">
+        <h1 class="flex flex-grow justify-center text-lg text-gray-900 font-bold">Upload list data
+        </h1>
+        <div class="text-sm text-gray-500 mb-4">
+            Upload data to your lookup list
+        </div>
+        <div>
+            <kern-upload [projectId]="projectId" (fileAttached)="getFile($event)">
+            </kern-upload>
+        </div>
+        <div class="modal-action">
+            <label (click)="uploadToMinio()"
+                class="bg-blue-700 text-white text-xs font-semibold px-4 py-2 rounded-md cursor-pointer hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                type="submit">
+                Upload
+            </label>
+            <label for="list-upload-modal"
+                class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                Close
+            </label>
+        </div>
+    </div>
+</div>

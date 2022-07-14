@@ -1,0 +1,94 @@
+<header class="sticky top-0 z-10 w-full">
+    <div
+        class="relative z-10 flex-shrink-0 h-16 bg-white border-b border-gray-200 shadow-sm flex justify-between items-center">
+        <div class="flex items-center">
+            <ng-container [ngSwitch]="page">
+                <ng-template [ngSwitchCase]="'projects'">
+                    <span *ngIf="!organizationInactive">
+                        <div class="ml-6 text-gray-500 text-sm font-normal">
+                            Welcome, <span class="font-bold text-gray-900">{{user?.firstName}}</span>! See
+                            your projects at <span class="font-bold text-gray-900">{{organizationName}}</span>.
+                        </div>
+                    </span>
+
+                    <div *ngIf="organizationInactive">
+                        <div class="ml-6 text-gray-500 text-sm font-normal">
+                            Welcome, <span class="font-bold text-gray-900">{{user?.firstName}}</span>!
+                            {{showConfigSettings ?'Switch to your main account to continue labeling...':
+                            'We’re currently setting up your account ...'}}
+                        </div>
+                    </div>
+                </ng-template>
+                <ng-template [ngSwitchCase]="'project'">
+                    <div class="ml-6 text-gray-700 text-sm font-bold">
+                        {{project.name}} - <span class="text-gray-500 font-normal">{{project?.numDataScaleUploaded}}
+                            items</span>
+                    </div>
+                </ng-template>
+                <ng-template [ngSwitchCase]="'project-new'">
+                    <div class="ml-6 text-gray-500 text-sm font-normal">
+                        Add a new project to <span class="font-bold text-gray-900">{{organizationName}}</span>.
+                    </div>
+                </ng-template>
+                <ng-template [ngSwitchCase]="'notifications'">
+                    <div *ngIf="user" class="flex items-center">
+                        <div class="ml-6 text-gray-500 text-sm font-normal">
+                            Welcome, <span class="font-bold text-gray-900">{{user?.firstName}}</span>! See
+                            your activities at <span class="font-bold text-gray-900">{{organizationName}}</span>.
+                        </div>
+                    </div>
+                </ng-template>
+                <ng-template [ngSwitchCase]="'config'">
+                    <div *ngIf="user" class="flex items-center">
+                        <div class="ml-6 text-gray-500 text-sm font-normal">
+                            Welcome, <span class="font-bold text-gray-900">{{user?.firstName}}</span>! Change your app
+                            configuration <span class="font-bold text-gray-900">here</span>.
+                        </div>
+                    </div>
+                </ng-template>
+            </ng-container>
+
+        </div>
+        <div class="flex flex-row flex-nowrap items-center">
+            <div class="flex items-center justify-center">
+                <a [routerLink]="['/notification-center']" class="flex mr-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path
+                            d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
+                    </svg>
+                </a>
+            </div>
+            <div class="flex justify-center overflow-visible">
+                <div *ngIf="user" class="dropdown dropdown-right dropdown-end mr-4">
+                    <a tabindex="0" class="w-full cursor-pointer">
+                        <div data-intercom-target="User Avatar Button" (isMenuOpen)="toggleVisible($event, menuButton)"
+                            appDropdown>
+                            <img style="width:32px;height:32px;" [src]="avatarUri">
+                        </div>
+                    </a>
+                    <div #menuButton
+                        class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none hidden"
+                        role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
+                        <div class="py-1 cursor-pointer" role="none">
+                            <option (click)="settings()" target="_blank"
+                                class="text-gray-700 block px-4 py-2 text-sm hover:bg-kernindigo hover:text-white"
+                                role="menuitem" tabindex="-1" id="menu-item-0">
+                                Account Settings
+                            </option>
+                            <option *ngIf="showConfigSettings" (click)="changeConfig()" target="_blank"
+                                class="text-gray-700 block px-4 py-2 text-sm hover:bg-kernindigo hover:text-white"
+                                role="menuitem" tabindex="-1" id="menu-item-0">
+                                Change Config
+                            </option>
+                            <option (click)="logout()"
+                                class="text-gray-700 block px-4 py-2 text-sm hover:bg-kernindigo hover:text-white"
+                                role="menuitem" tabindex="-1" id="menu-item-0">
+                                Logout
+                            </option>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>

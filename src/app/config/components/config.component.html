@@ -1,0 +1,94 @@
+<div class="h-screen bg-gray-100 flex overflow-hidden">
+    <kern-sidebar-pm (firstName)="getFirstName($event)">
+    </kern-sidebar-pm>
+
+    <div class="w-full flex-1 flex flex-col overflow-hidden">
+        <kern-header [user]="user$ | async" [avatarUri]="avatarUri" page="config"></kern-header>
+        <div class="h-screen bg-white py-6 px-4 space-y-6 sm:p-6">
+            <div>
+                <h3 class="text-lg leading-6 font-medium text-gray-900">Configuration</h3>
+                <p class="mt-1 text-sm text-gray-500">Here, you can change application settings for your self-hosted
+                    version.</p>
+            </div>
+            <div *ngIf="localConfigCopy" class="grid grid-cols-2 gap-6 items-center"
+                style="grid-template-columns: max-content min-content;">
+
+                <div class="text-sm">
+                    <label for="candidates" class="font-medium text-gray-700">Allow data tracking</label>
+                    <p class="text-gray-500">We collect few usage statistics to improve the user experience and product.
+                    </p>
+                </div>
+                <input #allowTracking class="h-5 w-5" type="checkbox" [checked]='localConfigCopy.allowDataTracking'
+                    (click)="checkAndSaveValue(allowTracking.checked,'allow_data_tracking')">
+                <div class="text-sm">
+                    <label for="candidates" class="font-medium text-gray-700">Max rows</label>
+                    <p class="text-gray-500">Maximum number of records per project.</p>
+                </div>
+                <input #maxRows tabindex="0" type="number"
+                    class="bg-white text-gray-700 text-xs font-semibold mr-3 px-4 py-2 rounded-md border border-gray-300 w-20 input input-sm"
+                    [value]="localConfigCopy.limitChecks.max_rows" (focus)="$event.target.select()"
+                    (keydown.enter)="checkAndSaveValue(maxRows.value,'limit_checks','max_rows')"
+                    (blur)="checkAndSaveValue(maxRows.value,'limit_checks','max_rows')">
+
+                <div class="text-sm">
+                    <label for="candidates" class="font-medium text-gray-700">Max attributes</label>
+                    <p class="text-gray-500">Maximum number of attributes per project.</p>
+                </div>
+                <input #maxCols tabindex="0" type="number"
+                    class="bg-white text-gray-700 text-xs font-semibold mr-3 px-4 py-2 rounded-md border border-gray-300 w-20 input input-sm"
+                    [value]="localConfigCopy.limitChecks.max_cols" (focus)="$event.target.select()"
+                    (keydown.enter)="checkAndSaveValue(maxRows.value,'limit_checks','max_cols')"
+                    (blur)="checkAndSaveValue(maxCols.value,'limit_checks','max_cols')">
+
+                <div class="text-sm">
+                    <label for="candidates" class="font-medium text-gray-700">Max characters</label>
+                    <p class="text-gray-500">Maximum number of characters per record.</p>
+                </div>
+                <input #maxChar tabindex="0" type="number"
+                    class="bg-white text-gray-700 text-xs font-semibold mr-3 px-4 py-2 rounded-md border border-gray-300 w-20 input input-sm"
+                    [value]="localConfigCopy.limitChecks.max_char_count" (focus)="$event.target.select()"
+                    (keydown.enter)="checkAndSaveValue(maxRows.value,'limit_checks','max_char_count')"
+                    (blur)="checkAndSaveValue(maxChar.value,'limit_checks','max_char_count')">
+                <div class="h-full text-sm">
+                    <label for="candidates" class="font-medium text-gray-700">Available <span
+                            class="font-dmMono">spaCy</span> language models</label>
+                    <p class="text-gray-500">Availability of spaCy language models. You can add new options.</p>
+                </div>
+                <div *ngIf="localConfigCopy.spacyDownloads as existing" class="flex flex-col gap-y-2">
+                    <div class="flex flex-row flex-nowrap gap-x-2 items-center"
+                        *ngFor="let myConfig of existing; let i=index">
+                        <select class="select select-bordered select-sm"
+                            (change)="changeConfigString($event.target.value,i)" [disabled]="i<2">
+                            <option *ngFor="let token of tokenizerOptions"
+                                [disabled]="existing.includes(token.configString)" [value]="token.configString"
+                                [selected]="token.configString == myConfig?'selected':null">
+                                {{token.name}} <span *ngIf="token.configString">({{token.configString}})</span>
+                            </option>
+                        </select>
+                        <div *ngIf="i>1" class="btn btn-sm btn-ghost px-1 inline-flex items-center"
+                            (click)="removeSpacyTokenizer(myConfig)">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="self-center relative" style="left:-1.5rem">
+                        <label *ngIf="tokenizerOptions && existing.length<tokenizerOptions.length"
+                            class="self-center inline-flex items-center px-0.5 py-0.5 border border-gray-200 shadow-sm text-xs font-medium rounded text-gray-700 bg-white focus:outline-none cursor-pointer"
+                            (click)="addSpacyConfig()">
+                            <div>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 4v16m8-8H4" />
+                                </svg>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

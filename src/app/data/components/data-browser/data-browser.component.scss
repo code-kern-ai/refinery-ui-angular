@@ -1,0 +1,91 @@
+$width_open: 400px;
+$width_closed: 56px;
+
+.transition_transform svg {
+  transition: transform 0.15s ease-in-out;
+}
+
+.rotate_transform svg {
+  transform: rotate(180deg);
+}
+
+.transition_all {
+  transition: all 0.25s ease-in-out;
+}
+
+.search_menu_width {
+  width: $width_open;
+}
+
+.sidebar_width {
+  max-width: $width_closed;
+}
+
+.sidebar_width_open {
+  max-width: $width_open;
+}
+
+.main_page_width_open {
+  width: calc(100% - #{$width_open});
+}
+
+.main_page_width {
+  width: calc(100% - #{$width_open});
+}
+
+.search_reduced_item_width {
+  width: ($width_open - 90px);
+}
+
+.search_custom_drowdown_disabled {
+  background-color: #f1f1f1;
+  border: 1px solid #bfbfbf;
+}
+
+.seperator_right {
+  border-right: 1px solid #eee;
+}
+
+.seperator_left {
+  border-left: 1px solid #eee;
+}
+
+.seperator_right_darker {
+  border-right: 1px solid #ddd;
+}
+
+.seperator_bottom {
+  border-bottom: 1px solid #ddd;
+}
+
+.seperator_top {
+  border-top: 1px solid #ddd;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.slice-width {
+  width: 170px !important;
+}
+
+.label-max-width {
+  max-width: 100px !important;
+}
+
+.overflow-anywhere {
+  overflow-wrap: anywhere;
+}
+
+.tooltip-label::before {
+  z-index: 10;
+}
