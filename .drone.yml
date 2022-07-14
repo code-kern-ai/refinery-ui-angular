@@ -65,3 +65,94 @@ trigger:
     - beta-v2
   event:
     - push
+
+---
+kind: pipeline
+type: docker
+name: amd64-dockerhub
+
+platform:
+  arch: amd64
+
+steps:
+  - name: build and publish
+    image: plugins/docker
+    settings:
+      username:
+        from_secret: dockerhub_username
+      password:
+        from_secret: dockerhub_password
+      repo: "kernai/${DRONE_REPO_NAME}"
+      tag: "${DRONE_TAG}-drone-amd64"
+
+trigger:
+  event:
+    - tag
+
+---
+kind: pipeline
+type: docker
+name: arm64-dockerhub
+
+platform:
+  arch: arm64
+
+steps:
+  - name: build and publish
+    image: plugins/docker
+    settings:
+      username:
+        from_secret: dockerhub_username
+      password:
+        from_secret: dockerhub_password
+      repo: "kernai/${DRONE_REPO_NAME}"
+      tag: "${DRONE_TAG}-drone-arm64"
+
+trigger:
+  event:
+    - tag
+
+---
+kind: pipeline
+name: manifest-version
+steps:
+- name: manifest
+  image: plugins/manifest
+  settings:
+    spec: drone-manifest-version.tmpl
+    tag: "${DRONE_TAG}"
+    ignore_missing: true
+    username:
+      from_secret: dockerhub_username
+    password:
+      from_secret: dockerhub_password
+
+depends_on:
+  - amd64-dockerhub
+  - arm64-dockerhub
+
+trigger:
+  event:
+    - tag
+
+---
+kind: pipeline
+name: manifest-latest
+steps:
+- name: manifest
+  image: plugins/manifest
+  settings:
+    spec: drone-manifest-latest.tmpl
+    tag: "${DRONE_TAG}"
+    ignore_missing: true
+    username:
+      from_secret: dockerhub_username
+    password:
+      from_secret: dockerhub_password
+
+depends_on:
+  - manifest-version
+
+trigger:
+  event:
+    - tag
