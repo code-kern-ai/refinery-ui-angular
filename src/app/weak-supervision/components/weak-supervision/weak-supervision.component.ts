@@ -345,7 +345,7 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
   }
   canStartISRun(informationSource: any): boolean {
     if (!informationSource) return false;
-    if (informationSource?.state == '' || informationSource?.state == 'FAILED' || informationSource?.state == 'FINISHED') return true;
+    if (!informationSource.state || informationSource?.state == 'FAILED' || informationSource?.state == 'FINISHED') return true;
     const d: Date = dateAsUTCDate(new Date(informationSource.lastRun));
     const current: Date = new Date();
     if (d.getTime() - current.getTime() > 600000) return true; // older than 10 min
@@ -436,7 +436,9 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
   getHeightInPx(stats) {
     const numLabels = stats[0].label == '-' ? 0 : stats.length;
     const numLabelsPx = (numLabels * 70) + "px";
-    return parseInt("88px", 10) + parseInt(numLabelsPx, 10) + "px"
+    let additionalPx = 0 + "px";
+    if(stats.length > 3) additionalPx = 20 + "px";
+    return parseInt("88px", 10) + parseInt(numLabelsPx, 10) + parseInt(additionalPx, 10) + "px";
   }
 
   setAllInformationSources(value: boolean) {
@@ -489,5 +491,12 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
       this.selectionList += el.name;
     })
 
+  }
+
+  navigateToSettings() {
+    this.router.navigate(["../settings"], {
+      relativeTo: this.activatedRoute,
+    });
+    localStorage.setItem("openModal", "true");
   }
 }

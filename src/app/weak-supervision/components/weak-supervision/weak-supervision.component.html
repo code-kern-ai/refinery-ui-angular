@@ -11,7 +11,7 @@
                         {{labelingTask.name}}
                     </div>
                     <div data-tip="Add new labeling task" class="tooltip tooltip-right tooltip-label">
-                        <button routerLink="../settings"><svg xmlns="http://www.w3.org/2000/svg"
+                        <button (click)="navigateToSettings()"><svg xmlns="http://www.w3.org/2000/svg"
                                 class="h-5 w-5 text-gray-500 my-5 cursor-pointer" fill="none" viewBox="0 0 24 24"
                                 stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
@@ -330,24 +330,24 @@
                                         <div class="text-sm text-gray-500">
                                             {{currentWeakSupervisionRun.selectedInformationSources}}
                                         </div>
-                                        <div class="text-sm font-bold">Selected Labeling Tasks</div>
+                                        <div class="text-sm font-bold">Selected labeling tasks</div>
                                         <div class="text-sm text-gray-500">
                                             {{currentWeakSupervisionRun.selectedLabelingTasks}}
                                         </div>
-                                        <div class="text-sm font-bold">Distinct Records</div>
+                                        <div class="text-sm font-bold">Distinct records</div>
                                         <div class="text-sm text-gray-500">
                                             {{currentWeakSupervisionRun.distinctRecords}}</div>
-                                        <div class="text-sm font-bold">Created Labels</div>
+                                        <div class="text-sm font-bold">Created labels</div>
                                         <div class="text-sm text-gray-500">
                                             {{currentWeakSupervisionRun.resultCount}}</div>
-                                        <div class="text-sm font-bold">Created By</div>
+                                        <div class="text-sm font-bold">Created by</div>
                                         <div class="text-sm text-gray-500">
                                             {{currentWeakSupervisionRun.displayName}}
                                         </div>
-                                        <div class="text-sm font-bold">Started At</div>
+                                        <div class="text-sm font-bold">Started at</div>
                                         <div class="text-sm text-gray-500">
                                             {{currentWeakSupervisionRun.createdAtDisplay}}</div>
-                                        <div class="text-sm font-bold">Finished At</div>
+                                        <div class="text-sm font-bold">Finished at</div>
                                         <div class="text-sm text-gray-500">
                                             {{currentWeakSupervisionRun.finishedAtDisplay}}</div>
                                     </div>
@@ -397,7 +397,7 @@
                                 class="cursor-help tooltip tooltip-right card-title mb-0 label-text"><span
                                     class="underline"
                                     style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Target
-                                    Task</span></span>
+                                    task</span></span>
                             <select #labelingTasksSelect class="select select-bordered select-sm"
                                 (change)="this.hideZeroShotAttribute = this.labelingTasksClassification[labelingTasksSelect.selectedIndex].taskTarget == 'ON_ATTRIBUTE'">
                                 <option *ngFor="let task of labelingTasksClassification" [value]="task.id">
@@ -672,6 +672,9 @@
                 <div class="overflow-y-auto" style="max-height: 93%;">
                     <div class="mt-8"
                         [ngClass]="filteredSourcesList.length > 2 ? 'flex_container' : 'grid gap-6 grid-cols-3'">
+                        <ng-template [ngIf]="filteredSourcesList.length == 0">
+                            <span class="text-gray-500 text-base leading-6 font-normal mt-4">No heuristics for this labeling task</span>
+                        </ng-template>
                         <div *ngFor="let source of filteredSourcesList; let i = index"
                             class="relative flex space-x-3 items-center rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm hover:border-gray-400"
                             [ngStyle]="{'height': getHeightInPx(source.stats)}"
@@ -769,7 +772,7 @@
                                                 </div>
                                                 <div>
                                                     <div>Coverage</div>
-                                                    <div class="font-normal text-gray-500">{{stat.values.Coverage}}
+                                                    <div class="font-normal text-gray-500">{{stat.values.Coverage}} {{ stat.values.Coverage == 1 ? 'item' : 'items' }}
                                                     </div>
 
                                                 </div>

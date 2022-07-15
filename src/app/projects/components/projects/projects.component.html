@@ -22,8 +22,10 @@
                                 <span class="text-sm text-gray-900 tooltip tooltip-bottom text-gray-500"
                                     [attr.data-tip]="project.user.mail">{{project.user.firstName}}
                                     {{project.user.lastName}}</span>
+                                <span class="text-sm text-gray-500">on</span>
+                                <span class="text-sm text-gray-900 text-gray-500">{{project.date}}</span>
                                 <span class="text-sm text-gray-500">at</span>
-                                <span class="text-sm text-gray-900 text-gray-500">{{project.timeStamp}}</span>
+                                <span class="text-sm text-gray-900 text-gray-500">{{project.time}}</span>
                             </div>
                             <div class="mt-4 grid grid-cols-3 gap-4 items-center lg:grid-cols-6">
                                 <div class="col-span-2">
@@ -39,7 +41,7 @@
                                 <div>
                                     <div class="text-sm text-gray-900 font-medium">Records</div>
                                     <div class="text-sm text-gray-500 font-normal">
-                                        {{projectStatisticsById.get(project.id)?.numDataScaleUploaded | number}} items
+                                        {{projectStatisticsById.get(project.id)?.numDataScaleUploaded | number}} records
                                     </div>
                                 </div>
                                 <div>
@@ -47,7 +49,7 @@
                                         <div class="text-sm text-gray-900 font-medium">Manually labeled</div>
                                         <div class="text-sm text-gray-500 font-normal">
                                             {{projectStatisticsById.get(project.id)?.numDataScaleManual | number }}
-                                            items
+                                            records
                                             ({{
                                             (projectStatisticsById.get(project.id)?.numDataScaleManual/projectStatisticsById.get(project.id)?.numDataScaleUploaded)
                                             | percentRound: 2 }})
@@ -56,10 +58,10 @@
                                 </div>
                                 <div>
                                     <div *ngIf="projectStatisticsById.get(project.id)?.numDataScaleProgrammatical != 0">
-                                        <div class="text-sm text-gray-900 font-medium">Weakly labeled</div>
+                                        <div class="text-sm text-gray-900 font-medium">Weakly supervised</div>
                                         <div class="text-sm text-gray-500 font-normal">
                                             {{projectStatisticsById.get(project.id)?.numDataScaleProgrammatical | number
-                                            }} items
+                                            }} records
                                             ({{
                                             (projectStatisticsById.get(project.id)?.numDataScaleProgrammatical/projectStatisticsById.get(project.id)?.numDataScaleUploaded)
                                             | percentRound: 2 }})

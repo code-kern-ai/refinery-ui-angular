@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, HostListener, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { interval, Observable, Subscription, timer } from 'rxjs';
@@ -116,6 +116,8 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     return this.labelingTasksSchema.get('labelingTasks') as FormArray;
   }
   labelMap: Map<string, []> = new Map<string, []>();
+  @ViewChild('modalInput', { read: ElementRef }) myModalnewRecordTask: ElementRef;
+
   constructor(
     private routeService: RouteService,
     private activatedRoute: ActivatedRoute,
@@ -160,6 +162,17 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     this.colorOptions.forEach(color => this.labelColorOptions.push({
       name: color, background: `bg-${color}-100`, text: `text-${color}-700`, border: `border-${color}-400`, hover: `hover:bg-${color}-200`
     }));
+
+    const openModal = JSON.parse(localStorage.getItem("openModal"));
+    if(openModal) {
+      const subscription = interval(250).subscribe(()=> {
+        if(this.myModalnewRecordTask) {
+          this.myModalnewRecordTask.nativeElement.checked = true;
+          localStorage.removeItem("openModal");
+          subscription.unsubscribe();
+        }
+      })
+    }
   }
 
 

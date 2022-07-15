@@ -305,14 +305,15 @@ export class KnowledgeBaseDetailsComponent implements OnInit, AfterViewInit, OnD
   }
 
   uploadToMinio() {
-    this.uploadComponent.projectId = this.projectId;
-    this.uploadComponent.reloadOnFinish = true;
-    this.uploadComponent.uploadStarted = true;
-    const finalFileName = this.uploadComponent.getLookupListName(this.file?.name, this.knowledgeBaseId);
-    this.uploadComponent.reSubscribeToNotifications();
-    this.uploadComponent.uploadFileType.setValue("knowledge_base");
-    this.uploadComponent.finishUpUpload(finalFileName, '');
-
+    if(this.file) {
+      this.uploadComponent.projectId = this.projectId;
+      this.uploadComponent.reloadOnFinish = true;
+      this.uploadComponent.uploadStarted = true;
+      const finalFileName = this.uploadComponent.getLookupListName(this.file?.name, this.knowledgeBaseId);
+      this.uploadComponent.reSubscribeToNotifications();
+      this.uploadComponent.uploadFileType.setValue("knowledge_base");
+      this.uploadComponent.finishUpUpload(finalFileName, '');
+    }
   }
 
   pasteLookupList(projectId: string, baseId: string, value: string, split: string, remove: boolean) {

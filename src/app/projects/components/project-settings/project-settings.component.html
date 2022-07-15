@@ -146,7 +146,7 @@
                                                 <!--info hover-->
                                             </div>
                                             <div class="flex">
-                                                <span class="card-title mb-0 label-text">Size Estimate</span>
+                                                <span class="card-title mb-0 label-text">Size estimate</span>
                                             </div>
                                             <div class="flex flex-row justify-center items-center gap-2">
                                                 <span class="card-title mb-0 label-text">Export</span>
@@ -156,9 +156,9 @@
                                                 let-i="index">
                                                 <div [formGroupName]="i" class="contents">
                                                     <div class="flex">
-                                                        <p class="break-words cursor-default"
+                                                        <p class="break-words cursor-default capitalize-first"
                                                             [ngClass]="attribute.get('moveRight').value?'ml-4':null">
-                                                            {{attribute.get("name").value | titlecase}}</p>
+                                                            {{attribute.get("name").value}}</p>
                                                     </div>
                                                     <div class="flex items-center justify-items-center">
                                                         <ng-template [ngIf]="attribute.get('desc').value">
@@ -202,7 +202,7 @@
                                 <div></div>
                                 <div class="mt-4 mr-2 flex flex-row flex-nowrap">
                                     <div class="flex">
-                                        <span class="card-title mb-0 label-text">Final Size Estimate:</span>
+                                        <span class="card-title mb-0 label-text">Final size estimate:</span>
                                     </div>
                                     <div class="flex ml-2">
                                         <span class="card-title mb-0 label-text">{{downloadSizeText}}</span>
@@ -750,7 +750,7 @@
                             class="cursor-help tooltip tooltip-right card-title mb-0 label-text flex"><span
                                 class="underline"
                                 style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Target
-                                Attribute</span></span>
+                                attribute</span></span>
                         <select #labelingTaskTarget class="select select-bordered select-sm">
                             <option value="@@NO_ATTRIBUTE@@" selected="selected">Full Record</option>
                             <option *ngFor="let attribute of attributesArray.controls"
@@ -762,7 +762,7 @@
                             class="cursor-help tooltip tooltip-right card-title mb-0 label-text flex"><span
                                 class="underline"
                                 style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Name</span></span>
-                        <input #labelingTaskName name="labelingTaskName" type="text" placeholder="Labeling Task Name"
+                        <input #labelingTaskName name="labelingTaskName" type="text" placeholder="Labeling task name"
                             class="input input-sm input-bordered" (input)="checkLabelingTaskName($event.target)"
                             (keydown.enter)="addLabelingTask(project.id,modalInput,labelingTaskName.value,labelingTaskTarget.value);labelingTaskName.value=''">
                     </div>
@@ -822,7 +822,7 @@
                 <div class="flex space-x-2 items-center">
                     <input name="projectName" id="projectName" [formControl]="projectName" type="text"
                         placeholder="Please enter the project name to enable deletion"
-                        class="w-full input input-sm input-error input-bordered"
+                        class="w-full input input-sm border border-red-400 input-bordered focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                         (keydown.enter)="(projectName.value == project.name)? deleteProject(project.id):null">
                     <button data-tip="This can't be reverted!" (click)="deleteProject(project.id)"
                         [disabled]="!(projectName.value === project.name)"

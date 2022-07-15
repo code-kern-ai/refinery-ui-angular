@@ -154,7 +154,12 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     this.subscriptions$.push(tmp.subscribe((projectList) => {
       projectList.sort((a, b) => a.name.localeCompare(b.name));
       projectList.forEach(projectItem => {
-        if (projectItem.createdAt) projectItem.timeStamp = this.parseUTC(projectItem.createdAt);
+        if (projectItem.createdAt) {
+          projectItem.timeStamp = this.parseUTC(projectItem.createdAt);
+          const splitDateTime = projectItem.timeStamp.split(',');
+          projectItem.date = splitDateTime[0].trim();
+          projectItem.time = splitDateTime[1];
+        };
       });
       this.projectList = projectList;
     }));

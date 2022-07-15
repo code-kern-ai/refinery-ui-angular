@@ -77,7 +77,7 @@ function getNameForGroupKey(group: SearchGroup): string {
     case SearchGroup.USER_FILTER:
       return 'Users';
     case SearchGroup.LABELING_TASKS:
-      return 'Labeling Task:';
+      return 'Labeling task:';
     case SearchGroup.ORDER_STATEMENTS:
       return 'Result Order';
   }
@@ -93,7 +93,7 @@ function getSubTextForGroupKey(group: SearchGroup): string {
     case SearchGroup.LABELING_TASKS:
       return 'Choose from anything related to';
     case SearchGroup.ORDER_STATEMENTS:
-      return 'Order your results by';
+      return 'Order your results';
   }
   return '';
 }

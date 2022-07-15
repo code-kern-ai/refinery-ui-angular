@@ -46,7 +46,7 @@
                 <div class="modal">
                     <div class="modal-box text-black bg-white justify-center">
                         <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
-                            Filter creation </div>
+                            Filter creation</div>
                         <div class="mb-2 flex flex-grow justify-center text-sm">
                             Save or update a filter for the data browser.</div>
                         <p class="pt-4">You have two choices.
@@ -152,7 +152,7 @@
                         <div class="w-full border-t border-gray-300"></div>
                     </div>
                     <div class="relative flex justify-start">
-                        <span class="pr-3 bg-white text-lg font-medium text-gray-900">Filter creation</span>
+                        <span class="pr-3 bg-white text-lg font-medium text-gray-900">Filter</span>
                     </div>
                 </div>
 
@@ -771,12 +771,12 @@
                 <div class="text-sm select-none flex flex-row flex-nowrap whitespace-nowrap mr-2">
                     {{extendedRecords.fullCount
                     | number}}
-                    Item{{extendedRecords.fullCount ===
+                    Record{{extendedRecords.fullCount ===
                     1
                     ? '' : 's'}}
                     <div *ngIf="activeSlice?.static && activeSlice.count!=staticDataSliceCurrentCount"
                         class="tooltip tooltip-bottom"
-                        [attr.data-tip]="'The count displayed is provided by the slice.&#10;The backend holds '+staticDataSliceCurrentCount +' Items with the same filter critera'"
+                        [attr.data-tip]="'The count displayed is provided by the slice.&#10;The backend holds '+staticDataSliceCurrentCount +' Records with the same filter critera'"
                         style="white-space: break-spaces;">
                         <div>*</div>
                     </div>
@@ -797,7 +797,7 @@
                                         </svg>
                                     </div>
                                     <div class="ml-3">
-                                        <p class="text-sm font-medium text-yellow-800">Static data slice active. Filter
+                                        <p class="text-sm font-medium text-yellow-800">Static filter active. Filter
                                             changes won't take effect{{activeSlice?.sliceType !=
                                             SliceTypes.STATIC_OUTLIER ? ' until you update the slice':''}}.</p>
                                         <div *ngIf="staticSliceOrderActive && activeSlice?.sliceType != SliceTypes.STATIC_OUTLIER"
@@ -851,7 +851,7 @@
                         class="mr-1 inline-flex items-center px-2.5 py-1.5 border border-gray-200 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer"
                         [ngClass]="similarSearchHelper.recordsInDisplay || activeSlice ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer'">
                         <svg xmlns="http://www.w3.org/2000/svg"
-                            class="mr-2 icon icon-tabler icon-tabler-adjustments inline-block" width="24" height="24"
+                            class="mr-2 icon icon-tabler icon-tabler-adjustments inline-block" width="20" height="20"
                             viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
                             stroke-linecap="round" stroke-linejoin="round">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
@@ -919,7 +919,7 @@
                     <button (click)="requestFileExport(project.id)" [disabled]="extendedRecords?.sessionId ? null:true"
                         [ngClass]="extendedRecords?.sessionId ?  'opacity-100 cursor-pointer':'opacity-50 cursor-not-allowed pointer-events-none'"
                         class="mr-1 inline-flex items-center px-2.5 py-1.5 border border-gray-200 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 h-6 w-6" fill="none" viewBox="0 0 24 24"
+                        <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 h-5 w-5" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />

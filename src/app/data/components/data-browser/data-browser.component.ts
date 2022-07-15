@@ -1480,8 +1480,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     }
     else return;
     if (this.filteredSliceIds.has(idToDelete)) this.filteredSliceIds.delete(idToDelete);
-    this.projectApolloService.deleteDataSlice(this.projectId, idToDelete).pipe(first()).subscribe();
-
+    this.projectApolloService.deleteDataSlice(this.projectId, idToDelete).pipe(first()).subscribe(() => this.clearFilters()); 
   }
 
   filterAvailableSlices() {
