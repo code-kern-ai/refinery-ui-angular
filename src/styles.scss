@@ -1,0 +1,38 @@
+/* You can add global styles to this file, and also import other style files */
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+@import "~highlight.js/styles/tomorrow.css";
+
+@font-face {
+  font-family: "DM Sans";
+  src: local("DM Sans"),
+    url(assets/dm-sans/DMSans-Regular.ttf) format("truetype");
+}
+
+@font-face {
+  font-family: "DM Mono";
+  src: local("DM Mono"),
+    url(assets/dm-mono/DMMono-Regular.ttf) format("truetype");
+}
+
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+}
+
+.nt-h-85 {
+  height: 85%;
+}
+
+@layer utilities {
+  .placeholder-italic::placeholder {
+    font-style: italic;
+  }
+
+  .placeholder-kernindigo::placeholder {
+    color: #0000F580;
+  }
+}

@@ -1,0 +1,285 @@
+<div *ngIf="project$ | async as project" class="p-4 bg-gray-100 flex-1 flex flex-col"
+    [ngClass]="graphsHaveValues ? '' : 'h-full'">
+
+    <nav class="flex" aria-label="Breadcrumb">
+        <ol role="list" class="grid grid-cols-1-max sm:grid-cols-2-max lg:grid-cols-4-max gap-1 items-center">
+            <li>
+                <div>
+                    <div data-tip="Choose the visualizations" class="tooltip tooltip-right relative z-50"
+                        data-tooltip-target="tooltip-right" data-tooltip-placement="right">
+                        <span class="cursor-help mr-2 underline text-black-800"
+                            style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Visualizations</span>
+                    </div>
+                    <select *ngIf="displayGraphsValueArray" class="select select-sm select-bordered pr-8 truncate w-44"
+                        [formControl]="displayGraphsForm">
+                        <option *ngFor="let option of displayGraphsValueArray" [value]="option.value">
+                            {{option.name}}</option>
+                    </select>
+                </div>
+            </li>
+
+            <li>
+                <div class="flex items-center">
+                    <svg class="flex-shrink-0 h-5 w-5 text-gray-300" xmlns="http://www.w3.org/2000/svg"
+                        fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                        <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" />
+                    </svg>
+                    <div data-tip="Choose the target type" class="tooltip tooltip-bottom relative z-50"
+                        data-tooltip-target="tooltip-bottom" data-tooltip-placement="bottom">
+                        <span class="cursor-help cursor-help mr-2 underline text-black-800"
+                            style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Target</span>
+                    </div>
+                    <select [formControl]="labelingTasksTargetForm" class="select select-sm select-bordered pr-8 w-56">
+                        <option *ngFor="let target of labelingTasksTargetMap | keyvalue" [value]="target.key">
+                            {{target.key}}</option>
+                    </select>
+                </div>
+            </li>
+
+            <li>
+                <div class="flex items-center">
+                    <svg class="flex-shrink-0 h-5 w-5 text-gray-300" xmlns="http://www.w3.org/2000/svg"
+                        fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                        <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" />
+                    </svg>
+                    <div data-tip="Choose the labeling task" class="tooltip tooltip-bottom relative z-50"
+                        data-tooltip-target="tooltip-bottom" data-tooltip-placement="bottom">
+                        <span class="cursor-help mr-2 underline text-black-800"
+                            style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Labeling
+                            task</span>
+                    </div>
+                    <select *ngIf="labelingTasksMap" [formControl]="labelingTasksForm"
+                        class="select select-sm select-bordered pr-8 truncate w-56">
+                        <option *ngFor="let task of labelingTasksMap | keyvalue" [value]="task.value.id">
+                            {{task.value.name}}</option>
+                    </select>
+                </div>
+            </li>
+
+            <li>
+                <div class="flex items-center">
+                    <svg class="flex-shrink-0 h-5 w-5 text-gray-300" xmlns="http://www.w3.org/2000/svg"
+                        fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                        <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" />
+                    </svg>
+                    <div data-tip="Choose the filter. Only static ones can be used"
+                        class="tooltip tooltip-bottom relative z-50" data-tooltip-target="tooltip-bottom"
+                        data-tooltip-placement="bottom">
+                        <span class="cursor-help mr-2 underline text-black-800"
+                            style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Filter</span>
+                    </div>
+                    <select class="select select-sm select-bordered pr-8 truncate w-56" [formControl]="dataSliceForm">
+                        <option value="@@NO_SLICE@@">All Records</option>
+                        <option *ngFor="let slice of dataSlicesById | keyvalue" [value]="slice.key">
+                            {{slice.value.name}}
+                        </option>
+                    </select>
+                </div>
+            </li>
+        </ol>
+    </nav>
+
+    <div>
+        <dl class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            <div class="relative bg-white pt-5 px-4 pb-12 sm:pt-6 sm:px-6 shadow rounded-lg overflow-hidden">
+                <dt>
+                    <div class="absolute bg-yellow-500 rounded-md p-3">
+                        <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+                        </svg>
+                    </div>
+                    <p class="ml-16 text-sm font-medium text-gray-500 truncate">Manually labeled</p>
+                </dt>
+                <dd class="ml-16 pb-6 flex items-baseline sm:pb-7">
+                    <ng-template [ngIf]="projectStats.generalLoading" [ngIfElse]="showStatsM">
+                        <kern-loading></kern-loading>
+                    </ng-template>
+                    <ng-template #showStatsM>
+                        <p class="text-2xl font-semibold text-gray-900 tooltip"
+                            [attr.data-tip]="projectStats.general['MANUAL']">
+                            {{projectStats.generalStats["MANUAL"] | percentRound: 2}}
+                        </p>
+                    </ng-template>
+                    <div class="absolute bottom-0 inset-x-0 bg-gray-50 px-4 py-4 sm:px-6">
+                        <div class="text-sm">
+                            <a [routerLink]="['../labeling']"
+                                class="font-medium text-green-700 hover:text-green-500">Continue labeling</a>
+                        </div>
+                    </div>
+                </dd>
+            </div>
+
+            <div class="relative bg-white pt-5 px-4 pb-12 sm:pt-6 sm:px-6 shadow rounded-lg overflow-hidden">
+                <dt>
+                    <div class="absolute bg-green-500 rounded-md p-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                        </svg>
+                    </div>
+                    <p class="ml-16 text-sm font-medium text-gray-500 truncate">Weakly supervised</p>
+                </dt>
+                <dd class="ml-16 pb-6 flex items-baseline sm:pb-7">
+                    <ng-template [ngIf]="projectStats.generalLoading" [ngIfElse]="showStatsWS">
+                        <kern-loading color="green"></kern-loading>
+                    </ng-template>
+                    <ng-template #showStatsWS>
+                        <p class="text-2xl font-semibold text-gray-900 tooltip"
+                            [attr.data-tip]="projectStats.general['WEAK_SUPERVISION']">
+                            {{projectStats.generalStats["WEAK_SUPERVISION"]| percentRound: 2}}
+                        </p>
+                    </ng-template>
+                    <div class="absolute bottom-0 inset-x-0 bg-gray-50 px-4 py-4 sm:px-6">
+                        <div class="text-sm">
+                            <a class="font-medium text-green-700 hover:text-green-500">Manage runs <span
+                                    class="bg-white text-gray-800 rounded-lg text-xs px-2.5 py-0.5 border border-gray-300">Coming
+                                    soon!</span></a>
+                        </div>
+                    </div>
+                </dd>
+            </div>
+
+            <div class="relative bg-white pt-5 px-4 pb-12 sm:pt-6 sm:px-6 shadow rounded-lg">
+                <dt>
+                    <div class="absolute bg-red-500 rounded-md p-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                        </svg>
+                    </div>
+                    <p class="ml-16 text-sm font-medium text-gray-500 truncate">Heuristics</p>
+                </dt>
+                <dd class="ml-16 pb-6 flex items-baseline sm:pb-7">
+                    <ng-template [ngIf]="projectStats.generalLoading" [ngIfElse]="showStatsIS">
+                        <kern-loading color="red"></kern-loading>
+                    </ng-template>
+                    <ng-template #showStatsIS>
+                        <p class="text-2xl font-semibold text-gray-900 tooltip relative z-10"
+                            style="white-space: break-spaces;"
+                            [attr.data-tip]="projectStats.general['INFORMATION_SOURCE']">
+                            {{projectStats.generalPercent["INFORMATION_SOURCE"]}}
+                        </p>
+                    </ng-template>
+                    <div class="absolute bottom-0 inset-x-0 bg-gray-50 px-4 py-4 sm:px-6">
+                        <div class="text-sm">
+                            <a [routerLink]="['../heuristics']"
+                                class="font-medium text-green-700 hover:text-green-500">Manage heuristics</a>
+                        </div>
+                    </div>
+                </dd>
+            </div>
+
+            <div class="relative bg-white pt-5 px-4 pb-12 sm:pt-6 sm:px-6 shadow rounded-lg overflow-hidden">
+                <dt>
+                    <div class="absolute bg-blue-500 rounded-md p-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
+                        </svg>
+                    </div>
+                    <p class="ml-16 text-sm font-medium text-gray-500 truncate">Inter annotator agreement</p>
+                </dt>
+                <dd class="ml-16 pb-6 flex items-baseline sm:pb-7">
+                    <ng-template [ngIf]="projectStats.interAnnotatorLoading" [ngIfElse]="showStatsIA">
+                        <kern-loading color="blue"></kern-loading>
+                    </ng-template>
+                    <ng-template #showStatsIA>
+                        <p class="text-2xl font-semibold text-gray-900 tooltip"
+                            [attr.data-tip]="projectStats.interAnnotator">
+                            {{projectStats.interAnnotatorStat == -1 ? 'n/a' : interAnnotatorStat | percentRound: 2 }}
+                        </p>
+                    </ng-template>
+                    <div class="absolute bottom-0 inset-x-0 bg-gray-50 px-4 py-4 sm:px-6">
+                        <div class="text-sm">
+                            <a [routerLink]="['../data']" class="font-medium text-green-700 hover:text-green-500">View
+                                records</a>
+                        </div>
+                    </div>
+                </dd>
+            </div>
+        </dl>
+    </div>
+
+    <div *ngIf="graphsHaveValues;else noCharts" class="w-full flex flex-col">
+
+        <div class="mt-8 w-2/4 grid w-full"
+            [ngClass]="displayGraphsForm.value == DisplayGraphsType.ALL || displayGraphsForm.value == DisplayGraphsType.LABEL_DISTRIBUTION?null:'hidden'">
+            <div class="text-lg leading-6 text-gray-900 font-medium inline-block">
+                Label distribution
+            </div>
+            <div class="mt-1 text-sm leading-5 font-medium text-gray-700 inline-block">See the distribution of your
+                manually labeled and weakly supervised records.</div>
+            <div class="mt-2 w-full h-full shadow stats bg-white grid place-items-center flex-grow">
+                <div style="width:100%;height:100%;padding-left:20px;padding-right:20px;padding-top:20px;padding-bottom:20px;"
+                    *ngIf="labelDistribution">
+                    <kern-label-distribution-bar-chart [dataInput]="labelDistribution">
+                    </kern-label-distribution-bar-chart>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8 w-2/4 grid w-full"
+            [ngClass]="displayGraphsForm.value == DisplayGraphsType.ALL || displayGraphsForm.value == DisplayGraphsType.CONFUSION_MATRIX?null:'hidden'">
+            <div class="text-lg leading-6 text-gray-900 font-medium inline-block">
+                Confusion matrix
+            </div>
+            <div class="mt-1 text-sm leading-5 font-medium text-gray-700 inline-block">See how often
+                your manually labeled and weakly supervised records agree or disagree.</div>
+            <div class="mt-2 w-full shadow stats bg-white grid place-items-center flex-grow">
+                <div style="width:100%;height:100%;padding-left:20px;padding-right:20px;padding-top:20px;padding-bottom:20px;"
+                    *ngIf="confusionMatrix && displayConfusion else noConfusion">
+                    <kern-confusion-heatmap [dataInput]="confusionMatrix">
+                    </kern-confusion-heatmap>
+                </div>
+                <ng-template #noConfusion>
+                    <div *ngIf="displayConfusion" class="stat-title flex items-center mb-3" style="height:50px">
+                        <kern-loading></kern-loading>
+                    </div>
+                    <div *ngIf="!displayConfusion" class="stat-title flex items-center" style="height:50px">Tokenization
+                        is still running
+                    </div>
+                </ng-template>
+            </div>
+        </div>
+
+        <div class="mt-8 w-2/4 grid w-full mb-48"
+            [ngClass]="displayGraphsForm.value == DisplayGraphsType.ALL || displayGraphsForm.value == DisplayGraphsType.INTER_ANNOTATOR?null:'hidden'">
+            <div class="text-lg leading-6 text-gray-900 font-medium inline-block">
+                Inter annotator agreement
+            </div>
+            <div class="mt-1 text-sm leading-5 font-medium text-gray-700 inline-block">See how users agree or disagree
+                on redundantely labeled records.</div>
+            <ng-template [ngIf]="interAnnotatorMatrix">
+                <div class="mt-2 w-full shadow stats bg-white grid place-items-center flex-grow">
+                    <div style="width:100%;height:100%;padding-left:20px;padding-right:20px;padding-top:20px;padding-bottom:20px;"
+                        *ngIf="interAnnotatorMatrix.countNames > 1 + (goldUserRequested?1:0);else noData">
+                        <kern-inter-annotator [data]="interAnnotatorMatrix"></kern-inter-annotator>
+                    </div>
+                    <ng-template #noData>
+                        <div class="stat-title flex items-center w-full p-4" style="height:50px">It seems like you're
+                            working
+                            on this project by yourself. <br>If you want to include other team members to see the
+                            inter-annotator agreement, check out our hosted version.
+                        </div>
+                    </ng-template>
+                </div>
+            </ng-template>
+        </div>
+    </div>
+
+    <ng-template #noCharts>
+        <div class="mt-8 text-lg leading-6 text-gray-900 font-medium inline-block">
+            Monitoring
+        </div>
+        <div class="mt-1 text-sm leading-5 font-medium text-gray-700 inline-block">Go to the settings page to add a
+            labeling task.</div>
+        <div class="mt-2 shadow w-full stats bg-white place-content-center p-4">
+            <div class="stat-title">Add Labels to display charts</div>
+        </div>
+    </ng-template>
+</div>

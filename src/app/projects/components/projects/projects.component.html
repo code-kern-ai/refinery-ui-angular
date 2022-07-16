@@ -1,0 +1,431 @@
+<div class="h-screen bg-gray-100 flex overflow-hidden">
+    <kern-sidebar-pm (firstName)="getFirstName($event)">
+    </kern-sidebar-pm>
+    <!-- Content area -->
+    <div class="h-full w-full flex-1 flex flex-col overflow-hidden">
+        <kern-header [user]="user$ | async" [organizationName]="organizationName"
+            [organizationInactive]="organizationInactive" [avatarUri]="avatarUri" page="projects"></kern-header>
+
+        <ng-container *ngIf="projectList as projects">
+            <div *ngIf="!organizationInactive && projects.length > 0" class="ml-4">
+                <ng-container *ngTemplateOutlet="buttonsProject"></ng-container>
+            </div>
+
+            <div *ngIf="!organizationInactive && projects.length > 0" class="h-screen overflow-y-scroll mt-3"
+                data-intercom-target="Project Overview">
+                <div class="scrollable-size">
+                    <div *ngFor="let project of projects" class="relative card shadow bg-white m-4">
+                        <div *ngIf="project.status != ProjectStatusType.IN_DELETION" class="card-body p-6">
+                            <div class="absolute top-0 left-2/4 flex flex-row flex-nowrap gap-x-1 bg-gray-100 px-1 rounded-br rounded-bl"
+                                style="transform: translate(-50%);" *ngIf="project.timeStamp">
+                                <span class="text-sm text-gray-500">Created by</span>
+                                <span class="text-sm text-gray-900 tooltip tooltip-bottom text-gray-500"
+                                    [attr.data-tip]="project.user.mail">{{project.user.firstName}}
+                                    {{project.user.lastName}}</span>
+                                <span class="text-sm text-gray-500">on</span>
+                                <span class="text-sm text-gray-900 text-gray-500">{{project.date}}</span>
+                                <span class="text-sm text-gray-500">at</span>
+                                <span class="text-sm text-gray-900 text-gray-500">{{project.time}}</span>
+                            </div>
+                            <div class="my-2 grid grid-cols-3 gap-4 items-center lg:grid-cols-6">
+                                <div class="col-span-2">
+                                    <div class="text-sm text-gray-900 font-medium">{{project.name}}</div>
+                                    <div *ngIf="project.description; else noProjectDesc"
+                                        class="text-sm text-gray-500 font-normal">
+                                        {{project.description}}
+                                    </div>
+                                    <ng-template #noProjectDesc>
+                                        <div class="text-sm text-gray-500 font-normal italic">No description</div>
+                                    </ng-template>
+                                </div>
+                                <div>
+                                    <div class="text-sm text-gray-900 font-medium">Records</div>
+                                    <div class="text-sm text-gray-500 font-normal">
+                                        {{projectStatisticsById.get(project.id)?.numDataScaleUploaded ? (projectStatisticsById.get(project.id)?.numDataScaleUploaded | number) : '0'}} records
+                                    </div>
+                                </div>
+                                <div>
+                                    <div *ngIf="projectStatisticsById.get(project.id)?.numDataScaleManual != 0">
+                                        <div class="text-sm text-gray-900 font-medium">Manually labeled</div>
+                                        <div class="text-sm text-gray-500 font-normal">
+                                            {{projectStatisticsById.get(project.id)?.numDataScaleManual | number }}
+                                            records
+                                            ({{
+                                            (projectStatisticsById.get(project.id)?.numDataScaleManual/projectStatisticsById.get(project.id)?.numDataScaleUploaded)
+                                            | percentRound: 2 }})
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div *ngIf="projectStatisticsById.get(project.id)?.numDataScaleProgrammatical != 0">
+                                        <div class="text-sm text-gray-900 font-medium">Weakly supervised</div>
+                                        <div class="text-sm text-gray-500 font-normal">
+                                            {{projectStatisticsById.get(project.id)?.numDataScaleProgrammatical | number
+                                            }} records
+                                            ({{
+                                            (projectStatisticsById.get(project.id)?.numDataScaleProgrammatical/projectStatisticsById.get(project.id)?.numDataScaleUploaded)
+                                            | percentRound: 2 }})
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <button (click)="manageProject(project.id, project.numDataScaleUploaded)" *ngIf="project.status !== 'INIT_UPLOAD'"
+                                        class="text-green-800 text-sm font-medium">
+                                        <span class="leading-5">Continue project</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                                        </svg>
+                                    </button> 
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </ng-container>
+
+        <ng-container *ngIf="!organizationInactive && (projectList?.length === 0)">
+            <div class="h-screen relative bg-white overflow-hidden">
+                <div class="hidden lg:block lg:absolute lg:inset-0" aria-hidden="true">
+                    <svg class="h-screen absolute top-0 left-1/2 transform translate-x-64 -translate-y-8" width="640"
+                        height="784" fill="none" viewBox="0 0 640 784">
+                        <defs>
+                            <pattern id="9ebea6f4-a1f5-4d96-8c4e-4c2abf658047" x="118" y="0" width="20" height="20"
+                                patternUnits="userSpaceOnUse">
+                                <rect x="0" y="0" width="4" height="4" class="text-gray-200" fill="currentColor" />
+                            </pattern>
+                        </defs>
+                        <rect y="72" width="640" height="640" class="text-gray-50" fill="currentColor" />
+                        <rect x="118" width="404" height="784" fill="url(#9ebea6f4-a1f5-4d96-8c4e-4c2abf658047)" />
+                    </svg>
+                </div>
+                <div class="relative pt-6 pb-16 sm:pb-24 lg:pb-32">
+                    <main class="mt-16 mx-auto max-w-7xl px-4 sm:mt-24 sm:px-6 lg:mt-32">
+                        <div class="lg:grid lg:grid-cols-12 lg:gap-8">
+                            <div class="sm:text-center md:max-w-2xl md:mx-auto lg:col-span-6 lg:text-left">
+                                <div class="text-gray-500 font-semibold text-base uppercase">Ready to launch!</div>
+                                <div class="font-extrabold text-gray-900 text-5xl mt-1">
+                                    Start your <span class="text-green-800">first project</span>
+                                </div>
+                                <div class="font-normal text-xl text-gray-500 mt-5">
+                                    Feel free to take a look at a product demo or check out our
+                                    <a href="https://docs.kern.ai/" target="_blank"><span
+                                            class="underline cursor-pointer">documentation</span></a>. If you have any
+                                    questions, you can reach out to us.
+                                </div>
+                                <ng-container *ngTemplateOutlet="buttonsProject"></ng-container>
+                            </div>
+                            <div style="width:560px;height:315px" class="overflow-hidden relative">
+                                <ng-template [ngIf]="saveUrl" [ngIfElse]="showPicture">
+                                    <iframe width="560" height="315" [src]="saveUrl" title="YouTube video player"
+                                        frameborder="0" autoplay="1"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowfullscreen></iframe>
+                                </ng-template>
+                                <ng-template #showPicture>
+                                    <div>
+                                        <img class="w-full" src="assets/thumbnail.jpg" alt="">
+
+                                        <span class="absolute inset-0 w-full h-full flex items-center justify-center"
+                                            aria-hidden="true">
+                                            <svg class="cursor-pointer h-20 w-20 text-indigo-500" fill="currentColor"
+                                                (click)="startPlayback()" viewBox="0 0 84 84">
+                                                <circle opacity="0.9" cx="42" cy="42" r="42" fill="white" />
+                                                <path
+                                                    d="M55.5039 40.3359L37.1094 28.0729C35.7803 27.1869 34 28.1396 34 29.737V54.263C34 55.8604 35.7803 56.8131 37.1094 55.9271L55.5038 43.6641C56.6913 42.8725 56.6913 41.1275 55.5039 40.3359Z" />
+                                            </svg>
+                                        </span>
+                                    </div>
+                                </ng-template>
+                            </div>
+                        </div>
+                    </main>
+                </div>
+            </div>
+        </ng-container>
+
+        <ng-container *ngIf="organizationInactive && isManaged">
+            <div class="h-screen relative bg-white overflow-hidden">
+                <div class="hidden lg:block lg:absolute lg:inset-0" aria-hidden="true">
+                    <svg class="h-screen absolute top-0 left-1/2 transform translate-x-64 -translate-y-8" width="640"
+                        height="784" fill="none" viewBox="0 0 640 784">
+                        <defs>
+                            <pattern id="9ebea6f4-a1f5-4d96-8c4e-4c2abf658047" x="118" y="0" width="20" height="20"
+                                patternUnits="userSpaceOnUse">
+                                <rect x="0" y="0" width="4" height="4" class="text-gray-200" fill="currentColor" />
+                            </pattern>
+                        </defs>
+                        <rect y="72" width="640" height="640" class="text-gray-50" fill="currentColor" />
+                        <rect x="118" width="404" height="784" fill="url(#9ebea6f4-a1f5-4d96-8c4e-4c2abf658047)" />
+                    </svg>
+                </div>
+                <div class="relative pt-6 pb-16 sm:pb-24 lg:pb-32">
+                    <main class="mt-16 mx-auto max-w-7xl px-4 sm:mt-24 sm:px-6 lg:mt-32">
+                        <div class="lg:grid lg:grid-cols-12 lg:gap-8">
+                            <div class="sm:text-center md:max-w-2xl md:mx-auto lg:col-span-6 lg:text-left">
+                                <div class="text-gray-500 font-semibold text-base uppercase">We’re setting up your
+                                    organization
+                                </div>
+                                <div class="font-extrabold text-gray-900 text-5xl mt-1">
+                                    A team member is <span class="text-green-800">preparing your account</span>
+                                </div>
+                                <div class="font-normal text-xl text-gray-500 mt-5">
+                                    In the meantime, feel free to take a look at a product demo or check out our
+                                    <a href="https://docs.kern.ai/" target="_blank"><span
+                                            class="underline cursor-pointer">documentation</span></a>. If you have any
+                                    questions, you can reach out to us.
+                                </div>
+                            </div>
+                            <div style="width:560px;height:315px" class="overflow-hidden relative">
+                                <ng-template [ngIf]="saveUrl" [ngIfElse]="showPicture">
+                                    <iframe width="560" height="315" [src]="saveUrl" title="YouTube video player"
+                                        frameborder="0" autoplay="1"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowfullscreen></iframe>
+
+                                </ng-template>
+                                <ng-template #showPicture>
+                                    <div>
+                                        <img class="w-full" src="assets/thumbnail.jpg" alt="">
+
+                                        <span class="absolute inset-0 w-full h-full flex items-center justify-center"
+                                            aria-hidden="true">
+                                            <svg class="cursor-pointer h-20 w-20 text-indigo-500" fill="currentColor"
+                                                (click)="startPlayback()" viewBox="0 0 84 84">
+                                                <circle opacity="0.9" cx="42" cy="42" r="42" fill="white" />
+                                                <path
+                                                    d="M55.5039 40.3359L37.1094 28.0729C35.7803 27.1869 34 28.1396 34 29.737V54.263C34 55.8604 35.7803 56.8131 37.1094 55.9271L55.5038 43.6641C56.6913 42.8725 56.6913 41.1275 55.5039 40.3359Z" />
+                                            </svg>
+                                        </span>
+                                    </div>
+                                </ng-template>
+                            </div>
+                        </div>
+                    </main>
+                </div>
+            </div>
+        </ng-container>
+
+        <ng-container *ngIf="organizationInactive && !isManaged">
+            <div class="h-screen relative bg-white overflow-hidden">
+                <div class="hidden lg:block lg:absolute lg:inset-0" aria-hidden="true">
+                    <svg class="h-screen absolute top-0 left-1/2 transform translate-x-64 -translate-y-8" width="640"
+                        height="784" fill="none" viewBox="0 0 640 784">
+                        <defs>
+                            <pattern id="9ebea6f4-a1f5-4d96-8c4e-4c2abf658047" x="118" y="0" width="20" height="20"
+                                patternUnits="userSpaceOnUse">
+                                <rect x="0" y="0" width="4" height="4" class="text-gray-200" fill="currentColor" />
+                            </pattern>
+                        </defs>
+                        <rect y="72" width="640" height="640" class="text-gray-50" fill="currentColor" />
+                        <rect x="118" width="404" height="784" fill="url(#9ebea6f4-a1f5-4d96-8c4e-4c2abf658047)" />
+                    </svg>
+                </div>
+                <div class="relative pt-6 pb-16 sm:pb-24 lg:pb-32">
+                    <main class="mt-16 mx-auto max-w-7xl px-4 sm:mt-24 sm:px-6 lg:mt-32">
+                        <div class="lg:grid lg:grid-cols-12 lg:gap-8">
+                            <div class="sm:text-center md:max-w-2xl md:mx-auto lg:col-span-6 lg:text-left">
+                                <div class="text-gray-500 font-semibold text-base uppercase">
+                                    {{ canCreateOrg ? 'Preparing your account' : 'Maximum number of users reached' }}
+                                </div>
+                                <div class="font-extrabold text-gray-900 text-5xl mt-1">
+                                    <ng-template [ngIf]="canCreateOrg" [ngIfElse]="cannotCreateOrg">
+                                        Currently <span class="text-green-800">preparing your account</span>
+                                    </ng-template>
+                                    <ng-template #cannotCreateOrg>
+                                        <span class="text-green-800">Only one user </span>is allowed
+                                    </ng-template>
+                                </div>
+                                <div class="font-normal text-xl text-gray-500 mt-5">
+                                    <ng-template [ngIf]="canCreateOrg" [ngIfElse]="premiumVersion">
+                                        In the meantime, feel free to take a look at a product demo or check out our
+                                        <a href="https://docs.kern.ai/" target="_blank"><span
+                                                class="underline cursor-pointer">documentation</span></a>. If you have
+                                        any
+                                        questions, you can reach out to us.
+                                    </ng-template>
+                                    <ng-template #premiumVersion>
+                                        If you are interested in working with multiple users take a look at our <a
+                                            href="https://kern.ai/pricing" target="_blank"><span
+                                                class="underline cursor-pointer">managed version</span></a>.
+                                    </ng-template>
+
+                                </div>
+                            </div>
+                            <div style="width:560px;height:315px" class="overflow-hidden relative">
+                                <ng-template [ngIf]="saveUrl" [ngIfElse]="showPicture">
+                                    <iframe width="560" height="315" [src]="saveUrl" title="YouTube video player"
+                                        frameborder="0" autoplay="1"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowfullscreen></iframe>
+
+                                </ng-template>
+                                <ng-template #showPicture>
+                                    <div>
+                                        <img class="w-full" src="assets/thumbnail.jpg" alt="">
+
+                                        <span class="absolute inset-0 w-full h-full flex items-center justify-center"
+                                            aria-hidden="true">
+                                            <svg class="cursor-pointer h-20 w-20 text-indigo-500" fill="currentColor"
+                                                (click)="startPlayback()" viewBox="0 0 84 84">
+                                                <circle opacity="0.9" cx="42" cy="42" r="42" fill="white" />
+                                                <path
+                                                    d="M55.5039 40.3359L37.1094 28.0729C35.7803 27.1869 34 28.1396 34 29.737V54.263C34 55.8604 35.7803 56.8131 37.1094 55.9271L55.5038 43.6641C56.6913 42.8725 56.6913 41.1275 55.5039 40.3359Z" />
+                                            </svg>
+                                        </span>
+                                    </div>
+                                </ng-template>
+                            </div>
+                        </div>
+                    </main>
+                </div>
+            </div>
+        </ng-container>
+
+    </div>
+</div>
+
+<ng-template #buttonsProject>
+    <button [routerLink]="['/projects/new']"
+        class="bg-blue-700 text-white text-xs font-semibold px-4 py-2.5 rounded-md mt-6 hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+        New project
+    </button>
+    <button class="ml-6 mt-6 mr-6 xs:mr-0">
+        <label
+            class="bg-blue-700 text-white text-xs font-semibold px-4 py-2.5 rounded-md cursor-pointer hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            for="project-upload-modal">
+            Import snapshot
+        </label>
+    </button>
+    <div class="relative inline-block text-left">
+        <button
+            class="ml-6 bg-blue-700 text-white text-xs font-semibold px-4 py-2.5 rounded-md mt-6 hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            id="menu-button" (click)="modalOpen=false" (isMenuOpen)="toggleVisible($event, samples)" appDropdown>
+            Sample projects
+            <svg class="inline-block -mr-1 ml-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                fill="currentColor" stroke="white" aria-hidden="true">
+                <path fill-rule="evenodd"
+                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                    clip-rule="evenodd" />
+            </svg>
+        </button>
+        <div #samples
+            class="ml-6 origin-top-right absolute mt-2 w-96 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none hidden"
+            role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
+            <div class="py-1" role="none">
+                <div class="divide-y">
+                    <div>
+                        <div (click)="importSampleProject('Clickbait')"
+                            class="text-gray-700 px-4 py-2 text-sm border-dots hover:bg-kernindigo hover:text-white cursor-pointer">
+                            <span class="flex">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="mr-2 icon icon-tabler icon-tabler-fish-hook" width="20" height="20"
+                                    viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M16 9v6a5 5 0 0 1 -10 0v-4l3 3"></path>
+                                    <circle cx="16" cy="7" r="2"></circle>
+                                    <path d="M16 5v-2"></path>
+                                </svg>
+                                <p>Clickbait</p>
+                            </span>
+                            <p class="text-sm mt-2">Binary classification for detecting nudging articles.</p>
+                        </div>
+
+                        <div (click)="importSampleProject('Clickbait - initial')"
+                            class="text-gray-700 px-4 py-2 text-sm hover:bg-kernindigo hover:text-white cursor-pointer">
+                            <p class="text-sm">Initial (only contains the initial data set and labels.)</p>
+                        </div>
+                    </div>
+                    <div>
+                        <div (click)="importSampleProject('Conversational AI')"
+                            class="text-gray-700 px-4 py-2 text-sm border-dots hover:bg-kernindigo hover:text-white cursor-pointer">
+                            <span class="flex">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="mr-2 icon icon-tabler icon-tabler-message-circle" width="20" height="20"
+                                    viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M3 20l1.3 -3.9a9 8 0 1 1 3.4 2.9l-4.7 1"></path>
+                                    <line x1="12" y1="12" x2="12" y2="12.01"></line>
+                                    <line x1="8" y1="12" x2="8" y2="12.01"></line>
+                                    <line x1="16" y1="12" x2="16" y2="12.01"></line>
+                                </svg>
+                                <p>Conversational AI</p>
+                            </span>
+                            <p class="text-sm mt-2">Detecting intent within conversational lines.</p>
+                        </div>
+
+                        <div (click)="importSampleProject('Conversational AI - initial')"
+                            class="text-gray-700 px-4 py-2 text-sm hover:bg-kernindigo hover:text-white cursor-pointer">
+                            <p class="text-sm">Initial (only contains the initial data set and labels.)</p>
+                        </div>
+                    </div>
+                    <div>
+                        <div (click)="importSampleProject('AG News')"
+                            class="text-gray-700 px-4 py-2 text-sm border-dots hover:bg-kernindigo hover:text-white cursor-pointer">
+                            <span class="flex">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 icon icon-tabler icon-tabler-news"
+                                    width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+                                    fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path
+                                        d="M16 6h3a1 1 0 0 1 1 1v11a2 2 0 0 1 -4 0v-13a1 1 0 0 0 -1 -1h-10a1 1 0 0 0 -1 1v12a3 3 0 0 0 3 3h11">
+                                    </path>
+                                    <line x1="8" y1="8" x2="12" y2="8"></line>
+                                    <line x1="8" y1="12" x2="12" y2="12"></line>
+                                    <line x1="8" y1="16" x2="12" y2="16"></line>
+                                </svg>
+                                <p>AG News</p>
+                            </span>
+                            <p class="text-sm mt-2">Modelling topics of headline news.
+                            </p>
+                        </div>
+
+                        <div (click)="importSampleProject('AG News - initial')"
+                            class="text-gray-700 px-4 py-2 text-sm hover:bg-kernindigo hover:text-white cursor-pointer">
+                            <p class="text-sm">Initial (only contains the initial data set and labels.)</p>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="text-gray-700 px-4 py-2 text-sm hover:bg-kernindigo hover:text-white cursor-pointer">
+                            <a class="flex" href="https://github.com/code-kern-ai/sample-projects" target="_blank">
+                                Further sample projects
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</ng-template>
+
+<input #inputUpload type="checkbox" id="project-upload-modal" class="modal-toggle">
+<div class="modal text-center items-center">
+    <div class="modal-box modal_content text-black bg-white justify-center">
+        <h1 class="flex flex-grow justify-center text-lg text-gray-900 font-bold">Upload Project Data
+        </h1>
+        <div class="text-sm text-gray-500 mb-4">
+            Upload data from an existing project
+        </div>
+        <div>
+            <kern-upload [projectId]="null" [init]="true" (fileAttached)="getFile($event)">
+            </kern-upload>
+        </div>
+        <div class="modal-action">
+            <label (click)="importExistingProject()"
+                class="bg-green-100 text-green-700 border border-green-400 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                type="submit">
+                Upload
+            </label>
+            <label for="project-upload-modal"
+                class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                Close
+            </label>
+        </div>
+    </div>
+</div>

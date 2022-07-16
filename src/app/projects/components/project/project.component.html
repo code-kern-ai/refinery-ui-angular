@@ -1,0 +1,17 @@
+<div class="h-screen bg-gray-100 flex overflow-hidden">
+    <kern-sidebar-pm (firstName)="getFirstName($event)">
+    </kern-sidebar-pm>
+    <div class="h-full w-full flex flex-col">
+        <ng-container *ngIf="project$ | async as project">
+            <kern-header 
+                [user]="user$ | async"
+                [project]="project"
+                [avatarUri]="avatarUri"
+                page="project"
+            ></kern-header>
+        </ng-container>
+        <div class="block flex-grow h-full w-full bg-white overflow-y-auto">
+            <router-outlet></router-outlet>
+        </div>
+    </div>
+</div>
