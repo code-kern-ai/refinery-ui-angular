@@ -135,7 +135,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
       this.subscriptions$.push(this.organizationApolloService.canCreateLocalOrg().pipe(first()).subscribe((canCreateOrg) => {
         this.canCreateOrg = canCreateOrg;
 
-        if(this.canCreateOrg) {
+        if (this.canCreateOrg) {
           const localhostOrg = "localhost";
 
           this.organizationApolloService.createOrganization(localhostOrg).pipe(first()).subscribe(
@@ -152,6 +152,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     let tmp;
     [this.projectListQuery$, tmp] = this.projectApolloService.getProjects();
     this.subscriptions$.push(tmp.subscribe((projectList) => {
+
       projectList.sort((a, b) => a.name.localeCompare(b.name));
       projectList.forEach(projectItem => {
         if (projectItem.createdAt) {
@@ -161,7 +162,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
           projectItem.time = splitDateTime[1];
         };
       });
-      this.projectList = projectList;
+      this.projectList = projectList.filter(a => a.status != ProjectStatus.IN_DELETION);
     }));
     [this.projectStatQuery$, tmp] = this.organizationApolloService.getOverviewStats();
     this.subscriptions$.push(tmp.subscribe((stats) => {
@@ -225,7 +226,9 @@ export class ProjectsComponent implements OnInit, OnDestroy {
 
   importSampleProject(projectName) {
     this.projectApolloService.createSampleProject(projectName).pipe(first()).subscribe((p: Project) => {
-      this.router.navigate(['projects', p.id, 'overview'])
+      if (this.router.url == "/projects") {
+        this.router.navigate(['projects', p.id, 'overview']);
+      }
     });
   }
 
