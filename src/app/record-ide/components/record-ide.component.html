@@ -3,15 +3,66 @@
     </kern-snake>
 </div>
 <ng-template #normalDisplay>
-    <div *ngIf="project" class="bg-white grid grid-cols-2">
-        <div class="h-screen">
+    <div *ngIf="project" class="bg-white grid" [ngClass]="vertical?'grid-cols-2': 'grid-cols-1'">
+        <div class="h-full">
             <div class="m-3">
                 <span class="mr-4">Editor</span>
                 <button (click)="goToLabelingPage()" data-tip="Go to labeling page"
                     class="tooltip tooltip-right hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 bg-white text-gray-700 font-semibold text-xs mr-2 px-4 py-2 rounded-md border border-gray-300">
                     View labeling
                 </button>
-                <span class="float-right">
+                <span class="float-right flex flex-row flex-nowrap items-center">
+                    <button (click)="switchView()"
+                        [attr.data-tip]="vertical?'switch to horizontal view':'switch to vertical view'"
+                        class="tooltip tooltip-left bg-white mr-3 p-1 rounded-md border border-gray-300 whitespace-nowrap hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        <svg *ngIf="vertical else horizontal" xmlns="http://www.w3.org/2000/svg"
+                            class="icon icon-tabler icon-tabler-border-horizontal" width="24" height="24"
+                            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                            <line x1="4" y1="12" x2="20" y2="12"></line>
+                            <line x1="4" y1="4" x2="4" y2="4.01"></line>
+                            <line x1="8" y1="4" x2="8" y2="4.01"></line>
+                            <line x1="12" y1="4" x2="12" y2="4.01"></line>
+                            <line x1="16" y1="4" x2="16" y2="4.01"></line>
+                            <line x1="20" y1="4" x2="20" y2="4.01"></line>
+                            <line x1="4" y1="8" x2="4" y2="8.01"></line>
+                            <line x1="12" y1="8" x2="12" y2="8.01"></line>
+                            <line x1="20" y1="8" x2="20" y2="8.01"></line>
+                            <line x1="4" y1="16" x2="4" y2="16.01"></line>
+                            <line x1="12" y1="16" x2="12" y2="16.01"></line>
+                            <line x1="20" y1="16" x2="20" y2="16.01"></line>
+                            <line x1="4" y1="20" x2="4" y2="20.01"></line>
+                            <line x1="8" y1="20" x2="8" y2="20.01"></line>
+                            <line x1="12" y1="20" x2="12" y2="20.01"></line>
+                            <line x1="16" y1="20" x2="16" y2="20.01"></line>
+                            <line x1="20" y1="20" x2="20" y2="20.01"></line>
+                        </svg>
+                        <ng-template #horizontal>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-border-vertical"
+                                width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+                                fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <line x1="12" y1="4" x2="12" y2="20"></line>
+                                <line x1="4" y1="4" x2="4" y2="4.01"></line>
+                                <line x1="8" y1="4" x2="8" y2="4.01"></line>
+                                <line x1="16" y1="4" x2="16" y2="4.01"></line>
+                                <line x1="20" y1="4" x2="20" y2="4.01"></line>
+                                <line x1="4" y1="8" x2="4" y2="8.01"></line>
+                                <line x1="20" y1="8" x2="20" y2="8.01"></line>
+                                <line x1="4" y1="12" x2="4" y2="12.01"></line>
+                                <line x1="8" y1="12" x2="8" y2="12.01"></line>
+                                <line x1="16" y1="12" x2="16" y2="12.01"></line>
+                                <line x1="20" y1="12" x2="20" y2="12.01"></line>
+                                <line x1="4" y1="16" x2="4" y2="16.01"></line>
+                                <line x1="20" y1="16" x2="20" y2="16.01"></line>
+                                <line x1="4" y1="20" x2="4" y2="20.01"></line>
+                                <line x1="8" y1="20" x2="8" y2="20.01"></line>
+                                <line x1="16" y1="20" x2="16" y2="20.01"></line>
+                                <line x1="20" y1="20" x2="20" y2="20.01"></line>
+                            </svg>
+                        </ng-template>
+                    </button>
                     <button (click)="prevRecord()"
                         class="bg-white text-gray-700 text-xs font-semibold mr-3 px-4 py-2 rounded-md border border-gray-300 whitespace-nowrap hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Back
                     </button>
@@ -22,12 +73,12 @@
                         class="tooltip tooltip-left border border-0 border-gray-200 inline-flex items-center px-2.5 py-0.5 rounded-md text-sm font-medium bg-gray-100 text-gray-800">{{position}}</span></span>
             </div>
             <div>
-                <ngx-monaco-editor class="h-screen w-full" [ngStyle]="{'height': screenHeight}"
-                    [options]="editorOptions" [(ngModel)]="code" [formControl]="codeFormCtrl">
+                <ngx-monaco-editor class="h-full w-full" [ngStyle]="{'height': screenHeight}" [options]="editorOptions"
+                    [(ngModel)]="code" [formControl]="codeFormCtrl" (onInit)="initEditor()">
                 </ngx-monaco-editor>
             </div>
         </div>
-        <div class="h-screen border-l border-gray-300">
+        <div class="h-full border-l border-gray-300">
             <div class="flex flex-row m-3 items-center">
                 <span class="mr-4">Shell</span>
                 <button (click)="runRecordIde()" data-tip="Press Shift + Enter in the editor&#10;to run the code"
@@ -70,7 +121,7 @@
                     {{output}}
                 </code>
             </div>
-            <div *ngIf="loading" class="h-full flex justify-center items-center">
+            <div *ngIf="loading" class="h-full flex justify-center items-center" [ngStyle]="{'height': screenHeight}">
                 <kern-loading size="btn-md"></kern-loading>
             </div>
         </div>

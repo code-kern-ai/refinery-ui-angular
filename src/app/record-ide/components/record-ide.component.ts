@@ -4,7 +4,7 @@ import {
   OnInit,
 } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { first } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, first } from 'rxjs/operators';
 import { RouteService } from 'src/app/base/services/route.service';
 import { ActivatedRoute, Router, Event, NavigationEnd } from '@angular/router';
 import { Project } from 'src/app/base/entities/project';
@@ -43,6 +43,7 @@ export class RecordIDEComponent implements OnInit {
   };
   snakeActive: boolean = false;
   firstVisit: boolean = true;
+  vertical: boolean = true;
 
 
   constructor(
@@ -60,12 +61,34 @@ export class RecordIDEComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.getScreenSize();
     this.sessionData = JSON.parse(localStorage.getItem("sessionData"));
     this.routeService.updateActivatedRoute(this.activatedRoute);
     this.session = this.activatedRoute.snapshot.paramMap.get("sessionId");
     const projectId = this.activatedRoute.parent.snapshot.paramMap.get('projectId');
-    this.prepareProject(projectId)
+    this.prepareProject(projectId);
+    const existingCode = localStorage.getItem("ideCode");
+    if (existingCode) this.code = existingCode;
+    const horizontal = JSON.parse(localStorage.getItem("ideHorizontal"));
+    if (horizontal) {
+      this.vertical = !horizontal;
+    }
+    this.changeScreenSize();
+  }
+
+  initEditor() {
+    this.codeFormCtrl.valueChanges
+      .pipe(
+        debounceTime(1000), //5 sec
+        distinctUntilChanged()
+      )
+      .subscribe(() => {
+        localStorage.setItem("ideCode", this.code);
+      });
+  }
+
+  switchView() {
+    localStorage.setItem("ideHorizontal", JSON.stringify(this.vertical));
+    location.reload();
   }
 
   setLabelingUrlAndPos(): void {
@@ -106,7 +129,16 @@ export class RecordIDEComponent implements OnInit {
 
   @HostListener('window:resize', ['$event'])
   getScreenSize(event?) {
-    this.screenHeight = window.innerHeight + "px";
+    this.changeScreenSize();
+  }
+
+  changeScreenSize() {
+    const baseSize = (window.innerHeight - 125);
+    if (this.vertical) {
+      this.screenHeight = baseSize + "px";
+    } else {
+      this.screenHeight = baseSize / 2 + "px";
+    }
   }
 
   @HostListener('window:keydown', ['$event'])
@@ -125,11 +157,13 @@ export class RecordIDEComponent implements OnInit {
   nextRecord() {
     this.clearIde();
     this.router.navigate(["projects", this.project.id, "record-ide", this.session], { queryParams: { pos: Math.min(this.position + 1, this.sessionData.recordIds.length) } });
+    this.firstVisit = true;
   }
 
   prevRecord() {
     this.clearIde();
     this.router.navigate(["projects", this.project.id, "record-ide", this.session], { queryParams: { pos: Math.max(this.position - 1, 1) } });
+    this.firstVisit = true;
   }
 
   navigateToTemplates() {
