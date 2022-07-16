@@ -494,9 +494,9 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
   }
 
   navigateToSettings() {
+    localStorage.setItem("openModal", "true");
     this.router.navigate(["../settings"], {
       relativeTo: this.activatedRoute,
     });
-    localStorage.setItem("openModal", "true");
   }
 }
