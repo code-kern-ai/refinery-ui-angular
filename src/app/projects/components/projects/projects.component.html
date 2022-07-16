@@ -27,7 +27,7 @@
                                 <span class="text-sm text-gray-500">at</span>
                                 <span class="text-sm text-gray-900 text-gray-500">{{project.time}}</span>
                             </div>
-                            <div class="mt-4 grid grid-cols-3 gap-4 items-center lg:grid-cols-6">
+                            <div class="my-2 grid grid-cols-3 gap-4 items-center lg:grid-cols-6">
                                 <div class="col-span-2">
                                     <div class="text-sm text-gray-900 font-medium">{{project.name}}</div>
                                     <div *ngIf="project.description; else noProjectDesc"
@@ -41,7 +41,7 @@
                                 <div>
                                     <div class="text-sm text-gray-900 font-medium">Records</div>
                                     <div class="text-sm text-gray-500 font-normal">
-                                        {{projectStatisticsById.get(project.id)?.numDataScaleUploaded | number}} records
+                                        {{projectStatisticsById.get(project.id)?.numDataScaleUploaded ? (projectStatisticsById.get(project.id)?.numDataScaleUploaded | number) : '0'}} records
                                     </div>
                                 </div>
                                 <div>
