@@ -137,7 +137,9 @@
 
         <div class="bg-white flex-1 min-w-0 mb-2 mt-8 flow-root">
 
-            <span class="text-gray-900 text-lg leading-6 font-medium mr-4">Terms</span>
+            <span class="text-gray-900 text-lg leading-6 font-medium mr-2">Terms</span>
+            <span *ngIf="listSize > 100" class="text-sm leading-5 font-medium text-gray-500">Only 100 of {{listSize}}
+                entries are displayed</span>
             <div class="float-right">
                 <input type="text" placeholder="Term" (keyup)="checkTermNameUniqe($event.target.value,addButton)"
                     (keyup.enter)="addTermToKnowledgeBase()" class="input input-sm input-bordered w-96"

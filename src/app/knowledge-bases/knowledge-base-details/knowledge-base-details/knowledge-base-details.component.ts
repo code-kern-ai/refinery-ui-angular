@@ -50,6 +50,7 @@ export class KnowledgeBaseDetailsComponent implements OnInit, AfterViewInit, OnD
   stickyObserver: IntersectionObserver;
   isHeaderNormal: boolean = true;
   downloadMessage: DownloadState = DownloadState.NONE;
+  listSize: number = -1;
   get DownloadStateType(): typeof DownloadState {
     return DownloadState;
   }
@@ -77,7 +78,15 @@ export class KnowledgeBaseDetailsComponent implements OnInit, AfterViewInit, OnD
     [this.knowledgeBaseQuery$, this.knowledgeBase$] = this.knowledgeBaseApolloService.getKnowledgeBaseByKnowledgeBaseId(this.projectId, this.knowledgeBaseId);
     [this.termsQuery$, this.terms$] = this.knowledgeBaseApolloService.getTermsByKnowledgeBaseId(this.projectId, this.knowledgeBaseId);
     this.subscriptions$.push(this.terms$.subscribe((terms) => {
-      this.terms = terms.sort((a, b) => a.value.localeCompare(b.value));
+
+      this.listSize = terms ? terms.length : -1;
+      if (terms?.length > 100) {
+        this.terms = terms.slice(0, 100);
+      } else {
+        this.terms = terms;
+      }
+      this.terms.sort((a, b) => a.value.localeCompare(b.value));
+
     }));
     NotificationService.subscribeToNotification(this, {
       projectId: this.projectId,
@@ -305,7 +314,7 @@ export class KnowledgeBaseDetailsComponent implements OnInit, AfterViewInit, OnD
   }
 
   uploadToMinio() {
-    if(this.file) {
+    if (this.file) {
       this.uploadComponent.projectId = this.projectId;
       this.uploadComponent.reloadOnFinish = true;
       this.uploadComponent.uploadStarted = true;

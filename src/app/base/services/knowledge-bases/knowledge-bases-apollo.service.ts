@@ -210,9 +210,7 @@ export class KnowledgeBasesApolloService {
           projectId: projectId,
           knowledgeBaseId: knowledgeBaseId,
         },
-        fetchPolicy: 'network-only', // Used for first execution
-        nextFetchPolicy: 'cache-first', // Used for subsequent executions (refetch query updates the cache != triggers the function)
-
+        fetchPolicy: 'cache-and-network', // Used for first execution
       });
     const vc = query
       .valueChanges.pipe(
