@@ -235,7 +235,7 @@ export class WeakSourceApolloService {
           projectId: projectId,
           informationSourceId: informationSourceId,
         },
-        fetchPolicy: 'cache-and-network',
+        fetchPolicy: 'no-cache',
       });
     const vc = query.valueChanges.pipe(
       map((result) => {
