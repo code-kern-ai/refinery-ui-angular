@@ -256,11 +256,7 @@ export class ProjectOverviewComponent implements OnInit, OnDestroy {
 
 
     this.labelingTasks$ = this.labelingTasks$.subscribe((tasks) => {
-      tasks.sort(
-        (a, b) =>
-          a.relativePosition - b.relativePosition ||
-          a.name.localeCompare(b.name)
-      ); //ensure same position
+      tasks.sort((a, b) => this.orderTasks(a, b)); //ensure same position
 
       let labelIds = [];
       let lastValueTask = this.labelingTasksForm.value;
@@ -294,7 +290,13 @@ export class ProjectOverviewComponent implements OnInit, OnDestroy {
       this.colors.domain(labelIds);
     });
   }
-
+  orderTasks(a, b) {
+    const at = a.taskTarget == LabelingTaskTarget.ON_WHOLE_RECORD ? -1 : 0;
+    const bt = b.taskTarget == LabelingTaskTarget.ON_WHOLE_RECORD ? -1 : 0;
+    return at - bt ||
+      a.relativePosition - b.relativePosition ||
+      a.name.localeCompare(b.name)
+  }
 
   //extention from monitor page
 
