@@ -121,6 +121,8 @@ export class ProjectsComponent implements OnInit, OnDestroy {
         this.avatarUri = "assets/avatars/" + avatarSelector + ".png"
         if (this.organizationInactive) {
           this.createDefaultOrg(user);
+        } else {
+          this.isManaged = ConfigManager.getIsManaged();
         }
       });
   }
