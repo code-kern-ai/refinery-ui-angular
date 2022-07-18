@@ -595,7 +595,7 @@ export class WeakSourceDetailsComponent
   }
 
   navigateToLibraries() {
-    window.open("https://github.com/code-kern-ai/lf-execution-environment/blob/dev/requirements.txt", "_blank");
+    window.open("https://github.com/code-kern-ai/refinery-lf-exec-env/blob/dev/requirements.txt", "_blank");
   }
 
   getBackground(color) {
