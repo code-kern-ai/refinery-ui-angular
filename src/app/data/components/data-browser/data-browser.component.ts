@@ -1346,6 +1346,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     return '#2563eb';
   }
 
+  // TO BE REMOVED FROM DATA BROWSER
   getDropdownDisplayText(
     formControls: AbstractControl[],
     labelFor: string

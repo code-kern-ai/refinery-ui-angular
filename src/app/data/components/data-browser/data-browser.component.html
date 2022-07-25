@@ -343,7 +343,14 @@
                                                                             </button>
                                                                         </ng-template>
                                                                         <ng-template #dropDownML>
-                                                                            <div tabindex="0"
+                                                                            <kern-dropdown-iterative
+                                                                                [arrayOptions]="groupItem.get('manualLabels').controls"
+                                                                                [hasCheckboxes]="true"
+                                                                                (optionClicked)="setActiveNegateGroup($event)"
+                                                                            ></kern-dropdown-iterative>
+
+
+                                                                            <!-- <div tabindex="0"
                                                                                 class="flex flex-row flex-nowrap select select-sm select-bordered search_reduced_item_width ">
                                                                                 <div class="truncate min-w-0 mr-4">
 
@@ -353,8 +360,8 @@
                                                                                     <label
                                                                                         style="color:#ef4444">{{getDropdownDisplayText(groupItem.get('manualLabels').controls,"NEGATED")}}</label>
                                                                                 </div>
-                                                                            </div>
-                                                                            <ul tabindex="0"
+                                                                            </div> -->
+                                                                            <!-- <ul tabindex="0"
                                                                                 class="p-2 w-full menu dropdown-content bg-base-100 shadow max-h-80 overflow-y-auto">
                                                                                 <li
                                                                                     *ngFor="let label of groupItem.get('manualLabels').controls; let k = index">
@@ -372,7 +379,7 @@
                                                                                         </label>
                                                                                     </div>
                                                                                 </li>
-                                                                            </ul>
+                                                                            </ul> -->
                                                                         </ng-template>
                                                                     </div>
                                                                 </div>
@@ -392,7 +399,12 @@
                                                                             </button>
                                                                         </ng-template>
                                                                         <ng-template #dropDownWS>
-                                                                            <div tabindex="1"
+                                                                            <kern-dropdown-iterative
+                                                                                [arrayOptions]="groupItem.get('weakSupervisionLabels').controls"
+                                                                                [hasCheckboxes]="true"
+                                                                                (optionClicked)="setActiveNegateGroup($event)"
+                                                                            ></kern-dropdown-iterative>
+                                                                            <!-- <div tabindex="1"
                                                                                 class="flex flex-row flex-nowrap select select-sm select-bordered search_reduced_item_width ">
                                                                                 <div class="truncate min-w-0 mr-4">
 
@@ -422,7 +434,7 @@
                                                                                         </label>
                                                                                     </div>
                                                                                 </li>
-                                                                            </ul>
+                                                                            </ul> -->
                                                                         </ng-template>
                                                                     </div>
                                                                 </div>
