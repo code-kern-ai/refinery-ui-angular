@@ -3,6 +3,7 @@ import { Apollo } from 'apollo-angular';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Organization } from '../../entities/organization';
+import { ApolloChecker } from '../base/apollo-checker';
 import { mutations } from './organization-mutations';
 import { queries } from './organization-queries';
 
@@ -12,7 +13,8 @@ import { queries } from './organization-queries';
 })
 export class OrganizationApolloService {
 
-  constructor(private apollo: Apollo) { }
+  private apollo: ApolloChecker;
+  constructor(private apolloBase: Apollo) { this.apollo = new ApolloChecker(this.apolloBase); }
 
   createOrganization(name: string) {
     return this.apollo

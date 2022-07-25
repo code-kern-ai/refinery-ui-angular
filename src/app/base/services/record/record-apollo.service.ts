@@ -6,13 +6,15 @@ import { queries } from './record-queries';
 import { mutations } from './record-mutations';
 import { queries as projectQueries } from '../project/project-queries';
 import { labelSourceToString } from '../../enum/graphql-enums';
+import { ApolloChecker } from '../base/apollo-checker';
 
 @Injectable({
   providedIn: 'root',
 })
 export class RecordApolloService {
   topN: number = 1;
-  constructor(private apollo: Apollo) { }
+  private apollo: ApolloChecker;
+  constructor(private apolloBase: Apollo) { this.apollo = new ApolloChecker(this.apolloBase); }
 
   recordsListQuery: QueryRef<any>;
   static recordsCursor: string;

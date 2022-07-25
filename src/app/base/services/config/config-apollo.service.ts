@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Apollo } from 'apollo-angular';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { ApolloChecker } from '../base/apollo-checker';
 import { mutations } from './config-mutations';
 import { queries } from './config-queries';
 
@@ -11,7 +12,8 @@ import { queries } from './config-queries';
 })
 export class ConfigApolloService {
 
-  constructor(private apollo: Apollo) { }
+  private apollo: ApolloChecker;
+  constructor(private apolloBase: Apollo) { this.apollo = new ApolloChecker(this.apolloBase); }
 
   isManaged() {
     return this.apollo
@@ -30,4 +32,32 @@ export class ConfigApolloService {
       }
     });
   }
+
+  isDemo() {
+    return this.apollo
+      .query({
+        query: queries.IS_DEMO,
+        fetchPolicy: 'cache-first',
+      })
+      .pipe(map((result) => result['data']['isDemo'] != false));
+  }
+
+  isAdmin() {
+    return this.apollo
+      .query({
+        query: queries.IS_AMDIN,
+        fetchPolicy: 'no-cache',
+      })
+      .pipe(map((result) => result['data']['isAdmin'] != false));
+  }
+
+  getBlackWhiteDemo() {
+    return this.apollo
+      .query({
+        query: queries.GET_BLACK_WHITE_DEMO,
+        fetchPolicy: 'cache-first',
+      })
+      .pipe(map((result) => JSON.parse(result['data']['getBlackWhiteDemo'])));
+  }
+
 }
