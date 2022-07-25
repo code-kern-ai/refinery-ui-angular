@@ -109,36 +109,16 @@
                 <div class="font-normal mt-2">Labeling task</div>
 
                 <div class="mt-1 flew-wrap relative">
-                    <button type="button" data-tip="Select the labeling task"
-                        class="tooltip tooltip-right inline-flex items-center justify-center rounded-md italic border border-gray-300 shadow-sm px-4 py-1.5 items-center bg-white text-xs font-semibold text-gray-700 cursor-pointer mr-5 focus:ring-offset-2 focus:ring-offset-gray-400"
-                        id="menu-button" aria-expanded="true" aria-haspopup="true"
-                        (isMenuOpen)="toggleVisible($event, labelTasks)" appDropdown>
-                        {{ zeroShotSettings.taskId === null ? 'Select labeling task' :
-                        labelingTasks.get(zeroShotSettings.taskId).name }}
-                        <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
-                            fill="currentColor" aria-hidden="true">
-                            <path fill-rule="evenodd"
-                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                clip-rule="evenodd" />
-                        </svg>
-                    </button>
-                    <div #labelTasks
-                        class="origin-top-right absolute mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none hidden"
-                        role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
-                        <div class="py-1 cursor-pointer" role="none">
-                            <option *ngFor="let task of labelingTasksClassification" [ngValue]="task.id"
-                                (click)="changeZeroShotSettings('taskId',task.id)"
-                                class="text-gray-700 block px-4 py-1.5 text-xs hover:bg-gray-700 hover:text-white"
-                                role="menuitem" tabindex="-1" id="menu-item-0">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                                    stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-                                </svg>
-                                {{task.name }}
-                            </option>
-                        </div>
-                    </div>
+                    <kern-dropdown-iterative
+                        [arrayOptions]="labelingTasksClassification"
+                        [condition]="zeroShotSettings.taskId"
+                        [valueIfConditionTrue]="labelingTasks.get(zeroShotSettings.taskId).name"
+                        valueIfConditionFalse="Select labeling task"
+                        buttonTooltip="Select the labeling task"
+                        [property]="'id'"
+                        [optionProperty]="'name'"
+                        (optionClicked)="changeZeroShotSettings('taskId',$event)"
+                        class="mr-5"></kern-dropdown-iterative>
 
                     <div *ngIf="!labelingTasks.get(zeroShotSettings.taskId)?.labels.length"
                         class="font-normal text-gray-500 p-3 inline-block">
@@ -166,100 +146,36 @@
                         <kern-loading color="yellow"></kern-loading>
                     </div>
                     <div class="font-normal">Required model confidence</div>
-                    <div class="relative tooltip tooltip-right" data-tip="Select the input attribute">
-                        <button type="button"
-                            class="inline-flex items-center justify-center rounded-md italic border border-gray-300 shadow-sm px-4 py-2 bg-white text-xs font-semibold text-gray-700 cursor-pointer focus:ring-offset-2 focus:ring-offset-gray-400"
-                            id="menu-button" aria-expanded="true" aria-haspopup="true"
-                            [disabled]="zeroShotSettings.attributeSelectDisabled"
-                            [ngClass]="zeroShotSettings.attributeSelectDisabled ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
-                            (isMenuOpen)="toggleVisible($event, inputAtt)" appDropdown>
-                            {{ zeroShotSettings.attributeId === null ? 'Select input attribute' :
-                            getAttributeName(zeroShotSettings.attributeId) }}
-                            <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
-                                fill="currentColor" aria-hidden="true">
-                                <path fill-rule="evenodd"
-                                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                    clip-rule="evenodd" />
-                            </svg>
-                        </button>
-                        <div #inputAtt
-                            class="origin-top-right absolute mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none hidden"
-                            role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
-                            <div class="py-1 cursor-pointer" role="none">
-                                <option *ngFor="let att of textAttributes" [ngValue]="att.id"
-                                    (click)="changeZeroShotSettings('attributeId',att.id)"
-                                    class="text-gray-700 block px-4 py-2 text-xs hover:bg-gray-700 hover:text-white"
-                                    role="menuitem" tabindex="-1" id="menu-item-0">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-                                    </svg>
-                                    {{att.name }}
-                                </option>
-                            </div>
-                        </div>
+                    <div class="relative tooltip tooltip-right" data-tip="Select input attribute">
+                        <kern-dropdown-iterative
+                            [arrayOptions]="textAttributes"
+                            [condition]="zeroShotSettings.attributeId"
+                            [valueIfConditionTrue]="getAttributeName(zeroShotSettings.attributeId)"
+                            valueIfConditionFalse="Select labeling task"
+                            property="id"
+                            optionProperty="name"
+                            [disabledCondition]="zeroShotSettings.attributeSelectDisabled"
+                            (optionClicked)="changeZeroShotSettings('attributeId',$event)"></kern-dropdown-iterative>
                     </div>
                     <div class="relative">
-                        <button type="button" data-tip="Select the model"
-                            class="tooltip tooltip-right inline-flex items-center justify-center rounded-md italic border border-gray-300 shadow-sm w-72 px-4 py-2 bg-white text-xs font-semibold text-gray-700 cursor-pointer focus:ring-offset-2 focus:ring-offset-gray-400"
-                            id="menu-button" aria-expanded="true" aria-haspopup="true"
-                            (isMenuOpen)="toggleVisible($event, model)" appDropdown>
-                            {{ zeroShotSettings.targetConfig === null ? 'Select model' : zeroShotSettings.targetConfig
-                            }}
-                            <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
-                                fill="currentColor" aria-hidden="true">
-                                <path fill-rule="evenodd"
-                                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                    clip-rule="evenodd" />
-                            </svg>
-                        </button>
-                        <div #model
-                            class="origin-top-right absolute mt-2 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none hidden"
-                            role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
-                            <div class="py-1 cursor-pointer" role="none">
-                                <option *ngFor="let recommendation of zeroShotRecommendations"
-                                    [ngValue]="recommendation.configString"
-                                    (click)="changeZeroShotSettings('targetConfig',recommendation.configString)"
-                                    class="text-gray-700 block px-4 py-2 text-xs hover:bg-gray-700 hover:text-white"
-                                    role="menuitem" tabindex="-1" id="menu-item-0">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-                                    </svg>
-                                    {{recommendation.configString }}
-                                </option>
-                            </div>
-                        </div>
+                        <kern-dropdown-iterative
+                            [arrayOptions]="zeroShotRecommendations"
+                            [condition]="zeroShotSettings.targetConfig"
+                            [valueIfConditionTrue]="zeroShotSettings.targetConfig"
+                            valueIfConditionFalse="Select model"
+                            property="configString"
+                            optionProperty="configString"
+                            buttonTooltip="Select the model"
+                            (optionClicked)="changeZeroShotSettings('targetConfig',$event)"></kern-dropdown-iterative> 
                     </div>
                     <div class="relative">
-                        <button type="button" data-tip="Minimum confidence required to store predictions"
-                            class="tooltip tooltip-right inline-flex items-center justify-center rounded-md italic border border-gray-300 shadow-sm w-20 px-4 py-2 bg-white text-xs font-semibold text-gray-700 cursor-pointer focus:ring-offset-2 focus:ring-offset-gray-400"
-                            id="menu-button" aria-expanded="true" aria-haspopup="true"
-                            (isMenuOpen)="toggleVisible($event, modelConfidence)" appDropdown>
-                            {{ zeroShotSettings.minConfidence === null ? 'Select model' : zeroShotSettings.minConfidence
-                            < 1 ? (zeroShotSettings.minConfidence*100).toFixed(0) + "%" :
-                                (zeroShotSettings.minConfidence).toFixed(0) + "%" }} <svg class="-mr-1 ml-2 h-5 w-5"
-                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
-                                aria-hidden="true">
-                                <path fill-rule="evenodd"
-                                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                    clip-rule="evenodd" />
-                                </svg>
-                        </button>
-                        <div #modelConfidence
-                            class="origin-top-right absolute mt-2 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none hidden"
-                            role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
-                            <div class="py-1 cursor-pointer" role="none">
-                                <option *ngFor="let confidence of confidenceIntervals" [ngValue]="confidence"
-                                    (click)="changeZeroShotSettings('minConfidence', confidence)"
-                                    class="text-gray-700 block px-4 py-2 text-xs hover:bg-gray-700 hover:text-white"
-                                    role="menuitem" tabindex="-1" id="menu-item-0">
-                                    {{confidence}} %
-                                </option>
-                            </div>
-                        </div>
+                        <kern-dropdown-iterative
+                            [arrayOptions]="confidenceIntervals"
+                            [condition]="zeroShotSettings.minConfidence"
+                            [valueIfConditionTrue]='zeroShotSettings.minConfidence < 1 ? (zeroShotSettings.minConfidence*100).toFixed(0) + "%" : (zeroShotSettings.minConfidence).toFixed(0) + "%"'
+                            valueIfConditionFalse="Select model"
+                            buttonTooltip="Minimum confidence required to store predictions"
+                            (optionClicked)="changeZeroShotSettings('minConfidence', $event)"></kern-dropdown-iterative>
                     </div>
                 </div>
             </div>

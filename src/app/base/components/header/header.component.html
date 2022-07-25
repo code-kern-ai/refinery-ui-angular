@@ -59,34 +59,11 @@
                 </a>
             </div>
             <div class="flex justify-center overflow-visible">
-                <div *ngIf="user" class="dropdown dropdown-right dropdown-end mr-4">
-                    <a tabindex="0" class="w-full cursor-pointer">
-                        <div data-intercom-target="User Avatar Button" (isMenuOpen)="toggleVisible($event, menuButton)"
-                            appDropdown>
-                            <img style="width:32px;height:32px;" [src]="avatarUri">
-                        </div>
-                    </a>
-                    <div #menuButton
-                        class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none hidden"
-                        role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
-                        <div class="py-1 cursor-pointer" role="none">
-                            <option (click)="settings()" target="_blank"
-                                class="text-gray-700 block px-4 py-2 text-sm hover:bg-kernindigo hover:text-white"
-                                role="menuitem" tabindex="-1" id="menu-item-0">
-                                Account Settings
-                            </option>
-                            <option *ngIf="showConfigSettings" (click)="changeConfig()" target="_blank"
-                                class="text-gray-700 block px-4 py-2 text-sm hover:bg-kernindigo hover:text-white"
-                                role="menuitem" tabindex="-1" id="menu-item-0">
-                                Change Config
-                            </option>
-                            <option (click)="logout()"
-                                class="text-gray-700 block px-4 py-2 text-sm hover:bg-kernindigo hover:text-white"
-                                role="menuitem" tabindex="-1" id="menu-item-0">
-                                Logout
-                            </option>
-                        </div>
-                    </div>
+                <div *ngIf="user" class=" mr-4">
+                    <kern-dropdown 
+                        element="header"
+                        [avatarUri]="avatarUri"
+                        [showConfigSettings]="showConfigSettings"></kern-dropdown>
                 </div>
             </div>
         </div>

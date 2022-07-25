@@ -574,18 +574,6 @@ export class WeakSourceDetailsComponent
     return informationSourceTypeToString(type, false, true);
   }
 
-  toggleVisible(isVisible: boolean, menuButton: HTMLDivElement): void {
-    if (isVisible) {
-      menuButton.classList.remove('hidden');
-      menuButton.classList.add('block');
-      menuButton.classList.add('z-10');
-    } else {
-      menuButton.classList.remove('z-10');
-      menuButton.classList.remove('block');
-      menuButton.classList.add('hidden');
-    }
-  }
-
   setValueToLabelingTask(value) {
     this.labelingTaskControl.setValue(value);
   }

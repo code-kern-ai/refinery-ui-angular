@@ -384,17 +384,6 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
     }
   }
 
-  toggleVisible(isVisible: boolean, menuButton: HTMLDivElement): void {
-    if (isVisible) {
-      menuButton.classList.remove('hidden');
-      menuButton.classList.add('block');
-      menuButton.classList.add('z-10');
-    } else {
-      menuButton.classList.remove('z-10');
-      menuButton.classList.remove('block');
-      menuButton.classList.add('hidden');
-    }
-  }
   modalChangeForCreation(checked: boolean, type: string) {
     if (checked) {
       this.description = "provide some description for documentation";
@@ -484,9 +473,9 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
     return str.replace(/\s+/g, '_').replace(/[^\w]/gi, '').trim();
   }
 
-  prepareSelectionList() {
+  prepareSelectionList(selectedItems) {
     this.selectionList = "";
-    this.selectedInformationSources.forEach(el => {
+    selectedItems.forEach(el => {
       if (this.selectionList) this.selectionList += "\n";
       this.selectionList += el.name;
     })

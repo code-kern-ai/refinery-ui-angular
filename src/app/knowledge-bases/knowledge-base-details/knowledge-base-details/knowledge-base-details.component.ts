@@ -242,18 +242,6 @@ export class KnowledgeBaseDetailsComponent implements OnInit, AfterViewInit, OnD
     }
   }
 
-  toggleVisible(isVisible: boolean, menuButton: HTMLDivElement): void {
-    if (isVisible) {
-      menuButton.classList.remove('hidden');
-      menuButton.classList.add('block');
-      menuButton.classList.add('z-10');
-    } else {
-      menuButton.classList.remove('z-10');
-      menuButton.classList.remove('block');
-      menuButton.classList.add('hidden');
-    }
-  }
-
   deleteKnowledgeBase(project_id, knowledge_base_id) {
     this.knowledgeBaseApolloService
       .deleteKnowledgeBase(project_id, knowledge_base_id)

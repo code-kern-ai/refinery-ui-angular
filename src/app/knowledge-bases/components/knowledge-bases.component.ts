@@ -78,9 +78,9 @@ export class KnowledgeBasesComponent implements OnInit, OnDestroy {
     })
   }
 
-  prepareSelectionList() {
+  prepareSelectionList(selectedItems) {
     this.selectionList = "";
-    this.selectedLookupLists.forEach(el => {
+    selectedItems.forEach(el => {
       if (this.selectionList) this.selectionList += "\n";
       this.selectionList += el.name;
     })
@@ -92,18 +92,6 @@ export class KnowledgeBasesComponent implements OnInit, OnDestroy {
       this.selectedLookupLists = this.selectedLookupLists.filter((x) => x.id != base.id);
     } else {
       this.selectedLookupLists.push(base);
-    }
-  }
-
-  toggleVisible(isVisible: boolean, menuButton: HTMLDivElement): void {
-    if (isVisible) {
-      menuButton.classList.remove('hidden');
-      menuButton.classList.add('block');
-      menuButton.classList.add('z-10');
-    } else {
-      menuButton.classList.remove('z-10');
-      menuButton.classList.remove('block');
-      menuButton.classList.add('hidden');
     }
   }
 

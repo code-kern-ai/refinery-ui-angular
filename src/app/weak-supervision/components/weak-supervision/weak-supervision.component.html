@@ -29,57 +29,13 @@
                     <div class="flex justify-center overflow-visible">
                         <div class="relative inline-block text-left">
                             <ng-template [ngIf]="labelingTasks && labelingTasks.length > 0" [ngIfElse]="noTasks">
-                                <button type="button" data-tip="Heuristics are noisy label signals"
-                                    class="tooltip tooltip-bottom inline-flex items-center justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-1.5 bg-white text-xs font-semibold text-gray-700 cursor-pointer focus:ring-offset-2 focus:ring-offset-gray-400"
-                                    id="menu-button" aria-expanded="true" aria-haspopup="true" (click)="modalOpen=false"
-                                    (isMenuOpen)="toggleVisible($event, heuristics)" appDropdown>
-                                    New heuristic
-                                    <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                        <path fill-rule="evenodd"
-                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                            clip-rule="evenodd" />
-                                    </svg>
-                                </button>
-                                <div #heuristics
-                                    class="origin-top-right absolute mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none hidden"
-                                    role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
-                                    <div class="py-1 cursor-pointer" role="none">
-                                        <label [for]="'heuristics-'+InformationSourceType.LABELING_FUNCTION"
-                                            class="text-gray-700 block px-4 py-2 text-xs hover:bg-kernindigo hover:text-white cursor-pointer"
-                                            role="menuitem" tabindex="-1" id="menu-item-1">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block"
-                                                viewBox="0 0 20 20" fill="currentColor">
-                                                <path fill-rule="evenodd"
-                                                    d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z"
-                                                    clip-rule="evenodd" />
-                                            </svg>
-                                            Labeling function
-                                        </label>
-                                        <label [for]="'heuristics-'+InformationSourceType.ACTIVE_LEARNING"
-                                            class="text-gray-700 block px-4 py-2 text-xs hover:bg-kernindigo hover:text-white cursor-pointer"
-                                            role="menuitem" tabindex="-1" id="menu-item-1">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block"
-                                                viewBox="0 0 20 20" fill="currentColor">
-                                                <path fill-rule="evenodd"
-                                                    d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"
-                                                    clip-rule="evenodd" />
-                                            </svg>
-                                            Active learning
-                                        </label>
-                                        <label for="zero-shot-modal"
-                                            class="text-gray-700 block px-4 py-2 text-xs hover:bg-kernindigo hover:text-white cursor-pointer"
-                                            role="menuitem" tabindex="-1" id="menu-item-1">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block"
-                                                viewBox="0 0 20 20" fill="currentColor">
-                                                <path fill-rule="evenodd"
-                                                    d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732l-3.354 1.935-1.18 4.455a1 1 0 01-1.933 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732l3.354-1.935 1.18-4.455A1 1 0 0112 2z"
-                                                    clip-rule="evenodd" />
-                                            </svg>
-                                            Zero-shot
-                                        </label>
-                                    </div>
-                                </div>
+
+                                <kern-dropdown
+                                    element="new-heuristic"
+                                    buttonName="New heuristic"
+                                    buttonTooltip="Heuristics are noisy label signals"
+                                ></kern-dropdown>
+
                             </ng-template>
                             <ng-template #noTasks>
                                 <div data-tip="At least one labeling task is needed to create Heuristics"
@@ -102,79 +58,15 @@
                     <div class="flex justify-center overflow-visible">
                         <div class="relative inline-block text-left mx-3">
                             <ng-template [ngIf]="informationSources.length > 0" [ngIfElse]="noHeuristics">
-                                <button type="button" data-tip="Multi-heuristic actions"
-                                    class="tooltip tooltip-bottom inline-flex items-center justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-1.5 bg-white text-xs font-semibold text-gray-700 cursor-pointer focus:ring-offset-2 focus:ring-offset-gray-400"
-                                    id="menu-button" aria-expanded="true" aria-haspopup="true"
-                                    (isMenuOpen)="toggleVisible($event, groupActions)" appDropdown>
-                                    Actions
-                                    <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
-                                        fill="currentColor" aria-hidden="true">
-                                        <path fill-rule="evenodd"
-                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                            clip-rule="evenodd" />
-                                    </svg>
-                                </button>
-                                <div #groupActions
-                                    class="origin-top-right absolute mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none hidden"
-                                    role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
-                                    <div class="py-1 cursor-pointer" role="none">
-                                        <label (click)="setAllInformationSources(true)"
-                                            class="text-gray-700 block px-4 py-2 text-xs hover:bg-kernindigo hover:text-white cursor-pointer"
-                                            role="menuitem" tabindex="-1" id="menu-item-1">
-                                            <svg xmlns="http://www.w3.org/2000/svg"
-                                                class="icon icon-tabler icon-tabler-square-check inline-block" width="20"
-                                                height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
-                                                fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                                <rect x="4" y="4" width="16" height="16" rx="2"></rect>
-                                                <path d="M9 12l2 2l4 -4"></path>
-                                            </svg>
-                                            Select all
-                                        </label>
-                                        <label (click)="setAllInformationSources(false)"
-                                            class="text-gray-700 block px-4 py-2 text-xs hover:bg-kernindigo hover:text-white cursor-pointer"
-                                            role="menuitem" tabindex="-1" id="menu-item-1">
-                                            <svg xmlns="http://www.w3.org/2000/svg"
-                                                class="icon icon-tabler icon-tabler-square inline-block" width="20"
-                                                height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
-                                                fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                                <rect x="4" y="4" width="16" height="16" rx="2"></rect>
-                                            </svg>
-                                            Deselect all
-                                        </label>
-                                        <span data-tip="Please select at least one heuristic." class="tooltip tooltip-left tooltip-label w-full">
-                                            <label
-                                                (click)="runSelectedInformationSources(project.id)"
-                                                [ngClass]="(informationSources.length == 0 || selectedInformationSources.length == 0) ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer hover:bg-kernindigo hover:text-white'"
-                                                class="text-left text-gray-700 block px-4 py-2 text-xs" role="menuitem"
-                                                tabindex="-1" id="menu-item-1">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block"
-                                                    viewBox="0 0 20 20" fill="currentColor">
-                                                    <path fill-rule="evenodd"
-                                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
-                                                        clip-rule="evenodd" />
-                                                </svg>
-                                                Run selected
-                                            </label>
-                                        </span>
-                                        <div [ngClass]="(informationSources.length == 0 || selectedInformationSources.length == 0) ? 'cursor-not-allowed' : '' "  
-                                            class="tooltip tooltip-left tooltip-label w-full" data-tip="Please select at least one heuristic.">
-                                            <label (click)="prepareSelectionList()"
-                                                [for]="'delete-modal-selected'"
-                                                [ngClass]="(informationSources.length == 0 || selectedInformationSources.length == 0) ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer tooltip tooltip-left tooltip-label hover:bg-kernindigo hover:text-white cursor-pointer'"
-                                                class="text-left text-gray-700 block px-4 py-2 text-xs" role="menuitem"
-                                                tabindex="-1" id="menu-item-1">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block" fill="none"
-                                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                </svg>
-                                                Delete selected
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
+                                <kern-dropdown 
+                                    element="actions" 
+                                    buttonName="Actions"
+                                    buttonTooltip="Multi-heuristic actions"
+                                    [selectedItems]="selectedInformationSources"
+                                    [isHeuristics]="true"
+                                    (setAllItems)="setAllInformationSources($event)"
+                                    (runSelectedItems)="runSelectedInformationSources(project.id)"
+                                    (sendSelectedItems)="prepareSelectionList($event)"></kern-dropdown>
                             </ng-template>
                             <ng-template #noHeuristics>
                                 <div data-tip="At least one heuristic is needed to enable actions"
@@ -462,10 +354,10 @@
                         <div class="modal-action text-center mt-4">
                             <label for="zero-shot-modal"
                                 [ngClass]="inputConfig && inputConfig.nativeElement.value ? 'opacity-100 cursor-pointer': 'opacity-50 cursor-not-allowed'"
-                                class="bg-green-100 text-green-700 border border-green-400 text-white text-xs font-semibold mr-2 px-4 py-2 rounded cursor-pointer hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block"
+                                class="bg-green-100 text-green-700 border border-green-400 text-white text-xs font-semibold mr-2 px-4 py-2 rounded-md cursor-pointer hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block"
                                 (click)="createZeroShotInformationSource(project.id);modalOpen=false">Create</label>
                             <label for="zero-shot-modal"
-                                class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
+                                class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded-md border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
                         </div>
                     </div>
                 </div>

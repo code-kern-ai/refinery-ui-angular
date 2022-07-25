@@ -226,13 +226,13 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     return tokenizer
   }
 
-  importSampleProject(projectName) {
-    this.projectApolloService.createSampleProject(projectName).pipe(first()).subscribe((p: Project) => {
-      if (this.router.url == "/projects") {
-        this.router.navigate(['projects', p.id, 'overview']);
-      }
-    });
-  }
+  // importSampleProject(projectName) {
+  //   this.projectApolloService.createSampleProject(projectName).pipe(first()).subscribe((p: Project) => {
+  //     if (this.router.url == "/projects") {
+  //       this.router.navigate(['projects', p.id, 'overview']);
+  //     }
+  //   });
+  // }
 
 
   canCreateProject(): boolean {
@@ -332,18 +332,6 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   parseUTC(utc: string) {
     const utcDate = dateAsUTCDate(new Date(utc));
     return utcDate.toLocaleString();
-  }
-
-  toggleVisible(isVisible: boolean, menuButton: HTMLDivElement): void {
-    if (isVisible) {
-      menuButton.classList.remove('hidden');
-      menuButton.classList.add('block');
-      menuButton.classList.add('z-10');
-    } else {
-      menuButton.classList.remove('z-10');
-      menuButton.classList.remove('block');
-      menuButton.classList.add('hidden');
-    }
   }
 
   startPlayback() {
