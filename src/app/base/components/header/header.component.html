@@ -59,7 +59,7 @@
                 </a>
             </div>
             <div class="flex justify-center overflow-visible">
-                <div *ngIf="user && !isDemo" class="dropdown dropdown-right dropdown-end mr-4">
+                <div *ngIf="user && !hideLogout" class="dropdown dropdown-right dropdown-end mr-4">
                     <a tabindex="0" class="w-full cursor-pointer">
                         <div data-intercom-target="User Avatar Button" (isMenuOpen)="toggleVisible($event, menuButton)"
                             appDropdown>
