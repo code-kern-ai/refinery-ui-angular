@@ -349,37 +349,6 @@
                                                                                 (optionClicked)="setActiveNegateGroup($event)"
                                                                             ></kern-dropdown-iterative>
 
-
-                                                                            <!-- <div tabindex="0"
-                                                                                class="flex flex-row flex-nowrap select select-sm select-bordered search_reduced_item_width ">
-                                                                                <div class="truncate min-w-0 mr-4">
-
-                                                                                    <label>{{getDropdownDisplayText(groupItem.get('manualLabels').controls,"EMPTY")}}</label>
-                                                                                    <label
-                                                                                        style="color:#2563eb">{{getDropdownDisplayText(groupItem.get('manualLabels').controls,"NOT_NEGATED")}}</label>
-                                                                                    <label
-                                                                                        style="color:#ef4444">{{getDropdownDisplayText(groupItem.get('manualLabels').controls,"NEGATED")}}</label>
-                                                                                </div>
-                                                                            </div> -->
-                                                                            <!-- <ul tabindex="0"
-                                                                                class="p-2 w-full menu dropdown-content bg-base-100 shadow max-h-80 overflow-y-auto">
-                                                                                <li
-                                                                                    *ngFor="let label of groupItem.get('manualLabels').controls; let k = index">
-                                                                                    <div class="form-control">
-                                                                                        <label
-                                                                                            formArrayName="manualLabels"
-                                                                                            class="label cursor-pointer"
-                                                                                            (click)="setActiveNegateGroup(label)">
-                                                                                            <div class="h-4 w-4 border-gray-300 border rounded hover:bg-gray-200"
-                                                                                                [ngStyle]="{'background-color':getActiveNegateGroupColor(label), 'border-color':getActiveNegateGroupColor(label)}">
-                                                                                            </div>
-                                                                                            <span
-                                                                                                class="pl-2 label-text truncate w-full"
-                                                                                                [ngClass]="label.get('id').value == 'NO_LABEL'?'italic':null">{{label.get("name").value}}</span>
-                                                                                        </label>
-                                                                                    </div>
-                                                                                </li>
-                                                                            </ul> -->
                                                                         </ng-template>
                                                                     </div>
                                                                 </div>
@@ -404,37 +373,6 @@
                                                                                 [hasCheckboxes]="true"
                                                                                 (optionClicked)="setActiveNegateGroup($event)"
                                                                             ></kern-dropdown-iterative>
-                                                                            <!-- <div tabindex="1"
-                                                                                class="flex flex-row flex-nowrap select select-sm select-bordered search_reduced_item_width ">
-                                                                                <div class="truncate min-w-0 mr-4">
-
-                                                                                    <label>{{getDropdownDisplayText(groupItem.get('weakSupervisionLabels').controls,"EMPTY")}}</label>
-                                                                                    <label
-                                                                                        style="color:#2563eb">{{getDropdownDisplayText(groupItem.get('weakSupervisionLabels').controls,"NOT_NEGATED")}}</label>
-                                                                                    <label
-                                                                                        style="color:#ef4444">{{getDropdownDisplayText(groupItem.get('weakSupervisionLabels').controls,"NEGATED")}}</label>
-
-                                                                                </div>
-                                                                            </div>
-                                                                            <ul tabindex="1"
-                                                                                class="p-2 w-full menu dropdown-content bg-base-100 shadow max-h-80 overflow-y-auto">
-                                                                                <li
-                                                                                    *ngFor="let label of groupItem.get('weakSupervisionLabels').controls; let k = index">
-                                                                                    <div class="form-control">
-                                                                                        <label
-                                                                                            formArrayName="weakSupervisionLabels"
-                                                                                            class="label cursor-pointer"
-                                                                                            (click)="setActiveNegateGroup(label)">
-                                                                                            <div class="h-4 w-4 border-gray-300 border rounded hover:bg-gray-200"
-                                                                                                [ngStyle]="{'background-color':getActiveNegateGroupColor(label), 'border-color':getActiveNegateGroupColor(label)}">
-                                                                                            </div>
-                                                                                            <span
-                                                                                                class="pl-2 label-text truncate w-full"
-                                                                                                [ngClass]="label.get('id').value == 'NO_LABEL'?'italic':null">{{label.get("name").value}}</span>
-                                                                                        </label>
-                                                                                    </div>
-                                                                                </li>
-                                                                            </ul> -->
                                                                         </ng-template>
                                                                     </div>
                                                                 </div>
