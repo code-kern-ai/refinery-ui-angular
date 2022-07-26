@@ -424,7 +424,7 @@ export class WeakSourceDetailsComponent
           this.description,
           functionName
         ).pipe(first())
-        .subscribe();
+        .subscribe(() => this.informationSourceQuery$.refetch());
     } else {
       console.log('currently not possible for type ' + sourceType);
       return;
