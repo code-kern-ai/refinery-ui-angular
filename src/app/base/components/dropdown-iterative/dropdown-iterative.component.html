@@ -35,7 +35,7 @@
             <div *ngFor="let task of arrayOptions">
                 <div class="form-control pl-2">
                     <label
-                        formArrayName="manualLabels"
+                        [formArrayName]="formArrayName"
                         class="label cursor-pointer"
                         (click)="performActionOnOption(task,$event)">
                         <div class="h-4 w-4 border-gray-300 border rounded hover:bg-gray-200"

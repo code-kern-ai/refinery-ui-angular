@@ -18,6 +18,7 @@ export class DropdownIterativeComponent implements OnInit {
   @Input() optionProperty: string;
   @Input() disabledCondition: boolean;
   @Input() hasCheckboxes: boolean;
+  @Input() formArrayName: string;
   
   @Output() optionClicked = new EventEmitter<string>();
 
