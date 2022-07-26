@@ -608,7 +608,7 @@
                 </div>
 
                 <div class="flex items-center mt-4">
-                    <div data-tip="Store filters to disk" class="tooltip tooltip-top relative z-50"
+                    <div data-tip="Store filters to disk" class="tooltip tooltip-top relative tooltip-label"
                         data-tooltip-target="tooltip-top" data-tooltip-placement="top" [ngClass]="similarSearchHelper.recordsInDisplay || activeSlide ? 'cursor-not-allowed':'' ">
                         <label for="save-slice-modal"
                             class="mr-1 inline-flex items-center w-32 px-2.5 py-1.5 border border-gray-200 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer"
@@ -625,7 +625,7 @@
                         </label>
                     </div>
                     <div>
-                        <div data-tip="Update your current filter" class="tooltip tooltip-top relative z-50"
+                        <div data-tip="Update your current filter" class="tooltip tooltip-top relative tooltip-label"
                             data-tooltip-target="tooltip-top" data-tooltip-placement="top" [ngClass]="updateButton.disabled ? 'cursor-not-allowed':'' ">
                             <button #updateButton
                                 class="mr-1 inline-flex items-center w-32 px-2.5 py-1.5 border border-gray-200 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer"
@@ -651,7 +651,7 @@
                     </div>
                 </div>
                 <div class="mt-1">
-                    <div data-tip="Creates a static slices" class="tooltip tooltip-bottom relative z-50"
+                    <div data-tip="Creates a static slices" class="tooltip tooltip-bottom relative tooltip-label"
                         data-tooltip-target="tooltip-bottom" data-tooltip-placement="bottom" [ngClass]="!(similarSearchHelper.embeddings?.length && anyRecordManuallyLabeled) ? 'cursor-not-allowed' : ''">
                         <label [for]="similarSearchHelper.embeddings?.length > 1?'outlier-search-embedding-select':''"
                             (click)="similarSearchHelper.embeddings?.length==1?requestOutlierSlice(similarSearchHelper.embeddings[0].id):null"
