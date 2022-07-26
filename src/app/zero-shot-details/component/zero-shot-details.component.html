@@ -278,13 +278,14 @@
                             </div>
                         </div>
                     </div>
-                    <button [disabled]="testerRequestedSomething"
-                        data-tip="Computes the prediction for your given example text"
-                        [ngClass]="testerRequestedSomething ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
-                        class="tooltip tooltip-left ml-3 bg-indigo-700 text-white text-xs leading-4 font-medium px-4 py-2 rounded-md border cursor-pointer hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                        (click)="runZeroShotTest(testInput.value.trim())">
-                        Compute example
-                    </button>
+                    <div data-tip="Computes the prediction for your given example text" class="tooltip tooltip-left">
+                        <button [disabled]="testerRequestedSomething"
+                            [ngClass]="testerRequestedSomething ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
+                            class="ml-3 bg-indigo-700 text-white text-xs leading-4 font-medium px-4 py-2 rounded-md border cursor-pointer hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            (click)="runZeroShotTest(testInput.value.trim())">
+                            Compute example
+                        </button>
+                    </div>
                 </div>
 
 
@@ -337,18 +338,22 @@
                         <div [ngClass]="testerRequestedSomething?null:'hidden'" class="inline-block">
                             <kern-loading color="indigo"></kern-loading>
                         </div>
-                        <button [disabled]="testerRequestedSomething" data-tip="Execute the model on 10 records"
-                            [ngClass]="testerRequestedSomething ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
-                            (click)="runZeroShot10RecordTest()"
-                            class="tooltip tooltip-left bg-white text-gray-700 text-xs font-semibold px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                            Run on 10
-                        </button>
-                        <button [disabled]="!canRunProject" data-tip="Execute the model on all records"
-                            [ngClass]="!canRunProject ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
-                            (click)="runZeroShotProject()"
-                            class="z-40 tooltip tooltip-left bg-indigo-700 text-white text-xs leading-4 font-semibold px-4 py-2 rounded-md cursor-pointer ml-3 hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                            Run
-                        </button>
+                        <div data-tip="Execute the model on 10 records" class="tooltip tooltip-left">
+                            <button [disabled]="testerRequestedSomething"
+                                [ngClass]="testerRequestedSomething ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
+                                (click)="runZeroShot10RecordTest()"
+                                class="bg-white text-gray-700 text-xs font-semibold px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                Run on 10
+                            </button>
+                        </div>
+                        <div data-tip="Execute the model on all records" class="tooltip tooltip-left">
+                            <button [disabled]="!canRunProject" data-tip="Execute the model on all records"
+                                [ngClass]="!canRunProject ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
+                                (click)="runZeroShotProject()"
+                                class="bg-indigo-700 text-white text-xs leading-4 font-semibold px-4 py-2 rounded-md cursor-pointer ml-3 hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                Run
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

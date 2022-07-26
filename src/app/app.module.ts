@@ -13,7 +13,7 @@ import { MonitorModule } from './monitor/monitor.module';
 import { GraphQLModule } from './graphql.module';
 import { ProjectOverviewModule } from './project-overview/project-overview.module';
 import { WeakSupervisionModule } from './weak-supervision/weak-supervision.module';
-import { ZeroShotModule } from './zero-shot-details/project-overview.module';
+import { ZeroShotModule } from './zero-shot-details/zero-shot-details.module';
 import { MonacoEditorModule } from 'ngx-monaco-editor';
 import { LabelingModule } from './labeling/labeling.module';
 import { KnowledgeBasesModule } from './knowledge-bases/knowledge-bases.module';
