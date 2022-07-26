@@ -226,15 +226,6 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     return tokenizer
   }
 
-  // importSampleProject(projectName) {
-  //   this.projectApolloService.createSampleProject(projectName).pipe(first()).subscribe((p: Project) => {
-  //     if (this.router.url == "/projects") {
-  //       this.router.navigate(['projects', p.id, 'overview']);
-  //     }
-  //   });
-  // }
-
-
   canCreateProject(): boolean {
     if (!this.name?.value) return false;
     if (this.name.value.trim() == '') return false;
