@@ -17,46 +17,7 @@
                     <div *ngIf="!isHeaderNormal" class="mx-4 text-sm leading-5 font-medium text-gray-500 inline-block">
                         {{informationSource.name}}</div>
 
-                    <div *ngIf="status !== 'CREATED' && status !== 'FINISHED' && status !== 'FAILED'"
-                        data-tip="Heuristic was successfully registered." class="tooltip tooltip-bottom ml-2">
-                        <span
-                            class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
-                            <svg class="mr-1.5 h-2 w-2 text-gray-400" fill="currentColor" viewBox="0 0 8 8">
-                                <circle cx="4" cy="4" r="3" />
-                            </svg>
-                            Initial
-                        </span>
-                    </div>
-                    <div *ngIf="status === 'CREATED'" data-tip="Heuristic is currently being executed."
-                        class="tooltip tooltip-bottom ml-2">
-                        <span
-                            class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
-                            <svg class="mr-1.5 h-2 w-2 text-yellow-400" fill="currentColor" viewBox="0 0 8 8">
-                                <circle cx="4" cy="4" r="3" />
-                            </svg>
-                            Running
-                        </span>
-                    </div>
-                    <div *ngIf="status === 'FINISHED'" data-tip="Heuristic was successfully executed."
-                        class="tooltip tooltip-bottom ml-2">
-                        <span
-                            class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-300 text-green-800">
-                            <svg class="mr-1.5 h-2 w-2 text-green-dark-4" fill="currentColor" viewBox="0 0 8 8">
-                                <circle cx="4" cy="4" r="3" />
-                            </svg>
-                            Finished
-                        </span>
-                    </div>
-                    <div *ngIf="status === 'FAILED'" data-tip="Heuristic ran into errors."
-                        class="tooltip tooltip-bottom ml-2">
-                        <span
-                            class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
-                            <svg class="mr-1.5 h-2 w-2 text-red-400" fill="currentColor" viewBox="0 0 8 8">
-                                <circle cx="4" cy="4" r="3" />
-                            </svg>
-                            Error
-                        </span>
-                    </div>
+                    <kern-heuristic-statuses [status]="status"></kern-heuristic-statuses>
                 </div>
             </div>
         </div>
