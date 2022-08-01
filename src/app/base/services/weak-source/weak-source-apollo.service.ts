@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Apollo } from 'apollo-angular';
 import { map } from 'rxjs/operators';
 import { InformationSourceType, informationSourceTypeToString, LabelSource } from '../../enum/graphql-enums';
+import { ApolloChecker } from '../base/apollo-checker';
 import { mutations } from './weak-source-mutations';
 import { queries } from './weak-source-queries';
 
@@ -9,7 +10,8 @@ import { queries } from './weak-source-queries';
   providedIn: 'root',
 })
 export class WeakSourceApolloService {
-  constructor(private apollo: Apollo) { }
+  private apollo: ApolloChecker;
+  constructor(private apolloBase: Apollo) { this.apollo = new ApolloChecker(this.apolloBase); }
 
   createTask(projectId: string, informationSourceId: string) {
     return this.apollo.mutate({
