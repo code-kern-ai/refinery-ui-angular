@@ -10,6 +10,6 @@ export class DemoError extends Error {
 
     errorMessage(): string {
         if (this.message) return this.message
-        return "This function isn't part of the demo application";
+        return "This function isn't part of the demo application.\nIf you want to test this function, don't hesitate to check out our open-source or hosted versions!";
     }
 }
