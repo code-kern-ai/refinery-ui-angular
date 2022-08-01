@@ -245,6 +245,9 @@ export class ZeroShotDetailsComponent
     return vc;
   }
 
+  logMe(msg: string) {
+    console.log(msg)
+  }
 
   deleteInformationSource(projectId: string, informationSourceId: string) {
     this.informationSourceApolloService
