@@ -5,7 +5,7 @@ import { FormArray } from "@angular/forms";
  * @optionArray {string[] | FormArray[] | any[]} - Can be any array. string array is just used, FormArray or any object array tries to use "name" property then "text" last first string property
  * @buttonCaption {string, optional} - used as caption for the button, if not given the first / current value is used
  * @valuePropertyPath {string, optional} - if undefined option text is returned, else (e.g. name.tmp.xyz) the path is split and used to access the object property
- * @stopClickPropagation {boolean, optional} - stops the event propagation of the click event 
+ * @keepDropdownOpen {boolean, optional} - stops the event propagation of the click event and therfore keeps the menu open
  * @buttonTooltip {string, optional} - adds a tooltip if defined
  * @isDisabled {boolean, optional} - disables the dropdown
  * @isOptionDisabled {boolean[], optional} - disables the dropdown option (needs to be the exact same length as the optionArray)
@@ -16,12 +16,11 @@ export type DropdownOptions = {
     optionArray: string[] | FormArray[] | any[];
     buttonCaption?: string;
     valuePropertyPath?: string;
-    stopClickPropagation?: boolean;
+    keepDropdownOpen?: boolean;
     buttonTooltip?: string;
     isDisabled?: boolean;
     isOptionDisabled?: boolean[];
     optionIcons?: string[];
-    hasCheckboxes?: boolean; //to be implmemented
+    hasCheckboxes?: boolean;
 };
-//TODO: add more optoins like the icon array
 

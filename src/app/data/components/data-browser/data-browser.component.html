@@ -345,7 +345,8 @@
 
                                                                             <kern-dropdown-it [dropdownOptions]="{
                                                                                 optionArray:groupItem.get('manualLabels').controls,
-                                                                                hasCheckboxes:true
+                                                                                hasCheckboxes:true,
+                                                                                stopClickPropagation:true
                                                                             }"
                                                                                 (optionClicked)="setActiveNegateGroup($event)">
                                                                             </kern-dropdown-it>

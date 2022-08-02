@@ -10,22 +10,9 @@ import { DropdownOptions } from './dropdown-it-helper';
 export class DropdownItComponent implements OnChanges {
 
   @Input() dropdownOptions: DropdownOptions;
-  // @Input() condition;
-  // @Input() valueIfConditionTrue;
-  // @Input() valueIfConditionFalse;
-  // @Input() buttonTooltip: string;
-  // @Input() labelingTasks;
-  // @Input() property: string;
-  // @Input() optionProperty: string;
-  // @Input() disabledCondition: boolean;
-  // @Input() hasCheckboxes: boolean;
-  // @Input() formArrayName: string;
+  @Output() optionClicked = new EventEmitter<string | any>();
 
-  @Output() optionClicked = new EventEmitter<string>();
-
-  private hasInputErrors: string;
-
-
+  hasInputErrors: string;
   buttonClassList: string;
   dropdownClassList: string;
   dropdownOptionCaptions: string[];
@@ -33,7 +20,6 @@ export class DropdownItComponent implements OnChanges {
 
   constructor() { }
   ngOnChanges(changes: SimpleChanges): void {
-    console.log("changed something", changes, this.dropdownOptions);
     this.dropdownOptionCaptions = this.getTextArray(this.dropdownOptions.optionArray);
     this.runInputChecks();
     this.buildHelperValues();
@@ -42,28 +28,29 @@ export class DropdownItComponent implements OnChanges {
   private getTextArray(arr: string[] | any[]): string[] {
     if (!arr) return [];
     if (arr.length == 0) return [];
-    console.log(typeof arr[0])
     if (typeof arr[0] == 'string') return arr as string[];
-    if (arr[0].name) return arr.map(a => a.name);
-    if (arr[0].text) return arr.map(a => a.text);
+    let valueArray = arr;
+    if (arr[0].value && typeof arr[0].value == 'object') valueArray = arr.map(x => x.getRawValue());
+    if (valueArray[0].name) return valueArray.map(a => a.name);
+    if (valueArray[0].text) return valueArray.map(a => a.text);
 
     let firstStringKey = "";
 
-    for (const key of Object.keys(arr[0])) {
-      if (typeof arr[0][key] == 'string') {
+    for (const key of Object.keys(valueArray[0])) {
+      if (typeof valueArray[0][key] == 'string') {
         firstStringKey = key;
         break;
       }
     }
     if (!firstStringKey) throw new Error("Cant find text in given array - dropdown");
-    return arr.map(a => a[firstStringKey]);
+    return valueArray.map(a => a[firstStringKey]);
   }
 
   private buildHelperValues() {
     this.buttonClassList = "";
     this.buttonClassList += this.dropdownOptions.isDisabled ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer';
-    this.buttonClassList += this.dropdownOptions.buttonTooltip ? 'tooltip tooltip-right' : '';
-    this.dropdownClassList = this.dropdownOptions.hasCheckboxes ? 'w-80' : 'w-auto';
+    this.buttonClassList += this.dropdownOptions.buttonTooltip ? ' tooltip tooltip-right' : '';
+    this.dropdownClassList = this.dropdownOptions.hasCheckboxes ? ' w-80' : ' w-auto';
     this.buttonClassList += this.dropdownClassList;
   }
 
@@ -78,10 +65,6 @@ export class DropdownItComponent implements OnChanges {
     if (this.dropdownOptions.isOptionDisabled && this.dropdownOptions.isOptionDisabled.length != this.dropdownOptions.optionArray.length) this.hasInputErrors = "array options != isOptionDisabled length\n";
     if (this.dropdownOptions.optionIcons && this.dropdownOptions.optionIcons.length != this.dropdownOptions.optionIcons.length) this.hasInputErrors = "array options != optionIcons length\n";
 
-
-    if (this.dropdownOptions.hasCheckboxes) {
-
-    }
 
     if (this.hasInputErrors) console.log(this.hasInputErrors);
 
@@ -100,7 +83,8 @@ export class DropdownItComponent implements OnChanges {
   }
 
   performActionOnOption(event: MouseEvent, clickIndex: number) {
-    if (this.dropdownOptions.stopClickPropagation) event.stopPropagation();
+    if (this.dropdownOptions.isOptionDisabled?.length && this.dropdownOptions.isOptionDisabled[clickIndex]) return;
+    if (this.dropdownOptions.keepDropdownOpen) event.stopPropagation();
 
     if (clickIndex >= this.dropdownOptions.optionArray.length) {
       console.log("something is wrong in the click action of the dropdown component");
@@ -109,7 +93,8 @@ export class DropdownItComponent implements OnChanges {
 
     if (!this.dropdownOptions.valuePropertyPath) {
       if (this.useValueAsCaption) this.dropdownOptions.buttonCaption = this.dropdownOptionCaptions[clickIndex];
-      this.optionClicked.emit(this.dropdownOptionCaptions[clickIndex]);
+      if (this.dropdownOptions.hasCheckboxes) this.optionClicked.emit(this.dropdownOptions.optionArray[clickIndex]);
+      else this.optionClicked.emit(this.dropdownOptionCaptions[clickIndex]);
       return;
     }
 
@@ -128,50 +113,50 @@ export class DropdownItComponent implements OnChanges {
 
   }
 
-  // getActiveNegateGroupColor(group: FormGroup) {
-  //   if (!group.get('active').value) return null;
-  //   if (group.contains('negate'))
-  //     return group.get('negate').value ? '#ef4444' : '#2563eb';
-  //   return '#2563eb';
-  // }
+  getActiveNegateGroupColor(group: FormGroup) {
+    if (!group.get('active').value) return null;
+    if (group.contains('negate'))
+      return group.get('negate').value ? '#ef4444' : '#2563eb';
+    return '#2563eb';
+  }
 
 
-  // getDropdownDisplayText(
-  //   formControls: AbstractControl[],
-  //   labelFor: string
-  // ): string {
-  //   let text = '';
-  //   let atLeastOneNegated: boolean = false;
-  //   for (let c of formControls) {
-  //     const hasNegate = Boolean(c.get('negate'));
-  //     if (labelFor == 'EMPTY' && c.get('active').value) return '';
-  //     else if (
-  //       labelFor == 'NOT_NEGATED' &&
-  //       c.get('active').value &&
-  //       (!hasNegate || (hasNegate && !c.get('negate').value))
-  //     ) {
-  //       text += (text == '' ? '' : ', ') + c.get('name').value;
-  //     } else if (
-  //       labelFor == 'NEGATED' &&
-  //       c.get('active').value &&
-  //       hasNegate &&
-  //       c.get('negate').value
-  //     ) {
-  //       text += (text == '' ? '' : ', ') + c.get('name').value;
-  //     }
-  //     if (
-  //       !atLeastOneNegated &&
-  //       c.get('active').value &&
-  //       hasNegate &&
-  //       c.get('negate').value
-  //     )
-  //       atLeastOneNegated = true;
-  //   }
-  //   if (labelFor == 'EMPTY') return 'None Selected';
+  getDropdownDisplayText(
+    formControls: AbstractControl[],
+    labelFor: string
+  ): string {
+    let text = '';
+    let atLeastOneNegated: boolean = false;
+    for (let c of formControls) {
+      const hasNegate = Boolean(c.get('negate'));
+      if (labelFor == 'EMPTY' && c.get('active').value) return '';
+      else if (
+        labelFor == 'NOT_NEGATED' &&
+        c.get('active').value &&
+        (!hasNegate || (hasNegate && !c.get('negate').value))
+      ) {
+        text += (text == '' ? '' : ', ') + c.get('name').value;
+      } else if (
+        labelFor == 'NEGATED' &&
+        c.get('active').value &&
+        hasNegate &&
+        c.get('negate').value
+      ) {
+        text += (text == '' ? '' : ', ') + c.get('name').value;
+      }
+      if (
+        !atLeastOneNegated &&
+        c.get('active').value &&
+        hasNegate &&
+        c.get('negate').value
+      )
+        atLeastOneNegated = true;
+    }
+    if (labelFor == 'EMPTY') return 'None Selected';
 
-  //   if (labelFor == 'NOT_NEGATED' && atLeastOneNegated && text != '')
-  //     return text + ', ';
+    if (labelFor == 'NOT_NEGATED' && atLeastOneNegated && text != '')
+      return text + ', ';
 
-  //   return text;
-  // }
+    return text;
+  }
 }
