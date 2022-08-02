@@ -18,6 +18,7 @@ import { PercentRoundPipe } from './pipes/decimal-round.pipe';
 import { HeaderComponent } from './components/header/header.component';
 import { DropdownComponent } from './components/dropdown/dropdown.component';
 import { DropdownIterativeComponent } from './components/dropdown-iterative/dropdown-iterative.component';
+import { DropdownItComponent } from './components/dropdown-it/dropdown-it.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,8 @@ import { DropdownIterativeComponent } from './components/dropdown-iterative/drop
     PercentRoundPipe,
     HeaderComponent,
     DropdownComponent,
-    DropdownIterativeComponent
+    DropdownIterativeComponent,
+    DropdownItComponent
   ],
   imports: [CommonModule, AppRoutingModule, HighlightModule],
   exports: [
@@ -53,7 +55,8 @@ import { DropdownIterativeComponent } from './components/dropdown-iterative/drop
     PercentRoundPipe,
     HeaderComponent,
     DropdownComponent,
-    DropdownIterativeComponent
+    DropdownIterativeComponent,
+    DropdownItComponent
   ],
   providers: [
     {

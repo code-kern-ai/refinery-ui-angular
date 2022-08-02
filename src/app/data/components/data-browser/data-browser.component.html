@@ -332,14 +332,24 @@
                                                                         <ng-template
                                                                             [ngIf]="groupItem.get('manualLabels').controls.length == 0"
                                                                             [ngIfElse]="dropDownML">
-                                                                            <ng-container [ngTemplateOutlet]="buttonLabelsDisabled"></ng-container>
+                                                                            <ng-container
+                                                                                [ngTemplateOutlet]="buttonLabelsDisabled">
+                                                                            </ng-container>
                                                                         </ng-template>
                                                                         <ng-template #dropDownML>
                                                                             <kern-dropdown-iterative
                                                                                 [arrayOptions]="groupItem.get('manualLabels').controls"
                                                                                 [hasCheckboxes]="true"
-                                                                                (optionClicked)="setActiveNegateGroup($event)"
-                                                                            ></kern-dropdown-iterative>
+                                                                                (optionClicked)="setActiveNegateGroup($event)">
+                                                                            </kern-dropdown-iterative>
+
+                                                                            <kern-dropdown-it [dropdownOptions]="{
+                                                                                optionArray:groupItem.get('manualLabels').controls,
+                                                                                hasCheckboxes:true,
+                                                                                stopClickPropagation:true
+                                                                            }"
+                                                                                (optionClicked)="setActiveNegateGroup($event)">
+                                                                            </kern-dropdown-it>
 
                                                                         </ng-template>
                                                                     </div>
@@ -351,15 +361,17 @@
                                                                             [ngIf]="groupItem.get('weakSupervisionLabels').controls.length == 0"
                                                                             formArrayName="manualLabels"
                                                                             [ngIfElse]="dropDownWS">
-                                                                            <ng-container [ngTemplateOutlet]="buttonLabelsDisabled"></ng-container>
+                                                                            <ng-container
+                                                                                [ngTemplateOutlet]="buttonLabelsDisabled">
+                                                                            </ng-container>
                                                                         </ng-template>
                                                                         <ng-template #dropDownWS>
                                                                             <kern-dropdown-iterative
                                                                                 [arrayOptions]="groupItem.get('weakSupervisionLabels').controls"
                                                                                 formArrayName="manualLabels"
                                                                                 [hasCheckboxes]="true"
-                                                                                (optionClicked)="setActiveNegateGroup($event)"
-                                                                            ></kern-dropdown-iterative>
+                                                                                (optionClicked)="setActiveNegateGroup($event)">
+                                                                            </kern-dropdown-iterative>
                                                                         </ng-template>
                                                                     </div>
                                                                 </div>
@@ -546,7 +558,8 @@
 
                 <div class="flex items-center mt-4">
                     <div data-tip="Store filters to disk" class="tooltip tooltip-top relative z-50"
-                        data-tooltip-target="tooltip-top" data-tooltip-placement="top" [ngClass]="similarSearchHelper.recordsInDisplay || activeSlide ? 'cursor-not-allowed':'' ">
+                        data-tooltip-target="tooltip-top" data-tooltip-placement="top"
+                        [ngClass]="similarSearchHelper.recordsInDisplay || activeSlide ? 'cursor-not-allowed':'' ">
                         <label for="save-slice-modal"
                             class="mr-1 inline-flex items-center w-32 px-2.5 py-1.5 border border-gray-200 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer"
                             [ngClass]="similarSearchHelper.recordsInDisplay || activeSlide ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer'"
@@ -563,7 +576,8 @@
                     </div>
                     <div>
                         <div data-tip="Update your current filter" class="tooltip tooltip-top relative z-50"
-                            data-tooltip-target="tooltip-top" data-tooltip-placement="top" [ngClass]="updateButton.disabled ? 'cursor-not-allowed':'' ">
+                            data-tooltip-target="tooltip-top" data-tooltip-placement="top"
+                            [ngClass]="updateButton.disabled ? 'cursor-not-allowed':'' ">
                             <button #updateButton
                                 class="mr-1 inline-flex items-center w-32 px-2.5 py-1.5 border border-gray-200 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer"
                                 (click)="updateSlice()"
@@ -589,7 +603,8 @@
                 </div>
                 <div class="mt-1">
                     <div data-tip="Creates a static slices" class="tooltip tooltip-bottom relative z-50"
-                        data-tooltip-target="tooltip-bottom" data-tooltip-placement="bottom" [ngClass]="!(similarSearchHelper.embeddings?.length && anyRecordManuallyLabeled) ? 'cursor-not-allowed' : ''">
+                        data-tooltip-target="tooltip-bottom" data-tooltip-placement="bottom"
+                        [ngClass]="!(similarSearchHelper.embeddings?.length && anyRecordManuallyLabeled) ? 'cursor-not-allowed' : ''">
                         <label [for]="similarSearchHelper.embeddings?.length > 1?'outlier-search-embedding-select':''"
                             (click)="similarSearchHelper.embeddings?.length==1?requestOutlierSlice(similarSearchHelper.embeddings[0].id):null"
                             [ngClass]="!(similarSearchHelper.embeddings?.length && anyRecordManuallyLabeled) ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer' "
@@ -769,8 +784,8 @@
                         class="mr-1 inline-flex items-center px-2.5 py-1.5 border border-gray-200 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer"
                         (click)="clearFilters()">
                         <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 icon icon-tabler icon-tabler-filter-off"
-                            width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                            stroke-linecap="round" stroke-linejoin="round">
+                            width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+                            fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                             <line x1="3" y1="3" x2="21" y2="21"></line>
                             <path
@@ -780,10 +795,12 @@
                         Clear filter
                     </button>
                 </div>
-                
 
-                <div data-tip="Change the data browser configurations" class="tooltip tooltip-left relative tooltip-label flex items-center"
-                    data-tooltip-target="tooltip-left" data-tooltip-placement="left" [ngClass]="similarSearchHelper.recordsInDisplay || activeSlice ? 'cursor-not-allowed' : '' ">
+
+                <div data-tip="Change the data browser configurations"
+                    class="tooltip tooltip-left relative tooltip-label flex items-center"
+                    data-tooltip-target="tooltip-left" data-tooltip-placement="left"
+                    [ngClass]="similarSearchHelper.recordsInDisplay || activeSlice ? 'cursor-not-allowed' : '' ">
                     <label for="config-modal"
                         class="mr-1 inline-flex items-center px-2.5 py-1.5 border border-gray-200 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer"
                         [ngClass]="similarSearchHelper.recordsInDisplay || activeSlice ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer'">
@@ -851,8 +868,10 @@
                     </div>
                 </div>
 
-                <div data-tip="Download the currently filtered records" class="tooltip tooltip-left relative tooltip-label flex items-center"
-                    data-tooltip-target="tooltip-left" data-tooltip-placement="left" [ngClass]="extendedRecords?.sessionId ? '' : 'cursor-not-allowed'">
+                <div data-tip="Download the currently filtered records"
+                    class="tooltip tooltip-left relative tooltip-label flex items-center"
+                    data-tooltip-target="tooltip-left" data-tooltip-placement="left"
+                    [ngClass]="extendedRecords?.sessionId ? '' : 'cursor-not-allowed'">
                     <button (click)="requestFileExport(project.id)" [disabled]="extendedRecords?.sessionId ? null:true"
                         [ngClass]="extendedRecords?.sessionId ?  'opacity-100 cursor-pointer':'opacity-50 cursor-not-allowed pointer-events-none'"
                         class="mr-1 inline-flex items-center px-2.5 py-1.5 border border-gray-200 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer">
@@ -862,7 +881,8 @@
                                 d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                         </svg>
                         Download filtered records
-                        <span *ngIf="downloadMessage == DownloadStateType.PREPARATION || downloadMessage == DownloadStateType.DOWNLOAD"
+                        <span
+                            *ngIf="downloadMessage == DownloadStateType.PREPARATION || downloadMessage == DownloadStateType.DOWNLOAD"
                             class="ml-2 inline-flex items-center rounded text-xs font-medium bg-gray-100 text-gray-800">
                             <kern-loading color="gray"></kern-loading>
                         </span>
@@ -1001,8 +1021,7 @@
                                     <div data-tip="Add an embedding in the project settings"
                                         class="tooltip tooltip-right relative z-50" data-tooltip-target="tooltip-right"
                                         data-tooltip-placement="right">
-                                        <label
-                                            class="text-gray-700 text-sm font-medium">
+                                        <label class="text-gray-700 text-sm font-medium">
                                             <span class="cursor-help leading-5 underline"
                                                 style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">No
                                                 embedding, can't find similar records</span>
@@ -1145,8 +1164,8 @@
         <div class="truncate min-w-0 mr-4">
             No labels associated with this task
         </div>
-        <svg class="-mr-1 ml-auto h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
-            fill="currentColor" aria-hidden="true">
+        <svg class="-mr-1 ml-auto h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+            aria-hidden="true">
             <path fill-rule="evenodd"
                 d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
                 clip-rule="evenodd" />
