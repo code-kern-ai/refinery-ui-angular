@@ -1,5 +1,5 @@
 <div class="relative">
-    <button type="button" [attr.data-tip]="dropdownOptions.buttonTooltip"
+    <button #dropdownOpenButton type="button" [attr.data-tip]="dropdownOptions.buttonTooltip"
         class="inline-flex rounded-md border border-gray-300 shadow-sm px-4 py-1.5 items-center bg-white text-xs font-semibold text-gray-700 cursor-pointer focus:ring-offset-2 focus:ring-offset-gray-400"
         id="menu-button" aria-expanded="true" aria-haspopup="true" [disabled]="dropdownOptions.isDisabled"
         [ngClass]="buttonClassList" (isMenuOpen)="toggleVisible($event, dropdownOptionsDiv)" appDropdown>
@@ -20,14 +20,19 @@
     <div #dropdownOptionsDiv
         class="origin-top-right absolute mt-2 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none hidden"
         [ngClass]="dropdownClassList" role="menu" aria-orientation="vertical" aria-labelledby="menu-button"
-        tabindex="-1">
+        [style.min-width.px]="dropdownOpenButton.offsetWidth" tabindex="-1">
         <div class="py-1 cursor-pointer" role="none">
-            <option *ngFor="let caption of dropdownOptionCaptions;let i = index"
-                (click)="performActionOnOption($event,i)"
-                class="text-gray-700 block px-4 py-1.5 text-xs hover:bg-gray-700 hover:text-white" role="menuitem"
-                tabindex="-1" id="menu-item-0">
+            <div *ngFor="let caption of dropdownOptionCaptions;let i = index" (click)="performActionOnOption($event,i)"
+                [ngClass]="dropdownOptions.isOptionDisabled?.length && dropdownOptions.isOptionDisabled[i]?'opacity-50 cursor-not-allowed pointer-events-none':''"
+                class="text-gray-700 block px-2 py-1.5 text-xs hover:bg-gray-700 hover:text-white flex flex-row flex-nowrap items-center gap-x-2"
+                role="menuitem" tabindex="-1" id="menu-item-0">
+                <ng-template [ngIf]="dropdownOptions.optionIcons?.length">
+                    <ng-container [ngTemplateOutlet]="icons"
+                        [ngTemplateOutletContext]="{iconName:dropdownOptions.optionIcons[i]}">
+                    </ng-container>
+                </ng-template>
                 {{ caption }}
-            </option>
+            </div>
             <!--   <ng-template #optionCheckboxes>
             <div *ngFor="let task of arrayOptions">
                 <div class="form-control pl-2">
@@ -49,3 +54,104 @@
         </div>
     </div>
 </div>
+
+
+<ng-template #icons let-iconName="iconName">
+    <ng-container [ngSwitch]="iconName">
+        <ng-template ngSwitchDefault>X
+        </ng-template>
+        <ng-template ngSwitchCase="clickbait">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-fish-hook" width="20"
+                height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                <path d="M16 9v6a5 5 0 0 1 -10 0v-4l3 3"></path>
+                <circle cx="16" cy="7" r="2"></circle>
+                <path d="M16 5v-2"></path>
+            </svg>
+        </ng-template>
+        <ng-template ngSwitchCase="conversational-ai">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-message-circle" width="20"
+                height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                <path d="M3 20l1.3 -3.9a9 8 0 1 1 3.4 2.9l-4.7 1"></path>
+                <line x1="12" y1="12" x2="12" y2="12.01"></line>
+                <line x1="8" y1="12" x2="8" y2="12.01"></line>
+                <line x1="16" y1="12" x2="16" y2="12.01"></line>
+            </svg>
+        </ng-template>
+        <ng-template ngSwitchCase="ag-news">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-news" width="20" height="20"
+                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                <path
+                    d="M16 6h3a1 1 0 0 1 1 1v11a2 2 0 0 1 -4 0v-13a1 1 0 0 0 -1 -1h-10a1 1 0 0 0 -1 1v12a3 3 0 0 0 3 3h11">
+                </path>
+                <line x1="8" y1="8" x2="12" y2="8"></line>
+                <line x1="8" y1="12" x2="12" y2="12"></line>
+                <line x1="8" y1="16" x2="12" y2="16"></line>
+            </svg>
+        </ng-template>
+        <ng-template ngSwitchCase="select-all">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-square-check inline-block"
+                width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+                <path d="M9 12l2 2l4 -4"></path>
+            </svg>
+        </ng-template>
+        <ng-template ngSwitchCase="deselect-all">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-square inline-block" width="20"
+                height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+            </svg>
+        </ng-template>
+        <ng-template ngSwitchCase="run">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block" viewBox="0 0 20 20"
+                fill="currentColor">
+                <path fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+                    clip-rule="evenodd" />
+            </svg>
+        </ng-template>
+        <ng-template ngSwitchCase="edit-term">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block" viewBox="0 0 20 20"
+                fill="currentColor">
+                <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
+                <path fill-rule="evenodd"
+                    d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
+                    clip-rule="evenodd" />
+            </svg>
+        </ng-template>
+        <ng-template ngSwitchCase="remove-term">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block" viewBox="0 0 20 20"
+                fill="currentColor">
+                <path fill-rule="evenodd"
+                    d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                    clip-rule="evenodd" />
+            </svg>
+        </ng-template>
+        <ng-template ngSwitchCase="whitelist-term">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block" viewBox="0 0 20 20"
+                fill="currentColor">
+                <path fill-rule="evenodd"
+                    d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    clip-rule="evenodd" />
+            </svg>
+        </ng-template>
+        <ng-template ngSwitchCase="blacklist-term">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block" viewBox="0 0 20 20"
+                fill="currentColor">
+                <path fill-rule="evenodd"
+                    d="M10 1.944A11.954 11.954 0 012.166 5C2.056 5.649 2 6.319 2 7c0 5.225 3.34 9.67 8 11.317C14.66 16.67 18 12.225 18 7c0-.682-.057-1.35-.166-2.001A11.954 11.954 0 0110 1.944zM11 14a1 1 0 11-2 0 1 1 0 012 0zm0-7a1 1 0 10-2 0v3a1 1 0 102 0V7z"
+                    clip-rule="evenodd" />
+            </svg>
+        </ng-template>
+    </ng-container>
+
+</ng-template>

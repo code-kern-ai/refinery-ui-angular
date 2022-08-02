@@ -29,6 +29,7 @@ export class DropdownItComponent implements OnChanges {
   buttonClassList: string;
   dropdownClassList: string;
   dropdownOptionCaptions: string[];
+  useValueAsCaption: boolean = false;
 
   constructor() { }
   ngOnChanges(changes: SimpleChanges): void {
@@ -70,8 +71,17 @@ export class DropdownItComponent implements OnChanges {
     this.hasInputErrors = "";
     if (!this.dropdownOptions) this.hasInputErrors = "no dropdown options provided\n";
     if (!this.dropdownOptions.optionArray || this.dropdownOptions.optionArray.length == 0) this.hasInputErrors = "no text provided\n";
-    if (!this.dropdownOptions.buttonCaption) this.hasInputErrors = "no button caption provided\n";
+    if (!this.dropdownOptions.buttonCaption && this.dropdownOptionCaptions.length > 0) {
+      this.dropdownOptions.buttonCaption = this.dropdownOptionCaptions[0];
+      this.useValueAsCaption = true;
+    }
     if (this.dropdownOptions.isOptionDisabled && this.dropdownOptions.isOptionDisabled.length != this.dropdownOptions.optionArray.length) this.hasInputErrors = "array options != isOptionDisabled length\n";
+    if (this.dropdownOptions.optionIcons && this.dropdownOptions.optionIcons.length != this.dropdownOptions.optionIcons.length) this.hasInputErrors = "array options != optionIcons length\n";
+
+
+    if (this.dropdownOptions.hasCheckboxes) {
+
+    }
 
     if (this.hasInputErrors) console.log(this.hasInputErrors);
 
@@ -98,6 +108,7 @@ export class DropdownItComponent implements OnChanges {
     }
 
     if (!this.dropdownOptions.valuePropertyPath) {
+      if (this.useValueAsCaption) this.dropdownOptions.buttonCaption = this.dropdownOptionCaptions[clickIndex];
       this.optionClicked.emit(this.dropdownOptionCaptions[clickIndex]);
       return;
     }
@@ -112,6 +123,7 @@ export class DropdownItComponent implements OnChanges {
       console.log("something is wrong in the click action of the dropdown component - property path");
       return;
     }
+    if (this.useValueAsCaption) this.dropdownOptions.buttonCaption = tmp;
     this.optionClicked.emit(tmp);
 
   }

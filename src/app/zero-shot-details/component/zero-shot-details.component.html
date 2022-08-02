@@ -116,15 +116,34 @@
                         [property]="'id'" [optionProperty]="'name'"
                         (optionClicked)="changeZeroShotSettings('taskId',$event)" class="mr-5">
                     </kern-dropdown-iterative>
+                    <!--normal/our version-->
                     <kern-dropdown-it class="mr-2" [dropdownOptions]="{
                             optionArray:labelingTasksClassification,
                             buttonCaption:labelingTasks.get(zeroShotSettings.taskId).name,
                             valuePropertyPath:'id'
                         }" (optionClicked)="changeZeroShotSettings('taskId',$event)">
                     </kern-dropdown-it>
+                    <!--with caption-->
                     <kern-dropdown-it class="mr-2" [dropdownOptions]="{
                         optionArray:['value 1','value2'],
                         buttonCaption:'dummy Dropdown'
+                    }" (optionClicked)="logMe($event)">
+                    </kern-dropdown-it>
+                    <!--with disabled option-->
+                    <kern-dropdown-it class="mr-2" [dropdownOptions]="{
+                        optionArray:['value 1','value2','v3'],
+                        isOptionDisabled:[false,false,true]
+                    }" (optionClicked)="logMe($event)">
+                    </kern-dropdown-it>
+                    <!--with icons-->
+                    <kern-dropdown-it class="mr-2" [dropdownOptions]="{
+                        optionArray:['value 1','value2'],
+                        optionIcons:['select-all','run']
+                    }" (optionClicked)="logMe($event)">
+                    </kern-dropdown-it>
+                    <!--simplest version-->
+                    <kern-dropdown-it class="mr-2" [dropdownOptions]="{
+                        optionArray:['value 1','value2']
                     }" (optionClicked)="logMe($event)">
                     </kern-dropdown-it>
                     <div *ngIf="!labelingTasks.get(zeroShotSettings.taskId)?.labels.length"
