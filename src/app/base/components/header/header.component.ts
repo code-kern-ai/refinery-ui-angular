@@ -21,6 +21,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   subscriptions$: Subscription[] = [];
 
   showConfigSettings: boolean = false;
+  hideLogout: boolean;
 
   constructor(private auth: AuthApiService,
     private router: Router) { }
@@ -33,7 +34,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
       timer(250).subscribe(() => this.setShowConfig());
       return;
     }
-    this.showConfigSettings = !ConfigManager.getIsManaged()
+    this.hideLogout = ConfigManager.getIsDemo() && !ConfigManager.getIsAdmin();
+    this.showConfigSettings = !ConfigManager.getIsManaged();
   }
 
   ngOnDestroy(): void {
