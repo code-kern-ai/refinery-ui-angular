@@ -114,7 +114,7 @@ module.exports = {
       "xxs": "9rem",
       "xs-1": "250px",
       ...defaultTheme.maxWidth,
-      "3/5": "80%"
+      "4/5": "80%"
     },
     minWidth: {
       "1/2": "50%"
