@@ -9,6 +9,9 @@ export class ConfigManager {
     private static http: HttpClient;
     private static configApolloService: ConfigApolloService;
     private static isManaged: boolean = true;//differentation between propriatary or not
+    private static isAdmin: boolean = false;
+    private static isDemo: boolean = false;
+    private static blackWhiteListDemo: any;
     private static registedUpdateListeners: Map<Object, () => void> = new Map<Object, () => void>();
     private static justUpdated = false;
 
@@ -80,5 +83,37 @@ export class ConfigManager {
         ConfigManager.registedUpdateListeners.delete(caller);
     }
 
+    public static setIsAdmin(value: boolean) {
+        ConfigManager.isAdmin = value;
+    }
+    public static getIsAdmin() {
+        return ConfigManager.isAdmin;
+    }
+
+    public static setIsDemo(value: boolean) {
+        ConfigManager.isDemo = value;
+    }
+    public static getIsDemo() {
+        return ConfigManager.isDemo;
+    }
+
+    public static setBlackWhiteListDemo(value: any) {
+        ConfigManager.blackWhiteListDemo = value;
+    }
+
+    public static checkBlackWhiteList(type: string, queryText: string): boolean {
+        if (!ConfigManager.blackWhiteListDemo) return false;
+        if (type == "query") {
+            for (const blacklisted of ConfigManager.blackWhiteListDemo["queries"]) {
+                if (queryText.indexOf(blacklisted) != -1) return false;
+            }
+            return true;
+        } else {
+            for (const whitelisted of ConfigManager.blackWhiteListDemo["mutations"]) {
+                if (queryText.indexOf(whitelisted) != -1) return true;
+            }
+            return false;
+        }
+    }
 }
 

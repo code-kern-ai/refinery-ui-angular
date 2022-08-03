@@ -185,7 +185,7 @@ export const mutations = {
   `,
   CREATE_OUTLIER_SLICE: gql`
   mutation($projectId: ID!, $embeddingId: ID!){
-    createOulierSlice(projectId: $projectId, embeddingId: $embeddingId) {
+    createOutlierSlice(projectId: $projectId, embeddingId: $embeddingId) {
       ok
     } 
   }
