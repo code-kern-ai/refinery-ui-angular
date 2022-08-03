@@ -171,7 +171,7 @@ export class RecordIDEComponent implements OnInit {
   }
 
   navigateToLibraries() {
-    window.open("https://github.com/code-kern-ai/refinery-lf-exec-env/blob/dev/requirements.txt", "_blank");
+    window.open("https://github.com/code-kern-ai/refinery-record-ide-env/blob/dev/requirements.txt", "_blank");
   }
 
 }
