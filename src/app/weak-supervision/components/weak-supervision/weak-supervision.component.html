@@ -10,7 +10,7 @@
                         class="text-sm leading-5 font-medium mr-10 cursor-pointer py-5">
                         {{labelingTask.name}}
                     </div>
-                    <div data-tip="Add new labeling task" class="tooltip tooltip-right tooltip-label">
+                    <div data-tip="Add new labeling task" class="tooltip tooltip-right">
                         <button (click)="navigateToSettings()"><svg xmlns="http://www.w3.org/2000/svg"
                                 class="h-5 w-5 text-gray-500 my-5 cursor-pointer" fill="none" viewBox="0 0 24 24"
                                 stroke="currentColor" stroke-width="2">
@@ -143,7 +143,7 @@
                                             </svg>
                                             Deselect all
                                         </label>
-                                        <span data-tip="Please select at least one heuristic." class="tooltip tooltip-left tooltip-label w-full">
+                                        <span data-tip="Please select at least one heuristic." class="tooltip tooltip-left w-full">
                                             <label
                                                 (click)="runSelectedInformationSources(project.id)"
                                                 [ngClass]="(informationSources.length == 0 || selectedInformationSources.length == 0) ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer hover:bg-kernindigo hover:text-white'"
@@ -159,10 +159,10 @@
                                             </label>
                                         </span>
                                         <div [ngClass]="(informationSources.length == 0 || selectedInformationSources.length == 0) ? 'cursor-not-allowed' : '' "  
-                                            class="tooltip tooltip-left tooltip-label w-full" data-tip="Please select at least one heuristic.">
+                                            class="tooltip tooltip-left w-full" data-tip="Please select at least one heuristic.">
                                             <label (click)="prepareSelectionList()"
                                                 [for]="'delete-modal-selected'"
-                                                [ngClass]="(informationSources.length == 0 || selectedInformationSources.length == 0) ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer tooltip tooltip-left tooltip-label hover:bg-kernindigo hover:text-white cursor-pointer'"
+                                                [ngClass]="(informationSources.length == 0 || selectedInformationSources.length == 0) ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer hover:bg-kernindigo hover:text-white cursor-pointer'"
                                                 class="text-left text-gray-700 block px-4 py-2 text-xs" role="menuitem"
                                                 tabindex="-1" id="menu-item-1">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block" fill="none"
@@ -220,7 +220,7 @@
                             <ng-template [ngIf]="areInformationSourcesSelected(informationSources,true)"
                                 [ngIfElse]="noValidSelected">
                                 <div data-tip="Calculation of denoised labels can take up to a few minutes!"
-                                    class="tooltip tooltip-bottom tooltip-label">
+                                    class="tooltip tooltip-bottom">
                                     <button
                                         class="bg-indigo-700 text-white text-xs font-semibold px-4 py-2 rounded-md border hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                                         (click)="startWeakSupervision(project.id)"
@@ -236,7 +236,7 @@
 
                             <ng-template #noValidSelected>
                                 <div data-tip="At least one invalid heuristic selected!"
-                                    class="tooltip tooltip-bottom tooltip-label">
+                                    class="tooltip tooltip-bottom">
                                     <button
                                         class="bg-indigo-700 text-white text-xs font-semibold px-4 py-2 rounded-md border opacity-50 cursor-not-allowed"
                                         [disabled]="true">
@@ -247,7 +247,7 @@
                         </ng-template>
                         <ng-template #nothingSelected>
                             <div data-tip="Please select at least one heuristic!"
-                                class="tooltip tooltip-bottom tooltip-label">
+                                class="tooltip tooltip-bottom">
                                 <button
                                     class="bg-indigo-700 text-white text-xs font-semibold px-4 py-2 rounded-md border opacity-50 cursor-not-allowed"
                                     [disabled]="true">

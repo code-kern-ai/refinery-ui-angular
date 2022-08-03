@@ -94,6 +94,6 @@ svg.noFillStar:hover {
   cursor: wait;
 }
 
-.tooltip-label::before {
-  z-index: 10;
+.tooltip::before {
+  z-index: 50;
 }
