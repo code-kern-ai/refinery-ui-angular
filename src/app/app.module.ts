@@ -1,10 +1,11 @@
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
-import { NgModule } from '@angular/core';
+import { ErrorHandler, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BaseModule } from './base/base.module';
 import { ExceptionInterceptor } from './base/interceptors/exception.interceptor';
+import { GlobalErrorHandler } from './base/interceptors/global-exception.interceptor';
 import { NotificationService } from './base/services/notification.service';
 import { DataModule } from './data/data.module';
 import { ProjectsModule } from './projects/projects.module';
@@ -50,6 +51,7 @@ import { RecordIDEModule } from './record-ide/record-ide.module';
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: ExceptionInterceptor, multi: true },
+    { provide: ErrorHandler, useClass: GlobalErrorHandler },
     NotificationService,
   ],
   bootstrap: [AppComponent],
