@@ -34,7 +34,7 @@
 
                     <div *ngIf="project$ | async as project">
                         <div *ngIf="project.id !== null">
-                            <div class="flex items-center justify-center overflow-visible mt-12">
+                            <div class="flex items-center justify-center overflow-visible mt-10 2xl:mt-12">
                                 <div data-tip="Overview" class="tooltip tooltip-right relative z-50"
                                     [ngClass]="project.numDataScaleUploaded == 0 ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer'">
                                     <a [routerLink]="['./overview']" rel="noopener noreferrer" class="circle text-white"
@@ -47,7 +47,7 @@
                                     </a>
                                 </div>
                             </div>
-                            <div class="flex items-center justify-center overflow-visible mt-12">
+                            <div class="flex items-center justify-center overflow-visible mt-10 2xl:mt-12">
                                 <div data-tip="Data Browser" class="tooltip tooltip-right relative z-50"
                                     [ngClass]="project.numDataScaleUploaded == 0 ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer'">
                                     <a [routerLink]="['./data']" rel="noopener noreferrer" class="circle text-white"
@@ -66,7 +66,7 @@
                                     </a>
                                 </div>
                             </div>
-                            <div class="flex items-center justify-center overflow-visible mt-12">
+                            <div class="flex items-center justify-center overflow-visible mt-10 2xl:mt-12">
                                 <div data-tip="Labeling" class="tooltip tooltip-right relative z-50"
                                     [ngClass]="project.numDataScaleUploaded == 0 ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer'">
                                     <a [routerLink]="['./labeling']" rel="noopener noreferrer" class="circle text-white"
@@ -80,7 +80,7 @@
                                     </a>
                                 </div>
                             </div>
-                            <div class="flex items-center justify-center overflow-visible mt-12">
+                            <div class="flex items-center justify-center overflow-visible mt-10 2xl:mt-12">
                                 <div data-tip="Heuristics" class="tooltip tooltip-right relative z-50"
                                     [ngClass]="project.numDataScaleUploaded == 0 ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer'">
                                     <a [routerLink]="['./heuristics']" rel="noopener noreferrer"
@@ -94,7 +94,7 @@
                                     </a>
                                 </div>
                             </div>
-                            <div class="flex items-center justify-center overflow-visible mt-12">
+                            <div class="flex items-center justify-center overflow-visible mt-10 2xl:mt-12">
                                 <div data-tip="Settings" class="tooltip tooltip-right relative z-50">
                                     <a [routerLink]="['./settings']" rel="noopener noreferrer" class="circle text-white"
                                         [ngClass]="matchRouteAndMenu((activatedRoute$ | async), 'settings') ? 'text-kerngreen': 'text-white'">
@@ -129,7 +129,7 @@
                             </a>
                         </div>
                     </div>
-                    <div class="flex items-center justify-center overflow-visible mt-12">
+                    <div class="flex items-center justify-center overflow-visible mt-10 2xl:mt-12">
                         <div data-tip="API" class="tooltip tooltip-right relative z-50">
                             <a href="https://github.com/code-kern-ai/kern-python" target="_blank"
                                 rel="noopener noreferrer" class="circle text-white">
@@ -146,7 +146,7 @@
                             </a>
                         </div>
                     </div>
-                    <div class="flex items-center justify-center overflow-visible mt-12">
+                    <div class="flex items-center justify-center overflow-visible mt-10 2xl:mt-12">
                         <div data-tip="Join our community" class="tooltip tooltip-right relative z-50">
                             <a href="https://discord.com/invite/qf4rGCEphW" target="_blank"
                                 rel="noopener noreferrer" class="circle text-white">
@@ -163,7 +163,7 @@
                         </div>
                     </div>
                 </div>
-                <div *ngIf="!isFullscreen" class="flex items-center justify-center">
+                <div *ngIf="!isFullscreen" class="flex items-center justify-center mt-10 2xl:mt-12">
                     <button data-tip="Maximize screen" (click)="openFullscreen()"
                         class="z-50 tooltip tooltip-right cursor-pointer">
                         <svg xmlns="http://www.w3.org/2000/svg" class="text-white icon icon-tabler icon-tabler-maximize"
@@ -177,7 +177,7 @@
                         </svg>
                     </button>
                 </div>
-                <div *ngIf="isFullscreen" class="flex items-center justify-center">
+                <div *ngIf="isFullscreen" class="flex items-center justify-center mt-10 2xl:mt-12">
                     <button data-tip="Minimize screen" (click)="closeFullscreen()"
                         class="z-50 tooltip tooltip-right cursor-pointer">
                         <svg xmlns="http://www.w3.org/2000/svg" class="text-white icon icon-tabler icon-tabler-minimize"
