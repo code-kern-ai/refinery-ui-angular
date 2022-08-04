@@ -166,13 +166,5 @@ export class RecordIDEComponent implements OnInit {
     this.firstVisit = true;
   }
 
-  navigateToTemplates() {
-    window.open("https://github.com/code-kern-ai/template-functions", "_blank");
-  }
-
-  navigateToLibraries() {
-    window.open("https://github.com/code-kern-ai/refinery-record-ide-env/blob/dev/requirements.txt", "_blank");
-  }
-
 }
 
