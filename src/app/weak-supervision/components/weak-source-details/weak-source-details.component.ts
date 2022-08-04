@@ -588,14 +588,6 @@ export class WeakSourceDetailsComponent
     this.labelingTaskControl.setValue(value);
   }
 
-  navigateToTemplates() {
-    window.open("https://github.com/code-kern-ai/template-functions", "_blank");
-  }
-
-  navigateToLibraries() {
-    window.open("https://github.com/code-kern-ai/lf-execution-environment/blob/dev/requirements.txt", "_blank");
-  }
-
   getBackground(color) {
     return `bg-${color}-100`
   }

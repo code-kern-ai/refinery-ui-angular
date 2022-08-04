@@ -133,15 +133,15 @@
                     <div class="flex flex-row flex-nowrap items-center">
                         <div class="flex items-center justify-center"
                             *ngIf="informationSource.informationSourceType == 'LABELING_FUNCTION'">
-                            <button (click)="navigateToTemplates()" data-tip="Go to GitHub repository"
+                            <a href="https://github.com/code-kern-ai/template-functions" target="_blank" data-tip="Go to GitHub repository"
                                 class="tooltip tooltip-left bg-white text-gray-700 text-xs font-semibold  px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                                 See function templates
-                            </button>
-                            <button (click)="navigateToLibraries()"
+                            </a>
+                            <a href="https://github.com/code-kern-ai/refinery-lf-exec-env/blob/dev/requirements.txt" target="_blank"
                                 data-tip="See available libraries for this labeling function"
                                 class="ml-2 tooltip tooltip-left bg-white text-gray-700 text-xs font-semibold  px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                                 See installed libraries
-                            </button>
+                            </a>
                         </div>
                         <div class="flex items-center justify-center"
                             *ngIf="informationSource.informationSourceType == 'ACTIVE_LEARNING'">
