@@ -1,11 +1,11 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges } from '@angular/core';
 
 @Component({
   selector: 'kern-heuristic-statuses',
   templateUrl: './heuristic-statuses.component.html',
   styleUrls: ['./heuristic-statuses.component.scss']
 })
-export class HeuristicStatusesComponent implements OnInit {
+export class HeuristicStatusesComponent implements OnChanges {
 
   @Input() status: string;
   @Input() tooltipPosition: string = 'tooltip-bottom';
@@ -16,7 +16,7 @@ export class HeuristicStatusesComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit(): void {
+  ngOnChanges(): void {
     switch(this.status) {
       case 'CREATED':
         this.dataTip = 'Heuristic is currently being executed.';
