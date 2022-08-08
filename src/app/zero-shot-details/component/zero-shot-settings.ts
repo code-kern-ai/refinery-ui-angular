@@ -4,7 +4,7 @@ export type ZeroShotSettings = {
     targetConfig: string;
     attributeId: string;
     attributeSelectDisabled?: boolean;
-    minConfidence: number;
+    minConfidence: Number;
     excludedLabels: string[];
     runIndividually: boolean;
 };
