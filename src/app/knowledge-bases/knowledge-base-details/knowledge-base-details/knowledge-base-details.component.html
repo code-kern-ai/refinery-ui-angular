@@ -166,12 +166,6 @@
                                 buttonVersion: '...'
                             }" (optionClicked)="executeOption($event, term)">
                             </kern-dropdown-it>
-
-                            <!-- <kern-dropdown
-                                element="white-list"
-                                (editTerm)="openTermEditor(true, term)"
-                                (removeTerm)="deleteTerm(term.id)"
-                                (blackListTerm)="blackListTerm(term.id)"></kern-dropdown> -->
                         </div>
 
                         <div class="text-gray-500 font-normal italic">{{term.comment}}</div>
@@ -221,11 +215,6 @@
                                     buttonVersion: '...'
                                 }" (optionClicked)="executeOption($event, term)">
                                 </kern-dropdown-it>
-                                <!-- <kern-dropdown
-                                    element="white-list"
-                                    (editTerm)="openTermEditor(true, term.id)"
-                                    (removeTerm)="deleteTerm(term.id)"
-                                    (blackListTerm)="blackListTerm(term.id)"></kern-dropdown> -->
                             </div>
                             <div class="text-gray-500 font-normal italic">{{term.comment}}</div>
                         </div>
@@ -252,10 +241,6 @@
                                 buttonVersion: '...'
                             }" (optionClicked)="executeOption($event, term)">
                             </kern-dropdown-it>
-                            <!-- <kern-dropdown
-                                element="black-list"
-                                (removeTerm)="deleteTerm(term.id)"
-                                (blackListTerm)="blackListTerm(term.id)"></kern-dropdown> -->
                         </div>
                         <div class="text-gray-500 font-normal block">{{term.comment}}</div>
                     </div>

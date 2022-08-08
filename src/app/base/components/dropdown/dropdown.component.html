@@ -40,14 +40,6 @@
     </ng-template>
 </ng-container>
 
-<!-- <ng-template [ngIf]="element=='header'">
-    <kern-dropdown-it [dropdownOptions]="{
-        optionArray: ['LF', 'AL', 'Zero-shot'],
-        optionIcons: ['labeling-function', 'active-learning', 'zero-shot']
-    }"
-    ></kern-dropdown-it>
-</ng-template> -->
-
 <div #dropdownMenu
     class="origin-top-right absolute mt-2 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none hidden" 
     [ngClass]="[element==='sample-projects' ? 'w-96' : 'w-56', element === 'black-list' || element === 'white-list' || element === 'header' ? 'right-0' : '']"

@@ -23,16 +23,6 @@
                         }" (optionClicked)="executeOption($event)">
                         </kern-dropdown-it>
 
-                        <!-- <kern-dropdown 
-                            element="actions" 
-                            buttonName="Actions"
-                            buttonTooltip="Actions"
-                            [selectedItems]="selectedLookupLists"
-                            [isHeuristics]="false"
-                            (setAllItems)="setAllLookupLists($event)"
-                            (sendSelectedItems)="prepareSelectionList($event)"
-                        ></kern-dropdown> -->
-
                         <input #deleteSelectedLists type="checkbox" id="delete-modal-selected" class="modal-toggle">
                         <div class="modal text-center items-center">
                             <div class="modal-box">
@@ -72,9 +62,9 @@
 
                     <div class="flex justify-center overflow-visible" (click)="createKnowledgeBase(projectId)">
                         <button data-tip="Create a new lookup list"
-                            class="tooltip-label tooltip tooltip-left bg-white text-gray-700 text-xs font-medium mr-3 ml-2 px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            class="tooltip-label tooltip tooltip-left bg-white text-gray-700 text-xs font-medium mr-3 ml-1 px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                             New list
-                        </button>
+                        </button>   
                     </div>
                 </div>
             </div>

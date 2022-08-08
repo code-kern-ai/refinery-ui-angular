@@ -60,10 +60,6 @@
             </div>
             <div class="flex justify-center overflow-visible">
                 <div *ngIf="user" class=" mr-4">
-                    <!-- <kern-dropdown 
-                        element="header"
-                        [avatarUri]="avatarUri"
-                        [showConfigSettings]="showConfigSettings"></kern-dropdown> -->
                         <kern-dropdown-it [dropdownOptions]="{
                             optionArray: showConfigSettings ? ['Account Settings', 'Change config', 'Logout'] : ['Account Settings', 'Logout'],
                             buttonVersion: 'userIcon',
