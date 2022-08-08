@@ -337,12 +337,12 @@
                                                                             </ng-container>
                                                                         </ng-template>
                                                                         <ng-template #dropDownML>
-                                                                            <kern-dropdown-it [dropdownOptions]="{
+                                                                            <kern-dropdown [dropdownOptions]="{
                                                                                 optionArray:groupItem.get('manualLabels').controls,
                                                                                 hasCheckboxes:true,
                                                                                 keepDropdownOpen:true
                                                                             }" (optionClicked)="setActiveNegateGroup($event)">
-                                                                            </kern-dropdown-it>
+                                                                            </kern-dropdown>
                                                                         </ng-template>
                                                                     </div>
                                                                 </div>
@@ -358,12 +358,12 @@
                                                                             </ng-container>
                                                                         </ng-template>
                                                                         <ng-template #dropDownWS>
-                                                                            <kern-dropdown-it [dropdownOptions]="{
+                                                                            <kern-dropdown [dropdownOptions]="{
                                                                                 optionArray:groupItem.get('weakSupervisionLabels').controls,
                                                                                 hasCheckboxes:true,
                                                                                 keepDropdownOpen:true
                                                                             }" (optionClicked)="setActiveNegateGroup($event)">
-                                                                            </kern-dropdown-it>
+                                                                            </kern-dropdown>
                                                                         </ng-template>
                                                                     </div>
                                                                 </div>

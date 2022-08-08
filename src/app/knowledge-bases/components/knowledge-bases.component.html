@@ -14,14 +14,14 @@
                     </div>
 
                     <ng-template [ngIf]="knowledgeBases.length > 0" [ngIfElse]="noLookupLists">
-                        <kern-dropdown-it class="mr-2" [dropdownOptions]="{
+                        <kern-dropdown class="mr-2" [dropdownOptions]="{
                             optionArray:['Select all','Deselect all', 'Delete selected'],
                             optionIcons:['select-all','deselect-all', 'delete-selected'],
                             buttonTooltip:'Actions',
                             buttonCaption: 'Actions',
                             isOptionDisabled: [false, false, this.selectedLookupLists.length == 0]
                         }" (optionClicked)="executeOption($event)">
-                        </kern-dropdown-it>
+                        </kern-dropdown>
 
                         <input #deleteSelectedLists type="checkbox" id="delete-modal-selected" class="modal-toggle">
                         <div class="modal text-center items-center">

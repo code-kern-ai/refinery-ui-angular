@@ -300,7 +300,7 @@
         </label>
     </button>
     <div class="relative inline-block text-left ml-6 mt-6">
-        <kern-dropdown-it [dropdownOptions]="{
+        <kern-dropdown [dropdownOptions]="{
             optionArray:['Clickbait','Initial (only contains the initial data set and labels.)','Conversational AI','Initial (only contains the initial data set and labels.)', 'AG News','Initial (only contains the initial data set and labels.)', 'Further sample projects'],
             optionIcons:['clickbait',null,'conversational-ai',null,'ag-news',null],
             buttonCaption: 'Sample projects',
@@ -308,7 +308,7 @@
             optionDescriptions: ['Binary classification for detecting nudging articles.','','Detecting intent within conversational lines.','','Modelling topics of headline news.','','']
         }" (optionClicked)="executeOption($event)"
         (isInitialProject)="setInitialValue($event)">
-        </kern-dropdown-it>
+        </kern-dropdown>
     </div>
 
 </ng-template>

@@ -122,13 +122,13 @@
                 <div class="relative flex-shrink-0 h-16 flex justify-between">
                     <div class="flex items-center">
                         <div class="text-sm leading-5 font-medium text-gray-700 inline-block mr-2">Editor</div>
-                        <kern-dropdown-it class="mr-2" [dropdownOptions]="{
+                        <kern-dropdown class="mr-2" [dropdownOptions]="{
                             optionArray:labelingTasksSortOrder,
                             buttonCaption:labelingTasks.get(labelingTaskControl.value).name,
                             buttonTooltip: 'Pick the labeling task',
                             valuePropertyPath:'key'
                         }" (optionClicked)="setValueToLabelingTask($event)">
-                        </kern-dropdown-it>
+                        </kern-dropdown>
                         <div *ngIf="getTargetTaskLabels().length == 0" class="text-sm font-normal text-gray-500">
                             No labels for target task
                         </div>

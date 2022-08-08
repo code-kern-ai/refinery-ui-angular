@@ -1,13 +1,13 @@
 import { Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { AbstractControl, FormGroup } from '@angular/forms';
-import { DropdownOptions } from './dropdown-it-helper';
+import { DropdownOptions } from './dropdown-helper';
 
 @Component({
-  selector: 'kern-dropdown-it',
-  templateUrl: './dropdown-it.component.html',
-  styleUrls: ['./dropdown-it.component.scss']
+  selector: 'kern-dropdown',
+  templateUrl: './dropdown.component.html',
+  styleUrls: ['./dropdown.component.scss']
 })
-export class DropdownItComponent implements OnChanges {
+export class DropdownComponent implements OnChanges {
 
   @Input() dropdownOptions: DropdownOptions;
   @Output() optionClicked = new EventEmitter<string | any>();
@@ -27,11 +27,6 @@ export class DropdownItComponent implements OnChanges {
     this.dropdownOptionCaptions = this.addPrePostFix(this.getTextArray(this.dropdownOptions.optionArray));
     this.runInputChecks();
     this.buildHelperValues();
-    // console.log(this.dropdownOpenButton, this.dropdownOptionsDiv)
-    // if(this.dropdownOpenButton && this.dropdownOptionsDiv) {
-    //   this.dropdownOptionsDiv.nativeElement.style.minWidth = this.dropdownOpenButton.nativeElement.offsetWidth;
-    //   console.log( this.dropdownOptionsDiv.nativeElement.style.minWidth )
-    // } 
   }
 
   private addPrePostFix(arr: string[]): string[] {

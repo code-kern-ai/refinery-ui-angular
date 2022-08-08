@@ -108,30 +108,32 @@
                 <div class="font-medium">Settings</div>
                 <div class="font-normal mt-2">Labeling task</div>
 
-                <div class="mt-1 flex flex-row flew-wrap relative">
-                    <kern-dropdown-it class="mr-2" [dropdownOptions]="{
+
+                <div class="relative flex-shrink-0 h-16 flex justify-between">
+                    <div class="flex items-center">
+                        <kern-dropdown class="mr-2" [dropdownOptions]="{
                             optionArray:labelingTasksClassification,
                             buttonCaption:labelingTasks.get(zeroShotSettings.taskId).name,
                             buttonTooltip: 'Select the labeling task',
                             valuePropertyPath:'id'
                         }" (optionClicked)="changeZeroShotSettings('taskId',$event)">
-                    </kern-dropdown-it>
-
-                    <div *ngIf="!labelingTasks.get(zeroShotSettings.taskId)?.labels.length"
-                        class="font-normal text-gray-500 p-3 inline-block">
-                        No labels for target task
-                    </div>
-                    <ng-container *ngFor="let label of labelingTasks.get(zeroShotSettings.taskId)?.labels">
-                        <span (click)="changeZeroShotSettings('excludedLabels',label.id)"
-                            [ngClass]="[getBackground(label.color), getText(label.color), getBorder(label.color), getHover(label.color)]"
-                            class="inline-flex border items-center px-2 py-0.5 rounded text-xs font-medium cursor-pointer h-6 mr-5 my-2">
-                            <span class="font-medium mr-3">{{label.name}}</span>
-                            <span class="pb-0.5">
-                                <input class="cursor-pointer align-middle" type="checkbox"
-                                    [checked]="!zeroShotSettings.excludedLabels.includes(label.id)">
+                        </kern-dropdown>
+                        <div *ngIf="!labelingTasks.get(zeroShotSettings.taskId)?.labels.length"
+                            class="font-normal text-gray-500 p-3 inline-block">
+                            No labels for target task
+                        </div>
+                        <ng-container *ngFor="let label of labelingTasks.get(zeroShotSettings.taskId)?.labels">
+                            <span (click)="changeZeroShotSettings('excludedLabels',label.id)"
+                                [ngClass]="[getBackground(label.color), getText(label.color), getBorder(label.color), getHover(label.color)]"
+                                class="inline-flex border items-center px-2 py-0.5 rounded text-xs font-medium cursor-pointer h-6 mr-5 my-2">
+                                <span class="font-medium mr-3">{{label.name}}</span>
+                                <span class="pb-0.5">
+                                    <input class="cursor-pointer align-middle" type="checkbox"
+                                        [checked]="!zeroShotSettings.excludedLabels.includes(label.id)">
+                                </span>
                             </span>
-                        </span>
-                    </ng-container>
+                        </ng-container>
+                    </div>
                 </div>
 
                 <div class="mt-3 grid gap-x-4 gap-y-2 items-center"
@@ -144,30 +146,30 @@
                     </div>
                     <div class="font-normal">Required model confidence</div>
                     <div class="relative tooltip tooltip-right flex" data-tip="Select input attribute">
-                        <kern-dropdown-it class="mr-2" [dropdownOptions]="{
+                        <kern-dropdown class="mr-2" [dropdownOptions]="{
                             optionArray:textAttributes,
                             buttonCaption:getAttributeName(zeroShotSettings.attributeId),
                             isDisabled: !zeroShotSettings.attributeSelectDisable,
                             valuePropertyPath:'id'
                         }" (optionClicked)="changeZeroShotSettings('attributeId',$event)">
-                        </kern-dropdown-it>
+                        </kern-dropdown>
                     </div>
                 
-                    <kern-dropdown-it class="mr-2" [dropdownOptions]="{
+                    <kern-dropdown class="mr-2" [dropdownOptions]="{
                         optionArray:zeroShotRecommendations,
                         buttonCaption:zeroShotSettings.targetConfig,
                         buttonTooltip: 'Select the model',
                         valuePropertyPath:'configString'
                     }" (optionClicked)="changeZeroShotSettings('targetConfig',$event)">
-                    </kern-dropdown-it>
+                    </kern-dropdown>
 
-                    <kern-dropdown-it class="mr-2" [dropdownOptions]="{
+                    <kern-dropdown class="mr-2" [dropdownOptions]="{
                         optionArray:confidenceIntervals,
                         buttonCaption: zeroShotSettings.minConfidence | percentRound: 2,
                         buttonTooltip: 'Minimum confidence required to store predictions',
                         postfix: ' %'
                     }" (optionClicked)="changeZeroShotSettings('minConfidence',$event)">
-                    </kern-dropdown-it>
+                    </kern-dropdown>
 
                 </div>
             </div>
