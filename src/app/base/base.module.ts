@@ -16,8 +16,6 @@ import { SidebarPmComponent } from './components/sidebar-pm/sidebar-pm.component
 import { DropdownDirective } from './directives/dropdown.directive';
 import { PercentRoundPipe } from './pipes/decimal-round.pipe';
 import { HeaderComponent } from './components/header/header.component';
-import { DropdownComponent } from './components/dropdown/dropdown.component';
-import { DropdownIterativeComponent } from './components/dropdown-iterative/dropdown-iterative.component';
 import { DropdownItComponent } from './components/dropdown-it/dropdown-it.component';
 
 @NgModule({
@@ -30,8 +28,6 @@ import { DropdownItComponent } from './components/dropdown-it/dropdown-it.compon
     DropdownDirective,
     PercentRoundPipe,
     HeaderComponent,
-    DropdownComponent,
-    DropdownIterativeComponent,
     DropdownItComponent
   ],
   imports: [CommonModule, AppRoutingModule, HighlightModule],
@@ -54,8 +50,6 @@ import { DropdownItComponent } from './components/dropdown-it/dropdown-it.compon
     DropdownDirective,
     PercentRoundPipe,
     HeaderComponent,
-    DropdownComponent,
-    DropdownIterativeComponent,
     DropdownItComponent
   ],
   providers: [
