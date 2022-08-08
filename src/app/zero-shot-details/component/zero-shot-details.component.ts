@@ -215,7 +215,6 @@ export class ZeroShotDetailsComponent
     this.zeroShotSettings.taskId = this.informationSource.labelingTaskId;
     this.zeroShotSettings.attributeSelectDisabled = this.textAttributes.length == 1 || this.labelingTasks.get(this.zeroShotSettings.taskId).taskTarget == 'ON_ATTRIBUTE';
     if (!this.zeroShotSettings.attributeId) this.zeroShotSettings.attributeId = this.labelingTasks.get(this.zeroShotSettings.taskId).attribute.id;
-    // this.minConfirence = Math.round(this.zeroShotSettings.minConfidence * 100) / 100 + '%';
   }
 
 
