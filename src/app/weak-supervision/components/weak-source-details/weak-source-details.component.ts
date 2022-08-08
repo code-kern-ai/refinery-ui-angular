@@ -250,7 +250,6 @@ export class WeakSourceDetailsComponent
         labelIds.push(...task.labels.map((label) => label.id));
       });
       this.colors.domain(labelIds);
-      console.log(this.labelingTasksSortOrder)
     });
 
     this.labelingTaskControl.valueChanges.pipe(distinctUntilChanged(), startWith("")).subscribe((labelingTaskId) => {
