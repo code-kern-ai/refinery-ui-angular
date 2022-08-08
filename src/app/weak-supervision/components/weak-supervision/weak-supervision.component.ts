@@ -68,6 +68,10 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
   embeddingQuery$: any;
   description: string;
   selectionList: string = "";
+  @ViewChild("modalCreateLF") modalCreateLF: ElementRef;
+  @ViewChild("modalCreateAL") modalCreateAL: ElementRef;
+  @ViewChild("modalCreateZS") modalCreateZS: ElementRef;
+  @ViewChild("deleteSelectedHeuristics") deleteSelectedHeuristics: ElementRef;
 
   constructor(
     private router: Router,
@@ -473,9 +477,9 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
     return str.replace(/\s+/g, '_').replace(/[^\w]/gi, '').trim();
   }
 
-  prepareSelectionList(selectedItems) {
+  prepareSelectionList() {
     this.selectionList = "";
-    selectedItems.forEach(el => {
+    this.selectedInformationSources.forEach(el => {
       if (this.selectionList) this.selectionList += "\n";
       this.selectionList += el.name;
     })
@@ -487,5 +491,32 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
     this.router.navigate(["../settings"], {
       relativeTo: this.activatedRoute,
     });
+  }
+
+  executeOption(value: string) {
+    switch(value) {
+      case 'Labeling function': 
+        this.modalCreateLF.nativeElement.checked = true;
+        break;
+      case 'Active learning':
+        this.modalCreateAL.nativeElement.checked = true;
+        break;
+      case 'Zero-shot':
+        this.modalCreateZS.nativeElement.checked = true;
+        break;
+      case 'Select all':
+        this.setAllInformationSources(true);
+        break;
+      case 'Deselect all':
+        this.setAllInformationSources(false);
+        break;
+      case 'Run selected':
+        this.runSelectedInformationSources(this.project.id);
+        break;
+      case 'Delete selected':
+        this.deleteSelectedHeuristics.nativeElement.checked = true;
+        this.prepareSelectionList();
+        break;
+    }
   }
 }

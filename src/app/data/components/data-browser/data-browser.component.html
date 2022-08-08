@@ -337,20 +337,18 @@
                                                                             </ng-container>
                                                                         </ng-template>
                                                                         <ng-template #dropDownML>
-                                                                            <kern-dropdown-iterative
+                                                                            <!-- <kern-dropdown-iterative
                                                                                 [arrayOptions]="groupItem.get('manualLabels').controls"
                                                                                 [hasCheckboxes]="true"
                                                                                 (optionClicked)="setActiveNegateGroup($event)">
-                                                                            </kern-dropdown-iterative>
+                                                                            </kern-dropdown-iterative> -->
 
                                                                             <kern-dropdown-it [dropdownOptions]="{
                                                                                 optionArray:groupItem.get('manualLabels').controls,
                                                                                 hasCheckboxes:true,
-                                                                                stopClickPropagation:true
-                                                                            }"
-                                                                                (optionClicked)="setActiveNegateGroup($event)">
+                                                                                keepDropdownOpen:true
+                                                                            }" (optionClicked)="setActiveNegateGroup($event)">
                                                                             </kern-dropdown-it>
-
                                                                         </ng-template>
                                                                     </div>
                                                                 </div>
@@ -366,12 +364,18 @@
                                                                             </ng-container>
                                                                         </ng-template>
                                                                         <ng-template #dropDownWS>
-                                                                            <kern-dropdown-iterative
+                                                                            <!-- <kern-dropdown-iterative
                                                                                 [arrayOptions]="groupItem.get('weakSupervisionLabels').controls"
                                                                                 formArrayName="manualLabels"
                                                                                 [hasCheckboxes]="true"
                                                                                 (optionClicked)="setActiveNegateGroup($event)">
-                                                                            </kern-dropdown-iterative>
+                                                                            </kern-dropdown-iterative> -->
+                                                                            <kern-dropdown-it [dropdownOptions]="{
+                                                                                optionArray:groupItem.get('weakSupervisionLabels').controls,
+                                                                                hasCheckboxes:true,
+                                                                                keepDropdownOpen:true
+                                                                            }" (optionClicked)="setActiveNegateGroup($event)">
+                                                                            </kern-dropdown-it>
                                                                         </ng-template>
                                                                     </div>
                                                                 </div>

@@ -40,6 +40,13 @@
     </ng-template>
 </ng-container>
 
+<!-- <ng-template [ngIf]="element=='header'">
+    <kern-dropdown-it [dropdownOptions]="{
+        optionArray: ['LF', 'AL', 'Zero-shot'],
+        optionIcons: ['labeling-function', 'active-learning', 'zero-shot']
+    }"
+    ></kern-dropdown-it>
+</ng-template> -->
 
 <div #dropdownMenu
     class="origin-top-right absolute mt-2 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none hidden" 
@@ -48,11 +55,12 @@
     <div class="py-1 cursor-pointer" role="none" [ngClass]="element === 'sample-projects' ? '' : ''">
 
         <ng-container [ngSwitch]="element">
-            <ng-template ngSwitchCase="header">
+            <ng-template ngSwitchCase="header1">
                 <div class="py-1 cursor-pointer" role="none">
-                    <ng-container [ngTemplateOutlet]="dropdownOption" [ngTemplateOutletContext]="optionSettings"></ng-container>
+
+                    <!-- <ng-container [ngTemplateOutlet]="dropdownOption" [ngTemplateOutletContext]="optionSettings"></ng-container>
                     <ng-container [ngTemplateOutlet]="dropdownOption" [ngTemplateOutletContext]="optionConf"></ng-container>
-                    <ng-container [ngTemplateOutlet]="dropdownOption" [ngTemplateOutletContext]="optionLogout"></ng-container>
+                    <ng-container [ngTemplateOutlet]="dropdownOption" [ngTemplateOutletContext]="optionLogout"></ng-container> -->
                 </div>
             </ng-template>
 

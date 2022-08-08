@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { KnowledgeBasesApolloService } from 'src/app/base/services/knowledge-bases/knowledge-bases-apollo.service';
 import { RouteService } from 'src/app/base/services/route.service';
@@ -19,6 +19,7 @@ export class KnowledgeBasesComponent implements OnInit, OnDestroy {
   selectionList: string = "";
   lists: any[] = [];
   @ViewChildren("checkboxes") checkboxes: QueryList<ElementRef>;
+  @ViewChild("deleteSelectedLists") deleteSelectedLists: ElementRef;
   subscriptions$: Subscription[] = [];
 
   constructor(
@@ -78,9 +79,10 @@ export class KnowledgeBasesComponent implements OnInit, OnDestroy {
     })
   }
 
-  prepareSelectionList(selectedItems) {
+  prepareSelectionList() {
+    this.deleteSelectedLists.nativeElement.checked = true;
     this.selectionList = "";
-    selectedItems.forEach(el => {
+    this.selectedLookupLists.forEach(el => {
       if (this.selectionList) this.selectionList += "\n";
       this.selectionList += el.name;
     })
@@ -92,6 +94,20 @@ export class KnowledgeBasesComponent implements OnInit, OnDestroy {
       this.selectedLookupLists = this.selectedLookupLists.filter((x) => x.id != base.id);
     } else {
       this.selectedLookupLists.push(base);
+    }
+  }
+
+  executeOption(value: string) {
+    switch(value) {
+      case 'Select all': 
+        this.setAllLookupLists(true);
+        break;
+      case 'Deselect all':
+        this.setAllLookupLists(false);
+        break;
+      case 'Delete selected':
+        this.prepareSelectionList();
+        break; 
     }
   }
 

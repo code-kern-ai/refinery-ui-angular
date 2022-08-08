@@ -316,4 +316,20 @@ export class KnowledgeBaseDetailsComponent implements OnInit, AfterViewInit, OnD
   pasteLookupList(projectId: string, baseId: string, value: string, split: string, remove: boolean) {
     this.knowledgeBaseApolloService.pasteTerm(projectId, baseId, value, split, remove).pipe(first()).subscribe();
   }
+
+  executeOption(value: string, term: any) {
+    switch(value) {
+      case 'Edit term': 
+        this.openTermEditor(true, term.id, term.value, term.comment);
+        break;
+      case 'Remove term':
+        this.deleteTerm(term.id);
+        break;
+      case 'Blacklist term':
+      case 'Whitelist term':
+        this.blackListTerm(term.id);
+        break;
+    }
+  }
+
 }

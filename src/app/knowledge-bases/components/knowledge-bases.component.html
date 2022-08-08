@@ -13,61 +13,66 @@
                         </button>
                     </div>
 
-                    <div class="flex justify-center overflow-visible">
-                        <div class="relative inline-block text-left mr-3">
-                            <ng-template [ngIf]="knowledgeBases.length > 0" [ngIfElse]="noLookupLists">
-                                <kern-dropdown 
-                                    element="actions" 
-                                    buttonName="Actions"
-                                    buttonTooltip="Actions"
-                                    [selectedItems]="selectedLookupLists"
-                                    [isHeuristics]="false"
-                                    (setAllItems)="setAllLookupLists($event)"
-                                    (sendSelectedItems)="prepareSelectionList($event)"
-                                ></kern-dropdown>
+                    <ng-template [ngIf]="knowledgeBases.length > 0" [ngIfElse]="noLookupLists">
+                        <kern-dropdown-it class="mr-2" [dropdownOptions]="{
+                            optionArray:['Select all','Deselect all', 'Delete selected'],
+                            optionIcons:['select-all','deselect-all', 'delete-selected'],
+                            buttonTooltip:'Actions',
+                            buttonCaption: 'Actions',
+                            isOptionDisabled: [false, false, this.selectedLookupLists.length == 0]
+                        }" (optionClicked)="executeOption($event)">
+                        </kern-dropdown-it>
 
-                                <input type="checkbox" id="delete-modal-selected" class="modal-toggle">
-                                <div class="modal text-center items-center">
-                                    <div class="modal-box">
-                                        <h1 class="text-lg text-gray-900 mb-2">Delete lookup {{ selectedLookupLists.length == 1 ? 'list' : 'lists' }}</h1>
-                                        <div class="text-sm text-gray-500 my-2 flex flex-col">
-                                            <span>Are you sure you want to delete selected lookup {{ selectedLookupLists.length == 1 ? 'list' : 'lists' }}?</span>
-                                            <span>Currently selected {{ selectedLookupLists.length == 1 ? 'is' : 'are' }}:</span>
-                                            <span class="whitespace-pre-line font-bold">{{selectionList}}</span>
-                                        </div>
-            
-                                        <div class="modal-action text-center">
-                                            <label for="delete-modal-selected"
-                                                class="bg-red-100 text-red-700 border border-red-400 text-xs font-semibold mr-2 px-4 py-2 rounded flex cursor-pointer inline-block hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                                                (click)="deleteSelectedLookupLists()">Delete</label>
-                                            <label for="delete-modal-selected"
-                                                class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Close</label>
-                                        </div>
-                                    </div>
+                        <!-- <kern-dropdown 
+                            element="actions" 
+                            buttonName="Actions"
+                            buttonTooltip="Actions"
+                            [selectedItems]="selectedLookupLists"
+                            [isHeuristics]="false"
+                            (setAllItems)="setAllLookupLists($event)"
+                            (sendSelectedItems)="prepareSelectionList($event)"
+                        ></kern-dropdown> -->
+
+                        <input #deleteSelectedLists type="checkbox" id="delete-modal-selected" class="modal-toggle">
+                        <div class="modal text-center items-center">
+                            <div class="modal-box">
+                                <h1 class="text-lg text-gray-900 mb-2">Delete lookup {{ selectedLookupLists.length == 1 ? 'list' : 'lists' }}</h1>
+                                <div class="text-sm text-gray-500 my-2 flex flex-col">
+                                    <span>Are you sure you want to delete selected lookup {{ selectedLookupLists.length == 1 ? 'list' : 'lists' }}?</span>
+                                    <span>Currently selected {{ selectedLookupLists.length == 1 ? 'is' : 'are' }}:</span>
+                                    <span class="whitespace-pre-line font-bold">{{selectionList}}</span>
                                 </div>
-                            </ng-template>
-                            <ng-template #noLookupLists>
-                                <div data-tip="At least one lookup list is needed to enable actions"
-                                    class="tooltip tooltip-bottom">
-                                    <button type="button"
-                                        class="inline-flex items-center justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-1.5 bg-white text-xs font-semibold text-gray-700 opacity-50 cursor-not-allowed focus:ring-offset-2 focus:ring-offset-gray-400"
-                                        id="menu-button" aria-expanded="true" aria-haspopup="true">
-                                        Actions
-                                        <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
-                                            fill="currentColor" aria-hidden="true">
-                                            <path fill-rule="evenodd"
-                                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                                clip-rule="evenodd" />
-                                        </svg>
-                                    </button>
+    
+                                <div class="modal-action text-center">
+                                    <label for="delete-modal-selected"
+                                        class="bg-red-100 text-red-700 border border-red-400 text-xs font-semibold mr-2 px-4 py-2 rounded flex cursor-pointer inline-block hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                                        (click)="deleteSelectedLookupLists()">Delete</label>
+                                    <label for="delete-modal-selected"
+                                        class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Close</label>
                                 </div>
-                            </ng-template>
+                            </div>
                         </div>
-                    </div>
+                    </ng-template>
+                    <ng-template #noLookupLists>
+                        <div data-tip="At least one lookup list is needed to enable actions"
+                            class="tooltip tooltip-bottom">
+                            <button type="button"
+                                class="inline-flex items-center justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-1.5 bg-white text-xs font-semibold text-gray-700 opacity-50 cursor-not-allowed focus:ring-offset-2 focus:ring-offset-gray-400"
+                                id="menu-button" aria-expanded="true" aria-haspopup="true">
+                                Actions
+                                <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                    fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd"
+                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+                    </ng-template>
 
                     <div class="flex justify-center overflow-visible" (click)="createKnowledgeBase(projectId)">
                         <button data-tip="Create a new lookup list"
-                            class="tooltip-label tooltip tooltip-left bg-white text-gray-700 text-xs font-medium mr-3 px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            class="tooltip-label tooltip tooltip-left bg-white text-gray-700 text-xs font-medium mr-3 ml-2 px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                             New list
                         </button>
                     </div>

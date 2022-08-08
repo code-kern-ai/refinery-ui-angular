@@ -109,43 +109,50 @@
                 <div class="font-normal mt-2">Labeling task</div>
 
                 <div class="mt-1 flex flex-row flew-wrap relative">
-                    <kern-dropdown-iterative [arrayOptions]="labelingTasksClassification"
+                    <!-- <kern-dropdown-iterative [arrayOptions]="labelingTasksClassification"
                         [condition]="zeroShotSettings.taskId"
                         [valueIfConditionTrue]="labelingTasks.get(zeroShotSettings.taskId).name"
                         valueIfConditionFalse="Select labeling task" buttonTooltip="Select the labeling task"
                         [property]="'id'" [optionProperty]="'name'"
                         (optionClicked)="changeZeroShotSettings('taskId',$event)" class="mr-5">
-                    </kern-dropdown-iterative>
+                    </kern-dropdown-iterative> -->
+
                     <!--normal/our version-->
                     <kern-dropdown-it class="mr-2" [dropdownOptions]="{
                             optionArray:labelingTasksClassification,
                             buttonCaption:labelingTasks.get(zeroShotSettings.taskId).name,
+                            buttonTooltip: 'Select the labeling task',
                             valuePropertyPath:'id'
                         }" (optionClicked)="changeZeroShotSettings('taskId',$event)">
                     </kern-dropdown-it>
+
                     <!--with caption-->
-                    <kern-dropdown-it class="mr-2" [dropdownOptions]="{
+                    <!-- <kern-dropdown-it class="mr-2" [dropdownOptions]="{
                         optionArray:['value 1','value2'],
                         buttonCaption:'dummy Dropdown'
                     }" (optionClicked)="logMe($event)">
-                    </kern-dropdown-it>
+                    </kern-dropdown-it> -->
+
                     <!--with disabled option-->
-                    <kern-dropdown-it class="mr-2" [dropdownOptions]="{
+                    <!-- <kern-dropdown-it class="mr-2" [dropdownOptions]="{
                         optionArray:['value 1','value2','v3'],
                         isOptionDisabled:[false,false,true]
                     }" (optionClicked)="logMe($event)">
-                    </kern-dropdown-it>
+                    </kern-dropdown-it> -->
+
                     <!--with icons-->
-                    <kern-dropdown-it class="mr-2" [dropdownOptions]="{
+                    <!-- <kern-dropdown-it class="mr-2" [dropdownOptions]="{
                         optionArray:['value 1','value2'],
                         optionIcons:['select-all','run']
                     }" (optionClicked)="logMe($event)">
-                    </kern-dropdown-it>
+                    </kern-dropdown-it> -->
+
                     <!--simplest version-->
-                    <kern-dropdown-it class="mr-2" [dropdownOptions]="{
+                    <!-- <kern-dropdown-it class="mr-2" [dropdownOptions]="{
                         optionArray:['value 1','value2']
                     }" (optionClicked)="logMe($event)">
-                    </kern-dropdown-it>
+                    </kern-dropdown-it> -->
+
                     <div *ngIf="!labelingTasks.get(zeroShotSettings.taskId)?.labels.length"
                         class="font-normal text-gray-500 p-3 inline-block">
                         No labels for target task
@@ -172,29 +179,56 @@
                         <kern-loading color="yellow"></kern-loading>
                     </div>
                     <div class="font-normal">Required model confidence</div>
-                    <div class="relative tooltip tooltip-right" data-tip="Select input attribute">
+                    <!-- <div class="relative tooltip tooltip-right" data-tip="Select input attribute">
                         <kern-dropdown-iterative [arrayOptions]="textAttributes"
                             [condition]="zeroShotSettings.attributeId"
                             [valueIfConditionTrue]="getAttributeName(zeroShotSettings.attributeId)"
                             valueIfConditionFalse="Select labeling task" property="id" optionProperty="name"
                             [disabledCondition]="zeroShotSettings.attributeSelectDisabled"
                             (optionClicked)="changeZeroShotSettings('attributeId',$event)"></kern-dropdown-iterative>
+                    </div> -->
+                    <div class="relative tooltip tooltip-right flex" data-tip="Select input attribute">
+                        <kern-dropdown-it class="mr-2" [dropdownOptions]="{
+                            optionArray:textAttributes,
+                            buttonCaption:getAttributeName(zeroShotSettings.attributeId),
+                            isDisabled: !zeroShotSettings.attributeSelectDisable,
+                            valuePropertyPath:'id'
+                        }" (optionClicked)="changeZeroShotSettings('attributeId',$event)">
+                        </kern-dropdown-it>
                     </div>
-                    <div class="relative">
+                
+                    <kern-dropdown-it class="mr-2" [dropdownOptions]="{
+                        optionArray:zeroShotRecommendations,
+                        buttonCaption:zeroShotSettings.targetConfig,
+                        buttonTooltip: 'Select the model',
+                        valuePropertyPath:'configString'
+                    }" (optionClicked)="changeZeroShotSettings('targetConfig',$event)">
+                    </kern-dropdown-it>
+
+                    <!-- <div class="relative">
                         <kern-dropdown-iterative [arrayOptions]="zeroShotRecommendations"
                             [condition]="zeroShotSettings.targetConfig"
                             [valueIfConditionTrue]="zeroShotSettings.targetConfig" valueIfConditionFalse="Select model"
                             property="configString" optionProperty="configString" buttonTooltip="Select the model"
                             (optionClicked)="changeZeroShotSettings('targetConfig',$event)"></kern-dropdown-iterative>
-                    </div>
-                    <div class="relative">
+                    </div> -->
+
+                    <kern-dropdown-it class="mr-2 w-6/12" [dropdownOptions]="{
+                        optionArray:confidenceIntervals,
+                        buttonCaption: zeroShotSettings.minConfidence | percentRound: 2,
+                        buttonTooltip: 'Minimum confidence required to store predictions',
+                        postfix: ' %'
+                    }" (optionClicked)="changeZeroShotSettings('minConfidence',$event)">
+                    </kern-dropdown-it>
+
+                    <!-- <div class="relative">
                         <kern-dropdown-iterative [arrayOptions]="confidenceIntervals"
                             [condition]="zeroShotSettings.minConfidence"
                             [valueIfConditionTrue]='zeroShotSettings.minConfidence < 1 ? (zeroShotSettings.minConfidence*100).toFixed(0) + "%" : (zeroShotSettings.minConfidence).toFixed(0) + "%"'
                             valueIfConditionFalse="Select model"
                             buttonTooltip="Minimum confidence required to store predictions"
                             (optionClicked)="changeZeroShotSettings('minConfidence', $event)"></kern-dropdown-iterative>
-                    </div>
+                    </div> -->
                 </div>
             </div>
 
@@ -282,7 +316,7 @@
                                 max="1"></progress>
                             <div class="flex flex-row items-center">
                                 <span class="text-sm select-none self-start mr-2">{{result.confidenceText}}</span>
-                                <div *ngIf="i==0 && result.confidence < zeroShotSettings.minConfidence"
+                                <div *ngIf="result.confidence < zeroShotSettings.minConfidence"
                                     data-tip="< minConfidence -> would be ignored" class="tooltip">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
                                         viewBox="0 0 24 24" stroke="#eab700" stroke-width="2">
@@ -362,7 +396,7 @@
                                                 </span>
                                             </div>
                                             <div class="flex items-center justify-center">
-                                                <div *ngIf="(record.labels[0].confidence*100) < zeroShotSettings.minConfidence"
+                                                <div *ngIf="(record.labels[0].confidence) < zeroShotSettings.minConfidence"
                                                     data-tip="< minConfidence -> would be ignored"
                                                     class="tooltip tooltip-left mx-1">
                                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
@@ -411,7 +445,7 @@
                                                             <div class="flex flex-row items-center">
                                                                 <span
                                                                     class="text-sm select-none">{{result.confidenceText}}</span>
-                                                                <div *ngIf="i==0 && result.confidence < zeroShotSettings.minConfidence"
+                                                                <div *ngIf="result.confidence < zeroShotSettings.minConfidence"
                                                                     data-tip="< minConfidence -> would be ignored"
                                                                     class="tooltip">
                                                                     <svg xmlns="http://www.w3.org/2000/svg"

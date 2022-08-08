@@ -215,6 +215,7 @@ export class ZeroShotDetailsComponent
     this.zeroShotSettings.taskId = this.informationSource.labelingTaskId;
     this.zeroShotSettings.attributeSelectDisabled = this.textAttributes.length == 1 || this.labelingTasks.get(this.zeroShotSettings.taskId).taskTarget == 'ON_ATTRIBUTE';
     if (!this.zeroShotSettings.attributeId) this.zeroShotSettings.attributeId = this.labelingTasks.get(this.zeroShotSettings.taskId).attribute.id;
+    // this.minConfirence = Math.round(this.zeroShotSettings.minConfidence * 100) / 100 + '%';
   }
 
 
@@ -384,6 +385,7 @@ export class ZeroShotDetailsComponent
         this.zeroShotSettings.excludedLabels.push(newValue);
       }
     } else {
+      if(attributeName == 'minConfidence') newValue /= 100;
       this.zeroShotSettings[attributeName] = newValue;
       if (attributeName == 'taskId') {
         this.zeroShotSettings.attributeSelectDisabled = this.textAttributes.length == 1 || this.labelingTasks.get(this.zeroShotSettings.taskId).taskTarget == 'ON_ATTRIBUTE';

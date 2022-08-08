@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { AbstractControl, FormGroup } from '@angular/forms';
 import { DropdownOptions } from './dropdown-it-helper';
 
@@ -11,6 +11,10 @@ export class DropdownItComponent implements OnChanges {
 
   @Input() dropdownOptions: DropdownOptions;
   @Output() optionClicked = new EventEmitter<string | any>();
+  @Output() isInitialProject = new EventEmitter<{flagInitial: boolean, value: string}>();
+
+  @ViewChild("dropdownOpenButton")dropdownOpenButton: ElementRef;
+  @ViewChild("dropdownOptionsDiv")dropdownOptionsDiv: ElementRef;
 
   hasInputErrors: string;
   buttonClassList: string;
@@ -20,15 +24,27 @@ export class DropdownItComponent implements OnChanges {
 
   constructor() { }
   ngOnChanges(changes: SimpleChanges): void {
-    this.dropdownOptionCaptions = this.getTextArray(this.dropdownOptions.optionArray);
+    this.dropdownOptionCaptions = this.addPrePostFix(this.getTextArray(this.dropdownOptions.optionArray));
     this.runInputChecks();
     this.buildHelperValues();
+    // console.log(this.dropdownOpenButton, this.dropdownOptionsDiv)
+    // if(this.dropdownOpenButton && this.dropdownOptionsDiv) {
+    //   this.dropdownOptionsDiv.nativeElement.style.minWidth = this.dropdownOpenButton.nativeElement.offsetWidth;
+    //   console.log( this.dropdownOptionsDiv.nativeElement.style.minWidth )
+    // } 
+  }
+
+  private addPrePostFix(arr: string[]): string[] {
+    if(this.dropdownOptions.prefix) arr = arr.map(el => this.dropdownOptions.prefix + el);
+    if(this.dropdownOptions.postfix) arr = arr.map(el => el+this.dropdownOptions.postfix);
+    return arr;
   }
 
   private getTextArray(arr: string[] | any[]): string[] {
     if (!arr) return [];
     if (arr.length == 0) return [];
     if (typeof arr[0] == 'string') return arr as string[];
+    if(typeof arr[0] == 'number') return  arr.map(String);
     let valueArray = arr;
     if (arr[0].value && typeof arr[0].value == 'object') valueArray = arr.map(x => x.getRawValue());
     if (valueArray[0].name) return valueArray.map(a => a.name);
@@ -48,9 +64,11 @@ export class DropdownItComponent implements OnChanges {
 
   private buildHelperValues() {
     this.buttonClassList = "";
-    this.buttonClassList += this.dropdownOptions.isDisabled ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer';
-    this.buttonClassList += this.dropdownOptions.buttonTooltip ? ' tooltip tooltip-right' : '';
-    this.dropdownClassList = this.dropdownOptions.hasCheckboxes ? ' w-80' : ' w-auto';
+    this.buttonClassList += this.dropdownOptions.isDisabled ? 'opacity-50 cursor-not-allowed ' : 'opacity-100 cursor-pointer ';
+    this.buttonClassList += this.dropdownOptions.buttonTooltip ? ' tooltip tooltip-right ' : '';
+    this.dropdownClassList = this.dropdownOptions.hasCheckboxes ? ' w-80 ' : '';
+    this.dropdownClassList += this.dropdownOptions.buttonVersion != 'default' ? 'right-0 width-icon-menues' : '';
+    this.buttonClassList += this.dropdownOptions.buttonHasBlueStyle ? 'bg-blue-700 text-white py-2' : 'text-gray-700 bg-white border-gray-300 py-1.5';
     this.buttonClassList += this.dropdownClassList;
   }
 
@@ -63,8 +81,10 @@ export class DropdownItComponent implements OnChanges {
       this.useValueAsCaption = true;
     }
     if (this.dropdownOptions.isOptionDisabled && this.dropdownOptions.isOptionDisabled.length != this.dropdownOptions.optionArray.length) this.hasInputErrors = "array options != isOptionDisabled length\n";
+    if (this.dropdownOptions.optionDescriptions &&  this.dropdownOptions.optionArray.length != this.dropdownOptions.optionDescriptions.length) this.hasInputErrors = "array options != optionDescriptions length\n";
     if (this.dropdownOptions.optionIcons && this.dropdownOptions.optionIcons.length != this.dropdownOptions.optionIcons.length) this.hasInputErrors = "array options != optionIcons length\n";
-
+    if (!this.dropdownOptions.buttonVersion) this.dropdownOptions.buttonVersion = "default";
+    if (!this.dropdownOptions.buttonHasBlueStyle) this.dropdownOptions.buttonHasBlueStyle = false;
 
     if (this.hasInputErrors) console.log(this.hasInputErrors);
 
@@ -93,6 +113,14 @@ export class DropdownItComponent implements OnChanges {
 
     if (!this.dropdownOptions.valuePropertyPath) {
       if (this.useValueAsCaption) this.dropdownOptions.buttonCaption = this.dropdownOptionCaptions[clickIndex];
+      if(this.dropdownOptions.optionArray.length > 0 && typeof this.dropdownOptions.optionArray[0]!= 'string') {
+        if(typeof this.dropdownOptions.optionArray[0] == 'number') {
+          this.optionClicked.emit(this.dropdownOptions.optionArray[clickIndex]);
+          return;
+        }
+      }
+      if(this.dropdownOptions.buttonHasBlueStyle && clickIndex%2 != 0) this.isInitialProject.emit({flagInitial: true, value: this.dropdownOptionCaptions[clickIndex-1]});
+
       if (this.dropdownOptions.hasCheckboxes) this.optionClicked.emit(this.dropdownOptions.optionArray[clickIndex]);
       else this.optionClicked.emit(this.dropdownOptionCaptions[clickIndex]);
       return;

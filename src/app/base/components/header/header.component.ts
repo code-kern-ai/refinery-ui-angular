@@ -1,6 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Project } from 'aws-sdk/clients/codebuild';
-import { timer } from 'rxjs';
+import { Subscription, timer } from 'rxjs';
+import { AuthApiService } from '../../services/auth-api.service';
 import { ConfigManager } from '../../services/config-service';
 
 @Component({
@@ -18,8 +20,9 @@ export class HeaderComponent implements OnInit {
   @Input() avatarUri: string;
 
   showConfigSettings: boolean = false;
+  subscriptions$: Subscription[] = [];
 
-  constructor() { }
+  constructor(private router: Router, private auth: AuthApiService,) { }
 
   ngOnInit(): void {
     this.setShowConfig();
@@ -30,6 +33,28 @@ export class HeaderComponent implements OnInit {
       return;
     }
     this.showConfigSettings = !ConfigManager.getIsManaged()
+  }
+
+  executeOption(optionSelected: string) {
+    switch(optionSelected) {
+      case 'Account Settings':
+        window.open('/auth/settings', '_blank');
+        break;
+      case 'Change config':
+        this.router.navigate(['config'])
+        break;
+      case 'Logout':
+        this.logout();
+        break;
+    }
+  }
+
+  logout() {
+    this.subscriptions$.push(
+      this.auth.getLogoutOut().subscribe((response) => {
+        window.location.href = response['logout_url'];
+      })
+    );
   }
 
 }

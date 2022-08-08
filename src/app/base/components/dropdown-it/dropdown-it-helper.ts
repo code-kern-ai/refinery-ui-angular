@@ -11,6 +11,12 @@ import { FormArray } from "@angular/forms";
  * @isOptionDisabled {boolean[], optional} - disables the dropdown option (needs to be the exact same length as the optionArray)
  * @optionIcons {string[], optional} - displays a predfined icon if set for the index (needs to be the exact same length as the optionArray)
  * @hasCheckboxes {boolean, optional} - helper for checkbox like dropdowns (e.g. data browser)
+ * @buttonVersion {string, optional} - defaults to 'default' (button with a caption text), '...', 'userIcon'
+ * @avatarUri {string, optional} - link to the avatar image for logged user
+ * @prefix {string, optional} - prefix to the main name in the option
+ * @postfix {string, optional} - postfix to the main name in the option
+ * @buttonHasBlueStyle {boolean, optional} - flag if the button has the blue style
+ * @optionDescriptions {string, optional} - array with optional descriptions to the options
  */
 export type DropdownOptions = {
     optionArray: string[] | FormArray[] | any[];
@@ -22,5 +28,11 @@ export type DropdownOptions = {
     isOptionDisabled?: boolean[];
     optionIcons?: string[];
     hasCheckboxes?: boolean;
+    buttonVersion?: string;
+    avatarUri?: string;
+    prefix?: string;
+    postfix?: string;
+    buttonHasBlueStyle?: boolean;
+    optionDescriptions?: string[];
 };
 

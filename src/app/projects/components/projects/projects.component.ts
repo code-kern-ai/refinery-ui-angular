@@ -86,6 +86,8 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   saveUrl: SafeResourceUrl;
   canCreateOrg: boolean = false;
   isManaged: boolean = true;
+  isProjectInitial: boolean = false;
+  previousValue: string;
 
   constructor(
     private projectApolloService: ProjectApolloService,
@@ -327,6 +329,27 @@ export class ProjectsComponent implements OnInit, OnDestroy {
 
   startPlayback() {
     this.saveUrl = this.urlSanatizer.bypassSecurityTrustResourceUrl(ProjectsComponent.youtubeUrl);
+  }
+
+  executeOption(value: string) {
+    if(value=='Further sample projects') {
+      window.open("https://github.com/code-kern-ai/refinery-sample-projects", "_blank");
+    } else {
+      this.importSampleProject(this.isProjectInitial ? this.previousValue+' - initial' : value)
+    }
+  }
+
+  importSampleProject(projectName) {
+    this.projectApolloService.createSampleProject(projectName).pipe(first()).subscribe((p: Project) => {
+      if (this.router.url == "/projects") {
+        this.router.navigate(['projects', p.id, 'overview']);
+      }
+    });
+  }
+
+  setInitialValue(projectInitial) {
+    this.isProjectInitial = projectInitial.flagInitial;
+    this.previousValue = projectInitial.value;
   }
 
 }

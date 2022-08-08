@@ -248,10 +248,11 @@ export class WeakSourceDetailsComponent
       let labelIds = [];
       tasks.forEach((task) => {
         this.labelingTasks.set(task.id, task);
-        this.labelingTasksSortOrder.push({ key: task.id, order: task.relativePosition });
+        this.labelingTasksSortOrder.push({ key: task.id, order: task.relativePosition, name: task.name });
         labelIds.push(...task.labels.map((label) => label.id));
       });
       this.colors.domain(labelIds);
+      console.log(this.labelingTasksSortOrder)
     });
 
     this.labelingTaskControl.valueChanges.pipe(distinctUntilChanged(), startWith("")).subscribe((labelingTaskId) => {

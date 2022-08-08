@@ -160,11 +160,18 @@
                         class="relative rounded-lg border border-gray-300 bg-white px-4 py-3 shadow-sm items-center text-sm hover:border-gray-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
                         <div class="flow-root">
                             <div class="text-gray-900 font-medium float-left">{{term.value}}</div>
-                            <kern-dropdown
+                            <kern-dropdown-it class="mr-2" [dropdownOptions]="{
+                                optionArray:['Edit term','Remove term', 'Blacklist term'],
+                                optionIcons:['edit-term','remove-term', 'blacklist-term'],
+                                buttonVersion: '...'
+                            }" (optionClicked)="executeOption($event, term)">
+                            </kern-dropdown-it>
+
+                            <!-- <kern-dropdown
                                 element="white-list"
-                                (editTerm)="openTermEditor(true, term.id)"
+                                (editTerm)="openTermEditor(true, term)"
                                 (removeTerm)="deleteTerm(term.id)"
-                                (blackListTerm)="blackListTerm(term.id)"></kern-dropdown>
+                                (blackListTerm)="blackListTerm(term.id)"></kern-dropdown> -->
                         </div>
 
                         <div class="text-gray-500 font-normal italic">{{term.comment}}</div>
@@ -208,11 +215,17 @@
                             class="relative rounded-lg border border-gray-300 bg-white px-4 py-3 shadow-sm items-center text-sm hover:border-gray-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
                             <div class="flow-root">
                                 <div class="text-gray-900 font-medium float-left">{{term.value}}</div>
-                                <kern-dropdown
+                                <kern-dropdown-it class="mr-2" [dropdownOptions]="{
+                                    optionArray:['Edit term','Remove term', 'Blacklist term'],
+                                    optionIcons:['edit-term','remove-term', 'blacklist-term'],
+                                    buttonVersion: '...'
+                                }" (optionClicked)="executeOption($event, term)">
+                                </kern-dropdown-it>
+                                <!-- <kern-dropdown
                                     element="white-list"
                                     (editTerm)="openTermEditor(true, term.id)"
                                     (removeTerm)="deleteTerm(term.id)"
-                                    (blackListTerm)="blackListTerm(term.id)"></kern-dropdown>
+                                    (blackListTerm)="blackListTerm(term.id)"></kern-dropdown> -->
                             </div>
                             <div class="text-gray-500 font-normal italic">{{term.comment}}</div>
                         </div>
@@ -233,10 +246,16 @@
                         class="relative rounded-lg border border-gray-300 bg-white px-4 py-3 shadow-sm items-center text-sm hover:border-gray-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
                         <div class="flow-root">
                             <div class="text-gray-900 font-medium float-left">{{term.value}}</div>
-                            <kern-dropdown
+                            <kern-dropdown-it class="mr-2" [dropdownOptions]="{
+                                optionArray:['Remove term', 'Whitelist term'],
+                                optionIcons:['remove-term', 'whitelist-term'],
+                                buttonVersion: '...'
+                            }" (optionClicked)="executeOption($event, term)">
+                            </kern-dropdown-it>
+                            <!-- <kern-dropdown
                                 element="black-list"
                                 (removeTerm)="deleteTerm(term.id)"
-                                (blackListTerm)="blackListTerm(term.id)"></kern-dropdown>
+                                (blackListTerm)="blackListTerm(term.id)"></kern-dropdown> -->
                         </div>
                         <div class="text-gray-500 font-normal block">{{term.comment}}</div>
                     </div>
