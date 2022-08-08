@@ -1,4 +1,4 @@
-<div class="relative">
+<div class="relative" [ngClass]="dropdownOptions.buttonVersion == 'default' ? ' w-max' : '' ">
     <button #dropdownOpenButton type="button" [attr.data-tip]="dropdownOptions.buttonTooltip" *ngIf="dropdownOptions.buttonVersion == 'default'"
         class="inline-flex rounded-md border shadow-sm px-4 items-center text-xs font-semibold cursor-pointer focus:ring-offset-2 focus:ring-offset-gray-400"
         id="menu-button" aria-expanded="true" aria-haspopup="true" [disabled]="dropdownOptions.isDisabled"
