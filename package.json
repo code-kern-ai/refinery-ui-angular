@@ -23,7 +23,7 @@
     "@angular/router": "~12.2.9",
     "@apollo/client": "^3.0.0",
     "@babel/core": "^7.15.8",
-    "@tailwindcss/forms": "^0.2.1",
+    "@tailwindcss/forms": "^0.3.4",
     "@tailwindcss/line-clamp": "^0.2.0",
     "@tailwindcss/typography": "^0.4.0",
     "apollo-angular": "^2.6.0",
