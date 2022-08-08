@@ -3,8 +3,7 @@
 
         <div #stickyHeader class="pt-2 sticky -top-2 z-40 h-12">
             <div class="bg-white flex-grow " [ngClass]="isHeaderNormal?'':'shadow'">
-                <div class="flex-row justify-start items-center inline-block" style="transition: all .25s ease-in-out;"
-                    (dblclick)="openName(true,project.id)" [ngClass]="isHeaderNormal?'p-0':'flex py-2'">
+                <div class="flex-row justify-start items-center inline-block" style="transition: all .25s ease-in-out;" [ngClass]="isHeaderNormal?'p-0':'flex py-2'">
 
                     <button [routerLink]="['../../heuristics']" class="text-green-800 text-sm font-medium">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block" fill="none"
@@ -17,46 +16,7 @@
                     <div *ngIf="!isHeaderNormal" class="mx-4 text-sm leading-5 font-medium text-gray-500 inline-block">
                         {{informationSource.name}}</div>
 
-                    <div *ngIf="status !== 'CREATED' && status !== 'FINISHED' && status !== 'FAILED'"
-                        data-tip="Heuristic was successfully registered." class="tooltip tooltip-bottom ml-2">
-                        <span
-                            class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
-                            <svg class="mr-1.5 h-2 w-2 text-gray-400" fill="currentColor" viewBox="0 0 8 8">
-                                <circle cx="4" cy="4" r="3" />
-                            </svg>
-                            Initial
-                        </span>
-                    </div>
-                    <div *ngIf="status === 'CREATED'" data-tip="Heuristic is currently being executed."
-                        class="tooltip tooltip-bottom ml-2">
-                        <span
-                            class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
-                            <svg class="mr-1.5 h-2 w-2 text-yellow-400" fill="currentColor" viewBox="0 0 8 8">
-                                <circle cx="4" cy="4" r="3" />
-                            </svg>
-                            Running
-                        </span>
-                    </div>
-                    <div *ngIf="status === 'FINISHED'" data-tip="Heuristic was successfully executed."
-                        class="tooltip tooltip-bottom ml-2">
-                        <span
-                            class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-300 text-green-800">
-                            <svg class="mr-1.5 h-2 w-2 text-green-dark-4" fill="currentColor" viewBox="0 0 8 8">
-                                <circle cx="4" cy="4" r="3" />
-                            </svg>
-                            Finished
-                        </span>
-                    </div>
-                    <div *ngIf="status === 'FAILED'" data-tip="Heuristic ran into errors."
-                        class="tooltip tooltip-bottom ml-2">
-                        <span
-                            class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
-                            <svg class="mr-1.5 h-2 w-2 text-red-400" fill="currentColor" viewBox="0 0 8 8">
-                                <circle cx="4" cy="4" r="3" />
-                            </svg>
-                            Error
-                        </span>
-                    </div>
+                    <kern-heuristic-statuses [status]="status"></kern-heuristic-statuses>
                 </div>
             </div>
         </div>
@@ -228,13 +188,14 @@
                             </div>
                         </div>
                     </div>
-                    <button [disabled]="testerRequestedSomething"
-                        data-tip="Computes the prediction for your given example text"
-                        [ngClass]="testerRequestedSomething ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
-                        class="tooltip tooltip-left ml-3 bg-indigo-700 text-white text-xs leading-4 font-medium px-4 py-2 rounded-md border cursor-pointer hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                        (click)="runZeroShotTest(testInput.value.trim())">
-                        Compute example
-                    </button>
+                    <div data-tip="Computes the prediction for your given example text" class="tooltip tooltip-left">
+                        <button [disabled]="testerRequestedSomething"
+                            [ngClass]="testerRequestedSomething ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
+                            class="ml-3 bg-indigo-700 text-white text-xs leading-4 font-medium px-4 py-2 rounded-md border cursor-pointer hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            (click)="runZeroShotTest(testInput.value.trim())">
+                            Compute example
+                        </button>
+                    </div>
                 </div>
 
 
@@ -287,18 +248,22 @@
                         <div [ngClass]="testerRequestedSomething?null:'hidden'" class="inline-block">
                             <kern-loading color="indigo"></kern-loading>
                         </div>
-                        <button [disabled]="testerRequestedSomething" data-tip="Execute the model on 10 records"
-                            [ngClass]="testerRequestedSomething ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
-                            (click)="runZeroShot10RecordTest()"
-                            class="tooltip tooltip-left bg-white text-gray-700 text-xs font-semibold px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                            Run on 10
-                        </button>
-                        <button [disabled]="!canRunProject" data-tip="Execute the model on all records"
-                            [ngClass]="!canRunProject ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
-                            (click)="runZeroShotProject()"
-                            class="z-40 tooltip tooltip-left bg-indigo-700 text-white text-xs leading-4 font-semibold px-4 py-2 rounded-md cursor-pointer ml-3 hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                            Run
-                        </button>
+                        <div data-tip="Execute the model on 10 records" class="tooltip tooltip-left">
+                            <button [disabled]="testerRequestedSomething"
+                                [ngClass]="testerRequestedSomething ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
+                                (click)="runZeroShot10RecordTest()"
+                                class="bg-white text-gray-700 text-xs font-semibold px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                Run on 10
+                            </button>
+                        </div>
+                        <div data-tip="Execute the model on all records" class="tooltip tooltip-left">
+                            <button [disabled]="!canRunProject" data-tip="Execute the model on all records"
+                                [ngClass]="!canRunProject ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
+                                (click)="runZeroShotProject()"
+                                class="bg-indigo-700 text-white text-xs leading-4 font-semibold px-4 py-2 rounded-md cursor-pointer ml-3 hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                Run
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

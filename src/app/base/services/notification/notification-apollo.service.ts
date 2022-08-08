@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Apollo } from 'apollo-angular';
 import { NotificationType } from 'aws-sdk/clients/budgets';
 import { map } from 'rxjs/operators';
+import { ApolloChecker } from '../base/apollo-checker';
 import { mutations } from './notification-mutations';
 import { queries } from './notification-queries';
 
@@ -9,7 +10,8 @@ import { queries } from './notification-queries';
   providedIn: 'root',
 })
 export class NotificationApolloService {
-  constructor(private apollo: Apollo) { }
+  private apollo: ApolloChecker;
+  constructor(private apolloBase: Apollo) { this.apollo = new ApolloChecker(this.apolloBase); }
 
   getNotificationsByUser() {
     const query = this.apollo

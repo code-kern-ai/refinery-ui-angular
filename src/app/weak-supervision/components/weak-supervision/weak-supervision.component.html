@@ -167,47 +167,7 @@
                                     <div class="grid items-center" style="grid-template-columns: 215px auto">
                                         <div class="text-sm font-bold">State</div>
                                         <div class="text text-sm">
-                                            <div
-                                                *ngIf="currentWeakSupervisionRun?.state !== 'CREATED' && currentWeakSupervisionRun?.state !== 'FINISHED' && currentWeakSupervisionRun?.state !== 'FAILED'">
-                                                <span
-                                                    class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
-                                                    <svg class="mr-1.5 h-2 w-2 text-gray-400" fill="currentColor"
-                                                        viewBox="0 0 8 8">
-                                                        <circle cx="4" cy="4" r="3" />
-                                                    </svg>
-                                                    Initial
-                                                </span>
-                                            </div>
-                                            <div *ngIf="currentWeakSupervisionRun?.state === 'CREATED'">
-                                                <span
-                                                    class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
-                                                    <svg class="mr-1.5 h-2 w-2 text-yellow-400" fill="currentColor"
-                                                        viewBox="0 0 8 8">
-                                                        <circle cx="4" cy="4" r="3" />
-                                                    </svg>
-                                                    Running
-                                                </span>
-                                            </div>
-                                            <div *ngIf="currentWeakSupervisionRun?.state === 'FINISHED'">
-                                                <span
-                                                    class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-300 text-green-800">
-                                                    <svg class="mr-1.5 h-2 w-2 text-text-green-600-4"
-                                                        fill="currentColor" viewBox="0 0 8 8">
-                                                        <circle cx="4" cy="4" r="3" />
-                                                    </svg>
-                                                    Finished
-                                                </span>
-                                            </div>
-                                            <div *ngIf="currentWeakSupervisionRun?.state === 'FAILED'">
-                                                <span
-                                                    class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
-                                                    <svg class="mr-1.5 h-2 w-2 text-red-400" fill="currentColor"
-                                                        viewBox="0 0 8 8">
-                                                        <circle cx="4" cy="4" r="3" />
-                                                    </svg>
-                                                    Error
-                                                </span>
-                                            </div>
+                                            <kern-heuristic-statuses [status]="currentWeakSupervisionRun?.state"></kern-heuristic-statuses>
                                         </div>
                                         <div class="text-sm font-bold">Selected Heuristics
                                         </div>
@@ -269,7 +229,7 @@
                 <input #modalCreateZS type="checkbox" id="zero-shot-modal" class="modal-toggle">
 
                 <div class="modal">
-                    <div class="modal-box text-black bg-white justify-center">
+                    <div class="modal-box text-black bg-white justify-center modal-configuration">
                         <h1 class="text-lg text-gray-900 mb-2 text-center mb-4">Add new zero shot classification</h1>
 
                         <div *ngIf="attributes && labelingTasksClassification"
@@ -589,53 +549,7 @@
                                         {{source.description}}
                                     </div>
                                     <div class="float-right">
-                                        <div *ngIf="source?.state !== 'CREATED' && source?.state !== 'FINISHED' && source?.state !== 'FAILED'"
-                                            data-tip="Heuristic was successfully registered."
-                                            class="tooltip tooltip-left">
-                                            <span
-                                                class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
-                                                <svg class="mr-1.5 h-2 w-2 text-gray-400" fill="currentColor"
-                                                    viewBox="0 0 8 8">
-                                                    <circle cx="4" cy="4" r="3" />
-                                                </svg>
-                                                Initial
-                                            </span>
-                                        </div>
-                                        <div *ngIf="source?.state === 'CREATED'"
-                                            data-tip="Heuristic is currently being executed."
-                                            class="tooltip tooltip-left">
-                                            <span
-                                                class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
-                                                <svg class="mr-1.5 h-2 w-2 text-yellow-400" fill="currentColor"
-                                                    viewBox="0 0 8 8">
-                                                    <circle cx="4" cy="4" r="3" />
-                                                </svg>
-                                                Running
-                                            </span>
-                                        </div>
-                                        <div *ngIf="source?.state === 'FINISHED'"
-                                            data-tip="Heuristic was successfully executed."
-                                            class="tooltip tooltip-left">
-                                            <span
-                                                class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-300 text-green-800">
-                                                <svg class="mr-1.5 h-2 w-2 text-text-green-600-4" fill="currentColor"
-                                                    viewBox="0 0 8 8">
-                                                    <circle cx="4" cy="4" r="3" />
-                                                </svg>
-                                                Finished
-                                            </span>
-                                        </div>
-                                        <div *ngIf="source?.state === 'FAILED'" data-tip="Heuristic ran into errors."
-                                            class="tooltip tooltip-left">
-                                            <span
-                                                class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
-                                                <svg class="mr-1.5 h-2 w-2 text-red-400" fill="currentColor"
-                                                    viewBox="0 0 8 8">
-                                                    <circle cx="4" cy="4" r="3" />
-                                                </svg>
-                                                Error
-                                            </span>
-                                        </div>
+                                        <kern-heuristic-statuses [status]="source?.state" tooltipPosition="tooltip-left"></kern-heuristic-statuses>
                                     </div>
                                 </div>
                                 <ng-template [ngIf]="!(source.stats.length == 1 && source.stats[0].label == '-' )">
@@ -656,7 +570,7 @@
                                                 </div>
                                                 <div>
                                                     <div>Coverage</div>
-                                                    <div class="font-normal text-gray-500">{{stat.values.Coverage}} {{ stat.values.Coverage == 1 ? 'item' : 'items' }}
+                                                    <div class="font-normal text-gray-500">{{stat.values.Coverage}} {{ stat.values.Coverage == 1 ? 'record' : 'records' }}
                                                     </div>
 
                                                 </div>

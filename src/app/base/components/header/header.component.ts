@@ -21,6 +21,7 @@ export class HeaderComponent implements OnInit {
 
   showConfigSettings: boolean = false;
   subscriptions$: Subscription[] = [];
+  hideLogout: boolean;
 
   constructor(private router: Router, private auth: AuthApiService,) { }
 
@@ -32,7 +33,8 @@ export class HeaderComponent implements OnInit {
       timer(250).subscribe(() => this.setShowConfig());
       return;
     }
-    this.showConfigSettings = !ConfigManager.getIsManaged()
+    this.hideLogout = ConfigManager.getIsDemo() && !ConfigManager.getIsAdmin();
+    this.showConfigSettings = !ConfigManager.getIsManaged();
   }
 
   executeOption(optionSelected: string) {

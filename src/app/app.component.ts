@@ -38,7 +38,7 @@ export class AppComponent implements OnDestroy, OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.configService.isManaged().pipe(first()).subscribe((v) => ConfigManager.initConfigManager(this.http, this.configService, v));
+    this.initalRequests();
     NotificationService.subscribeToNotification(this, {
       whitelist: ['notification_created', 'project_deleted', 'config_updated'],
       func: this.handleWebsocketNotification
@@ -46,6 +46,15 @@ export class AppComponent implements OnDestroy, OnInit {
     this.initializeNotificationService();
     this.initWithConfigManager();
   }
+
+  initalRequests() {
+    this.configService.isManaged().pipe(first()).subscribe((v) => ConfigManager.initConfigManager(this.http, this.configService, v));
+    this.configService.isDemo().pipe(first()).subscribe((v) => ConfigManager.setIsDemo(v));
+    this.configService.isAdmin().pipe(first()).subscribe((v) => ConfigManager.setIsAdmin(v));
+    this.configService.getBlackWhiteDemo().pipe(first()).subscribe((v) => ConfigManager.setBlackWhiteListDemo(v));
+  }
+
+
   initWithConfigManager() {
 
     if (!ConfigManager.isInit()) {

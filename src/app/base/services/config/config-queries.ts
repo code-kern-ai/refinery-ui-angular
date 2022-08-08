@@ -47,5 +47,20 @@ export const queries = {
   query{
     isManaged
   }  
+  `,
+  IS_DEMO: gql`
+  query{
+    isDemo
+  }  
+  `,
+  IS_AMDIN: gql`
+  query{
+    isAdmin
+  }  
+  `,
+  GET_BLACK_WHITE_DEMO: gql`
+  {
+    getBlackWhiteDemo
+  }  
   `
 };
