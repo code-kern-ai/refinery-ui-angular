@@ -4,8 +4,7 @@
 </div>
 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
     <div>
-        <label
-            class="rounded-lg relative border p-4 flex cursor-pointer h-full focus:outline-none bg-white"
+        <label class="rounded-lg relative border p-4 flex cursor-pointer h-full focus:outline-none bg-white"
             (click)="toggleTab(0)" [ngClass]="openTab === 0 ? 'border-black' : 'border-gray'">
             <input type="radio" name="upload-file" [value]="0" [checked]="true"
                 class="h-4 w-4 mt-0.5 cursor-pointer shrink-0 text-indigo-600 border-gray-300 focus:ring-indigo-500"
@@ -26,8 +25,7 @@
                 <div class="col-span-3 lg:col-span-4 ml-3">
                     <span id="integrate-api-0-label" class="block text-sm font-medium text-gray-900">
                         Integrate via API </span>
-                    <span id="integrate-api-0-description"
-                        class="block text-sm font-normal text-gray-500"> Upload data
+                    <span id="integrate-api-0-description" class="block text-sm font-normal text-gray-500"> Upload data
                         via our API. </span>
                 </div>
                 <div class="col-span-3 lg:col-span-2 text-right items-center flex">
@@ -42,10 +40,10 @@
         <label class="bg-white rounded-lg relative border p-4 flex h-full focus:outline-none">
             <div class="grid grid-cols-6 gap-4 w-full">
                 <div class="col-span-3 lg:col-span-4 ml-3">
-                    <span id="integrate-database-0-label"
-                        class="block text-sm font-medium text-gray-900"> Integrate database </span>
-                    <span id="integrate-database-0-description"
-                        class="block text-sm font-normal text-gray-500"> Integrate data directly from a
+                    <span id="integrate-database-0-label" class="block text-sm font-medium text-gray-900"> Integrate
+                        database </span>
+                    <span id="integrate-database-0-description" class="block text-sm font-normal text-gray-500">
+                        Integrate data directly from a
                         DB. </span>
                 </div>
                 <div class="col-span-3 lg:col-span-2 text-right items-center flex">
@@ -70,8 +68,7 @@
                 href="https://docs.kern.ai/docs/setup" target="_blank"><span
                     class="underline cursor-pointer">documentation</span></a> for further
             details.</label>
-        <input name="twitterAPI" type="text"
-            class="input input-sm input-bordered w-full placeholder-italic"
+        <input name="twitterAPI" type="text" class="input input-sm input-bordered w-full placeholder-italic"
             placeholder="Enter your API key here ...">
     </div>
     <div class="form-control mt-6">
@@ -102,16 +99,16 @@
 <div class="form-group" *ngIf="openTab === 0">
     <label class="text-gray-500 text-sm font-normal">
         You can specify import file upload options for your file. See how this is done for <a
-            href="https://pandas.pydata.org/docs/reference/api/pandas.read_json.html"
-            target="_blank"><span class="underline cursor-pointer">JSON</span></a>, <a
-            href="https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html"
-            target="_blank"><span class="underline cursor-pointer">CSV</span></a> and <a
-            href="https://pandas.pydata.org/docs/reference/api/pandas.read_excel.html"
-            target="_blank"><span class="underline cursor-pointer">spreadsheets</span></a>. If you leave
+            href="https://pandas.pydata.org/docs/reference/api/pandas.read_json.html" target="_blank"><span
+                class="underline cursor-pointer">JSON</span></a>, <a
+            href="https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html" target="_blank"><span
+                class="underline cursor-pointer">CSV</span></a> and <a
+            href="https://pandas.pydata.org/docs/reference/api/pandas.read_excel.html" target="_blank"><span
+                class="underline cursor-pointer">spreadsheets</span></a>. If you leave
         it blank, we'll use default settings
     </label>
     <div>
-        <textarea class="shadow mt-1 p-4 text-sm w-full placeholder-indigo" rows="3"
+        <textarea #importOptions class="shadow mt-1 p-4 text-sm w-full placeholder-indigo" rows="3"
             placeholder="E.g. for uncommon CSV&#10;sep=\t&#10;lineterminator=\r"></textarea>
     </div>
 </div>

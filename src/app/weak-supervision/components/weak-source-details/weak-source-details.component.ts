@@ -169,10 +169,8 @@ export class WeakSourceDetailsComponent
       }
     } else if ('information_source_updated' == msgParts[1]) {
       if (this.informationSource.id == msgParts[2]) {
-        if (this.loggedInUser.id != msgParts[3]) {
-          this.updatedThroughWebsocket = true;
-          this.informationSourceQuery$.refetch();
-        }
+        this.updatedThroughWebsocket = true;
+        this.informationSourceQuery$.refetch();
       }
     } else if (msgParts[1] == 'embedding_deleted' || (msgParts[1] == 'embedding' && msgParts[3] == 'state')) {
       if (this.embeddingQuery$) this.embeddingQuery$.refetch();
@@ -588,14 +586,6 @@ export class WeakSourceDetailsComponent
 
   setValueToLabelingTask(value) {
     this.labelingTaskControl.setValue(value);
-  }
-
-  navigateToTemplates() {
-    window.open("https://github.com/code-kern-ai/template-functions", "_blank");
-  }
-
-  navigateToLibraries() {
-    window.open("https://github.com/code-kern-ai/lf-execution-environment/blob/dev/requirements.txt", "_blank");
   }
 
   getBackground(color) {

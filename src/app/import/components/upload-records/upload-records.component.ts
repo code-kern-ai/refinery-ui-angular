@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { timer } from 'rxjs';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
@@ -21,6 +21,7 @@ export class UploadRecordsComponent implements OnInit {
   isFileUploaded: boolean = false;
   openTab: number = 0;
   @ViewChild(UploadComponent) uploadComponent;
+  @ViewChild('importOptions', { read: ElementRef }) importOptionsHTML: ElementRef;
 
 
   constructor(private projectApolloService: ProjectApolloService, private router: Router) { }
@@ -61,6 +62,6 @@ export class UploadRecordsComponent implements OnInit {
         this.router.navigate(['projects', this.projectId, 'settings'])
       })
     }
-    this.uploadComponent.finishUpUpload(finalFileName, '');
+    this.uploadComponent.finishUpUpload(finalFileName, this.importOptionsHTML.nativeElement.value);
   }
 }

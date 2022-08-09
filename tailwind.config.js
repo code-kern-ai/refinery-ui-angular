@@ -113,7 +113,7 @@ module.exports = {
     maxWidth: {
       "xxs": "9rem",
       "xs-1": "250px",
-      ...defaultTheme.maxWidth,
+      ...defaultTheme.maxWidth
     },
     lineHeight: {
       '12': '3rem',
