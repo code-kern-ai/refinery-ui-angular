@@ -497,9 +497,11 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
     switch(value) {
       case 'Labeling function': 
         this.modalCreateLF.nativeElement.checked = true;
+        this.modalChangeForCreation(true, InformationSourceType.LABELING_FUNCTION);
         break;
       case 'Active learning':
         this.modalCreateAL.nativeElement.checked = true;
+        this.modalChangeForCreation(true, InformationSourceType.ACTIVE_LEARNING);
         break;
       case 'Zero-shot':
         this.modalCreateZS.nativeElement.checked = true;
