@@ -380,7 +380,7 @@ export class ZeroShotDetailsComponent
         this.zeroShotSettings.excludedLabels.push(newValue);
       }
     } else {
-      if(attributeName == 'minConfidence') newValue /= 100;
+      if (attributeName == 'minConfidence') newValue /= 100;
       this.zeroShotSettings[attributeName] = newValue;
       if (attributeName == 'taskId') {
         this.zeroShotSettings.attributeSelectDisabled = this.textAttributes.length == 1 || this.labelingTasks.get(this.zeroShotSettings.taskId).taskTarget == 'ON_ATTRIBUTE';
