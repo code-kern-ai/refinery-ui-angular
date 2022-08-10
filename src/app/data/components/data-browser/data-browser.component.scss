@@ -86,6 +86,6 @@ input[type="number"] {
   overflow-wrap: anywhere;
 }
 
-.tooltip-label::before {
-  z-index: 10;
+.tooltip::before {
+  z-index: 50;
 }

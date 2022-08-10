@@ -10,7 +10,7 @@
                         class="text-sm leading-5 font-medium mr-10 cursor-pointer py-5">
                         {{labelingTask.name}}
                     </div>
-                    <div data-tip="Add new labeling task" class="tooltip tooltip-right tooltip-label">
+                    <div data-tip="Add new labeling task" class="tooltip tooltip-right">
                         <button (click)="navigateToSettings()"><svg xmlns="http://www.w3.org/2000/svg"
                                 class="h-5 w-5 text-gray-500 my-5 cursor-pointer" fill="none" viewBox="0 0 24 24"
                                 stroke="currentColor" stroke-width="2">
@@ -42,8 +42,8 @@
                                 class="inline-flex items-center justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-1.5 bg-white text-xs font-semibold text-gray-700 opacity-50 cursor-not-allowed focus:ring-offset-2 focus:ring-offset-gray-400"
                                 id="menu-button" aria-expanded="true" aria-haspopup="true">
                                 New heuristic
-                                <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                    fill="currentColor" aria-hidden="true">
                                     <path fill-rule="evenodd"
                                         d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
                                         clip-rule="evenodd" />
@@ -51,7 +51,7 @@
                             </button>
                         </div>
                     </ng-template>
-                    
+
                     <ng-template [ngIf]="informationSources.length > 0" [ngIfElse]="noHeuristics">
                         <kern-dropdown class="mr-3" [dropdownOptions]="{
                             optionArray:['Select all','Deselect all', 'Run selected', 'Delete selected'],
@@ -79,13 +79,17 @@
                         </div>
                     </ng-template>
 
-                    <input #deleteSelectedHeuristics type="checkbox" [id]="'delete-modal-selected'" class="modal-toggle">
+                    <input #deleteSelectedHeuristics type="checkbox" [id]="'delete-modal-selected'"
+                        class="modal-toggle">
                     <div class="modal text-center items-center">
                         <div class="modal-box">
-                            <h1 class="text-lg text-gray-900 mb-2">Delete {{ selectedInformationSources.length == 1 ? 'heuristic' : 'heuristics' }}</h1>
+                            <h1 class="text-lg text-gray-900 mb-2">Delete {{ selectedInformationSources.length == 1 ?
+                                'heuristic' : 'heuristics' }}</h1>
                             <div class="text-sm text-gray-500 my-2 flex flex-col">
-                                <span>Are you sure you want to delete selected {{ selectedInformationSources.length == 1 ? 'heuristic' : 'heuristics' }}?</span>
-                                <span>Currently selected {{ selectedInformationSources.length == 1 ? 'is' : 'are' }}:</span>
+                                <span>Are you sure you want to delete selected {{ selectedInformationSources.length == 1
+                                    ? 'heuristic' : 'heuristics' }}?</span>
+                                <span>Currently selected {{ selectedInformationSources.length == 1 ? 'is' : 'are'
+                                    }}:</span>
                                 <span class="whitespace-pre-line font-bold">{{selectionList}}</span>
                             </div>
 
@@ -105,7 +109,7 @@
                             <ng-template [ngIf]="areInformationSourcesSelected(informationSources,true)"
                                 [ngIfElse]="noValidSelected">
                                 <div data-tip="Calculation of denoised labels can take up to a few minutes!"
-                                    class="tooltip tooltip-bottom tooltip-label">
+                                    class="tooltip tooltip-bottom">
                                     <button
                                         class="bg-indigo-700 text-white text-xs font-semibold px-4 py-2 rounded-md border hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                                         (click)="startWeakSupervision(project.id)"
@@ -120,8 +124,7 @@
                             </ng-template>
 
                             <ng-template #noValidSelected>
-                                <div data-tip="At least one invalid heuristic selected!"
-                                    class="tooltip tooltip-bottom tooltip-label">
+                                <div data-tip="At least one invalid heuristic selected!" class="tooltip tooltip-bottom">
                                     <button
                                         class="bg-indigo-700 text-white text-xs font-semibold px-4 py-2 rounded-md border opacity-50 cursor-not-allowed"
                                         [disabled]="true">
@@ -131,8 +134,7 @@
                             </ng-template>
                         </ng-template>
                         <ng-template #nothingSelected>
-                            <div data-tip="Please select at least one heuristic!"
-                                class="tooltip tooltip-bottom tooltip-label">
+                            <div data-tip="Please select at least one heuristic!" class="tooltip tooltip-bottom">
                                 <button
                                     class="bg-indigo-700 text-white text-xs font-semibold px-4 py-2 rounded-md border opacity-50 cursor-not-allowed"
                                     [disabled]="true">
@@ -167,7 +169,8 @@
                                     <div class="grid items-center" style="grid-template-columns: 215px auto">
                                         <div class="text-sm font-bold">State</div>
                                         <div class="text text-sm">
-                                            <kern-heuristic-statuses [status]="currentWeakSupervisionRun?.state"></kern-heuristic-statuses>
+                                            <kern-heuristic-statuses [status]="currentWeakSupervisionRun?.state">
+                                            </kern-heuristic-statuses>
                                         </div>
                                         <div class="text-sm font-bold">Selected Heuristics
                                         </div>
@@ -517,7 +520,8 @@
                     <div class="mt-8"
                         [ngClass]="filteredSourcesList.length > 2 ? 'flex_container' : 'grid gap-6 grid-cols-3'">
                         <ng-template [ngIf]="filteredSourcesList.length == 0">
-                            <span class="text-gray-500 text-base leading-6 font-normal mt-4">No heuristics for this labeling task</span>
+                            <span class="text-gray-500 text-base leading-6 font-normal mt-4">No heuristics for this
+                                labeling task</span>
                         </ng-template>
                         <div *ngFor="let source of filteredSourcesList; let i = index"
                             class="relative flex space-x-3 items-center rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm hover:border-gray-400"
@@ -549,7 +553,8 @@
                                         {{source.description}}
                                     </div>
                                     <div class="float-right">
-                                        <kern-heuristic-statuses [status]="source?.state" tooltipPosition="tooltip-left"></kern-heuristic-statuses>
+                                        <kern-heuristic-statuses [status]="source?.state"
+                                            tooltipPosition="tooltip-left"></kern-heuristic-statuses>
                                     </div>
                                 </div>
                                 <ng-template [ngIf]="!(source.stats.length == 1 && source.stats[0].label == '-' )">
@@ -570,7 +575,8 @@
                                                 </div>
                                                 <div>
                                                     <div>Coverage</div>
-                                                    <div class="font-normal text-gray-500">{{stat.values.Coverage}} {{ stat.values.Coverage == 1 ? 'record' : 'records' }}
+                                                    <div class="font-normal text-gray-500">{{stat.values.Coverage}} {{
+                                                        stat.values.Coverage == 1 ? 'record' : 'records' }}
                                                     </div>
 
                                                 </div>
