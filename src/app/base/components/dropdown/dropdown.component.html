@@ -37,9 +37,9 @@
         role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
         <div class="py-1 cursor-pointer" role="none">
             <div *ngFor="let caption of dropdownOptionCaptions;let i = index" (click)="performActionOnOption($event,i)"
-                [ngClass]="[dropdownOptions.optionDescriptions ? '' : 'flex' ,dropdownOptions.isOptionDisabled?.length && dropdownOptions.isOptionDisabled[i]?'opacity-50 cursor-not-allowed':'',!dropdownOptions.hasCheckboxes ? 'hover:bg-gray-700 hover:text-white':'']"
+                [ngClass]="[dropdownOptions.textSize,dropdownOptions.textColor,dropdownOptions.optionDescriptions ? '' : 'flex' ,dropdownOptions.isOptionDisabled?.length && dropdownOptions.isOptionDisabled[i]?'opacity-50 cursor-not-allowed':'',!dropdownOptions.hasCheckboxes ? dropdownOptions.hoverColor + ' ' +dropdownOptions.textHoverColor:'']"
                 [ngStyle]="{'border-bottom': dropdownOptions.buttonHasBlueStyle && i%2 == 0 && i!=dropdownOptionCaptions.length-1 ? '1px dashed #e2e8f0' : (dropdownOptions.buttonHasBlueStyle && i%2 != 0 && i!=dropdownOptionCaptions.length-1 ? '1px solid #e2e8f0' : null) }"
-                class="text-gray-700 block px-2 py-1.5 text-xs flex-row flex-nowrap items-center gap-x-2"
+                class="block px-2 py-1.5 flex-row flex-nowrap items-center gap-x-2"
                 role="menuitem" tabindex="-1" id="menu-item-0">
                 <ng-template [ngIf]="dropdownOptions.hasCheckboxes">
                     <div class="h-4 w-4 border-gray-300 border rounded hover:bg-gray-200"
@@ -53,9 +53,9 @@
                 </ng-template>
                 {{ caption }}
 
-                <div *ngIf="dropdownOptions.optionDescriptions && dropdownOptions.optionDescriptions[i] != ''">
+                <p *ngIf="dropdownOptions.optionDescriptions && dropdownOptions.optionDescriptions[i] != ''" class="mt-2">
                     {{dropdownOptions.optionDescriptions[i]}}
-                </div>
+                </p>
             </div>
         </div>
     </div>

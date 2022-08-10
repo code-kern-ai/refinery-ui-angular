@@ -305,7 +305,9 @@
             optionIcons:['clickbait',null,'conversational-ai',null,'ag-news',null],
             buttonCaption: 'Sample projects',
             buttonHasBlueStyle: true,
-            optionDescriptions: ['Binary classification for detecting nudging articles.','','Detecting intent within conversational lines.','','Modelling topics of headline news.','','']
+            optionDescriptions: ['Binary classification for detecting nudging articles.','','Detecting intent within conversational lines.','','Modelling topics of headline news.','',''],
+            textSize: 'text-sm',
+            hoverColor: 'hover:bg-kernindigo'
         }" (optionClicked)="executeOption($event)"
         (isInitialProject)="setInitialValue($event)">
         </kern-dropdown>

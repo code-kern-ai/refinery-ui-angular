@@ -80,6 +80,10 @@ export class DropdownComponent implements OnChanges {
     if (this.dropdownOptions.optionIcons && this.dropdownOptions.optionIcons.length != this.dropdownOptions.optionIcons.length) this.hasInputErrors = "array options != optionIcons length\n";
     if (!this.dropdownOptions.buttonVersion) this.dropdownOptions.buttonVersion = "default";
     if (!this.dropdownOptions.buttonHasBlueStyle) this.dropdownOptions.buttonHasBlueStyle = false;
+    if(!this.dropdownOptions.hoverColor) this.dropdownOptions.hoverColor = "hover:bg-gray-700";
+    if(!this.dropdownOptions.textColor) this.dropdownOptions.textColor = "text-gray-700";
+    if(!this.dropdownOptions.textHoverColor) this.dropdownOptions.textHoverColor = "hover:text-white";
+    if(!this.dropdownOptions.textSize) this.dropdownOptions.textSize = "text-xs";
 
     if (this.hasInputErrors) console.log(this.hasInputErrors);
 

@@ -17,6 +17,10 @@ import { FormArray } from "@angular/forms";
  * @postfix {string, optional} - postfix to the main name in the option
  * @buttonHasBlueStyle {boolean, optional} - flag if the button has the blue style
  * @optionDescriptions {string, optional} - array with optional descriptions to the options
+ * @hoverColor {string, optional} - 
+ * @textColor {string, optional} - 
+ * @textHoverColor {string, optional} - 
+ * @textSize {string, optional} - 
  */
 export type DropdownOptions = {
     optionArray: string[] | FormArray[] | any[];
@@ -34,5 +38,9 @@ export type DropdownOptions = {
     postfix?: string;
     buttonHasBlueStyle?: boolean;
     optionDescriptions?: string[];
+    hoverColor?: string;
+    textColor?: string;
+    textHoverColor?: string;
+    textSize?: string;
 };
 
