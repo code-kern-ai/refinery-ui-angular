@@ -3,7 +3,8 @@
 
         <div #stickyHeader class="pt-2 sticky -top-2 z-40 h-12">
             <div class="bg-white flex-grow " [ngClass]="isHeaderNormal?'':'shadow'">
-                <div class="flex-row justify-start items-center inline-block" style="transition: all .25s ease-in-out;" [ngClass]="isHeaderNormal?'p-0':'flex py-2'">
+                <div class="flex-row justify-start items-center inline-block" style="transition: all .25s ease-in-out;"
+                    [ngClass]="isHeaderNormal?'p-0':'flex py-2'">
 
                     <button [routerLink]="['../../heuristics']" class="text-green-800 text-sm font-medium">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block" fill="none"
@@ -114,7 +115,7 @@
                         }" (optionClicked)="changeZeroShotSettings('attributeId',$event)">
                         </kern-dropdown>
                     </div>
-                
+
                     <kern-dropdown class="mr-2" [dropdownOptions]="{
                         optionArray:zeroShotRecommendations,
                         buttonCaption:zeroShotSettings.targetConfig,
@@ -131,6 +132,42 @@
                     }" (optionClicked)="changeZeroShotSettings('minConfidence',$event)">
                     </kern-dropdown>
 
+                    <kern-dropdown class="mr-2" [dropdownOptions]="{
+                        optionArray:['test', 'test2'],
+                        hoverColor:'black',
+                        textColor:'black',
+                        textHoverColor:'white',
+                        buttonBgColor:'black',
+                        buttonTextColor:'white'
+                    }" (optionClicked)="logme($event)">
+                    </kern-dropdown>
+                    <kern-dropdown class="mr-2" [dropdownOptions]="{
+                        optionArray:['test', 'test2'],
+                        hoverColor:'gray-700',
+                        textColor:'black',
+                        textHoverColor:'white',
+                        buttonBgColor:'black',
+                        buttonTextColor:'white'
+                    }" (optionClicked)="logme($event)">
+                    </kern-dropdown>
+                    <kern-dropdown class="mr-2" [dropdownOptions]="{
+                        optionArray:['test', 'test2'],
+                        hoverColor:'hover:bg-gray-700',
+                        textColor:'black',
+                        textHoverColor:'white',
+                        buttonBgColor:'black',
+                        buttonTextColor:'white'
+                    }" (optionClicked)="logme($event)">
+                    </kern-dropdown>
+                    <kern-dropdown class="mr-2" [dropdownOptions]="{
+                        optionArray:['test', 'test2','test3'],
+                        hoverColor:'bg-red-100',
+                        textColor:'green',
+                        textHoverColor:'yellow-800',
+                        buttonBgColor:'black',
+                        buttonTextColor:'white'
+                    }" (optionClicked)="logme($event)">
+                    </kern-dropdown>
                 </div>
             </div>
 

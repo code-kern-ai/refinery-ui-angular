@@ -11,17 +11,18 @@ export class DropdownComponent implements OnChanges {
 
   @Input() dropdownOptions: DropdownOptions;
   @Output() optionClicked = new EventEmitter<string | any>();
-  @Output() isInitialProject = new EventEmitter<{flagInitial: boolean, value: string}>();
+  @Output() isInitialProject = new EventEmitter<{ flagInitial: boolean, value: string }>();
 
-  @ViewChild("dropdownOpenButton")dropdownOpenButton: ElementRef;
-  @ViewChild("dropdownOptionsDiv")dropdownOptionsDiv: ElementRef;
+  @ViewChild("dropdownOpenButton") dropdownOpenButton: ElementRef;
+  @ViewChild("dropdownOptionsDiv") dropdownOptionsDiv: ElementRef;
 
   hasInputErrors: string;
   buttonClassList: string;
   dropdownClassList: string;
   dropdownOptionCaptions: string[];
   useValueAsCaption: boolean = false;
-  tailwindClasses: string[] = ['kernindigo']
+  tailwindClasses: string[] = ['kernindigo'];
+  static colorWithoutNumber: string[] = ['kernindigo', 'black', 'white']
 
   constructor() { }
   ngOnChanges(changes: SimpleChanges): void {
@@ -31,8 +32,8 @@ export class DropdownComponent implements OnChanges {
   }
 
   private addPrePostFix(arr: string[]): string[] {
-    if(this.dropdownOptions.prefix) arr = arr.map(el => this.dropdownOptions.prefix + el);
-    if(this.dropdownOptions.postfix) arr = arr.map(el => el+this.dropdownOptions.postfix);
+    if (this.dropdownOptions.prefix) arr = arr.map(el => this.dropdownOptions.prefix + el);
+    if (this.dropdownOptions.postfix) arr = arr.map(el => el + this.dropdownOptions.postfix);
     return arr;
   }
 
@@ -40,7 +41,7 @@ export class DropdownComponent implements OnChanges {
     if (!arr) return [];
     if (arr.length == 0) return [];
     if (typeof arr[0] == 'string') return arr as string[];
-    if(typeof arr[0] == 'number') return  arr.map(String);
+    if (typeof arr[0] == 'number') return arr.map(String);
     let valueArray = arr;
     if (arr[0].value && typeof arr[0].value == 'object') valueArray = arr.map(x => x.getRawValue());
     if (valueArray[0].name) return valueArray.map(a => a.name);
@@ -76,26 +77,54 @@ export class DropdownComponent implements OnChanges {
       this.useValueAsCaption = true;
     }
     if (this.dropdownOptions.isOptionDisabled && this.dropdownOptions.isOptionDisabled.length != this.dropdownOptions.optionArray.length) this.hasInputErrors = "array options != isOptionDisabled length\n";
-    if (this.dropdownOptions.optionDescriptions &&  this.dropdownOptions.optionArray.length != this.dropdownOptions.optionDescriptions.length) this.hasInputErrors = "array options != optionDescriptions length\n";
+    if (this.dropdownOptions.optionDescriptions && this.dropdownOptions.optionArray.length != this.dropdownOptions.optionDescriptions.length) this.hasInputErrors = "array options != optionDescriptions length\n";
     if (this.dropdownOptions.optionIcons && this.dropdownOptions.optionIcons.length != this.dropdownOptions.optionIcons.length) this.hasInputErrors = "array options != optionIcons length\n";
     if (!this.dropdownOptions.buttonVersion) this.dropdownOptions.buttonVersion = "default";
 
-    // Button properties
-    this.buttonClassList = "";
-    this.dropdownOptions.buttonBgColor = !this.dropdownOptions.buttonBgColor ? "bg-white " : "bg-"+this.convertProperty(this.dropdownOptions.buttonBgColor,'700');
-    this.buttonClassList+= this.dropdownOptions.buttonBgColor;
+    // // Button properties
+    // this.buttonClassList = "";
+    // this.dropdownOptions.buttonBgColor = !this.dropdownOptions.buttonBgColor ? "bg-white " : "bg-" + this.convertProperty(this.dropdownOptions.buttonBgColor, '700');
+    // this.buttonClassList += this.dropdownOptions.buttonBgColor;
 
-    this.dropdownOptions.buttonTextColor = !this.dropdownOptions.buttonTextColor ? "text-gray-700 " : "text-"+this.convertProperty(this.dropdownOptions.buttonTextColor,'700');
-    this.buttonClassList+=this.dropdownOptions.buttonTextColor;
+    // this.dropdownOptions.buttonTextColor = !this.dropdownOptions.buttonTextColor ? "text-gray-700 " : "text-" + this.convertProperty(this.dropdownOptions.buttonTextColor, '700');
+    // this.buttonClassList += this.dropdownOptions.buttonTextColor;
+
+    // // Dropdown properties
+    // this.dropdownOptions.hoverColor = !this.dropdownOptions.hoverColor ? "hover:bg-gray-700" : this.convertProperty(this.dropdownOptions.hoverColor, '700');
+    // this.dropdownOptions.textColor = !this.dropdownOptions.textColor ? "text-gray-700" : "text-" + this.convertProperty(this.dropdownOptions.textColor, '700');
+    // this.dropdownOptions.textHoverColor = !this.dropdownOptions.textHoverColor ? "hover:text-white" : this.convertProperty(this.dropdownOptions.hoverColor, '700');
+    // this.dropdownOptions.textSize = !this.dropdownOptions.textSize ? "text-xs" : this.dropdownOptions.textSize;
+
+    this.buttonClassList = "";
+    if (!this.dropdownOptions.buttonBgColor) this.dropdownOptions.buttonBgColor = "bg-white ";
+    else this.dropdownOptions.buttonBgColor = "bg-" + this.reduceColorProperty(this.dropdownOptions.buttonBgColor, '700');
+    this.buttonClassList += this.dropdownOptions.buttonBgColor + " ";
+    if (!this.dropdownOptions.buttonTextColor) this.dropdownOptions.buttonTextColor = "text-gray-700 ";
+    else this.dropdownOptions.buttonTextColor = "text-" + this.reduceColorProperty(this.dropdownOptions.buttonTextColor, '700');
+    this.buttonClassList += this.dropdownOptions.buttonTextColor;
 
     // Dropdown properties
-    this.dropdownOptions.hoverColor = !this.dropdownOptions.hoverColor ? "hover:bg-gray-700" : this.convertProperty(this.dropdownOptions.hoverColor, '700');
-    this.dropdownOptions.textColor = !this.dropdownOptions.textColor ? "text-gray-700" : "text-"+ this.convertProperty(this.dropdownOptions.textColor, '700'); 
-    this.dropdownOptions.textHoverColor = !this.dropdownOptions.textHoverColor ? "hover:text-white" : this.convertProperty(this.dropdownOptions.hoverColor, '700');
+    this.dropdownOptions.hoverColor = "hover:bg-" + (!this.dropdownOptions.hoverColor ? "gray-700" : this.reduceColorProperty(this.dropdownOptions.hoverColor, '700'));
+    this.dropdownOptions.textColor = "text-" + (!this.dropdownOptions.textColor ? "gray-700" : this.reduceColorProperty(this.dropdownOptions.textColor, '700'));
+    this.dropdownOptions.textHoverColor = "hover:text-" + (!this.dropdownOptions.textHoverColor ? "white" : this.reduceColorProperty(this.dropdownOptions.textHoverColor, '700'));
     this.dropdownOptions.textSize = !this.dropdownOptions.textSize ? "text-xs" : this.dropdownOptions.textSize;
-
+    console.log(this.dropdownOptions)
     if (this.hasInputErrors) console.log(this.hasInputErrors);
 
+  }
+
+  private reduceColorProperty(property: string, defaultShade: string): string {
+    let splitted = property.split(":");
+    if (splitted.length > 1) property = splitted[splitted.length - 1];
+
+    splitted = property.split("-");
+    if (['bg', 'text'].includes(splitted[0])) splitted = splitted.slice(1);
+
+    if (splitted.length == 1) {
+      if (DropdownComponent.colorWithoutNumber.includes(splitted[0])) return splitted[0];
+      return splitted[0] + "-" + defaultShade;
+    }
+    return splitted.join("-");
   }
 
   toggleVisible(isVisible: boolean, dropdownOptions: HTMLDivElement): void {
@@ -121,13 +150,13 @@ export class DropdownComponent implements OnChanges {
 
     if (!this.dropdownOptions.valuePropertyPath) {
       if (this.useValueAsCaption) this.dropdownOptions.buttonCaption = this.dropdownOptionCaptions[clickIndex];
-      if(this.dropdownOptions.optionArray.length > 0 && typeof this.dropdownOptions.optionArray[0]!= 'string') {
-        if(typeof this.dropdownOptions.optionArray[0] == 'number') {
+      if (this.dropdownOptions.optionArray.length > 0 && typeof this.dropdownOptions.optionArray[0] != 'string') {
+        if (typeof this.dropdownOptions.optionArray[0] == 'number') {
           this.optionClicked.emit(this.dropdownOptions.optionArray[clickIndex]);
           return;
         }
       }
-      if(this.dropdownOptions.isButtonSampleProjects && clickIndex%2 != 0) this.isInitialProject.emit({flagInitial: true, value: this.dropdownOptionCaptions[clickIndex-1]});
+      if (this.dropdownOptions.isButtonSampleProjects && clickIndex % 2 != 0) this.isInitialProject.emit({ flagInitial: true, value: this.dropdownOptionCaptions[clickIndex - 1] });
 
       if (this.dropdownOptions.hasCheckboxes) this.optionClicked.emit(this.dropdownOptions.optionArray[clickIndex]);
       else this.optionClicked.emit(this.dropdownOptionCaptions[clickIndex]);
@@ -197,15 +226,15 @@ export class DropdownComponent implements OnChanges {
   }
 
   private convertProperty(property: string, colorShade?: string) {
-   if(property.slice(0,4) ==='text' || property.slice(0,2)==='bg' || property.slice(0,6)=='hover:') {
-    const splitColor = property.split("-");
-    return property == 'white' || this.isTailwindDefinedClass(splitColor[1]) ? property + " "  : splitColor[1]+"-"+splitColor[2]+" ";
-   } else if(property.includes("-")) {
-    const splitColor = property.split("-");
-    return property == 'white' || this.isTailwindDefinedClass(splitColor[0]) ? property + " "  :  splitColor[0]+"-"+splitColor[1]+" ";
-   } else {
-    return property == 'white' || this.isTailwindDefinedClass(property) ? property + " " : property+"-"+colorShade+" ";
-   }
+    if (property.slice(0, 4) === 'text' || property.slice(0, 2) === 'bg' || property.slice(0, 6) == 'hover:') {
+      const splitColor = property.split("-");
+      return property == 'white' || this.isTailwindDefinedClass(splitColor[1]) ? property + " " : splitColor[1] + "-" + splitColor[2] + " ";
+    } else if (property.includes("-")) {
+      const splitColor = property.split("-");
+      return property == 'white' || this.isTailwindDefinedClass(splitColor[0]) ? property + " " : splitColor[0] + "-" + splitColor[1] + " ";
+    } else {
+      return property == 'white' || this.isTailwindDefinedClass(property) ? property + " " : property + "-" + colorShade + " ";
+    }
   }
 
   private isTailwindDefinedClass(className: string) {
