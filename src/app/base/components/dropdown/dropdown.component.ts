@@ -21,6 +21,7 @@ export class DropdownComponent implements OnChanges {
   dropdownClassList: string;
   dropdownOptionCaptions: string[];
   useValueAsCaption: boolean = false;
+  tailwindClasses: string[] = ['kernindigo']
 
   constructor() { }
   ngOnChanges(changes: SimpleChanges): void {
@@ -58,12 +59,11 @@ export class DropdownComponent implements OnChanges {
   }
 
   private buildHelperValues() {
-    this.buttonClassList = "";
     this.buttonClassList += this.dropdownOptions.isDisabled ? 'opacity-50 cursor-not-allowed ' : 'opacity-100 cursor-pointer ';
     this.buttonClassList += this.dropdownOptions.buttonTooltip ? ' tooltip tooltip-right ' : '';
     this.dropdownClassList = this.dropdownOptions.hasCheckboxes ? ' w-80 ' : '';
     this.dropdownClassList += this.dropdownOptions.buttonVersion != 'default' ? 'right-0 width-icon-menues' : '';
-    this.buttonClassList += this.dropdownOptions.buttonHasBlueStyle ? 'bg-blue-700 text-white py-2' : 'text-gray-700 bg-white border-gray-300 py-1.5';
+    this.buttonClassList += this.dropdownOptions.isButtonSampleProjects ? 'py-2' : 'border-gray-300 py-1.5';
     this.buttonClassList += this.dropdownClassList;
   }
 
@@ -79,11 +79,20 @@ export class DropdownComponent implements OnChanges {
     if (this.dropdownOptions.optionDescriptions &&  this.dropdownOptions.optionArray.length != this.dropdownOptions.optionDescriptions.length) this.hasInputErrors = "array options != optionDescriptions length\n";
     if (this.dropdownOptions.optionIcons && this.dropdownOptions.optionIcons.length != this.dropdownOptions.optionIcons.length) this.hasInputErrors = "array options != optionIcons length\n";
     if (!this.dropdownOptions.buttonVersion) this.dropdownOptions.buttonVersion = "default";
-    if (!this.dropdownOptions.buttonHasBlueStyle) this.dropdownOptions.buttonHasBlueStyle = false;
-    if(!this.dropdownOptions.hoverColor) this.dropdownOptions.hoverColor = "hover:bg-gray-700";
-    if(!this.dropdownOptions.textColor) this.dropdownOptions.textColor = "text-gray-700";
-    if(!this.dropdownOptions.textHoverColor) this.dropdownOptions.textHoverColor = "hover:text-white";
-    if(!this.dropdownOptions.textSize) this.dropdownOptions.textSize = "text-xs";
+
+    // Button properties
+    this.buttonClassList = "";
+    this.dropdownOptions.buttonBgColor = !this.dropdownOptions.buttonBgColor ? "bg-white " : "bg-"+this.convertProperty(this.dropdownOptions.buttonBgColor,'700');
+    this.buttonClassList+= this.dropdownOptions.buttonBgColor;
+
+    this.dropdownOptions.buttonTextColor = !this.dropdownOptions.buttonTextColor ? "text-gray-700 " : "text-"+this.convertProperty(this.dropdownOptions.buttonTextColor,'700');
+    this.buttonClassList+=this.dropdownOptions.buttonTextColor;
+
+    // Dropdown properties
+    this.dropdownOptions.hoverColor = !this.dropdownOptions.hoverColor ? "hover:bg-gray-700" : this.convertProperty(this.dropdownOptions.hoverColor, '700');
+    this.dropdownOptions.textColor = !this.dropdownOptions.textColor ? "text-gray-700" : "text-"+ this.convertProperty(this.dropdownOptions.textColor, '700'); 
+    this.dropdownOptions.textHoverColor = !this.dropdownOptions.textHoverColor ? "hover:text-white" : this.convertProperty(this.dropdownOptions.hoverColor, '700');
+    this.dropdownOptions.textSize = !this.dropdownOptions.textSize ? "text-xs" : this.dropdownOptions.textSize;
 
     if (this.hasInputErrors) console.log(this.hasInputErrors);
 
@@ -118,7 +127,7 @@ export class DropdownComponent implements OnChanges {
           return;
         }
       }
-      if(this.dropdownOptions.buttonHasBlueStyle && clickIndex%2 != 0) this.isInitialProject.emit({flagInitial: true, value: this.dropdownOptionCaptions[clickIndex-1]});
+      if(this.dropdownOptions.isButtonSampleProjects && clickIndex%2 != 0) this.isInitialProject.emit({flagInitial: true, value: this.dropdownOptionCaptions[clickIndex-1]});
 
       if (this.dropdownOptions.hasCheckboxes) this.optionClicked.emit(this.dropdownOptions.optionArray[clickIndex]);
       else this.optionClicked.emit(this.dropdownOptionCaptions[clickIndex]);
@@ -185,5 +194,21 @@ export class DropdownComponent implements OnChanges {
       return text + ', ';
 
     return text;
+  }
+
+  private convertProperty(property: string, colorShade?: string) {
+   if(property.slice(0,4) ==='text' || property.slice(0,2)==='bg' || property.slice(0,6)=='hover:') {
+    const splitColor = property.split("-");
+    return property == 'white' || this.isTailwindDefinedClass(splitColor[1]) ? property + " "  : splitColor[1]+"-"+splitColor[2]+" ";
+   } else if(property.includes("-")) {
+    const splitColor = property.split("-");
+    return property == 'white' || this.isTailwindDefinedClass(splitColor[0]) ? property + " "  :  splitColor[0]+"-"+splitColor[1]+" ";
+   } else {
+    return property == 'white' || this.isTailwindDefinedClass(property) ? property + " " : property+"-"+colorShade+" ";
+   }
+  }
+
+  private isTailwindDefinedClass(className: string) {
+    return this.tailwindClasses.includes(className) ? true : false;
   }
 }

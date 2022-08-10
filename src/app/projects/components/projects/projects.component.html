@@ -304,9 +304,11 @@
             optionArray:['Clickbait','Initial (only contains the initial data set and labels.)','Conversational AI','Initial (only contains the initial data set and labels.)', 'AG News','Initial (only contains the initial data set and labels.)', 'Further sample projects'],
             optionIcons:['clickbait',null,'conversational-ai',null,'ag-news',null],
             buttonCaption: 'Sample projects',
-            buttonHasBlueStyle: true,
+            isButtonSampleProjects: true,
             optionDescriptions: ['Binary classification for detecting nudging articles.','','Detecting intent within conversational lines.','','Modelling topics of headline news.','',''],
             textSize: 'text-sm',
+            buttonBgColor: 'blue',
+            buttonTextColor: 'white',
             hoverColor: 'hover:bg-kernindigo'
         }" (optionClicked)="executeOption($event)"
         (isInitialProject)="setInitialValue($event)">

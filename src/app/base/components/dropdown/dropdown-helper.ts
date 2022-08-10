@@ -15,12 +15,14 @@ import { FormArray } from "@angular/forms";
  * @avatarUri {string, optional} - link to the avatar image for logged user
  * @prefix {string, optional} - prefix to the main name in the option
  * @postfix {string, optional} - postfix to the main name in the option
- * @buttonHasBlueStyle {boolean, optional} - flag if the button has the blue style
+ * @buttonBgColor {string, optional} - 
+ * @buttonTextColor {string, optional} - 
  * @optionDescriptions {string, optional} - array with optional descriptions to the options
  * @hoverColor {string, optional} - 
  * @textColor {string, optional} - 
  * @textHoverColor {string, optional} - 
  * @textSize {string, optional} - 
+ * @isButtonSampleProjects {boolean, optional} - 
  */
 export type DropdownOptions = {
     optionArray: string[] | FormArray[] | any[];
@@ -36,11 +38,13 @@ export type DropdownOptions = {
     avatarUri?: string;
     prefix?: string;
     postfix?: string;
-    buttonHasBlueStyle?: boolean;
+    buttonBgColor?: string;
+    buttonTextColor?: string;
     optionDescriptions?: string[];
     hoverColor?: string;
     textColor?: string;
     textHoverColor?: string;
     textSize?: string;
+    isButtonSampleProjects?: boolean;
 };
 
