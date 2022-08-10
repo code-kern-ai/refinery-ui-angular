@@ -15,13 +15,13 @@ import { FormArray } from "@angular/forms";
  * @avatarUri {string, optional} - link to the avatar image for logged user
  * @prefix {string, optional} - prefix to the main name in the option
  * @postfix {string, optional} - postfix to the main name in the option
- * @buttonBgColor {string, optional} - 
- * @buttonTextColor {string, optional} - 
+ * @buttonBgColor {string, optional} - background color for the button
+ * @buttonTextColor {string, optional} - text color for the button
  * @optionDescriptions {string, optional} - array with optional descriptions to the options
- * @hoverColor {string, optional} - 
- * @textColor {string, optional} - 
- * @textHoverColor {string, optional} - 
- * @textSize {string, optional} - 
+ * @hoverColor {string, optional} - background color on hover for the dropdown options
+ * @textColor {string, optional} - text color for the dropdown options
+ * @textHoverColor {string, optional} - text color on hover for the dropdown options
+ * @textSize {string, optional} - text size for the dropdown options
  * @isButtonSampleProjects {boolean, optional} - 
  */
 export type DropdownOptions = {
