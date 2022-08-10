@@ -299,10 +299,6 @@ export class ZeroShotDetailsComponent
     return informationSourceTypeToString(type, false, true);
   }
 
-  logme(value) {
-    console.log(value);
-  }
-
   runZeroShotTest(text: string) {
     if (text.length == 0) return;
     if (this.testerRequestedSomething) return;
