@@ -105,7 +105,7 @@ export class DropdownComponent implements OnChanges {
     if (['bg', 'text'].includes(splitted[0])) splitted = splitted.slice(1);
 
     if (splitted.length == 1) {
-      if (DropdownComponent.colorWithoutNumber.includes(splitted[0])) return splitted[0];
+      if (DropdownComponent.colorWithoutNumber.includes(splitted[0])) return splitted[0] + " ";
       return splitted[0] + "-" + defaultShade;
     }
     return splitted.join("-");

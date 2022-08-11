@@ -22,7 +22,7 @@ import { FormArray } from "@angular/forms";
  * @textColor {string, optional} - text color for the dropdown options
  * @textHoverColor {string, optional} - text color on hover for the dropdown options
  * @textSize {string, optional} - text size for the dropdown options
- * @isButtonSampleProjects {boolean, optional} - 
+ * @isButtonSampleProjects {boolean, optional} - checks if the button is the specific one for sample project
  */
 export type DropdownOptions = {
     optionArray: string[] | FormArray[] | any[];
