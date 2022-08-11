@@ -245,7 +245,6 @@ export class ZeroShotDetailsComponent
     return vc;
   }
 
-
   deleteInformationSource(projectId: string, informationSourceId: string) {
     this.informationSourceApolloService
       .deleteInformationSource(projectId, informationSourceId).pipe(first())
@@ -381,6 +380,7 @@ export class ZeroShotDetailsComponent
         this.zeroShotSettings.excludedLabels.push(newValue);
       }
     } else {
+      if (attributeName == 'minConfidence') newValue /= 100;
       this.zeroShotSettings[attributeName] = newValue;
       if (attributeName == 'taskId') {
         this.zeroShotSettings.attributeSelectDisabled = this.textAttributes.length == 1 || this.labelingTasks.get(this.zeroShotSettings.taskId).taskTarget == 'ON_ATTRIBUTE';
@@ -423,19 +423,6 @@ export class ZeroShotDetailsComponent
           }
         }
       }
-    }
-  }
-
-
-  toggleVisible(isVisible: boolean, menuButton: HTMLDivElement): void {
-    if (isVisible) {
-      menuButton.classList.remove('hidden');
-      menuButton.classList.add('block');
-      menuButton.classList.add('z-10');
-    } else {
-      menuButton.classList.remove('z-10');
-      menuButton.classList.remove('block');
-      menuButton.classList.add('hidden');
     }
   }
 

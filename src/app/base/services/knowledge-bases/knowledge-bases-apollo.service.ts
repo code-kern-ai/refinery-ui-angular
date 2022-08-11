@@ -55,7 +55,7 @@ export class KnowledgeBasesApolloService {
     });
   }
 
-  blacklistTerm(projectId: string, knowledgeBaseId: string, termId: string) {
+  toggleBlacklistTerm(projectId: string, knowledgeBaseId: string, termId: string) {
     return this.apollo.mutate({
       mutation: mutations.BLACKLIST_TERM,
       variables: {

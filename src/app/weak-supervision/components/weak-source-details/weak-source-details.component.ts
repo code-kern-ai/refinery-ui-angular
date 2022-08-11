@@ -246,7 +246,7 @@ export class WeakSourceDetailsComponent
       let labelIds = [];
       tasks.forEach((task) => {
         this.labelingTasks.set(task.id, task);
-        this.labelingTasksSortOrder.push({ key: task.id, order: task.relativePosition });
+        this.labelingTasksSortOrder.push({ key: task.id, order: task.relativePosition, name: task.name });
         labelIds.push(...task.labels.map((label) => label.id));
       });
       this.colors.domain(labelIds);
@@ -570,18 +570,6 @@ export class WeakSourceDetailsComponent
 
   getInformationSourceTypeString(type: InformationSourceType) {
     return informationSourceTypeToString(type, false, true);
-  }
-
-  toggleVisible(isVisible: boolean, menuButton: HTMLDivElement): void {
-    if (isVisible) {
-      menuButton.classList.remove('hidden');
-      menuButton.classList.add('block');
-      menuButton.classList.add('z-10');
-    } else {
-      menuButton.classList.remove('z-10');
-      menuButton.classList.remove('block');
-      menuButton.classList.add('hidden');
-    }
   }
 
   setValueToLabelingTask(value) {

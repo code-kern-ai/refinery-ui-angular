@@ -16,6 +16,7 @@ import { SidebarPmComponent } from './components/sidebar-pm/sidebar-pm.component
 import { DropdownDirective } from './directives/dropdown.directive';
 import { PercentRoundPipe } from './pipes/decimal-round.pipe';
 import { HeaderComponent } from './components/header/header.component';
+import { DropdownComponent } from './components/dropdown/dropdown.component';
 import { HeuristicStatusesComponent } from './components/heuristic-statuses/heuristic-statuses.component';
 
 @NgModule({
@@ -28,6 +29,7 @@ import { HeuristicStatusesComponent } from './components/heuristic-statuses/heur
     DropdownDirective,
     PercentRoundPipe,
     HeaderComponent,
+    DropdownComponent,
     HeuristicStatusesComponent
   ],
   imports: [CommonModule, AppRoutingModule, HighlightModule],
@@ -50,6 +52,7 @@ import { HeuristicStatusesComponent } from './components/heuristic-statuses/heur
     DropdownDirective,
     PercentRoundPipe,
     HeaderComponent,
+    DropdownComponent,
     HeuristicStatusesComponent
   ],
   providers: [

@@ -68,6 +68,10 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
   embeddingQuery$: any;
   description: string;
   selectionList: string = "";
+  @ViewChild("modalCreateLF") modalCreateLF: ElementRef;
+  @ViewChild("modalCreateAL") modalCreateAL: ElementRef;
+  @ViewChild("modalCreateZS") modalCreateZS: ElementRef;
+  @ViewChild("deleteSelectedHeuristics") deleteSelectedHeuristics: ElementRef;
 
   constructor(
     private router: Router,
@@ -384,17 +388,6 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
     }
   }
 
-  toggleVisible(isVisible: boolean, menuButton: HTMLDivElement): void {
-    if (isVisible) {
-      menuButton.classList.remove('hidden');
-      menuButton.classList.add('block');
-      menuButton.classList.add('z-10');
-    } else {
-      menuButton.classList.remove('z-10');
-      menuButton.classList.remove('block');
-      menuButton.classList.add('hidden');
-    }
-  }
   modalChangeForCreation(checked: boolean, type: string) {
     if (checked) {
       this.description = "provide some description for documentation";
@@ -498,5 +491,34 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
     this.router.navigate(["../settings"], {
       relativeTo: this.activatedRoute,
     });
+  }
+
+  executeOption(value: string) {
+    switch(value) {
+      case 'Labeling function': 
+        this.modalCreateLF.nativeElement.checked = true;
+        this.modalChangeForCreation(true, InformationSourceType.LABELING_FUNCTION);
+        break;
+      case 'Active learning':
+        this.modalCreateAL.nativeElement.checked = true;
+        this.modalChangeForCreation(true, InformationSourceType.ACTIVE_LEARNING);
+        break;
+      case 'Zero-shot':
+        this.modalCreateZS.nativeElement.checked = true;
+        break;
+      case 'Select all':
+        this.setAllInformationSources(true);
+        break;
+      case 'Deselect all':
+        this.setAllInformationSources(false);
+        break;
+      case 'Run selected':
+        this.runSelectedInformationSources(this.project.id);
+        break;
+      case 'Delete selected':
+        this.deleteSelectedHeuristics.nativeElement.checked = true;
+        this.prepareSelectionList();
+        break;
+    }
   }
 }

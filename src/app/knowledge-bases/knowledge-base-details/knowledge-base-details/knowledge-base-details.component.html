@@ -160,54 +160,12 @@
                         class="relative rounded-lg border border-gray-300 bg-white px-4 py-3 shadow-sm items-center text-sm hover:border-gray-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
                         <div class="flow-root">
                             <div class="text-gray-900 font-medium float-left">{{term.value}}</div>
-                            <svg (isMenuOpen)="toggleVisible($event, termsMenu)" appDropdown
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="h-5 w-5 float-right cursor-pointer text-gray-500" viewBox="0 0 20 20"
-                                fill="currentColor">
-                                <path
-                                    d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-                            </svg>
-                            <div #termsMenu
-                                class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none hidden"
-                                role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
-                                <div class="py-1 cursor-pointer" role="none">
-                                    <label (click)="openTermEditor(true, term.id)"
-                                        class="text-gray-700 block px-4 py-2 text-sm hover:bg-kernindigo hover:text-white cursor-pointer"
-                                        role="menuitem" tabindex="-1" id="menu-item-0">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block"
-                                            viewBox="0 0 20 20" fill="currentColor">
-                                            <path
-                                                d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
-                                            <path fill-rule="evenodd"
-                                                d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
-                                                clip-rule="evenodd" />
-                                        </svg>
-                                        Edit term
-                                    </label>
-                                    <label (click)="deleteTerm(term.id)"
-                                        class="text-gray-700 block px-4 py-2 text-sm hover:bg-kernindigo hover:text-white cursor-pointer"
-                                        role="menuitem" tabindex="-1" id="menu-item-1">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block"
-                                            viewBox="0 0 20 20" fill="currentColor">
-                                            <path fill-rule="evenodd"
-                                                d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                                                clip-rule="evenodd" />
-                                        </svg>
-                                        Remove term
-                                    </label>
-                                    <label (click)="blackListTerm(term.id)"
-                                        class="text-gray-700 block px-4 py-2 text-sm hover:bg-kernindigo hover:text-white cursor-pointer"
-                                        role="menuitem" tabindex="-1" id="menu-item-1">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block"
-                                            viewBox="0 0 20 20" fill="currentColor">
-                                            <path fill-rule="evenodd"
-                                                d="M10 1.944A11.954 11.954 0 012.166 5C2.056 5.649 2 6.319 2 7c0 5.225 3.34 9.67 8 11.317C14.66 16.67 18 12.225 18 7c0-.682-.057-1.35-.166-2.001A11.954 11.954 0 0110 1.944zM11 14a1 1 0 11-2 0 1 1 0 012 0zm0-7a1 1 0 10-2 0v3a1 1 0 102 0V7z"
-                                                clip-rule="evenodd" />
-                                        </svg>
-                                        Blacklist term
-                                    </label>
-                                </div>
-                            </div>
+                            <kern-dropdown class="mr-2" [dropdownOptions]="{
+                                optionArray:['Edit term','Remove term', 'Blacklist term'],
+                                optionIcons:['edit-term','remove-term', 'blacklist-term'],
+                                buttonVersion: '...'
+                            }" (optionClicked)="executeOption($event, term)">
+                            </kern-dropdown>
                         </div>
 
                         <div class="text-gray-500 font-normal italic">{{term.comment}}</div>
@@ -251,63 +209,17 @@
                             class="relative rounded-lg border border-gray-300 bg-white px-4 py-3 shadow-sm items-center text-sm hover:border-gray-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
                             <div class="flow-root">
                                 <div class="text-gray-900 font-medium float-left">{{term.value}}</div>
-                                <svg (isMenuOpen)="toggleVisible($event, termsMenu)" appDropdown
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    class="h-5 w-5 float-right cursor-pointer text-gray-500" viewBox="0 0 20 20"
-                                    fill="currentColor">
-                                    <path
-                                        d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-                                </svg>
-                                <div #termsMenu
-                                    class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none hidden"
-                                    role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
-                                    <div class="py-1 cursor-pointer" role="none">
-                                        <label (click)="openTermEditor(true, term.id)"
-                                            class="text-gray-700 block px-4 py-2 text-sm hover:bg-kernindigo hover:text-white"
-                                            role="menuitem" tabindex="-1" id="menu-item-0">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block"
-                                                viewBox="0 0 20 20" fill="currentColor">
-                                                <path
-                                                    d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
-                                                <path fill-rule="evenodd"
-                                                    d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
-                                                    clip-rule="evenodd" />
-                                            </svg>
-                                            Edit term
-                                        </label>
-                                        <label (click)="deleteTerm(term.id)"
-                                            class="text-gray-700 block px-4 py-2 text-sm hover:bg-kernindigo hover:text-white"
-                                            role="menuitem" tabindex="-1" id="menu-item-1">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block"
-                                                viewBox="0 0 20 20" fill="currentColor">
-                                                <path fill-rule="evenodd"
-                                                    d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                                                    clip-rule="evenodd" />
-                                            </svg>
-                                            Remove term
-                                        </label>
-                                        <label (click)="blackListTerm(term.id)"
-                                            class="text-gray-700 block px-4 py-2 text-sm hover:bg-kernindigo hover:text-white"
-                                            role="menuitem" tabindex="-1" id="menu-item-1">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block"
-                                                viewBox="0 0 20 20" fill="currentColor">
-                                                <path fill-rule="evenodd"
-                                                    d="M10 1.944A11.954 11.954 0 012.166 5C2.056 5.649 2 6.319 2 7c0 5.225 3.34 9.67 8 11.317C14.66 16.67 18 12.225 18 7c0-.682-.057-1.35-.166-2.001A11.954 11.954 0 0110 1.944zM11 14a1 1 0 11-2 0 1 1 0 012 0zm0-7a1 1 0 10-2 0v3a1 1 0 102 0V7z"
-                                                    clip-rule="evenodd" />
-                                            </svg>
-                                            Blacklist term
-                                        </label>
-                                    </div>
-                                </div>
+                                <kern-dropdown class="mr-2" [dropdownOptions]="{
+                                    optionArray:['Edit term','Remove term', 'Blacklist term'],
+                                    optionIcons:['edit-term','remove-term', 'blacklist-term'],
+                                    buttonVersion: '...'
+                                }" (optionClicked)="executeOption($event, term)">
+                                </kern-dropdown>
                             </div>
-
                             <div class="text-gray-500 font-normal italic">{{term.comment}}</div>
                         </div>
                     </ng-template>
                 </ng-template>
-
-
-
             </ng-container>
         </div>
 
@@ -323,41 +235,12 @@
                         class="relative rounded-lg border border-gray-300 bg-white px-4 py-3 shadow-sm items-center text-sm hover:border-gray-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
                         <div class="flow-root">
                             <div class="text-gray-900 font-medium float-left">{{term.value}}</div>
-                            <svg (isMenuOpen)="toggleVisible($event, termsMenu)" appDropdown
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="h-5 w-5 float-right cursor-pointer text-gray-500" viewBox="0 0 20 20"
-                                fill="currentColor">
-                                <path
-                                    d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-                            </svg>
-                            <div #termsMenu
-                                class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none hidden"
-                                role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
-                                <div class="py-1 cursor-pointer" role="none">
-                                    <label (click)="deleteTerm(term.id)"
-                                        class="text-gray-700 block px-4 py-2 text-sm hover:bg-kernindigo hover:text-white"
-                                        role="menuitem" tabindex="-1" id="menu-item-1">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block"
-                                            viewBox="0 0 20 20" fill="currentColor">
-                                            <path fill-rule="evenodd"
-                                                d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                                                clip-rule="evenodd" />
-                                        </svg>
-                                        Remove term
-                                    </label>
-                                    <label (click)="blackListTerm(term.id)"
-                                        class="text-gray-700 block px-4 py-2 text-sm hover:bg-kernindigo hover:text-white"
-                                        role="menuitem" tabindex="-1" id="menu-item-1">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block"
-                                            viewBox="0 0 20 20" fill="currentColor">
-                                            <path fill-rule="evenodd"
-                                                d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                                clip-rule="evenodd" />
-                                        </svg>
-                                        Whitelist term
-                                    </label>
-                                </div>
-                            </div>
+                            <kern-dropdown class="mr-2" [dropdownOptions]="{
+                                optionArray:['Remove term', 'Whitelist term'],
+                                optionIcons:['remove-term', 'whitelist-term'],
+                                buttonVersion: '...'
+                            }" (optionClicked)="executeOption($event, term)">
+                            </kern-dropdown>
                         </div>
                         <div class="text-gray-500 font-normal block">{{term.comment}}</div>
                     </div>

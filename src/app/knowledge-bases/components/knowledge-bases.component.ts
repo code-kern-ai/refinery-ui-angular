@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { KnowledgeBasesApolloService } from 'src/app/base/services/knowledge-bases/knowledge-bases-apollo.service';
 import { RouteService } from 'src/app/base/services/route.service';
@@ -19,6 +19,7 @@ export class KnowledgeBasesComponent implements OnInit, OnDestroy {
   selectionList: string = "";
   lists: any[] = [];
   @ViewChildren("checkboxes") checkboxes: QueryList<ElementRef>;
+  @ViewChild("deleteSelectedLists") deleteSelectedLists: ElementRef;
   subscriptions$: Subscription[] = [];
 
   constructor(
@@ -79,6 +80,7 @@ export class KnowledgeBasesComponent implements OnInit, OnDestroy {
   }
 
   prepareSelectionList() {
+    this.deleteSelectedLists.nativeElement.checked = true;
     this.selectionList = "";
     this.selectedLookupLists.forEach(el => {
       if (this.selectionList) this.selectionList += "\n";
@@ -95,15 +97,17 @@ export class KnowledgeBasesComponent implements OnInit, OnDestroy {
     }
   }
 
-  toggleVisible(isVisible: boolean, menuButton: HTMLDivElement): void {
-    if (isVisible) {
-      menuButton.classList.remove('hidden');
-      menuButton.classList.add('block');
-      menuButton.classList.add('z-10');
-    } else {
-      menuButton.classList.remove('z-10');
-      menuButton.classList.remove('block');
-      menuButton.classList.add('hidden');
+  executeOption(value: string) {
+    switch(value) {
+      case 'Select all': 
+        this.setAllLookupLists(true);
+        break;
+      case 'Deselect all':
+        this.setAllLookupLists(false);
+        break;
+      case 'Delete selected':
+        this.prepareSelectionList();
+        break; 
     }
   }
 
