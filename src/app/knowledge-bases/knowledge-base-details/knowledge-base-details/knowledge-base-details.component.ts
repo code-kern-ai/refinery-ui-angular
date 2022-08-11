@@ -151,9 +151,9 @@ export class KnowledgeBaseDetailsComponent implements OnInit, AfterViewInit, OnD
     btn.disabled = !termName || !this.isTermUnique(termName);
   }
 
-  blackListTerm(termId: string) {
+  toggleBlacklistTerm(termId: string) {
     this.knowledgeBaseApolloService
-      .blacklistTerm(this.projectId, this.knowledgeBaseId, termId)
+      .toggleBlacklistTerm(this.projectId, this.knowledgeBaseId, termId)
       .pipe(first()).subscribe();
   }
 
@@ -327,7 +327,7 @@ export class KnowledgeBaseDetailsComponent implements OnInit, AfterViewInit, OnD
         break;
       case 'Blacklist term':
       case 'Whitelist term':
-        this.blackListTerm(term.id);
+        this.toggleBlacklistTerm(term.id);
         break;
     }
   }
