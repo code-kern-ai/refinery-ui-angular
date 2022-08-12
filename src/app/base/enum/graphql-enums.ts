@@ -46,8 +46,8 @@ export function labelingTaskToString(source: LabelingTask, forDisplay: boolean =
     if (forDisplay) {
         switch (source) {
             // case LabelingTask.BINARY_CLASSIFICATION: return "Binary Classification";
-            case LabelingTask.MULTICLASS_CLASSIFICATION: return "Multiclass Classification";
-            case LabelingTask.INFORMATION_EXTRACTION: return "Information Extraction";
+            case LabelingTask.MULTICLASS_CLASSIFICATION: return "Multiclass classification";
+            case LabelingTask.INFORMATION_EXTRACTION: return "Information extraction";
             case LabelingTask.NOT_SET: return "Not Set";
             default: return source;
         }
