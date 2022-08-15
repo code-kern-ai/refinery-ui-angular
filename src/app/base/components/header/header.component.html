@@ -102,7 +102,7 @@
                 </a>
 
             </div>
-            <div class="flex justify-center overflow-visible">
+            <div class="flex justify-center overflow-visible" *ngIf="!hideLogout">
                 <div *ngIf="user" class=" mr-4">
                     <kern-dropdown [dropdownOptions]="{
                             optionArray: showConfigSettings ? ['Account Settings', 'Change config', 'Logout'] : ['Account Settings', 'Logout'],

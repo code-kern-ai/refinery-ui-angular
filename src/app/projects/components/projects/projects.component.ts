@@ -88,6 +88,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   isManaged: boolean = true;
   isProjectInitial: boolean = false;
   previousValue: string;
+  isDemoUser: boolean = false;
 
   constructor(
     private projectApolloService: ProjectApolloService,
@@ -127,6 +128,15 @@ export class ProjectsComponent implements OnInit, OnDestroy {
           this.isManaged = ConfigManager.getIsManaged();
         }
       });
+      this.checkIfDemoUser();
+  }
+
+  checkIfDemoUser() {
+    if (!ConfigManager.isInit()) {
+      timer(250).subscribe(() => this.checkIfDemoUser());
+      return;
+    }
+    this.isDemoUser = ConfigManager.getIsDemo() && !ConfigManager.getIsAdmin();
   }
 
   createDefaultOrg(user) {
