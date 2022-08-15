@@ -128,7 +128,15 @@ export class ProjectsComponent implements OnInit, OnDestroy {
           this.isManaged = ConfigManager.getIsManaged();
         }
       });
-      this.isDemoUser = ConfigManager.getIsDemo() && !ConfigManager.getIsAdmin();
+      this.checkIfDemoUser();
+  }
+
+  checkIfDemoUser() {
+    if (!ConfigManager.isInit()) {
+      timer(250).subscribe(() => this.checkIfDemoUser());
+      return;
+    }
+    this.isDemoUser = ConfigManager.getIsDemo() && !ConfigManager.getIsAdmin();
   }
 
   createDefaultOrg(user) {
