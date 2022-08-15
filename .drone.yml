@@ -62,7 +62,6 @@ steps:
 trigger:
   branch:
     - dev
-    - change-node
   event:
     - push
 
