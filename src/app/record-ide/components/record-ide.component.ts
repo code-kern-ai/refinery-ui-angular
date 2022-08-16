@@ -106,7 +106,7 @@ export class RecordIDEComponent implements OnInit {
     return this.project$.pipe(first());
   }
 
-  runRecordIde(firstVisit: bool = false) {
+  runRecordIde(firstVisit: boolean = false) {
     if (!firstVisit && this.code.indexOf("import easteregg") != -1) {
       this.snakeActive = true;
     } else {
