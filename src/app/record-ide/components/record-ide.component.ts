@@ -42,7 +42,6 @@ export class RecordIDEComponent implements OnInit {
     currentPos: number
   };
   snakeActive: boolean = false;
-  firstVisit: boolean = true;
   vertical: boolean = true;
 
 
@@ -102,16 +101,13 @@ export class RecordIDEComponent implements OnInit {
     this.project$ = this.projectApolloService.getProjectById(projectId);
     this.subscriptions$.push(this.project$.subscribe((project) => {
       this.project = project;
-      if (this.firstVisit) {
-        this.runRecordIde();
-        this.firstVisit = false;
-      }
+      this.runRecordIde(true);
     }));
     return this.project$.pipe(first());
   }
 
-  runRecordIde() {
-    if (this.code.indexOf("import easteregg") != -1) {
+  runRecordIde(firstVisit: boolean = false) {
+    if (!firstVisit && this.code.indexOf("import easteregg") != -1) {
       this.snakeActive = true;
     } else {
       this.loading = true;
@@ -157,13 +153,13 @@ export class RecordIDEComponent implements OnInit {
   nextRecord() {
     this.clearIde();
     this.router.navigate(["projects", this.project.id, "record-ide", this.session], { queryParams: { pos: Math.min(this.position + 1, this.sessionData.recordIds.length) } });
-    this.firstVisit = true;
+    setTimeout(() => this.runRecordIde(), 200);
   }
 
   prevRecord() {
     this.clearIde();
     this.router.navigate(["projects", this.project.id, "record-ide", this.session], { queryParams: { pos: Math.max(this.position - 1, 1) } });
-    this.firstVisit = true;
+    setTimeout(() => this.runRecordIde(), 200);
   }
 
 }
