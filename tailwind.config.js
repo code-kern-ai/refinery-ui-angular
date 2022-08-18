@@ -49,6 +49,8 @@ module.exports = {
       /(border)-(red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-(400)/,
       /(text)-(red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-(700)/,
       /(text)-(red|yellow|green|blue)-(800)/,
+      /(text)-(white|black)/,
+      /(bg)-(gray)-(700)/
     ],
     options: {
       keyframes: true,
@@ -113,7 +115,7 @@ module.exports = {
     maxWidth: {
       "xxs": "9rem",
       "xs-1": "250px",
-      ...defaultTheme.maxWidth,
+      ...defaultTheme.maxWidth
     },
     lineHeight: {
       '12': '3rem',

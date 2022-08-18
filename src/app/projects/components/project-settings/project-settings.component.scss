@@ -4,8 +4,8 @@
     overflow-x: auto;
 }
 
-.tooltip-label::before {
-    z-index: 10;
+.tooltip::before {
+    z-index: 50;
 }
 
 .capitalize-first {

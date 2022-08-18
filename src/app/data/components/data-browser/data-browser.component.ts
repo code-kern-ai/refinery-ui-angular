@@ -1346,46 +1346,6 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     return '#2563eb';
   }
 
-  getDropdownDisplayText(
-    formControls: AbstractControl[],
-    labelFor: string
-  ): string {
-    let text = '';
-    let atLeastOneNegated: boolean = false;
-    for (let c of formControls) {
-      const hasNegate = Boolean(c.get('negate'));
-      if (labelFor == 'EMPTY' && c.get('active').value) return '';
-      else if (
-        labelFor == 'NOT_NEGATED' &&
-        c.get('active').value &&
-        (!hasNegate || (hasNegate && !c.get('negate').value))
-      ) {
-        text += (text == '' ? '' : ', ') + c.get('name').value;
-      } else if (
-        labelFor == 'NEGATED' &&
-        c.get('active').value &&
-        hasNegate &&
-        c.get('negate').value
-      ) {
-        text += (text == '' ? '' : ', ') + c.get('name').value;
-      }
-      if (
-        !atLeastOneNegated &&
-        c.get('active').value &&
-        hasNegate &&
-        c.get('negate').value
-      )
-        atLeastOneNegated = true;
-    }
-    if (labelFor == 'EMPTY') return 'None Selected';
-
-    if (labelFor == 'NOT_NEGATED' && atLeastOneNegated && text != '')
-      return text + ', ';
-
-    return text;
-  }
-
-
   focusModalInputBox(event: Event, inputBoxName: string) {
     if (event.target instanceof HTMLInputElement) {
       const modalDiv = event.target.nextSibling;

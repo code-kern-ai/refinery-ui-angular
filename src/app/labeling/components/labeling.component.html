@@ -510,8 +510,7 @@
                 </ng-template>
                 <ng-template #usersTop>
                     <div class="flex justify-center overflow-visible">
-                        <div data-tip="Go to the browser" class="tooltip tooltip-bottom relative tooltip-label"
-                            data-tooltip-target="tooltip-bottom" data-tooltip-placement="bottom">
+                        <div data-tip="Go to the browser" class="tooltip tooltip-bottom relative">
                             <button [routerLink]="['../../data']"
                                 class="bg-white text-gray-700 text-xs font-semibold mr-3 px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                                 Data browser
@@ -521,8 +520,7 @@
 
                     <div class="flex justify-center overflow-visible">
                         <div data-tip="See the programmatic view for your current record"
-                            class="tooltip tooltip-right relative tooltip-label" data-tooltip-target="tooltip-right"
-                            data-tooltip-placement="right">
+                            class="tooltip tooltip-right relative">
                             <button (click)="goToRecordIde()"
                                 class="bg-white text-gray-700 text-xs font-semibold mr-3 px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                                 Record IDE
@@ -534,7 +532,7 @@
                         <ng-template [ngIf]="userIcons.length <=5" [ngIfElse]="userDropdown">
                             <div class="flex justify-center overflow-visible">
                                 <div *ngFor="let userIcon of userIcons" [attr.data-tip]="userIcon.name"
-                                    class="tooltip tooltip-label mr-3"
+                                    class="tooltip mr-3"
                                     [ngClass]="isBottom?'tooltip-top':'tooltip-bottom'">
                                     <ng-template [ngIf]="userIcon.id != GOLD_USER_ID" [ngIfElse]="goldStar">
                                         <div class="w-8 h-8 flex cursor-pointer rounded-full justify-center items-center"
@@ -617,8 +615,7 @@
                 <div *ngIf="!isBottom" class="flex justify-center overflow-visible items-center">
                     <div class="text-sm leading-5 text-gray-500 flex-shrink-0 mr-3 my-3">
                         <div data-tip="If you reached the end, you can select new filters in the browser"
-                            class="tooltip tooltip-bottom relative tooltip-label" data-tooltip-target="tooltip-bottom"
-                            data-tooltip-placement="bottom">
+                            class="tooltip tooltip-bottom relative">
                             {{sessionData?.currentPos}} / {{sessionData?.recordIds.length}} records in <span
                                 class="cursor-help underline"
                                 style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">current

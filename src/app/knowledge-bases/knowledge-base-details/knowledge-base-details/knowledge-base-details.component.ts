@@ -151,9 +151,9 @@ export class KnowledgeBaseDetailsComponent implements OnInit, AfterViewInit, OnD
     btn.disabled = !termName || !this.isTermUnique(termName);
   }
 
-  blackListTerm(termId: string) {
+  toggleBlacklistTerm(termId: string) {
     this.knowledgeBaseApolloService
-      .blacklistTerm(this.projectId, this.knowledgeBaseId, termId)
+      .toggleBlacklistTerm(this.projectId, this.knowledgeBaseId, termId)
       .pipe(first()).subscribe();
   }
 
@@ -242,18 +242,6 @@ export class KnowledgeBaseDetailsComponent implements OnInit, AfterViewInit, OnD
     }
   }
 
-  toggleVisible(isVisible: boolean, menuButton: HTMLDivElement): void {
-    if (isVisible) {
-      menuButton.classList.remove('hidden');
-      menuButton.classList.add('block');
-      menuButton.classList.add('z-10');
-    } else {
-      menuButton.classList.remove('z-10');
-      menuButton.classList.remove('block');
-      menuButton.classList.add('hidden');
-    }
-  }
-
   deleteKnowledgeBase(project_id, knowledge_base_id) {
     this.knowledgeBaseApolloService
       .deleteKnowledgeBase(project_id, knowledge_base_id)
@@ -328,4 +316,20 @@ export class KnowledgeBaseDetailsComponent implements OnInit, AfterViewInit, OnD
   pasteLookupList(projectId: string, baseId: string, value: string, split: string, remove: boolean) {
     this.knowledgeBaseApolloService.pasteTerm(projectId, baseId, value, split, remove).pipe(first()).subscribe();
   }
+
+  executeOption(value: string, term: any) {
+    switch(value) {
+      case 'Edit term': 
+        this.openTermEditor(true, term.id, term.value, term.comment);
+        break;
+      case 'Remove term':
+        this.deleteTerm(term.id);
+        break;
+      case 'Blacklist term':
+      case 'Whitelist term':
+        this.toggleBlacklistTerm(term.id);
+        break;
+    }
+  }
+
 }

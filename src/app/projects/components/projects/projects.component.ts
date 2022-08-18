@@ -86,6 +86,9 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   saveUrl: SafeResourceUrl;
   canCreateOrg: boolean = false;
   isManaged: boolean = true;
+  isProjectInitial: boolean = false;
+  previousValue: string;
+  isDemoUser: boolean = false;
 
   constructor(
     private projectApolloService: ProjectApolloService,
@@ -125,6 +128,15 @@ export class ProjectsComponent implements OnInit, OnDestroy {
           this.isManaged = ConfigManager.getIsManaged();
         }
       });
+      this.checkIfDemoUser();
+  }
+
+  checkIfDemoUser() {
+    if (!ConfigManager.isInit()) {
+      timer(250).subscribe(() => this.checkIfDemoUser());
+      return;
+    }
+    this.isDemoUser = ConfigManager.getIsDemo() && !ConfigManager.getIsAdmin();
   }
 
   createDefaultOrg(user) {
@@ -226,15 +238,6 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     return tokenizer
   }
 
-  importSampleProject(projectName) {
-    this.projectApolloService.createSampleProject(projectName).pipe(first()).subscribe((p: Project) => {
-      if (this.router.url == "/projects") {
-        this.router.navigate(['projects', p.id, 'overview']);
-      }
-    });
-  }
-
-
   canCreateProject(): boolean {
     if (!this.name?.value) return false;
     if (this.name.value.trim() == '') return false;
@@ -334,20 +337,29 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     return utcDate.toLocaleString();
   }
 
-  toggleVisible(isVisible: boolean, menuButton: HTMLDivElement): void {
-    if (isVisible) {
-      menuButton.classList.remove('hidden');
-      menuButton.classList.add('block');
-      menuButton.classList.add('z-10');
+  startPlayback() {
+    this.saveUrl = this.urlSanatizer.bypassSecurityTrustResourceUrl(ProjectsComponent.youtubeUrl);
+  }
+
+  executeOption(value: string) {
+    if(value=='Further sample projects') {
+      window.open("https://github.com/code-kern-ai/refinery-sample-projects", "_blank");
     } else {
-      menuButton.classList.remove('z-10');
-      menuButton.classList.remove('block');
-      menuButton.classList.add('hidden');
+      this.importSampleProject(this.isProjectInitial ? this.previousValue+' - initial' : value)
     }
   }
 
-  startPlayback() {
-    this.saveUrl = this.urlSanatizer.bypassSecurityTrustResourceUrl(ProjectsComponent.youtubeUrl);
+  importSampleProject(projectName) {
+    this.projectApolloService.createSampleProject(projectName).pipe(first()).subscribe((p: Project) => {
+      if (this.router.url == "/projects") {
+        this.router.navigate(['projects', p.id, 'overview']);
+      }
+    });
+  }
+
+  setInitialValue(projectInitial) {
+    this.isProjectInitial = projectInitial.flagInitial;
+    this.previousValue = projectInitial.value;
   }
 
 }

@@ -4,7 +4,7 @@
         <div #stickyHeader class="pt-2 sticky -top-2 z-40 h-12">
             <div class="bg-white flex-grow " [ngClass]="isHeaderNormal?'':'shadow'">
                 <div class="flex-row justify-start items-center inline-block" style="transition: all .25s ease-in-out;"
-                    (dblclick)="openName(true,project.id)" [ngClass]="isHeaderNormal?'p-0':'flex py-2'">
+                    [ngClass]="isHeaderNormal?'p-0':'flex py-2'">
 
                     <button [routerLink]="['../../heuristics']" class="text-green-800 text-sm font-medium">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block" fill="none"
@@ -17,46 +17,7 @@
                     <div *ngIf="!isHeaderNormal" class="mx-4 text-sm leading-5 font-medium text-gray-500 inline-block">
                         {{informationSource.name}}</div>
 
-                    <div *ngIf="status !== 'CREATED' && status !== 'FINISHED' && status !== 'FAILED'"
-                        data-tip="Heuristic was successfully registered." class="tooltip tooltip-bottom ml-2">
-                        <span
-                            class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
-                            <svg class="mr-1.5 h-2 w-2 text-gray-400" fill="currentColor" viewBox="0 0 8 8">
-                                <circle cx="4" cy="4" r="3" />
-                            </svg>
-                            Initial
-                        </span>
-                    </div>
-                    <div *ngIf="status === 'CREATED'" data-tip="Heuristic is currently being executed."
-                        class="tooltip tooltip-bottom ml-2">
-                        <span
-                            class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
-                            <svg class="mr-1.5 h-2 w-2 text-yellow-400" fill="currentColor" viewBox="0 0 8 8">
-                                <circle cx="4" cy="4" r="3" />
-                            </svg>
-                            Running
-                        </span>
-                    </div>
-                    <div *ngIf="status === 'FINISHED'" data-tip="Heuristic was successfully executed."
-                        class="tooltip tooltip-bottom ml-2">
-                        <span
-                            class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-300 text-green-800">
-                            <svg class="mr-1.5 h-2 w-2 text-green-dark-4" fill="currentColor" viewBox="0 0 8 8">
-                                <circle cx="4" cy="4" r="3" />
-                            </svg>
-                            Finished
-                        </span>
-                    </div>
-                    <div *ngIf="status === 'FAILED'" data-tip="Heuristic ran into errors."
-                        class="tooltip tooltip-bottom ml-2">
-                        <span
-                            class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
-                            <svg class="mr-1.5 h-2 w-2 text-red-400" fill="currentColor" viewBox="0 0 8 8">
-                                <circle cx="4" cy="4" r="3" />
-                            </svg>
-                            Error
-                        </span>
-                    </div>
+                    <kern-heuristic-statuses [status]="status"></kern-heuristic-statuses>
                 </div>
             </div>
         </div>
@@ -108,53 +69,32 @@
                 <div class="font-medium">Settings</div>
                 <div class="font-normal mt-2">Labeling task</div>
 
-                <div class="mt-1 flew-wrap relative">
-                    <button type="button" data-tip="Select the labeling task"
-                        class="tooltip tooltip-right inline-flex items-center justify-center rounded-md italic border border-gray-300 shadow-sm px-4 py-1.5 items-center bg-white text-xs font-semibold text-gray-700 cursor-pointer mr-5 focus:ring-offset-2 focus:ring-offset-gray-400"
-                        id="menu-button" aria-expanded="true" aria-haspopup="true"
-                        (isMenuOpen)="toggleVisible($event, labelTasks)" appDropdown>
-                        {{ zeroShotSettings.taskId === null ? 'Select labeling task' :
-                        labelingTasks.get(zeroShotSettings.taskId).name }}
-                        <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
-                            fill="currentColor" aria-hidden="true">
-                            <path fill-rule="evenodd"
-                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                clip-rule="evenodd" />
-                        </svg>
-                    </button>
-                    <div #labelTasks
-                        class="origin-top-right absolute mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none hidden"
-                        role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
-                        <div class="py-1 cursor-pointer" role="none">
-                            <option *ngFor="let task of labelingTasksClassification" [ngValue]="task.id"
-                                (click)="changeZeroShotSettings('taskId',task.id)"
-                                class="text-gray-700 block px-4 py-1.5 text-xs hover:bg-gray-700 hover:text-white"
-                                role="menuitem" tabindex="-1" id="menu-item-0">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                                    stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-                                </svg>
-                                {{task.name }}
-                            </option>
-                        </div>
-                    </div>
 
-                    <div *ngIf="!labelingTasks.get(zeroShotSettings.taskId)?.labels.length"
-                        class="font-normal text-gray-500 p-3 inline-block">
-                        No labels for target task
-                    </div>
-                    <ng-container *ngFor="let label of labelingTasks.get(zeroShotSettings.taskId)?.labels">
-                        <span (click)="changeZeroShotSettings('excludedLabels',label.id)"
-                            [ngClass]="[getBackground(label.color), getText(label.color), getBorder(label.color), getHover(label.color)]"
-                            class="inline-flex border items-center px-2 py-0.5 rounded text-xs font-medium cursor-pointer h-6 mr-5 my-2">
-                            <span class="font-medium mr-3">{{label.name}}</span>
-                            <span class="pb-0.5">
-                                <input class="cursor-pointer align-middle" type="checkbox"
-                                    [checked]="!zeroShotSettings.excludedLabels.includes(label.id)">
+                <div class="relative flex-shrink-0 h-16 flex justify-between">
+                    <div class="flex items-center">
+                        <kern-dropdown class="mr-2" [dropdownOptions]="{
+                            optionArray:labelingTasksClassification,
+                            buttonCaption:labelingTasks.get(zeroShotSettings.taskId).name,
+                            buttonTooltip: 'Select the labeling task',
+                            valuePropertyPath:'id'
+                        }" (optionClicked)="changeZeroShotSettings('taskId',$event)">
+                        </kern-dropdown>
+                        <div *ngIf="!labelingTasks.get(zeroShotSettings.taskId)?.labels.length"
+                            class="font-normal text-gray-500 p-3 inline-block">
+                            No labels for target task
+                        </div>
+                        <ng-container *ngFor="let label of labelingTasks.get(zeroShotSettings.taskId)?.labels">
+                            <span (click)="changeZeroShotSettings('excludedLabels',label.id)"
+                                [ngClass]="[getBackground(label.color), getText(label.color), getBorder(label.color), getHover(label.color)]"
+                                class="inline-flex border items-center px-2 py-0.5 rounded text-xs font-medium cursor-pointer h-6 mr-5 my-2">
+                                <span class="font-medium mr-3">{{label.name}}</span>
+                                <span class="pb-0.5">
+                                    <input class="cursor-pointer align-middle" type="checkbox"
+                                        [checked]="!zeroShotSettings.excludedLabels.includes(label.id)">
+                                </span>
                             </span>
-                        </span>
-                    </ng-container>
+                        </ng-container>
+                    </div>
                 </div>
 
                 <div class="mt-3 grid gap-x-4 gap-y-2 items-center"
@@ -166,101 +106,31 @@
                         <kern-loading color="yellow"></kern-loading>
                     </div>
                     <div class="font-normal">Required model confidence</div>
-                    <div class="relative tooltip tooltip-right" data-tip="Select the input attribute">
-                        <button type="button"
-                            class="inline-flex items-center justify-center rounded-md italic border border-gray-300 shadow-sm px-4 py-2 bg-white text-xs font-semibold text-gray-700 cursor-pointer focus:ring-offset-2 focus:ring-offset-gray-400"
-                            id="menu-button" aria-expanded="true" aria-haspopup="true"
-                            [disabled]="zeroShotSettings.attributeSelectDisabled"
-                            [ngClass]="zeroShotSettings.attributeSelectDisabled ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
-                            (isMenuOpen)="toggleVisible($event, inputAtt)" appDropdown>
-                            {{ zeroShotSettings.attributeId === null ? 'Select input attribute' :
-                            getAttributeName(zeroShotSettings.attributeId) }}
-                            <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
-                                fill="currentColor" aria-hidden="true">
-                                <path fill-rule="evenodd"
-                                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                    clip-rule="evenodd" />
-                            </svg>
-                        </button>
-                        <div #inputAtt
-                            class="origin-top-right absolute mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none hidden"
-                            role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
-                            <div class="py-1 cursor-pointer" role="none">
-                                <option *ngFor="let att of textAttributes" [ngValue]="att.id"
-                                    (click)="changeZeroShotSettings('attributeId',att.id)"
-                                    class="text-gray-700 block px-4 py-2 text-xs hover:bg-gray-700 hover:text-white"
-                                    role="menuitem" tabindex="-1" id="menu-item-0">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-                                    </svg>
-                                    {{att.name }}
-                                </option>
-                            </div>
-                        </div>
+                    <div class="relative tooltip tooltip-right flex" data-tip="Select input attribute">
+                        <kern-dropdown class="mr-2" [dropdownOptions]="{
+                            optionArray:textAttributes,
+                            buttonCaption:getAttributeName(zeroShotSettings.attributeId),
+                            isDisabled: !zeroShotSettings.attributeSelectDisable,
+                            valuePropertyPath:'id'
+                        }" (optionClicked)="changeZeroShotSettings('attributeId',$event)">
+                        </kern-dropdown>
                     </div>
-                    <div class="relative">
-                        <button type="button" data-tip="Select the model"
-                            class="tooltip tooltip-right inline-flex items-center justify-center rounded-md italic border border-gray-300 shadow-sm w-72 px-4 py-2 bg-white text-xs font-semibold text-gray-700 cursor-pointer focus:ring-offset-2 focus:ring-offset-gray-400"
-                            id="menu-button" aria-expanded="true" aria-haspopup="true"
-                            (isMenuOpen)="toggleVisible($event, model)" appDropdown>
-                            {{ zeroShotSettings.targetConfig === null ? 'Select model' : zeroShotSettings.targetConfig
-                            }}
-                            <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
-                                fill="currentColor" aria-hidden="true">
-                                <path fill-rule="evenodd"
-                                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                    clip-rule="evenodd" />
-                            </svg>
-                        </button>
-                        <div #model
-                            class="origin-top-right absolute mt-2 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none hidden"
-                            role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
-                            <div class="py-1 cursor-pointer" role="none">
-                                <option *ngFor="let recommendation of zeroShotRecommendations"
-                                    [ngValue]="recommendation.configString"
-                                    (click)="changeZeroShotSettings('targetConfig',recommendation.configString)"
-                                    class="text-gray-700 block px-4 py-2 text-xs hover:bg-gray-700 hover:text-white"
-                                    role="menuitem" tabindex="-1" id="menu-item-0">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-                                    </svg>
-                                    {{recommendation.configString }}
-                                </option>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="relative">
-                        <button type="button" data-tip="Minimum confidence required to store predictions"
-                            class="tooltip tooltip-right inline-flex items-center justify-center rounded-md italic border border-gray-300 shadow-sm w-20 px-4 py-2 bg-white text-xs font-semibold text-gray-700 cursor-pointer focus:ring-offset-2 focus:ring-offset-gray-400"
-                            id="menu-button" aria-expanded="true" aria-haspopup="true"
-                            (isMenuOpen)="toggleVisible($event, modelConfidence)" appDropdown>
-                            {{ zeroShotSettings.minConfidence === null ? 'Select model' : zeroShotSettings.minConfidence
-                            < 1 ? (zeroShotSettings.minConfidence*100).toFixed(0) + "%" :
-                                (zeroShotSettings.minConfidence).toFixed(0) + "%" }} <svg class="-mr-1 ml-2 h-5 w-5"
-                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
-                                aria-hidden="true">
-                                <path fill-rule="evenodd"
-                                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                    clip-rule="evenodd" />
-                                </svg>
-                        </button>
-                        <div #modelConfidence
-                            class="origin-top-right absolute mt-2 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none hidden"
-                            role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
-                            <div class="py-1 cursor-pointer" role="none">
-                                <option *ngFor="let confidence of confidenceIntervals" [ngValue]="confidence"
-                                    (click)="changeZeroShotSettings('minConfidence', confidence)"
-                                    class="text-gray-700 block px-4 py-2 text-xs hover:bg-gray-700 hover:text-white"
-                                    role="menuitem" tabindex="-1" id="menu-item-0">
-                                    {{confidence}} %
-                                </option>
-                            </div>
-                        </div>
-                    </div>
+
+                    <kern-dropdown class="mr-2" [dropdownOptions]="{
+                        optionArray:zeroShotRecommendations,
+                        buttonCaption:zeroShotSettings.targetConfig,
+                        buttonTooltip: 'Select the model',
+                        valuePropertyPath:'configString'
+                    }" (optionClicked)="changeZeroShotSettings('targetConfig',$event)">
+                    </kern-dropdown>
+
+                    <kern-dropdown class="mr-2" [dropdownOptions]="{
+                        optionArray:confidenceIntervals,
+                        buttonCaption: zeroShotSettings.minConfidence | percentRound: 2,
+                        buttonTooltip: 'Minimum confidence required to store predictions',
+                        postfix: ' %'
+                    }" (optionClicked)="changeZeroShotSettings('minConfidence',$event)">
+                    </kern-dropdown>
                 </div>
             </div>
 
@@ -318,13 +188,14 @@
                             </div>
                         </div>
                     </div>
-                    <button [disabled]="testerRequestedSomething"
-                        data-tip="Computes the prediction for your given example text"
-                        [ngClass]="testerRequestedSomething ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
-                        class="tooltip tooltip-left ml-3 bg-indigo-700 text-white text-xs leading-4 font-medium px-4 py-2 rounded-md border cursor-pointer hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                        (click)="runZeroShotTest(testInput.value.trim())">
-                        Compute example
-                    </button>
+                    <div data-tip="Computes the prediction for your given example text" class="tooltip tooltip-left">
+                        <button [disabled]="testerRequestedSomething"
+                            [ngClass]="testerRequestedSomething ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
+                            class="ml-3 bg-indigo-700 text-white text-xs leading-4 font-medium px-4 py-2 rounded-md border cursor-pointer hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            (click)="runZeroShotTest(testInput.value.trim())">
+                            Compute example
+                        </button>
+                    </div>
                 </div>
 
 
@@ -348,7 +219,7 @@
                                 max="1"></progress>
                             <div class="flex flex-row items-center">
                                 <span class="text-sm select-none self-start mr-2">{{result.confidenceText}}</span>
-                                <div *ngIf="i==0 && result.confidence < zeroShotSettings.minConfidence"
+                                <div *ngIf="result.confidence < zeroShotSettings.minConfidence"
                                     data-tip="< minConfidence -> would be ignored" class="tooltip">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
                                         viewBox="0 0 24 24" stroke="#eab700" stroke-width="2">
@@ -377,18 +248,22 @@
                         <div [ngClass]="testerRequestedSomething?null:'hidden'" class="inline-block">
                             <kern-loading color="indigo"></kern-loading>
                         </div>
-                        <button [disabled]="testerRequestedSomething" data-tip="Execute the model on 10 records"
-                            [ngClass]="testerRequestedSomething ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
-                            (click)="runZeroShot10RecordTest()"
-                            class="tooltip tooltip-left bg-white text-gray-700 text-xs font-semibold px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                            Run on 10
-                        </button>
-                        <button [disabled]="!canRunProject" data-tip="Execute the model on all records"
-                            [ngClass]="!canRunProject ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
-                            (click)="runZeroShotProject()"
-                            class="z-40 tooltip tooltip-left bg-indigo-700 text-white text-xs leading-4 font-semibold px-4 py-2 rounded-md cursor-pointer ml-3 hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                            Run
-                        </button>
+                        <div data-tip="Execute the model on 10 records" class="tooltip tooltip-left">
+                            <button [disabled]="testerRequestedSomething"
+                                [ngClass]="testerRequestedSomething ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
+                                (click)="runZeroShot10RecordTest()"
+                                class="bg-white text-gray-700 text-xs font-semibold px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                Run on 10
+                            </button>
+                        </div>
+                        <div data-tip="Execute the model on all records" class="tooltip tooltip-left">
+                            <button [disabled]="!canRunProject" data-tip="Execute the model on all records"
+                                [ngClass]="!canRunProject ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
+                                (click)="runZeroShotProject()"
+                                class="bg-indigo-700 text-white text-xs leading-4 font-semibold px-4 py-2 rounded-md cursor-pointer ml-3 hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                Run
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -428,7 +303,7 @@
                                                 </span>
                                             </div>
                                             <div class="flex items-center justify-center">
-                                                <div *ngIf="(record.labels[0].confidence*100) < zeroShotSettings.minConfidence"
+                                                <div *ngIf="(record.labels[0].confidence) < zeroShotSettings.minConfidence"
                                                     data-tip="< minConfidence -> would be ignored"
                                                     class="tooltip tooltip-left mx-1">
                                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
@@ -477,7 +352,7 @@
                                                             <div class="flex flex-row items-center">
                                                                 <span
                                                                     class="text-sm select-none">{{result.confidenceText}}</span>
-                                                                <div *ngIf="i==0 && result.confidence < zeroShotSettings.minConfidence"
+                                                                <div *ngIf="result.confidence < zeroShotSettings.minConfidence"
                                                                     data-tip="< minConfidence -> would be ignored"
                                                                     class="tooltip">
                                                                     <svg xmlns="http://www.w3.org/2000/svg"

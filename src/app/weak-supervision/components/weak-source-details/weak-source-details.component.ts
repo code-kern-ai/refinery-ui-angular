@@ -169,10 +169,8 @@ export class WeakSourceDetailsComponent
       }
     } else if ('information_source_updated' == msgParts[1]) {
       if (this.informationSource.id == msgParts[2]) {
-        if (this.loggedInUser.id != msgParts[3]) {
-          this.updatedThroughWebsocket = true;
-          this.informationSourceQuery$.refetch();
-        }
+        this.updatedThroughWebsocket = true;
+        this.informationSourceQuery$.refetch();
       }
     } else if (msgParts[1] == 'embedding_deleted' || (msgParts[1] == 'embedding' && msgParts[3] == 'state')) {
       if (this.embeddingQuery$) this.embeddingQuery$.refetch();
@@ -248,7 +246,7 @@ export class WeakSourceDetailsComponent
       let labelIds = [];
       tasks.forEach((task) => {
         this.labelingTasks.set(task.id, task);
-        this.labelingTasksSortOrder.push({ key: task.id, order: task.relativePosition });
+        this.labelingTasksSortOrder.push({ key: task.id, order: task.relativePosition, name: task.name });
         labelIds.push(...task.labels.map((label) => label.id));
       });
       this.colors.domain(labelIds);
@@ -574,28 +572,8 @@ export class WeakSourceDetailsComponent
     return informationSourceTypeToString(type, false, true);
   }
 
-  toggleVisible(isVisible: boolean, menuButton: HTMLDivElement): void {
-    if (isVisible) {
-      menuButton.classList.remove('hidden');
-      menuButton.classList.add('block');
-      menuButton.classList.add('z-10');
-    } else {
-      menuButton.classList.remove('z-10');
-      menuButton.classList.remove('block');
-      menuButton.classList.add('hidden');
-    }
-  }
-
   setValueToLabelingTask(value) {
     this.labelingTaskControl.setValue(value);
-  }
-
-  navigateToTemplates() {
-    window.open("https://github.com/code-kern-ai/template-functions", "_blank");
-  }
-
-  navigateToLibraries() {
-    window.open("https://github.com/code-kern-ai/lf-execution-environment/blob/dev/requirements.txt", "_blank");
   }
 
   getBackground(color) {

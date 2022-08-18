@@ -3,12 +3,14 @@ import { Injectable } from '@angular/core';
 import { mutations } from './knowledge-bases-mutations';
 import { queries } from './knowledge-bases-queries';
 import { map } from 'rxjs/operators';
+import { ApolloChecker } from '../base/apollo-checker';
 
 @Injectable({
   providedIn: 'root',
 })
 export class KnowledgeBasesApolloService {
-  constructor(private apollo: Apollo) { }
+  private apollo: ApolloChecker;
+  constructor(private apolloBase: Apollo) { this.apollo = new ApolloChecker(this.apolloBase); }
 
   createKnowledgeBase(projectId: string) {
     return this.apollo.mutate({
@@ -53,7 +55,7 @@ export class KnowledgeBasesApolloService {
     });
   }
 
-  blacklistTerm(projectId: string, knowledgeBaseId: string, termId: string) {
+  toggleBlacklistTerm(projectId: string, knowledgeBaseId: string, termId: string) {
     return this.apollo.mutate({
       mutation: mutations.BLACKLIST_TERM,
       variables: {

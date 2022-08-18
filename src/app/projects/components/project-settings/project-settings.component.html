@@ -86,7 +86,7 @@
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-2 mt-1 align-top">
                 <div>
                     <button [routerLink]="['../add']" data-tip="Upload more records to the project"
-                        class="tooltip-label tooltip tooltip-right mr-1 inline-flex items-center px-2.5 py-2 border border-gray-300 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none cursor-pointer">
+                        class="tooltip tooltip-right mr-1 inline-flex items-center px-2.5 py-2 border border-gray-300 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none cursor-pointer">
                         <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 h-4 w-4" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round"
@@ -225,7 +225,7 @@
                                     [ngClass]="downloadPrepareMessage== DownloadStateType.PREPARATION||downloadPrepareMessage == DownloadStateType.DOWNLOAD?'opacity-50 cursor-not-allowed py-1' : 'opacity-100 cursor-pointer py-2'"
                                     class="bg-green-100 text-green-700 border border-green-400 text-xs font-semibold px-4 rounded-md cursor-pointer hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
                                     type="submit">
-                                    Prepare Download
+                                    Prepare download
                                     <kern-loading color="green"
                                         *ngIf="downloadPrepareMessage == DownloadStateType.PREPARATION || downloadPrepareMessage == DownloadStateType.DOWNLOAD">
                                     </kern-loading>

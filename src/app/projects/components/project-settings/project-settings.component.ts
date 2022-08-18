@@ -164,9 +164,9 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     }));
 
     const openModal = JSON.parse(localStorage.getItem("openModal"));
-    if(openModal) {
-      const subscription = interval(250).subscribe(()=> {
-        if(this.myModalnewRecordTask) {
+    if (openModal) {
+      const subscription = interval(250).subscribe(() => {
+        if (this.myModalnewRecordTask) {
           this.myModalnewRecordTask.nativeElement.checked = true;
           localStorage.removeItem("openModal");
           subscription.unsubscribe();
@@ -274,6 +274,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     [this.attributesQuery$, attributes$] = this.projectApolloService.getAttributesByProjectId(projectId);;
     this.subscriptions$.push(attributes$.subscribe((attributes) => {
       this.attributes = attributes;
+      this.attributesArrayText = [];
       this.attributesArray.clear();
       attributes.forEach((att) => {
         let group = this.formBuilder.group({

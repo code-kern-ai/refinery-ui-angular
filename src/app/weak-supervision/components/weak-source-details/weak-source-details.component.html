@@ -3,8 +3,7 @@
 
         <div #stickyHeader class="pt-2 sticky -top-2 z-40 h-12">
             <div class="bg-white flex-grow " [ngClass]="isHeaderNormal?'':'shadow'">
-                <div class="flex-row justify-start items-center inline-block" style="transition: all .25s ease-in-out;"
-                    (dblclick)="openName(true,project.id)" [ngClass]="isHeaderNormal?'p-0':'flex py-2'">
+                <div class="flex-row justify-start items-center inline-block" style="transition: all .25s ease-in-out;" [ngClass]="isHeaderNormal?'p-0':'flex py-2'">
 
                     <button [routerLink]="['../../heuristics']" class="text-green-800 text-sm font-medium">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block" fill="none"
@@ -17,46 +16,8 @@
                     <div *ngIf="!isHeaderNormal" class="mx-4 text-sm leading-5 font-medium text-gray-500 inline-block">
                         {{informationSource.name}}</div>
 
-                    <div *ngIf="status !== 'CREATED' && status !== 'FINISHED' && status !== 'FAILED'"
-                        data-tip="Heuristic was successfully registered." class="tooltip tooltip-bottom ml-2">
-                        <span
-                            class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
-                            <svg class="mr-1.5 h-2 w-2 text-gray-400" fill="currentColor" viewBox="0 0 8 8">
-                                <circle cx="4" cy="4" r="3" />
-                            </svg>
-                            Initial
-                        </span>
-                    </div>
-                    <div *ngIf="status === 'CREATED'" data-tip="Heuristic is currently being executed."
-                        class="tooltip tooltip-bottom ml-2">
-                        <span
-                            class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
-                            <svg class="mr-1.5 h-2 w-2 text-yellow-400" fill="currentColor" viewBox="0 0 8 8">
-                                <circle cx="4" cy="4" r="3" />
-                            </svg>
-                            Running
-                        </span>
-                    </div>
-                    <div *ngIf="status === 'FINISHED'" data-tip="Heuristic was successfully executed."
-                        class="tooltip tooltip-bottom ml-2">
-                        <span
-                            class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-300 text-green-800">
-                            <svg class="mr-1.5 h-2 w-2 text-text-green-600-4" fill="currentColor" viewBox="0 0 8 8">
-                                <circle cx="4" cy="4" r="3" />
-                            </svg>
-                            Finished
-                        </span>
-                    </div>
-                    <div *ngIf="status === 'FAILED'" data-tip="Heuristic ran into errors."
-                        class="tooltip tooltip-bottom ml-2">
-                        <span
-                            class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
-                            <svg class="mr-1.5 h-2 w-2 text-red-400" fill="currentColor" viewBox="0 0 8 8">
-                                <circle cx="4" cy="4" r="3" />
-                            </svg>
-                            Error
-                        </span>
-                    </div>
+                    <kern-heuristic-statuses [status]="status"></kern-heuristic-statuses>
+
                     <div *ngIf="informationSource.lastTask as task" data-tip="Execution time"
                         class="text-sm leading-5 font-normal text-gray-500 ml-3 mt-1 inline-block tooltip tooltip-right">
                         {{task.durationText}}
@@ -122,40 +83,13 @@
                 <div class="relative flex-shrink-0 h-16 flex justify-between">
                     <div class="flex items-center">
                         <div class="text-sm leading-5 font-medium text-gray-700 inline-block mr-2">Editor</div>
-                        <div class="mr-2">
-                            <button type="button" data-tip="Pick the labeling task"
-                                class="tooltip tooltip-right inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-1.5 items-center bg-white text-xs font-semibold text-gray-700 cursor-pointer focus:ring-offset-2 focus:ring-offset-gray-400"
-                                id="menu-button" aria-expanded="true" aria-haspopup="true"
-                                (isMenuOpen)="toggleVisible($event, labelTasks)" appDropdown>
-                                {{ labelingTaskControl.value !=null ? labelingTasks.get(labelingTaskControl.value).name
-                                :
-                                'Labeling tasks' }}
-                                <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
-                                    fill="currentColor" aria-hidden="true">
-                                    <path fill-rule="evenodd"
-                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                            </button>
-                            <div #labelTasks
-                                class="origin-top-right absolute mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none hidden"
-                                role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
-                                <div class="py-1 cursor-pointer" role="none">
-                                    <option *ngFor="let task of labelingTasksSortOrder" [ngValue]="task.key"
-                                        (click)="setValueToLabelingTask(task.key)"
-                                        [selected]="labelingTaskControl.value"
-                                        class="text-gray-700 block px-4 py-1.5 text-xs hover:bg-gray-700 hover:text-white"
-                                        role="menuitem" tabindex="-1" id="menu-item-0">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-                                        </svg>
-                                        {{labelingTasks.get(task.key).name }}
-                                    </option>
-                                </div>
-                            </div>
-                        </div>
+                        <kern-dropdown class="mr-2" [dropdownOptions]="{
+                            optionArray:labelingTasksSortOrder,
+                            buttonCaption:labelingTasks.get(labelingTaskControl.value).name,
+                            buttonTooltip: 'Pick the labeling task',
+                            valuePropertyPath:'key'
+                        }" (optionClicked)="setValueToLabelingTask($event)">
+                        </kern-dropdown>
                         <div *ngIf="getTargetTaskLabels().length == 0" class="text-sm font-normal text-gray-500">
                             No labels for target task
                         </div>
@@ -172,15 +106,15 @@
                     <div class="flex flex-row flex-nowrap items-center">
                         <div class="flex items-center justify-center"
                             *ngIf="informationSource.informationSourceType == 'LABELING_FUNCTION'">
-                            <button (click)="navigateToTemplates()" data-tip="Go to GitHub repository"
+                            <a href="https://github.com/code-kern-ai/template-functions" target="_blank" data-tip="Go to GitHub repository"
                                 class="tooltip tooltip-left bg-white text-gray-700 text-xs font-semibold  px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                                 See function templates
-                            </button>
-                            <button (click)="navigateToLibraries()"
+                            </a>
+                            <a href="https://github.com/code-kern-ai/refinery-lf-exec-env/blob/dev/requirements.txt" target="_blank"
                                 data-tip="See available libraries for this labeling function"
                                 class="ml-2 tooltip tooltip-left bg-white text-gray-700 text-xs font-semibold  px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                                 See installed libraries
-                            </button>
+                            </a>
                         </div>
                         <div class="flex items-center justify-center"
                             *ngIf="informationSource.informationSourceType == 'ACTIVE_LEARNING'">
@@ -248,13 +182,14 @@
                             Run
                         </button>
                     </div>
-                    <button #runWithWS (click)="runInformationSourceAndWeaklySupervise(project.id)"
-                        data-tip="Run weak supervision on current labeling task"
-                        [ngClass]="runWithWS.disabled ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
-                        [disabled]="hasUnsavedChanges() || !canStartISRun()"
-                        class="tooltip tooltip-left ml-2 text-white text-xs font-medium px-4 py-2 rounded-md border bg-indigo-700 hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                        Run + weakly supervise
-                    </button>
+                    <div data-tip="Run weak supervision on current labeling task" class="tooltip tooltip-left">
+                        <button #runWithWS (click)="runInformationSourceAndWeaklySupervise(project.id)"
+                            [ngClass]="runWithWS.disabled ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
+                            [disabled]="hasUnsavedChanges() || !canStartISRun()"
+                            class="ml-2 text-white text-xs font-medium px-4 py-2 rounded-md border bg-indigo-700 hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            Run + weakly supervise
+                        </button>
+                    </div>
                 </div>
             </div>
 
