@@ -400,6 +400,24 @@
                                                                     <ng-template #functionBlock>
                                                                         <div class="flex flex-col">
                                                                             <div
+                                                                                class="seperator_bottom seperator_top py-2 mt-1">
+                                                                                <div class="form-control">
+                                                                                    <label
+                                                                                        [formGroup]="groupItem.get('isWithDifferentResults')"
+                                                                                        class="cursor-pointer label p-0 search_reduced_item_width"
+                                                                                        (click)="setActiveNegateGroup(groupItem.get('isWithDifferentResults'))">
+                                                                                        <div class="h-4 w-4 border-gray-300 border rounded hover:bg-gray-200"
+                                                                                            [ngStyle]="{'background-color':getActiveNegateGroupColor(groupItem.get('isWithDifferentResults'))}">
+                                                                                        </div>
+                                                                                        <span
+                                                                                            class="label-text truncate w-full pl-2">Only
+                                                                                            with different
+                                                                                            results</span>
+                                                                                    </label>
+                                                                                </div>
+
+                                                                            </div>
+                                                                            <div
                                                                                 *ngFor="let lf of groupItem.get('informationSources').controls; let k = index">
                                                                                 <div class="form-control mt-2">
                                                                                     <label
@@ -810,334 +828,339 @@
                         </svg>
                         Configuration
                     </label>
-            </div>
-            <input #saveInputCheckbox type="checkbox" id="config-modal" class="modal-toggle"
-                (change)="focusModalInputBox($event,'config')">
-            <div class="modal">
-                <div class="modal-box text-black bg-white justify-center">
-                    <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
-                        View configuration </div>
-                    <div class="mb-2 flex flex-grow justify-center text-sm">
-                        Change the content that is displayed in the browser.</div>
-                    <div class="mb-2">
-                        <fieldset class="space-y-5">
-                            <div class="relative flex items-start">
-                                <div class="flex items-center h-5">
-                                    <input id="comments" type="checkbox"
-                                        class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
-                                        (change)="toggleHighlightText()" [checked]='highlightText'>
+                </div>
+                <input #saveInputCheckbox type="checkbox" id="config-modal" class="modal-toggle"
+                    (change)="focusModalInputBox($event,'config')">
+                <div class="modal">
+                    <div class="modal-box text-black bg-white justify-center">
+                        <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
+                            View configuration </div>
+                        <div class="mb-2 flex flex-grow justify-center text-sm">
+                            Change the content that is displayed in the browser.</div>
+                        <div class="mb-2">
+                            <fieldset class="space-y-5">
+                                <div class="relative flex items-start">
+                                    <div class="flex items-center h-5">
+                                        <input id="comments" type="checkbox"
+                                            class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
+                                            (change)="toggleHighlightText()" [checked]='highlightText'>
+                                    </div>
+                                    <div class="ml-3 text-sm">
+                                        <label class="font-medium text-gray-700">Highlight text</label>
+                                        <p id="comments-description" class="text-gray-500">During search, you can remove
+                                            the text highlighting. This makes the search a bit faster.</p>
+                                    </div>
                                 </div>
-                                <div class="ml-3 text-sm">
-                                    <label class="font-medium text-gray-700">Highlight text</label>
-                                    <p id="comments-description" class="text-gray-500">During search, you can remove
-                                        the text highlighting. This makes the search a bit faster.</p>
+                                <div class="relative flex items-start">
+                                    <div class="flex items-center h-5">
+                                        <input id="comments" type="checkbox"
+                                            class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
+                                            (change)="toggleWeakSupervisionRelated()"
+                                            [checked]='weakSupervisionRelated'>
+                                    </div>
+                                    <div class="ml-3 text-sm">
+                                        <label class="font-medium text-gray-700">Only show weakly
+                                            supervised-related</label>
+                                        <p id="comments-description" class="text-gray-500">If checked, the data-browser
+                                            will only show you heuristics that affect the weak supervision.</p>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="relative flex items-start">
-                                <div class="flex items-center h-5">
-                                    <input id="comments" type="checkbox"
-                                        class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
-                                        (change)="toggleWeakSupervisionRelated()" [checked]='weakSupervisionRelated'>
-                                </div>
-                                <div class="ml-3 text-sm">
-                                    <label class="font-medium text-gray-700">Only show weakly
-                                        supervised-related</label>
-                                    <p id="comments-description" class="text-gray-500">If checked, the data-browser
-                                        will only show you heuristics that affect the weak supervision.</p>
-                                </div>
-                            </div>
-                        </fieldset>
+                            </fieldset>
 
-                        <div class="modal-action">
-                            <label for="config-modal"
-                                class="bg-white text-gray-700 text-xs font-semibold mr-3 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
+                            <div class="modal-action">
+                                <label for="config-modal"
+                                    class="bg-white text-gray-700 text-xs font-semibold mr-3 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div data-tip="Download the currently filtered records"
-                class="tooltip tooltip-left relative flex items-center"
-                [ngClass]="extendedRecords?.sessionId ? '' : 'cursor-not-allowed'">
-                <button (click)="requestFileExport(project.id)" [disabled]="extendedRecords?.sessionId ? null:true"
-                    [ngClass]="extendedRecords?.sessionId ?  'opacity-100 cursor-pointer':'opacity-50 cursor-not-allowed pointer-events-none'"
-                    class="mr-1 inline-flex items-center px-2.5 py-1.5 border border-gray-200 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 h-5 w-5" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                    </svg>
-                    Download filtered records
-                    <span
-                        *ngIf="downloadMessage == DownloadStateType.PREPARATION || downloadMessage == DownloadStateType.DOWNLOAD"
-                        class="ml-2 inline-flex items-center rounded text-xs font-medium bg-gray-100 text-gray-800">
-                        <kern-loading color="gray"></kern-loading>
-                    </span>
-                </button>
-            </div>
+                <div data-tip="Download the currently filtered records"
+                    class="tooltip tooltip-left relative flex items-center"
+                    [ngClass]="extendedRecords?.sessionId ? '' : 'cursor-not-allowed'">
+                    <button (click)="requestFileExport(project.id)" [disabled]="extendedRecords?.sessionId ? null:true"
+                        [ngClass]="extendedRecords?.sessionId ?  'opacity-100 cursor-pointer':'opacity-50 cursor-not-allowed pointer-events-none'"
+                        class="mr-1 inline-flex items-center px-2.5 py-1.5 border border-gray-200 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 h-5 w-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        Download filtered records
+                        <span
+                            *ngIf="downloadMessage == DownloadStateType.PREPARATION || downloadMessage == DownloadStateType.DOWNLOAD"
+                            class="ml-2 inline-flex items-center rounded text-xs font-medium bg-gray-100 text-gray-800">
+                            <kern-loading color="gray"></kern-loading>
+                        </span>
+                    </button>
+                </div>
 
+            </div>
         </div>
-    </div>
-    <div class="flex flex-row flex-wrap mt-4" *ngIf="!(activeSlice?.static)">
-        <!--search list-->
-        <ng-template ngFor let-searchParam [ngForOf]="activeSearchParams" let-i="index">
-            <div *ngFor="let searchText of searchParam.splittedText;let j = index"
-                class="flex flex-row items-center gap-y-1" style="max-width:95%">
-                <div class="whitespace-pre-line break-all inline-flex rounded-full items-center py-0.5 px-2.5 text-sm font-medium border border-green-700 bg-green-100 text-green-700 grid grid-cols-2 items-center mr-2"
-                    style="grid-template-columns: auto max-content;">
-                    <div class="flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-filter inline-block"
+        <div class="flex flex-row flex-wrap mt-4" *ngIf="!(activeSlice?.static)">
+            <!--search list-->
+            <ng-template ngFor let-searchParam [ngForOf]="activeSearchParams" let-i="index">
+                <div *ngFor="let searchText of searchParam.splittedText;let j = index"
+                    class="flex flex-row items-center gap-y-1" style="max-width:95%">
+                    <div class="whitespace-pre-line break-all inline-flex rounded-full items-center py-0.5 px-2.5 text-sm font-medium border border-green-700 bg-green-100 text-green-700 grid grid-cols-2 items-center mr-2"
+                        style="grid-template-columns: auto max-content;">
+                        <div class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                class="icon icon-tabler icon-tabler-filter inline-block" width="24" height="24"
+                                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <path d="M5.5 5h13a1 1 0 0 1 .5 1.5l-5 5.5l0 7l-4 -3l0 -4l-5 -5.5a1 1 0 0 1 .5 -1.5">
+                                </path>
+                            </svg>
+                            <div class="whitespace-pre-line break-all m-auto">{{searchText}}</div>
+                        </div>
+                    </div>
+                    <div *ngIf="!(i==activeSearchParams.length-1 && j==searchParam.splittedText.length-1)"
+                        data-tip="intersection (AND)" class="tooltip mr-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chart-circles"
                             width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
                             fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                            <path d="M5.5 5h13a1 1 0 0 1 .5 1.5l-5 5.5l0 7l-4 -3l0 -4l-5 -5.5a1 1 0 0 1 .5 -1.5">
-                            </path>
+                            <circle cx="9.5" cy="9.5" r="5.5"></circle>
+                            <circle cx="12" cy="12" r="2" fill="black"></circle>
+                            <circle cx="14.5" cy="14.5" r="5.5"></circle>
                         </svg>
-                        <div class="whitespace-pre-line break-all m-auto">{{searchText}}</div>
                     </div>
                 </div>
-                <div *ngIf="!(i==activeSearchParams.length-1 && j==searchParam.splittedText.length-1)"
-                    data-tip="intersection (AND)" class="tooltip mr-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chart-circles"
-                        width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                        <circle cx="9.5" cy="9.5" r="5.5"></circle>
-                        <circle cx="12" cy="12" r="2" fill="black"></circle>
-                        <circle cx="14.5" cy="14.5" r="5.5"></circle>
-                    </svg>
-                </div>
-            </div>
-        </ng-template>
-    </div>
-
-    <!--Search Result-->
-
-    <div class="mb-3 mt-4 grow overflow-hidden overflow-y-auto" infiniteScroll [infiniteScrollDistance]="2"
-        [infiniteScrollThrottle]="50" [scrollWindow]="false" (scrolled)="fetchMoreExtended()">
-
-        <div *ngIf="loading" class="flex justify-center">
-            <kern-loading size="btn-md"></kern-loading>
+            </ng-template>
         </div>
 
-        <div *ngIf="extendedRecords && attributes && !loading" class="mr-2">
-            <div *ngIf="extendedRecords.fullCount == 0">Your search criteria didn't match any record.</div>
-            <div *ngFor="let record of extendedRecords.recordList;let i = index"
-                class="bg-white overflow-hidden shadow rounded-lg border mb-4 pb-4">
-                <div class="px-4 py-5 sm:p-6">
-                    <div *ngFor="let attribute of attributesSortOrder">
-                        <div class="font-semibold text-sm text-gray-800 font-dmMono">
-                            {{attributes.get(attribute.key).name}}
-                        </div>
-                        <div class="text-gray-800 text-sm mb-4 overflow-anywhere">
-                            <ng-template [ngIf]=" highlightText && isTextHighlightNeeded &&
+        <!--Search Result-->
+
+        <div class="mb-3 mt-4 grow overflow-hidden overflow-y-auto" infiniteScroll [infiniteScrollDistance]="2"
+            [infiniteScrollThrottle]="50" [scrollWindow]="false" (scrolled)="fetchMoreExtended()">
+
+            <div *ngIf="loading" class="flex justify-center">
+                <kern-loading size="btn-md"></kern-loading>
+            </div>
+
+            <div *ngIf="extendedRecords && attributes && !loading" class="mr-2">
+                <div *ngIf="extendedRecords.fullCount == 0">Your search criteria didn't match any record.</div>
+                <div *ngFor="let record of extendedRecords.recordList;let i = index"
+                    class="bg-white overflow-hidden shadow rounded-lg border mb-4 pb-4">
+                    <div class="px-4 py-5 sm:p-6">
+                        <div *ngFor="let attribute of attributesSortOrder">
+                            <div class="font-semibold text-sm text-gray-800 font-dmMono">
+                                {{attributes.get(attribute.key).name}}
+                            </div>
+                            <div class="text-gray-800 text-sm mb-4 overflow-anywhere">
+                                <ng-template [ngIf]=" highlightText && isTextHighlightNeeded &&
                                     isTextHighlightNeeded.get(attribute.key) &&
                                     record.data[attributes.get(attribute.key).name]" [ngIfElse]="noHighlight">
-                                <ngx-highlight-words
-                                    [textToHighlight]="record.data[attributes.get(attribute.key).name].toString()"
-                                    [searchWords]="textHighlightArray.get(attribute.key)" [autoEscape]="false"
-                                    highlightClassName="bg-yellow-300">
-                                </ngx-highlight-words>
-                            </ng-template>
-                            <ng-template #noHighlight>
-                                {{record.data[attributes.get(attribute.key).name]}}
-                            </ng-template>
+                                    <ngx-highlight-words
+                                        [textToHighlight]="record.data[attributes.get(attribute.key).name].toString()"
+                                        [searchWords]="textHighlightArray.get(attribute.key)" [autoEscape]="false"
+                                        highlightClassName="bg-yellow-300">
+                                    </ngx-highlight-words>
+                                </ng-template>
+                                <ng-template #noHighlight>
+                                    {{record.data[attributes.get(attribute.key).name]}}
+                                </ng-template>
+                            </div>
                         </div>
-                    </div>
-                    <!--rla aggregation-->
-                    <ng-template [ngIf]="record.rla_aggregation">
-                        <div class="mt-2 flex flex-col">
-                            <div class="overflow-x-auto">
-                                <div class="inline-block min-w-full align-middle">
-                                    <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-                                        <table class="min-w-full border divide-y divide-gray-300">
-                                            <thead class="bg-gray-50">
-                                                <tr>
-                                                    <th scope="col"
-                                                        class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                                        Type</th>
-                                                    <th scope="col"
-                                                        class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                                        Task</th>
-                                                    <th scope="col"
-                                                        class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                                        Label</th>
-                                                    <th scope="col"
-                                                        class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                                        Amount</th>
-                                                    <th scope="col"
-                                                        class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                                        Avg. Confidence</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody class="divide-y divide-gray-200 bg-white">
-                                                <tr *ngFor="let aggregation of record.rla_aggregation | keyvalue; let i = index"
-                                                    [ngClass]="(i%2!=0 ? 'bg-gray-50':'bg-white') + (!weakSupervisionRelated || (weakSupervisionRelated && aggregation.value.isWSRelated)?'':' hidden')">
-                                                    <td
-                                                        class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                                        {{aggregation.value.type}}</td>
-                                                    <td
-                                                        class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                                        {{aggregation.value.task}}</td>
-                                                    <td class="whitespace-nowrap text-center">
-                                                        <span
-                                                            class="inline-flex items-center px-2.5 py-0.5 rounded-md text-sm font-medium border border-0"
-                                                            [ngClass]="[getBackground(aggregation.value.color), getText(aggregation.value.color), getBorder(aggregation.value.color)]">{{aggregation.value.label}}
-                                                        </span>
+                        <!--rla aggregation-->
+                        <ng-template [ngIf]="record.rla_aggregation">
+                            <div class="mt-2 flex flex-col">
+                                <div class="overflow-x-auto">
+                                    <div class="inline-block min-w-full align-middle">
+                                        <div
+                                            class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+                                            <table class="min-w-full border divide-y divide-gray-300">
+                                                <thead class="bg-gray-50">
+                                                    <tr>
+                                                        <th scope="col"
+                                                            class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                                            Type</th>
+                                                        <th scope="col"
+                                                            class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                                            Task</th>
+                                                        <th scope="col"
+                                                            class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                                            Label</th>
+                                                        <th scope="col"
+                                                            class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                                            Amount</th>
+                                                        <th scope="col"
+                                                            class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                                            Avg. Confidence</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="divide-y divide-gray-200 bg-white">
+                                                    <tr *ngFor="let aggregation of record.rla_aggregation | keyvalue; let i = index"
+                                                        [ngClass]="(i%2!=0 ? 'bg-gray-50':'bg-white') + (!weakSupervisionRelated || (weakSupervisionRelated && aggregation.value.isWSRelated)?'':' hidden')">
+                                                        <td
+                                                            class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                                            {{aggregation.value.type}}</td>
+                                                        <td
+                                                            class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                                            {{aggregation.value.task}}</td>
+                                                        <td class="whitespace-nowrap text-center">
+                                                            <span
+                                                                class="inline-flex items-center px-2.5 py-0.5 rounded-md text-sm font-medium border border-0"
+                                                                [ngClass]="[getBackground(aggregation.value.color), getText(aggregation.value.color), getBorder(aggregation.value.color)]">{{aggregation.value.label}}
+                                                            </span>
 
-                                                    </td>
-                                                    <td
-                                                        class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                                        {{aggregation.value.amount}}</td>
-                                                    <td
-                                                        class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                                        {{aggregation.value.confidenceAvg}}</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
+                                                        </td>
+                                                        <td
+                                                            class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                                            {{aggregation.value.amount}}</td>
+                                                        <td
+                                                            class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                                            {{aggregation.value.confidenceAvg}}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </ng-template>
-                    <div class="mt-3">
-                        <div class="float-left">
-                            <ng-template [ngIf]="similarSearchHelper.embeddings?.length==0">
-                                <div data-tip="Add an embedding in the project settings"
-                                    class="tooltip tooltip-right relative z-50">
-                                    <label class="text-gray-700 text-sm font-medium">
-                                        <span class="cursor-help leading-5 underline"
-                                            style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">No
-                                            embedding, can't find similar records</span>
+                        </ng-template>
+                        <div class="mt-3">
+                            <div class="float-left">
+                                <ng-template [ngIf]="similarSearchHelper.embeddings?.length==0">
+                                    <div data-tip="Add an embedding in the project settings"
+                                        class="tooltip tooltip-right relative z-50">
+                                        <label class="text-gray-700 text-sm font-medium">
+                                            <span class="cursor-help leading-5 underline"
+                                                style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">No
+                                                embedding, can't find similar records</span>
+                                        </label>
+                                    </div>
+                                </ng-template>
+                                <ng-template [ngIf]="similarSearchHelper.embeddings?.length==1">
+                                    <label (click)="requestSimilarSearch(record.id)"
+                                        class="text-green-700 hover:text-green-500 text-sm font-medium cursor-pointer">
+                                        <span class="leading-5">Find similar
+                                            records
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="icon icon-tabler icon-tabler-angle inline-block" width="24"
+                                                height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+                                                fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                                <path d="M21 19h-18l9 -15"></path>
+                                                <path d="M20.615 15.171h.015"></path>
+                                                <path d="M19.515 11.771h.015"></path>
+                                                <path d="M17.715 8.671h.015"></path>
+                                                <path d="M15.415 5.971h.015"></path>
+                                            </svg>
+                                        </span>
                                     </label>
-                                </div>
-                            </ng-template>
-                            <ng-template [ngIf]="similarSearchHelper.embeddings?.length==1">
-                                <label (click)="requestSimilarSearch(record.id)"
-                                    class="text-green-700 hover:text-green-500 text-sm font-medium cursor-pointer">
-                                    <span class="leading-5">Find similar
-                                        records
-                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                            class="icon icon-tabler icon-tabler-angle inline-block" width="24"
-                                            height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
-                                            fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                            <path d="M21 19h-18l9 -15"></path>
-                                            <path d="M20.615 15.171h.015"></path>
-                                            <path d="M19.515 11.771h.015"></path>
-                                            <path d="M17.715 8.671h.015"></path>
-                                            <path d="M15.415 5.971h.015"></path>
-                                        </svg>
-                                    </span>
-                                </label>
-                            </ng-template>
-                            <ng-template [ngIf]="similarSearchHelper.embeddings?.length > 1">
-                                <label (click)="similarSearchHelper.rememberedRecordId = record.id"
-                                    for="similarity-search-embedding-select"
-                                    class="text-green-700 hover:text-green-500 text-sm font-medium cursor-pointer">
-                                    <span class="leading-5">Find similar
-                                        records
-                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                            class="icon icon-tabler icon-tabler-angle inline-block" width="24"
-                                            height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
-                                            fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                            <path d="M21 19h-18l9 -15"></path>
-                                            <path d="M20.615 15.171h.015"></path>
-                                            <path d="M19.515 11.771h.015"></path>
-                                            <path d="M17.715 8.671h.015"></path>
-                                            <path d="M15.415 5.971h.015"></path>
-                                        </svg>
-                                    </span>
-                                </label>
-                            </ng-template>
+                                </ng-template>
+                                <ng-template [ngIf]="similarSearchHelper.embeddings?.length > 1">
+                                    <label (click)="similarSearchHelper.rememberedRecordId = record.id"
+                                        for="similarity-search-embedding-select"
+                                        class="text-green-700 hover:text-green-500 text-sm font-medium cursor-pointer">
+                                        <span class="leading-5">Find similar
+                                            records
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="icon icon-tabler icon-tabler-angle inline-block" width="24"
+                                                height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+                                                fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                                <path d="M21 19h-18l9 -15"></path>
+                                                <path d="M20.615 15.171h.015"></path>
+                                                <path d="M19.515 11.771h.015"></path>
+                                                <path d="M17.715 8.671h.015"></path>
+                                                <path d="M15.415 5.971h.015"></path>
+                                            </svg>
+                                        </span>
+                                    </label>
+                                </ng-template>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="float-right">
-                        <label class="text-green-700 hover:text-green-500 text-sm font-medium cursor-pointer"
-                            (click)="storePreliminaryRecordIds(i+1)"
-                            [routerLink]="['../labeling/' + extendedRecords.sessionId]" [queryParams]="{pos: i+1}">
-                            <span class="leading-5">Continue with this record
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                                </svg>
-                            </span>
-                        </label>
-                    </div>
+                        <div class="float-right">
+                            <label class="text-green-700 hover:text-green-500 text-sm font-medium cursor-pointer"
+                                (click)="storePreliminaryRecordIds(i+1)"
+                                [routerLink]="['../labeling/' + extendedRecords.sessionId]" [queryParams]="{pos: i+1}">
+                                <span class="leading-5">Continue with this record
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                                    </svg>
+                                </span>
+                            </label>
+                        </div>
 
+                    </div>
                 </div>
             </div>
-        </div>
-        <ng-template [ngIf]="similarSearchHelper.embeddings?.length>1">
-            <input type="checkbox" id="similarity-search-embedding-select" class="modal-toggle">
-            <div class="modal" *ngIf="similarSearchHelper.embeddings?.length>1">
-                <div class="modal-box text-black bg-white justify-center">
-                    <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
-                        Select embedding for similarity search </div>
-                    <div *ngIf="activeSearchParams.length > 0 || similarSearchHelper.recordsInDisplay">
-                        <div class="text-red-500 mb-2 flex flex-grow justify-center text-sm">
-                            Warning: your current filter selection will be removed!</div>
+            <ng-template [ngIf]="similarSearchHelper.embeddings?.length>1">
+                <input type="checkbox" id="similarity-search-embedding-select" class="modal-toggle">
+                <div class="modal" *ngIf="similarSearchHelper.embeddings?.length>1">
+                    <div class="modal-box text-black bg-white justify-center">
+                        <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
+                            Select embedding for similarity search </div>
+                        <div *ngIf="activeSearchParams.length > 0 || similarSearchHelper.recordsInDisplay">
+                            <div class="text-red-500 mb-2 flex flex-grow justify-center text-sm">
+                                Warning: your current filter selection will be removed!</div>
+                        </div>
+                        <select #embeddingSelect class="select select-bordered select-sm w-full mt-4">
+                            <option *ngFor="let embedding of similarSearchHelper.embeddings" [value]="embedding.id">
+                                {{embedding.name }}
+                            </option>
+                        </select>
+                        <div class="modal-action">
+                            <label for="similarity-search-embedding-select"
+                                class="mr-2 bg-green-100 text-green-700 border border-green-400 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                                (click)="requestSimilarSearch(similarSearchHelper.rememberedRecordId,similarSearchHelper.embeddings[embeddingSelect.selectedIndex].id)">Search</label>
+                            <label for="similarity-search-embedding-select"
+                                class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
+                        </div>
                     </div>
-                    <select #embeddingSelect class="select select-bordered select-sm w-full mt-4">
-                        <option *ngFor="let embedding of similarSearchHelper.embeddings" [value]="embedding.id">
-                            {{embedding.name }}
-                        </option>
-                    </select>
+                </div>
+            </ng-template>
+            <input type="checkbox" id="user-info" class="modal-toggle">
+            <div class="modal" *ngIf="userFilter.currentUserInfo">
+                <div class="modal-box text-center">
+                    <h1 class="text-lg text-gray-900 mb-2">Info</h1>
+                    <div class="flex-grow items-center flex flex-col mb-2">
+                        <div class="mb-4 ">{{userFilter.currentUserInfo.user.mail}}</div>
+                        <div *ngIf="!userFilter.currentUserInfo.countSum">No labels associated with this user.</div>
+                        <div class="grid gap-x-4 gap-y-2" style="grid-template-columns: max-content max-content;">
+                            <div *ngFor="let pair of userFilter.currentUserInfo.counts" class="contents">
+                                <div class="text-base text-gray-900 font-semibold">{{pair.source}}</div>
+                                <div class="text-base text-gray-500 font-normal">{{pair.count + ' record' +
+                                    (pair.count>1?'s':'')}}</div>
+                            </div>
+                            <div *ngIf="userFilter.currentUserInfo.counts >1" class="contents">
+                                <div class="text-base text-gray-900 font-semibold mt-2">Sum</div>
+                                <div class="text-base text-gray-500 font-normal mt-2">
+                                    {{userFilter.currentUserInfo.countSum + ' record' +
+                                    (userFilter.currentUserInfo.countSum>1?'s':'')}}</div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="modal-action">
-                        <label for="similarity-search-embedding-select"
-                            class="mr-2 bg-green-100 text-green-700 border border-green-400 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-                            (click)="requestSimilarSearch(similarSearchHelper.rememberedRecordId,similarSearchHelper.embeddings[embeddingSelect.selectedIndex].id)">Search</label>
-                        <label for="similarity-search-embedding-select"
+                        <label for="user-info"
                             class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
                     </div>
                 </div>
             </div>
-        </ng-template>
-        <input type="checkbox" id="user-info" class="modal-toggle">
-        <div class="modal" *ngIf="userFilter.currentUserInfo">
-            <div class="modal-box text-center">
-                <h1 class="text-lg text-gray-900 mb-2">Info</h1>
-                <div class="flex-grow items-center flex flex-col mb-2">
-                    <div class="mb-4 ">{{userFilter.currentUserInfo.user.mail}}</div>
-                    <div *ngIf="!userFilter.currentUserInfo.countSum">No labels associated with this user.</div>
-                    <div class="grid gap-x-4 gap-y-2" style="grid-template-columns: max-content max-content;">
-                        <div *ngFor="let pair of userFilter.currentUserInfo.counts" class="contents">
-                            <div class="text-base text-gray-900 font-semibold">{{pair.source}}</div>
-                            <div class="text-base text-gray-500 font-normal">{{pair.count + ' record' +
-                                (pair.count>1?'s':'')}}</div>
-                        </div>
-                        <div *ngIf="userFilter.currentUserInfo.counts >1" class="contents">
-                            <div class="text-base text-gray-900 font-semibold mt-2">Sum</div>
-                            <div class="text-base text-gray-500 font-normal mt-2">
-                                {{userFilter.currentUserInfo.countSum + ' record' +
-                                (userFilter.currentUserInfo.countSum>1?'s':'')}}</div>
-                        </div>
+            <input type="checkbox" id="slice-information" class="modal-toggle">
+            <div class="modal">
+                <div class="modal-box text-black bg-white justify-center">
+                    <div class="flex flex-grow justify-center mb-4 font-bold">Slice Information</div>
+                    <div *ngFor="let item of sliceInfo | keyvalue : orderOriginal"
+                        class="flex flex-grow justify-between">
+                        <p>{{item.key}}</p>
+                        <p>{{item.value}}</p>
                     </div>
-                </div>
-                <div class="modal-action">
-                    <label for="user-info"
-                        class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
-                </div>
-            </div>
-        </div>
-        <input type="checkbox" id="slice-information" class="modal-toggle">
-        <div class="modal">
-            <div class="modal-box text-black bg-white justify-center">
-                <div class="flex flex-grow justify-center mb-4 font-bold">Slice Information</div>
-                <div *ngFor="let item of sliceInfo | keyvalue : orderOriginal" class="flex flex-grow justify-between">
-                    <p>{{item.key}}</p>
-                    <p>{{item.value}}</p>
-                </div>
-                <div class="modal-action">
-                    <label for="slice-information"
-                        class="mr-2 bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
+                    <div class="modal-action">
+                        <label for="slice-information"
+                            class="mr-2 bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 </div>
 
 <ng-template #buttonLabelsDisabled>
