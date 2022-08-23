@@ -16,6 +16,7 @@ import { ProjectNewComponent } from './projects/components/project-new/project-n
 import { ProjectAddComponent } from './projects/components/project-add/project-add.component';
 import { RecordIDEComponent } from './record-ide/components/record-ide.component';
 import { ConfigComponent } from './config/components/config.component';
+import { ModelDownloadComponent } from './model-download/components/model-download/model-download.component';
 
 const routes: Routes = [
   {
@@ -54,6 +55,7 @@ const routes: Routes = [
         path: 'knowledge-base/:knowledgeBaseId',
         component: KnowledgeBaseDetailsComponent, data: { name: 'KnowledgeBaseDetailsComponent' }
       },
+      { path: 'model-download', component: ModelDownloadComponent, data: { name: 'KnowledgeBasesComponent' } },
       { path: '**', component: ProjectOverviewComponent, data: { name: 'ProjectOverviewComponent' } },
       //TODO: redirecting to projects overview page and errors
     ],
