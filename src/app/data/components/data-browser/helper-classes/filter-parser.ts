@@ -89,7 +89,6 @@ export class DataBrowserFilterParser {
         array: any[],
         drillDown: boolean = false
     ): any {
-
         if (drillDown) {
             for (const l of array) {
                 this.appendBlackAndWhiteListUserForArray(appendTo, [l], false);
@@ -208,12 +207,16 @@ export class DataBrowserFilterParser {
         appendTo: string[],
         array: any[],
         labelSource: LabelSource,
-        drillDown: boolean = false
+        drillDown: boolean = false,
+        onlyNoLabel: boolean = false //for recursion of NO_LABEL only
     ): any {
-
         if (drillDown) {
             for (const l of array) {
-                this.appendBlackAndWhiteListLabelingTaskForArray(appendTo, [l], labelSource, false);
+                if (l.id == 'NO_LABEL') {
+                    this.appendBlackAndWhiteListLabelingTaskForArray(appendTo, array, labelSource, false, true);
+                } else {
+                    this.appendBlackAndWhiteListLabelingTaskForArray(appendTo, [l], labelSource, false);
+                }
             }
             return;
         }
@@ -233,7 +236,7 @@ export class DataBrowserFilterParser {
         for (let c of array) {
             if (c.active) {
                 if (c.id == 'NO_LABEL') addNoLabel = true;
-                else {
+                else if (!onlyNoLabel) {
                     if (c.negate) notInValues.push(c.id);
                     else inValues.push(c.id);
                 }
