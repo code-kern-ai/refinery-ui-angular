@@ -182,7 +182,7 @@ export class AppComponent implements OnDestroy, OnInit {
     if (!wasChecked) {
       const agent = window.navigator.userAgent;
       if (!(agent.indexOf("Chrome/") != -1 && agent.indexOf("Chromium/") == -1) || agent.indexOf("Edg/") != -1) {
-        const t = "This application was built with chrome. Some things might look differnt than expected.\n\nFor the best experience we recommend using chrome."
+        const t = "This application was built with chrome. Some things might look different than expected.\n\nFor the best experience we recommend using chrome."
         alert(t);
       }
       localStorage.setItem("browser_info_checked", "1");
