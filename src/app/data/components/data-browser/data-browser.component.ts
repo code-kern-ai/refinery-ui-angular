@@ -1911,7 +1911,6 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   }
 
   alterUser(msgId) {
-    console.log(Date.now())
     if (this.alertLastVisible && Date.now() - this.alertLastVisible < 1000) return;
     alert("Settings were changed (msgId: " + msgId + ")\nFilter will be reloaded.");
     this.alertLastVisible = Date.now();
