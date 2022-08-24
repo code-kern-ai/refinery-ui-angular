@@ -182,6 +182,8 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
 
   currentSearchRequest: CurrentSearchRequest;
 
+  alertLastVisible: number;
+
   getSearchFormArray(groupKey: string): FormArray {
     return this.fullSearch.get(groupKey).get('groupElements') as FormArray;
   }
@@ -1440,7 +1442,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     }
     else return;
     if (this.filteredSliceIds.has(idToDelete)) this.filteredSliceIds.delete(idToDelete);
-    this.projectApolloService.deleteDataSlice(this.projectId, idToDelete).pipe(first()).subscribe(() => this.clearFilters()); 
+    this.projectApolloService.deleteDataSlice(this.projectId, idToDelete).pipe(first()).subscribe(() => this.clearFilters());
   }
 
   filterAvailableSlices() {
@@ -1909,7 +1911,9 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   }
 
   alterUser(msgId) {
+    if (this.alertLastVisible && Date.now() - this.alertLastVisible < 1000) return;
     alert("Settings were changed (msgId: " + msgId + ")\nFilter will be reloaded.");
+    this.alertLastVisible = Date.now();
   }
 
   websocketFilterRefresh(currentFilterData: string) {
