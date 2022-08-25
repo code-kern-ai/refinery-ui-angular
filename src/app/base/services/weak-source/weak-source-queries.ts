@@ -98,4 +98,9 @@ export const queries = {
   }
   `,
 
+  GET_DOWNLOADED_MODELS: gql`
+  query($projectId:ID!){
+    informationSourcesOverviewData(projectId:$projectId)
+  }
+  `,
 };

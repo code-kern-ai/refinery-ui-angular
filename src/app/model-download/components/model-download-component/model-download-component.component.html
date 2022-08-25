@@ -16,16 +16,22 @@
                                 Name</th>
                             <th scope="col"
                                 class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                Type</th>
+                                Link</th>
+                            <th scope="col"
+                                class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                Version</th>
+                            <th scope="col"
+                                class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                Date</th>
                             <th scope="col"
                                 class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
                                 Status</th>
                             <th scope="col"
                                 class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                Dimensionality</th>
+                                File size</th>
                             <th scope="col"
                                 class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                Count</th>
+                                Estimated RAM</th>
                             <th scope="col"
                                 class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
                             </th>
@@ -33,11 +39,13 @@
                     </thead>
                     <tbody class="divide-y divide-gray-200">
                         <tr>
-                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">Col1</td>
-                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">Col1</td>
-                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">Col1</td>
-                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">Col1</td>
-                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">Col1</td>
+                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">Col</td>
+                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">Col</td>
+                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">Col</td>
+                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">Col</td>
+                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">Col</td>
+                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">Col</td>
+                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">Col</td>
                             <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
                                 <label [for]="'model-download'"
                                     class="modal-button btn btn-sm btn-ghost px-0 inline-block">
@@ -74,6 +82,9 @@
                                 </div>
                             </td>
                         </tr>
+                        <tr *ngFor="let model of downloadedModelsList$ | async">
+                            
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -81,13 +92,31 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-2 mt-1 align-top">
             <div>
-                <button data-tip="Add new model"
+                <label data-tip="Add new model" [for]="'add-new-model'"
                     class="tooltip tooltip-bottom mr-1 inline-flex items-center px-2.5 py-2 border border-gray-300 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none cursor-pointer">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
                     </svg>
                     Add new model
-                </button>
+                </label>
+                <input type="checkbox"
+                    [id]="'add-new-model'"
+                    class="modal-toggle">
+                <div class="modal">
+                    <div class="modal-box text-black bg-white justify-center">
+                        <div
+                            class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
+                            Add new model</div>
+                        <div class="modal-action">
+                            <label [for]="'add-new-model'"
+                                class="bg-green-100 text-green-700 border border-green-400 text-xs font-semibold mr-2 px-4 py-2 rounded flex cursor-pointer hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 inline-block"
+                                (click)="addNewModel()">Add
+                                </label>
+                            <label [for]="'add-new-model'"
+                                class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
+                        </div>
+                    </div>
+                </div>
                 <button data-tip="Download"
                     class="tooltip tooltip-bottom mr-1 inline-flex items-center px-2.5 border border-gray-300 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none cursor-pointer py-2">
                     <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 h-4 w-4" fill="none" viewBox="0 0 24 24"
@@ -96,9 +125,6 @@
                             d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                     </svg>
                     Download 
-                    <!-- <span *ngIf="downloadMessage == DownloadStateType.PREPARATION || downloadMessage == DownloadStateType.DOWNLOAD">
-                        <kern-loading color="gray"></kern-loading>
-                    </span> -->
                 </button>
             </div>
         </div>

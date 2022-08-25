@@ -98,5 +98,27 @@ export const mutations = {
     }
   }
   
-  `
+  `,
+
+  DELETE_DOWNLOADED_MODEL: gql`
+  mutation ($projectId: ID!, $informationSourceId: ID!) {
+    deleteDownloadedModel(
+      projectId: $projectId
+      informationSourceId: $informationSourceId
+    ) {
+      ok
+    }
+  }
+`,
+
+CREATE_DOWNLOADED_MODEL: gql`
+mutation ($projectId: ID!, $informationSourceId: ID!) {
+  deleteDownloadedModel(
+    projectId: $projectId
+    informationSourceId: $informationSourceId
+  ) {
+    ok
+  }
+}
+`,
 };

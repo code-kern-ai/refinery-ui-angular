@@ -428,4 +428,53 @@ export class WeakSourceApolloService {
     });
   }
 
+  getAllDownloadedModels(projectId: string) {
+    return this.apollo
+    .query({
+      query: queries.GET_DOWNLOADED_MODELS,
+      variables: {
+        projectId: projectId,
+      },
+      fetchPolicy: 'no-cache'
+    }).pipe(
+      map((result) => result['data']['downloadedModels']));
+  }
+
+  addNewModel(projectId: string, name: string, link: string, version: string) {
+    return this.apollo.mutate({
+      mutation: mutations.CREATE_DOWNLOADED_MODEL,
+      variables: {
+        projectId: projectId,
+        name: name,
+        link: link,
+        version: version
+      },
+      refetchQueries: [
+        {
+          query: queries.GET_DOWNLOADED_MODELS,
+          variables: {
+            projectId: projectId,
+          },
+        },
+      ],
+    });
+  }
+
+  deleteDownloadedModel(projectId: string) {
+    return this.apollo.mutate({
+      mutation: mutations.DELETE_DOWNLOADED_MODEL,
+      variables: {
+        projectId: projectId,
+      },
+      refetchQueries: [
+        {
+          query: queries.GET_DOWNLOADED_MODELS,
+          variables: {
+            projectId: projectId,
+          },
+        },
+      ],
+    });
+  }
+
 }
