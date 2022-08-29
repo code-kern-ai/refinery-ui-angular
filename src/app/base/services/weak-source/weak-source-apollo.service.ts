@@ -441,7 +441,7 @@ export class WeakSourceApolloService {
     return this.apollo.mutate({
       mutation: mutations.CREATE_MODEL_PROVIDER,
       variables: {
-        name: name,
+        modelName: name,
         revision: revision
       },
       refetchQueries: [
@@ -456,7 +456,7 @@ export class WeakSourceApolloService {
     return this.apollo.mutate({
       mutation: mutations.DELETE_MODEL_PROVIDER,
       variables: {
-        name: name,
+        modelName: name,
         revision: revision
       },
       refetchQueries: [
