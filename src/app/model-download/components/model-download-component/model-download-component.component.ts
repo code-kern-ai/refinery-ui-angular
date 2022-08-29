@@ -57,8 +57,9 @@ export class ModelDownloadComponentComponent implements OnInit {
     .pipe(first()).subscribe();
   }
   
-  parseUTC(utc: string) {
-    const utcDate = dateAsUTCDate(new Date(utc));
+  parseUTC(utc: any) {
+    const milliseconds = +utc * 1000;
+    const utcDate = dateAsUTCDate(new Date(milliseconds));
     return utcDate.toLocaleString();
   }
 
