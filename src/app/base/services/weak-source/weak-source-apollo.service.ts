@@ -428,50 +428,40 @@ export class WeakSourceApolloService {
     });
   }
 
-  getAllDownloadedModels(projectId: string) {
+  getModelProviders() {
     return this.apollo
     .query({
-      query: queries.GET_DOWNLOADED_MODELS,
-      variables: {
-        projectId: projectId,
-      },
+      query: queries.GET_MODEL_PROVIDERS,
       fetchPolicy: 'no-cache'
     }).pipe(
-      map((result) => result['data']['downloadedModels']));
+      map((result) => result['data']['modelProviderInfo']));
   }
 
-  addNewModel(projectId: string, name: string, link: string, version: string) {
+  createModelProvider(name: string, revision: string) {
     return this.apollo.mutate({
-      mutation: mutations.CREATE_DOWNLOADED_MODEL,
+      mutation: mutations.CREATE_MODEL_PROVIDER,
       variables: {
-        projectId: projectId,
         name: name,
-        link: link,
-        version: version
+        revision: revision
       },
       refetchQueries: [
         {
-          query: queries.GET_DOWNLOADED_MODELS,
-          variables: {
-            projectId: projectId,
-          },
+          query: queries.GET_MODEL_PROVIDERS
         },
       ],
     });
   }
 
-  deleteDownloadedModel(projectId: string) {
+  deleteModelProvider(name: string, revision: string) {
     return this.apollo.mutate({
-      mutation: mutations.DELETE_DOWNLOADED_MODEL,
+      mutation: mutations.DELETE_MODEL_PROVIDER,
       variables: {
-        projectId: projectId,
+        name: name,
+        revision: revision
       },
       refetchQueries: [
         {
-          query: queries.GET_DOWNLOADED_MODELS,
-          variables: {
-            projectId: projectId,
-          },
+          query: queries.GET_MODEL_PROVIDERS
         },
       ],
     });

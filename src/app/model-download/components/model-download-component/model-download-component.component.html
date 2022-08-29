@@ -16,36 +16,29 @@
                                 Name</th>
                             <th scope="col"
                                 class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                Link</th>
+                                Revision</th>
                             <th scope="col"
                                 class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                Version</th>
+                                Link</th>
                             <th scope="col"
                                 class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
                                 Date</th>
                             <th scope="col"
                                 class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                Status</th>
-                            <th scope="col"
-                                class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                File size</th>
-                            <th scope="col"
-                                class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                Estimated RAM</th>
+                                Size</th>
                             <th scope="col"
                                 class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
                             </th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200">
-                        <tr>
-                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">Col</td>
-                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">Col</td>
-                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">Col</td>
-                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">Col</td>
-                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">Col</td>
-                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">Col</td>
-                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">Col</td>
+                        <tr *ngFor="let model of downloadedModelsList$ | async">
+                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">{{model.name}}</td>
+                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">{{model.revision}}</td>
+                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">{{model.link}}</td>
+                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">{{model.date | date}}</td>
+                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">{{model.size}}</td>
+
                             <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
                                 <label [for]="'model-download'"
                                     class="modal-button btn btn-sm btn-ghost px-0 inline-block">
@@ -73,7 +66,7 @@
                                         <div class="modal-action">
                                             <label [for]="'model-download'"
                                                 class="bg-red-100 text-red-700 border border-red-400 text-xs font-semibold mr-2 px-4 py-2 rounded flex cursor-pointer hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 inline-block"
-                                                (click)="deleteModel()">Delete
+                                                (click)="deleteModelProvider(model.name, model.revision)">Delete
                                                 </label>
                                             <label [for]="'model-download'"
                                                 class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
@@ -81,9 +74,6 @@
                                     </div>
                                 </div>
                             </td>
-                        </tr>
-                        <tr *ngFor="let model of downloadedModelsList$ | async">
-                            
                         </tr>
                     </tbody>
                 </table>
@@ -107,10 +97,26 @@
                         <div
                             class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
                             Add new model</div>
+                        
+                        <form [formGroup]="form">
+                            <div class="form-control">
+                                <label class="text-gray-500 text-sm font-normal">Name</label>
+                                <input name="name" formControlName="name" type="text"
+                                    placeholder="Enter name here ..." required
+                                    class="input input-sm input-bordered w-full placeholder-italic mr-3">       
+                            </div>
+                            <div class="form-control">
+                                <label class="text-gray-500 text-sm font-normal">Revision</label>
+                                <input name="name" formControlName="revision" type="text"
+                                    placeholder="Enter revision here ..." required
+                                    class="input input-sm input-bordered w-full placeholder-italic mr-3">       
+                            </div>
+                        </form>
+                        
                         <div class="modal-action">
                             <label [for]="'add-new-model'"
                                 class="bg-green-100 text-green-700 border border-green-400 text-xs font-semibold mr-2 px-4 py-2 rounded flex cursor-pointer hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 inline-block"
-                                (click)="addNewModel()">Add
+                                (click)="addModelProvider()">Add
                                 </label>
                             <label [for]="'add-new-model'"
                                 class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>

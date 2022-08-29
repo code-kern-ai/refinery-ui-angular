@@ -100,25 +100,19 @@ export const mutations = {
   
   `,
 
-  DELETE_DOWNLOADED_MODEL: gql`
-  mutation ($projectId: ID!, $informationSourceId: ID!) {
-    deleteDownloadedModel(
-      projectId: $projectId
-      informationSourceId: $informationSourceId
-    ) {
-      ok
+  DELETE_MODEL_PROVIDER: gql`
+    mutation($name: String!, $revision: String!) {
+      deleteModelProvider(name: $name, revision: $revision) {
+        ok
+      }
     }
-  }
 `,
 
-CREATE_DOWNLOADED_MODEL: gql`
-mutation ($projectId: ID!, $informationSourceId: ID!) {
-  deleteDownloadedModel(
-    projectId: $projectId
-    informationSourceId: $informationSourceId
-  ) {
-    ok
-  }
+CREATE_MODEL_PROVIDER: gql`
+  mutation($model_name: String!, $revision: String!) {
+    createModelProvider(model_name: $model_name, revision: $revision) {
+      ok
+    }
 }
 `,
 };

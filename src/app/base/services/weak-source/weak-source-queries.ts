@@ -98,9 +98,15 @@ export const queries = {
   }
   `,
 
-  GET_DOWNLOADED_MODELS: gql`
-  query($projectId:ID!){
-    informationSourcesOverviewData(projectId:$projectId)
+  GET_MODEL_PROVIDERS: gql`
+  query{
+    modelProviderInfo {
+      name
+      revision
+      link
+      date
+      size
+    }
   }
   `,
 };
