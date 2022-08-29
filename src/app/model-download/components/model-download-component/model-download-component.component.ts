@@ -5,6 +5,7 @@ import { first } from 'rxjs/operators';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { RouteService } from 'src/app/base/services/route.service';
 import { WeakSourceApolloService } from 'src/app/base/services/weak-source/weak-source-apollo.service';
+import { dateAsUTCDate } from 'src/app/util/helper-functions';
 
 @Component({
   selector: 'kern-model-download-component',
@@ -18,6 +19,7 @@ export class ModelDownloadComponentComponent implements OnInit {
   downloadedModelsList$: any;
   projectId: string;
   form: FormGroup;
+  embeddings$: any;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -33,6 +35,7 @@ export class ModelDownloadComponentComponent implements OnInit {
     this.projectId = this.activatedRoute.parent.snapshot.paramMap.get('projectId');
     [this.projectQuery$, this.project$] = this.projectApolloService.getProjectByIdQuery(this.projectId);
     this.downloadedModelsList$ = this.informationSourceApolloService.getModelProviders();
+    this.embeddings$ = this.projectApolloService.getRecomendedEncodersForEmbeddings(this.projectId);
   }
 
   initForm() {
@@ -53,5 +56,11 @@ export class ModelDownloadComponentComponent implements OnInit {
     .createModelProvider(this.form.get('name').value,this.form.get('revision').value)
     .pipe(first()).subscribe();
   }
+  
+  parseUTC(utc: string) {
+    const utcDate = dateAsUTCDate(new Date(utc));
+    return utcDate.toLocaleString();
+  }
+
 
 }
