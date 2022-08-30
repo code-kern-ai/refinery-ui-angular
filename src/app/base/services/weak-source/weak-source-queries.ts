@@ -106,6 +106,7 @@ export const queries = {
       link
       date
       size
+      status
     }
   }
   `,
