@@ -437,12 +437,11 @@ export class WeakSourceApolloService {
       map((result) => result['data']['modelProviderInfo']));
   }
 
-  createModelProvider(name: string, revision: string) {
+  createModelProvider(name: string) {
     return this.apollo.mutate({
       mutation: mutations.CREATE_MODEL_PROVIDER,
       variables: {
-        modelName: name,
-        revision: revision
+        modelName: name
       },
       refetchQueries: [
         {

@@ -22,10 +22,13 @@
                                 Link</th>
                             <th scope="col"
                                 class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                Date</th>
+                                Download date</th>
                             <th scope="col"
                                 class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
                                 Size</th>
+                            <th scope="col"
+                                class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                Status</th>
                             <th scope="col"
                                 class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
                             </th>
@@ -33,15 +36,16 @@
                     </thead>
                     <tbody class="divide-y divide-gray-200">
                         <tr *ngFor="let model of downloadedModelsList$ | async">
-                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">{{model.name}}</td>
-                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">{{model.revision}}</td>
-                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">{{model.link}}</td>
+                            <td class="text-center px-3 py-2 text-sm text-gray-500">{{model.name}}</td>
+                            <td class="text-center px-3 py-2 text-sm text-gray-500">{{model.revision}}</td>
+                            <td class="text-center px-3 py-2 text-sm text-gray-500">{{model.link}}</td>
                             <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">{{parseUTC(model.date)}}</td>
                             <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">{{model.size}}</td>
-
+                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">SPINNER</td>
                             <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
                                 <label [for]="'model-download'"
-                                    class="modal-button btn btn-sm btn-ghost px-0 inline-block">
+                                    class="modal-button btn btn-sm btn-ghost px-0 inline-block"
+                                    [ngClass]="!isManaged ? 'pointer-events-none cursor-not-allowed opacity-50' : '' ">
 
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
                                         viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -82,7 +86,7 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-2 mt-1 align-top">
             <div>
-                <label data-tip="Add new model" [for]="'add-new-model'"
+                <label data-tip="Add new model" [for]="'add-new-model'" [ngClass]="!isManaged ? 'pointer-events-none cursor-not-allowed opacity-50' : '' "
                     class="tooltip tooltip-bottom mr-1 inline-flex items-center px-2.5 py-2 border border-gray-300 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none cursor-pointer">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
@@ -101,18 +105,13 @@
                         <form [formGroup]="form">
                             <div class="form-control">
                                 <label class="text-gray-500 text-sm font-normal">Name</label>
-                                <select class="select select-bordered select-sm w-full" formControlName="name">
-                                    <option selected disabled>Select</option>
-                                    <option *ngFor="let embedding of embeddings$ | async" [value]="embedding.configString">
+                                <select class="select select-bordered select-sm w-full" formControlName="name"
+                                 [ngClass]="form.get('name').value === 0 ? 'italic' : '' ">
+                                    <option value="0" selected disabled>Select</option>
+                                    <option *ngFor="let embedding of embeddings" [value]="embedding.configString">
                                         {{embedding.configString }}
                                     </option>
                                 </select>     
-                            </div>
-                            <div class="form-control">
-                                <label class="text-gray-500 text-sm font-normal">Revision</label>
-                                <input name="name" formControlName="revision" type="text"
-                                    placeholder="Enter revision here ..." required
-                                    class="input input-sm input-bordered w-full placeholder-italic mr-3">       
                             </div>
                         </form>
                         

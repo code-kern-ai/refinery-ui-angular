@@ -109,8 +109,8 @@ export const mutations = {
 `,
 
 CREATE_MODEL_PROVIDER: gql`
-  mutation($modelName: String!, $revision: String!) {
-    createModelProvider(modelName: $modelName, revision: $revision) {
+  mutation($modelName: String!) {
+    createModelProvider(modelName: $modelName) {
       ok
     }
 }
