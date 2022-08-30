@@ -29,14 +29,14 @@ export class ModelDownloadComponentComponent implements OnInit {
     private routeService: RouteService,
     private informationSourceApolloService: WeakSourceApolloService,
     private formBuilder: FormBuilder
-    ) { }
+  ) { }
 
   ngOnInit(): void {
     this.initForm();
     this.routeService.updateActivatedRoute(this.activatedRoute);
     this.projectId = this.activatedRoute.parent.snapshot.paramMap.get('projectId');
     [this.projectQuery$, this.project$] = this.projectApolloService.getProjectByIdQuery(this.projectId);
-    this.downloadedModelsList$ = this.informationSourceApolloService.getModelProviders();
+    this.downloadedModelsList$ = this.informationSourceApolloService.getModelProviderInfo();
     this.prepareEmbeddings();
     this.isManaged = ConfigManager.getIsManaged();
   }
@@ -47,18 +47,18 @@ export class ModelDownloadComponentComponent implements OnInit {
     })
   }
 
-  deleteModelProvider(name: string, revision: string) {
+  deleteModel(name: string, revision: string) {
     this.informationSourceApolloService
-    .deleteModelProvider(name, revision)
-    .pipe(first()).subscribe();
+      .deleteModel(name, revision)
+      .pipe(first()).subscribe();
   }
 
-  addModelProvider() {
+  downloadModel() {
     this.informationSourceApolloService
-    .createModelProvider(this.form.get('name').value)
-    .pipe(first()).subscribe();
+      .downloadModel(this.projectId, this.form.get('name').value)
+      .pipe(first()).subscribe();
   }
-  
+
   parseUTC(utc: any) {
     const milliseconds = +utc * 1000;
     const utcDate = dateAsUTCDate(new Date(milliseconds));
@@ -68,8 +68,8 @@ export class ModelDownloadComponentComponent implements OnInit {
   prepareEmbeddings() {
     this.projectApolloService.getRecomendedEncodersForEmbeddings(this.projectId)
       .subscribe((embeddings) => {
-        this.embeddings = embeddings.filter(el => 
-          el.configString != 'bag-of-characters' && el.configString!='bag-of-words' && el.configString!='tf-idf');
+        this.embeddings = embeddings.filter(el =>
+          el.configString != 'bag-of-characters' && el.configString != 'bag-of-words' && el.configString != 'tf-idf');
       });
   }
 

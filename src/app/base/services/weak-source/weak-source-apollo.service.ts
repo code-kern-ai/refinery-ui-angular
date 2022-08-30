@@ -428,39 +428,40 @@ export class WeakSourceApolloService {
     });
   }
 
-  getModelProviders() {
+  getModelProviderInfo() {
     return this.apollo
-    .query({
-      query: queries.GET_MODEL_PROVIDERS,
-      fetchPolicy: 'no-cache'
-    }).pipe(
-      map((result) => result['data']['modelProviderInfo']));
+      .query({
+        query: queries.GET_MODEL_PROVIDER_INFO,
+        fetchPolicy: 'no-cache'
+      }).pipe(
+        map((result) => result['data']['modelProviderInfo']));
   }
 
-  createModelProvider(name: string) {
+  downloadModel(projectId: string, name: string) {
     return this.apollo.mutate({
-      mutation: mutations.CREATE_MODEL_PROVIDER,
+      mutation: mutations.MODEL_PROVIDER_DOWNLOAD_MODEL,
       variables: {
+        projectId: projectId,
         modelName: name
       },
       refetchQueries: [
         {
-          query: queries.GET_MODEL_PROVIDERS
+          query: queries.GET_MODEL_PROVIDER_INFO
         },
       ],
     });
   }
 
-  deleteModelProvider(name: string, revision: string) {
+  deleteModel(name: string, revision: string) {
     return this.apollo.mutate({
-      mutation: mutations.DELETE_MODEL_PROVIDER,
+      mutation: mutations.MODEL_PROVIDER_DELETE_MODEL,
       variables: {
         modelName: name,
         revision: revision
       },
       refetchQueries: [
         {
-          query: queries.GET_MODEL_PROVIDERS
+          query: queries.GET_MODEL_PROVIDER_INFO
         },
       ],
     });

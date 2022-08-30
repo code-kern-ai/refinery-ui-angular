@@ -98,7 +98,7 @@ export const queries = {
   }
   `,
 
-  GET_MODEL_PROVIDERS: gql`
+  GET_MODEL_PROVIDER_INFO: gql`
   query{
     modelProviderInfo {
       name
