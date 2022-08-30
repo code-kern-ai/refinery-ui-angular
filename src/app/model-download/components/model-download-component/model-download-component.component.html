@@ -40,7 +40,7 @@
                             <td class="text-center px-3 py-2 text-sm text-gray-500">{{model.revision}}</td>
                             <td class="text-center px-3 py-2 text-sm text-gray-500">{{model.link}}</td>
                             <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">{{parseUTC(model.date)}}</td>
-                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">{{model.size}}</td>
+                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">{{formatBytes(model.size)}}</td>
                             <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">SPINNER</td>
                             <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
                                 <label [for]="'model-download'"
