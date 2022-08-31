@@ -97,22 +97,41 @@
                     [id]="'add-new-model'"
                     class="modal-toggle">
                 <div class="modal">
-                    <div class="modal-box text-black bg-white justify-center">
+                    <div class="modal-box text-black bg-white justify-center" style="overflow: initial;">
                         <div
                             class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
                             Add new model</div>
                         
-                        <form [formGroup]="form">
-                            <div class="form-control">
-                                <label class="text-gray-500 text-sm font-normal">Name</label>
-                                <select class="select select-bordered select-sm w-full" formControlName="name"
-                                 [ngClass]="form.get('name').value === 0 ? 'italic' : '' ">
-                                    <option value="0" selected disabled>Select</option>
-                                    <option *ngFor="let embedding of embeddings" [value]="embedding.configString">
-                                        {{embedding.configString }}
-                                    </option>
-                                </select>     
-                            </div>
+                        <form [formGroup]="form" class="grid grid-cols-2  gap-2 items-center mt-2"
+                            style="grid-template-columns: max-content auto;">
+                            <span data-tip="Name of your Hugging Face model"
+                                    class="z-50 tooltip tooltip-right card-title mb-0 label-text flex"><span
+                                        class="cursor-help underline"
+                                        style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Name</span></span>
+                                <div class="dropdown" *ngIf="embeddings as suggestions">
+                                    <div tabindex="0" class="flex flex-row select select-bordered select-sm pl-0 pr-8">
+                                        <input #inputEmbeddingHandle type="text" placeholder="Type to search..."
+                                            class="w-full font-bold input input-sm"
+                                            style="outline:none; box-shadow:none;height:1.9rem;"
+                                            [value]="form.get('name').value"
+                                            (focus)="$event.target.select()"
+                                            (keydown.enter)="selectFirstUnhiddenEmbeddingHandle(inputEmbeddingHandle)"
+                                            (input)="checkEmbeddingHandles($event.target)">
+                                    </div>
+                                    <ul tabindex="0"
+                                        class="p-2 w-full menu dropdown-content bg-base-100 shadow max-h-80 overflow-y-auto">
+                                        <li #me *ngFor="let embeddingHandle of suggestions; let k = index"
+                                            [ngClass]="embeddingHandle.hidden || embeddingHandle.forceHidden?'hidden':null"
+                                            (mouseenter)="setCurrentEmbeddingHandle(embeddingHandle,hoverBox,me)"
+                                            (mouseleave)="setCurrentEmbeddingHandle(null)">
+
+                                            <label class="cursor-pointer label"
+                                                (click)="selectEmbeddingHandle(embeddingHandle,inputEmbeddingHandle)">
+                                                {{embeddingHandle.configString}}
+                                            </label>
+                                        </li>
+                                    </ul>
+                                </div>
                         </form>
                         
                         <div class="modal-action">
@@ -128,4 +147,16 @@
             </div>
         </div>
     </div>
+</div>
+
+<div #hoverBox class="absolute top-0 w-fit h-fit card shadow bg-white" style="z-index: 1000;"
+[ngClass]="currentEmbeddingHandle?null:'hidden'">
+<ng-template [ngIf]="currentEmbeddingHandle">
+    <div class="card-body p-6 flex flex-col w-64">
+        <div class="flex justify-center">
+            <span class="card-title mb-2 label-text">Info</span>
+        </div>
+        <span class="label-text text-sm">{{currentEmbeddingHandle.description}}</span>
+    </div>
+</ng-template>
 </div>

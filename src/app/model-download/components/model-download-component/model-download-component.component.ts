@@ -22,6 +22,7 @@ export class ModelDownloadComponentComponent implements OnInit {
   form: FormGroup;
   embeddings: any[] = [];
   isManaged: boolean = false;
+  currentEmbeddingHandle: any;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -43,7 +44,7 @@ export class ModelDownloadComponentComponent implements OnInit {
 
   initForm() {
     this.form = this.formBuilder.group({
-      name: [0, Validators.required]
+      name: ['', Validators.required]
     })
   }
 
@@ -79,6 +80,42 @@ export class ModelDownloadComponentComponent implements OnInit {
     const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
     const i = Math.floor(Math.log(bytes) / Math.log(1024));
     return parseFloat((bytes / Math.pow(1024, i)).toFixed(dm)) + ' ' + sizes[i];
+  }
+
+  selectFirstUnhiddenEmbeddingHandle(inputElement: HTMLInputElement) {
+    for (let embeddingHandle of this.embeddings) {
+      if (!embeddingHandle.hidden && !embeddingHandle.forceHidden) {
+        this.selectEmbeddingHandle(embeddingHandle, inputElement);
+        return;
+      }
+    }
+  }
+
+  selectEmbeddingHandle(embeddingHandle, inputElement: HTMLInputElement) {
+    inputElement.value = embeddingHandle.configString;
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+    this.checkEmbeddingHandles(inputElement);
+  }
+
+  checkEmbeddingHandles(eventTarget: HTMLInputElement) {
+    this.form.get('name').setValue(eventTarget.value);
+    if (!this.embeddings || this.embeddings.length == 0) return;
+    const lowerEventValue = eventTarget.value.toLowerCase();
+    for (let embeddingHandle of this.embeddings) {
+      embeddingHandle.hidden = !embeddingHandle.configString.toLowerCase().includes(lowerEventValue)
+    }
+
+  }
+  
+  setCurrentEmbeddingHandle(embeddingHandle, hoverBox: HTMLElement, listElement: HTMLElement) {
+    this.currentEmbeddingHandle = embeddingHandle;
+    if (embeddingHandle) {
+      const dataBoundingBox: DOMRect = listElement.getBoundingClientRect();
+      hoverBox.style.top = (dataBoundingBox.top) + "px"
+      hoverBox.style.left = (dataBoundingBox.left + dataBoundingBox.width) + "px"
+    }
   }
 
 }
