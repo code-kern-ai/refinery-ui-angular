@@ -142,7 +142,7 @@ export class ModelDownloadComponentComponent implements OnInit {
   }
 
   checkIfModelIsDownloaded(modelName: string) {
-    const findModel = this.downloadedModels.find(el => el.name === modelName);
+    const findModel = this.downloadedModels && this.downloadedModels.find(el => el.name === modelName);
     return findModel !== undefined ? true : false;
   }
 
