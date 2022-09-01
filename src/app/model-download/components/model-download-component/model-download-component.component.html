@@ -44,7 +44,7 @@
                                 <ng-template [ngIf]="model.revision">{{model.revision}}</ng-template>
                             </td>
                             <td class="text-center px-3 py-2 text-sm text-gray-500">
-                                <a [href]="model.link" target="_blank" *ngIf="model.link" class="h4 w-4 mr-2"
+                                <a [href]="model.link" target="_blank" *ngIf="model.link" class="h4 w-4 m-auto block"
                                     style="padding:0px"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 m-auto"
                                     fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -204,7 +204,8 @@
                         
                         <div class="modal-action">
                             <label [for]="'add-new-model'"
-                                class="bg-green-100 text-green-700 border border-green-400 text-xs font-semibold mr-2 px-4 py-2 rounded flex cursor-pointer hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 inline-block"
+                                [ngClass]="checkIfModelIsDownloaded(form.get('name').value) ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'cursor-pointer'"
+                                class="bg-green-100 text-green-700 border border-green-400 text-xs font-semibold mr-2 px-4 py-2 rounded flex  hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 inline-block"
                                 (click)="downloadModel()">Add
                                 </label>
                             <label [for]="'add-new-model'"

@@ -77,6 +77,7 @@ export class ModelDownloadComponentComponent implements OnInit {
   }
 
   downloadModel() {
+    if(this.form.invalid) return ;
     this.subscriptions$.push(
       this.informationSourceApolloService
       .downloadModel(this.projectId, this.form.get('name').value)
