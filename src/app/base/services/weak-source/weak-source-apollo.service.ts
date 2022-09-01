@@ -429,12 +429,16 @@ export class WeakSourceApolloService {
   }
 
   getModelProviderInfo() {
-    return this.apollo
-      .query({
-        query: queries.GET_MODEL_PROVIDER_INFO,
-        fetchPolicy: 'no-cache'
-      }).pipe(
-        map((result) => result['data']['modelProviderInfo']));
+    const query = this.apollo
+      .watchQuery({
+        query:  queries.GET_MODEL_PROVIDER_INFO,
+        fetchPolicy: 'network-only', // Used for first execution
+        nextFetchPolicy: 'cache-first', // Used for subsequent executions (refetch query updates the cache != triggers the function)
+      });
+    const vc = query.valueChanges.pipe(
+      map((result) => result['data']['modelProviderInfo'])
+    );
+    return [query, vc]
   }
 
   downloadModel(projectId: string, name: string) {
@@ -443,12 +447,7 @@ export class WeakSourceApolloService {
       variables: {
         projectId: projectId,
         modelName: name
-      },
-      refetchQueries: [
-        {
-          query: queries.GET_MODEL_PROVIDER_INFO
-        },
-      ],
+      }
     });
   }
 

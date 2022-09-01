@@ -28,6 +28,7 @@ const routes: Routes = [
   { path: 'notification-center', component: NotificationCenterComponent, data: { name: 'NotificationCenterComponent' } },
   { path: 'projects/new', component: ProjectNewComponent, data: { name: 'ProjectNewComponent' } },
   { path: 'config', component: ConfigComponent, data: { name: 'ConfigComponent' } },
+  
   {
     path: 'projects/:projectId',
     component: ProjectComponent,

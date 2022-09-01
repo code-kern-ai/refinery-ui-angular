@@ -35,15 +35,60 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200">
-                        <tr *ngFor="let model of downloadedModelsList$ | async">
+                        <tr *ngFor="let model of downloadedModels; let i = index">
                             <td class="text-center px-3 py-2 text-sm text-gray-500">{{model.name}}</td>
-                            <td class="text-center px-3 py-2 text-sm text-gray-500">{{model.revision}}</td>
-                            <td class="text-center px-3 py-2 text-sm text-gray-500">{{model.link}}</td>
-                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">{{parseUTC(model.date)}}</td>
-                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">{{formatBytes(model.size)}}</td>
-                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">SPINNER</td>
+                            <td class="text-center px-3 py-2 text-sm text-gray-500">
+                                <ng-template [ngIf]="model.revision">{{model.revision}}</ng-template>
+                            </td>
+                            <td class="text-center px-3 py-2 text-sm text-gray-500">
+                                <a [href]="model.link" target="_blank" *ngIf="model.link" class="h4 w-4 mr-2"
+                                    style="padding:0px"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
+                                    fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                </svg></a>
+                            </td>
                             <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                <label [for]="'model-download'"
+                                <ng-template [ngIf]="model.date != 0">{{parseUTC(model.date)}}</ng-template>
+                            </td>
+                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                <ng-template [ngIf]="model.size === 'finished'">{{formatBytes(model.size)}}</ng-template>
+                            </td>
+                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                <div *ngIf="model.status === 'finished'" data-tip="Successfully created." class="tooltip">
+                                    <div
+                                        class="btn cursor-default btn-circle btn-xs no-animation btn-primary mx-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                            class="inline-block w-4 h-4 stroke-current" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                stroke-width="2" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div *ngIf="model.status === 'failed'" data-tip="Embedding creation ran into errors." class="tooltip">
+                                    <div class="btn cursor-default btn-circle btn-xs no-animation btn-error mx-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                            class="inline-block w-4 h-4 stroke-current" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div *ngIf="model.status === 'downloading'" data-tip="Model is downloading" class="tooltip">
+                                    <kern-loading color="yellow" size="btn-xs"></kern-loading>
+                                </div>
+                                <div *ngIf="model.status === 'initializing'" data-tip="Model is initializing" class="tooltip">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 8.25H7.5a2.25 2.25 0 00-2.25 2.25v9a2.25 2.25 0 002.25 2.25h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25H15M9 12l3 3m0 0l3-3m-3 3V2.25" />
+                                      </svg>
+                                      
+                                </div>
+                            </td>
+                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                <label [for]="'model-download'+model.name"
                                     class="modal-button btn btn-sm btn-ghost px-0 inline-block"
                                     [ngClass]="!isManaged ? 'pointer-events-none cursor-not-allowed opacity-50' : '' ">
 
@@ -54,7 +99,7 @@
                                     </svg>
                                 </label>
                                 <input type="checkbox"
-                                    [id]="'model-download'"
+                                    [id]="'model-download'+model.name"
                                     class="modal-toggle">
                                 <div class="modal">
                                     <div class="modal-box text-black bg-white justify-center">
@@ -68,16 +113,17 @@
                                             associated
                                             with it!</p>
                                         <div class="modal-action">
-                                            <label [for]="'model-download'"
+                                            <label [for]="'model-download'+model.name"
                                                 class="bg-red-100 text-red-700 border border-red-400 text-xs font-semibold mr-2 px-4 py-2 rounded flex cursor-pointer hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 inline-block"
                                                 (click)="deleteModel(model.name, model.revision)">Delete
                                                 </label>
-                                            <label [for]="'model-download'"
+                                            <label [for]="'model-download'+model.name"
                                                 class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
                                         </div>
                                     </div>
                                 </div>
                             </td>
+                            
                         </tr>
                     </tbody>
                 </table>
