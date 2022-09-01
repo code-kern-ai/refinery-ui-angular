@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl } from '@angular/forms';
-import { first } from 'rxjs/operators';
+import { first, refCount } from 'rxjs/operators';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { RouteService } from 'src/app/base/services/route.service';
 import { WeakSourceApolloService } from 'src/app/base/services/weak-source/weak-source-apollo.service';
@@ -88,6 +88,10 @@ export class ZeroShotDetailsComponent
   specificRunTaskInformation$: any;
   status: string;
   confidenceIntervals = [10, 20, 30, 40, 50, 60, 70, 80, 90];
+  downloadedModelsList$: any;
+  downloadedModelsQuery$: any;
+  downloadedModels: any[] = [];
+  modelsDownloadedState: boolean[] = [];
 
   constructor(
     private router: Router,
@@ -109,6 +113,13 @@ export class ZeroShotDetailsComponent
     this.prepareZeroShotRecommendations(projectId);
     this.subscriptions$.push(project$.subscribe((project) => this.project = project));
     combineLatest(tasks$).subscribe(() => this.prepareInformationSource(projectId));
+
+    [this.downloadedModelsQuery$, this.downloadedModelsList$] = this.informationSourceApolloService.getModelProviderInfo();
+    this.subscriptions$.push(
+      this.downloadedModelsList$.subscribe((downloadedModels) => {
+        this.downloadedModels = downloadedModels;
+        this.createModelsDownloadedStateList();
+      }));
 
     NotificationService.subscribeToNotification(this, {
       projectId: projectId,
@@ -443,5 +454,15 @@ export class ZeroShotDetailsComponent
 
   getHover(color) {
     return `hover:bg-${color}-200`
+  }
+
+  createModelsDownloadedStateList() {
+    this.zeroShotRecommendations.forEach(rec => {
+      const isDownloaded = this.downloadedModels.find(el => el.name === rec.configString);
+      console.log(isDownloaded)
+      console.log(this.downloadedModels)
+      this.modelsDownloadedState.push(isDownloaded!=undefined ? true : false);
+    })
+    console.log(this.modelsDownloadedState)
   }
 }

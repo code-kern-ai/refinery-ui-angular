@@ -23,6 +23,7 @@ import { FormArray } from "@angular/forms";
  * @textHoverColor {string, optional} - text color on hover for the dropdown options
  * @textSize {string, optional} - text size for the dropdown options
  * @isButtonSampleProjects {boolean, optional} - checks if the button is the specific one for sample project
+ * @isModelDownloaded {boolean[], optional} - checks if the model is downloaded and if so the color of the text is green
  */
 export type DropdownOptions = {
     optionArray: string[] | FormArray[] | any[];
@@ -46,5 +47,6 @@ export type DropdownOptions = {
     textHoverColor?: string;
     textSize?: string;
     isButtonSampleProjects?: boolean;
+    isModelDownloaded: boolean[];
 };
 

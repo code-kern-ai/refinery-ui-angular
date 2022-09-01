@@ -131,7 +131,8 @@
                         optionArray:zeroShotRecommendations,
                         buttonCaption:zeroShotSettings.targetConfig,
                         buttonTooltip: 'Select the model',
-                        valuePropertyPath:'configString'
+                        valuePropertyPath:'configString',
+                        isModelDownloaded: modelsDownloadedState
                     }" (optionClicked)="changeZeroShotSettings('targetConfig',$event)">
                     </kern-dropdown>
 
