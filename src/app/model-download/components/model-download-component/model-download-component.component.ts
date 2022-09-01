@@ -134,7 +134,7 @@ export class ModelDownloadComponentComponent implements OnInit {
     if(msgParts[1] === 'model_provider_download' && msgParts[2] === 'started') {
       this.downloadedModels.push({
         "name": msgParts[3],
-        "date": this.parseUTC(new Date().getSeconds()),
+        "date": dateAsUTCDate(new Date()).toLocaleString(),
         "status": "initializing"
       });
       timer(2500).subscribe(() => this.downloadedModelsQuery$.refetch());

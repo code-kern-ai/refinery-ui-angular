@@ -49,7 +49,8 @@
                                 </svg></a>
                             </td>
                             <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                <ng-template [ngIf]="model.date != 0">{{parseUTC(model.date)}}</ng-template>
+                                <ng-template [ngIf]="model.date != 0 && model.status === 'finished'">{{parseUTC(model.date)}}</ng-template>
+                                <ng-template [ngIf]="model.status === 'initializing'">{{model.date}}</ng-template>
                             </td>
                             <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
                                 <ng-template [ngIf]="model.size === 'finished'">{{formatBytes(model.size)}}</ng-template>
@@ -81,10 +82,17 @@
                                     <kern-loading color="yellow" size="btn-xs"></kern-loading>
                                 </div>
                                 <div *ngIf="model.status === 'initializing'" data-tip="Model is initializing" class="tooltip">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 8.25H7.5a2.25 2.25 0 00-2.25 2.25v9a2.25 2.25 0 002.25 2.25h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25H15M9 12l3 3m0 0l3-3m-3 3V2.25" />
-                                      </svg>
-                                      
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-loader" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <line x1="12" y1="6" x2="12" y2="3"></line>
+                                        <line x1="16.25" y1="7.75" x2="18.4" y2="5.6"></line>
+                                        <line x1="18" y1="12" x2="21" y2="12"></line>
+                                        <line x1="16.25" y1="16.25" x2="18.4" y2="18.4"></line>
+                                        <line x1="12" y1="18" x2="12" y2="21"></line>
+                                        <line x1="7.75" y1="16.25" x2="5.6" y2="18.4"></line>
+                                        <line x1="6" y1="12" x2="3" y2="12"></line>
+                                        <line x1="7.75" y1="7.75" x2="5.6" y2="5.6"></line>
+                                    </svg>
                                 </div>
                             </td>
                             <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
