@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { interval, timer } from 'rxjs';
+import { timer } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { ConfigManager } from 'src/app/base/services/config-service';
 import { NotificationService } from 'src/app/base/services/notification.service';
@@ -23,9 +23,9 @@ export class ModelDownloadComponentComponent implements OnInit {
   downloadedModelsQuery$: any;
   projectId: string;
   form: FormGroup;
-  embeddings: any[] = [];
+  models: any[] = [];
   isManaged: boolean = false;
-  currentEmbeddingHandle: any;
+  currentModelHandle: any;
   downloadedModels: any[];
 
   constructor(
@@ -42,7 +42,7 @@ export class ModelDownloadComponentComponent implements OnInit {
     this.projectId = this.activatedRoute.parent.snapshot.paramMap.get('projectId');
     [this.projectQuery$, this.project$] = this.projectApolloService.getProjectByIdQuery(this.projectId);
     [this.downloadedModelsQuery$, this.downloadedModelsList$] = this.informationSourceApolloService.getModelProviderInfo();
-    this.prepareEmbeddings();
+    this.prepareModels();
     this.isManaged = ConfigManager.getIsManaged();
 
     this.downloadedModelsList$.subscribe((downloadedModels) => this.downloadedModels = downloadedModels)
@@ -78,10 +78,10 @@ export class ModelDownloadComponentComponent implements OnInit {
     return utcDate.toLocaleString();
   }
 
-  prepareEmbeddings() {
+  prepareModels() {
     this.projectApolloService.getRecomendedEncodersForEmbeddings(this.projectId)
-      .subscribe((embeddings) => {
-        this.embeddings = embeddings.filter(el =>
+      .subscribe((models) => {
+        this.models = models.filter(el =>
           el.configString != 'bag-of-characters' && el.configString != 'bag-of-words' && el.configString != 'tf-idf');
       });
   }
@@ -95,16 +95,16 @@ export class ModelDownloadComponentComponent implements OnInit {
   }
 
   selectFirstUnhiddenEmbeddingHandle(inputElement: HTMLInputElement) {
-    for (let embeddingHandle of this.embeddings) {
-      if (!embeddingHandle.hidden && !embeddingHandle.forceHidden) {
-        this.selectEmbeddingHandle(embeddingHandle, inputElement);
+    for (let modelHandle of this.models) {
+      if (!modelHandle.hidden && !modelHandle.forceHidden) {
+        this.selectEmbeddingHandle(modelHandle, inputElement);
         return;
       }
     }
   }
 
-  selectEmbeddingHandle(embeddingHandle, inputElement: HTMLInputElement) {
-    inputElement.value = embeddingHandle.configString;
+  selectEmbeddingHandle(modelHandle, inputElement: HTMLInputElement) {
+    inputElement.value = modelHandle.configString;
     if (document.activeElement instanceof HTMLElement) {
       document.activeElement.blur();
     }
@@ -113,17 +113,17 @@ export class ModelDownloadComponentComponent implements OnInit {
 
   checkEmbeddingHandles(eventTarget: HTMLInputElement) {
     this.form.get('name').setValue(eventTarget.value);
-    if (!this.embeddings || this.embeddings.length == 0) return;
+    if (!this.models || this.models.length == 0) return;
     const lowerEventValue = eventTarget.value.toLowerCase();
-    for (let embeddingHandle of this.embeddings) {
-      embeddingHandle.hidden = !embeddingHandle.configString.toLowerCase().includes(lowerEventValue)
+    for (let modelHandle of this.models) {
+      modelHandle.hidden = !modelHandle.configString.toLowerCase().includes(lowerEventValue)
     }
 
   }
   
-  setCurrentEmbeddingHandle(embeddingHandle, hoverBox: HTMLElement, listElement: HTMLElement) {
-    this.currentEmbeddingHandle = embeddingHandle;
-    if (embeddingHandle) {
+  setCurrentEmbeddingHandle(modelHandle, hoverBox: HTMLElement, listElement: HTMLElement) {
+    this.currentModelHandle = modelHandle;
+    if (modelHandle) {
       const dataBoundingBox: DOMRect = listElement.getBoundingClientRect();
       hoverBox.style.top = (dataBoundingBox.top) + "px"
       hoverBox.style.left = (dataBoundingBox.left + dataBoundingBox.width) + "px"
@@ -138,8 +138,12 @@ export class ModelDownloadComponentComponent implements OnInit {
         "status": "initializing"
       });
       timer(2500).subscribe(() => this.downloadedModelsQuery$.refetch());
-      
     }
+  }
+
+  checkIfModelIsDownloaded(modelName: string) {
+    const findModel = this.downloadedModels.find(el => el.name === modelName);
+    return findModel !== undefined ? true : false;
   }
 
 }

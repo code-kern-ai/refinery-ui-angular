@@ -49,11 +49,11 @@
                                 </svg></a>
                             </td>
                             <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                <ng-template [ngIf]="model.date != 0 && model.status === 'finished'">{{parseUTC(model.date)}}</ng-template>
+                                <ng-template [ngIf]="model.date != 0 && (model.status === 'finished' || model.status === 'downloading')">{{parseUTC(model.date)}}</ng-template>
                                 <ng-template [ngIf]="model.status === 'initializing'">{{model.date}}</ng-template>
                             </td>
                             <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                <ng-template [ngIf]="model.size === 'finished'">{{formatBytes(model.size)}}</ng-template>
+                                <ng-template [ngIf]="model.status === 'finished'">{{formatBytes(model.size)}}</ng-template>
                             </td>
                             <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
                                 <div *ngIf="model.status === 'finished'" data-tip="Successfully created." class="tooltip">
@@ -162,7 +162,7 @@
                                     class="z-50 tooltip tooltip-right card-title mb-0 label-text flex"><span
                                         class="cursor-help underline"
                                         style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Name</span></span>
-                                <div class="dropdown" *ngIf="embeddings as suggestions">
+                                <div class="dropdown" *ngIf="models as suggestions">
                                     <div tabindex="0" class="flex flex-row select select-bordered select-sm pl-0 pr-8">
                                         <input #inputEmbeddingHandle type="text" placeholder="Type to search..."
                                             class="w-full font-bold input input-sm"
@@ -174,15 +174,22 @@
                                     </div>
                                     <ul tabindex="0"
                                         class="p-2 w-full menu dropdown-content bg-base-100 shadow max-h-80 overflow-y-auto">
-                                        <li #me *ngFor="let embeddingHandle of suggestions; let k = index"
-                                            [ngClass]="embeddingHandle.hidden || embeddingHandle.forceHidden?'hidden':null"
-                                            (mouseenter)="setCurrentEmbeddingHandle(embeddingHandle,hoverBox,me)"
-                                            (mouseleave)="setCurrentEmbeddingHandle(null)">
+                                        <li #me *ngFor="let modelHandle of suggestions; let k = index"
+                                            [ngClass]="modelHandle.hidden || modelHandle.forceHidden?'hidden':null"
+                                            (mouseenter)="setCurrentEmbeddingHandle(modelHandle,hoverBox,me)"
+                                            (mouseleave)="setCurrentEmbeddingHandle(null)" class="flex flex-row">
 
                                             <label class="cursor-pointer label"
-                                                (click)="selectEmbeddingHandle(embeddingHandle,inputEmbeddingHandle)">
-                                                {{embeddingHandle.configString}}
+                                                (click)="selectEmbeddingHandle(modelHandle,inputEmbeddingHandle)">
+                                                {{modelHandle.configString}}
                                             </label>
+                                            <svg xmlns="http://www.w3.org/2000/svg" style="margin: auto 0 auto auto" *ngIf="checkIfModelIsDownloaded(modelHandle.configString)"
+                                                class="icon icon-tabler icon-tabler-file-check" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                                <path d="M14 3v4a1 1 0 0 0 1 1h4"></path>
+                                                <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z"></path>
+                                                <path d="M9 15l2 2l4 -4"></path>
+                                             </svg>
                                         </li>
                                     </ul>
                                 </div>
@@ -204,13 +211,13 @@
 </div>
 
 <div #hoverBox class="absolute top-0 w-fit h-fit card shadow bg-white" style="z-index: 1000;"
-[ngClass]="currentEmbeddingHandle?null:'hidden'">
-<ng-template [ngIf]="currentEmbeddingHandle">
+[ngClass]="currentModelHandle?null:'hidden'">
+<ng-template [ngIf]="currentModelHandle">
     <div class="card-body p-6 flex flex-col w-64">
         <div class="flex justify-center">
             <span class="card-title mb-2 label-text">Info</span>
         </div>
-        <span class="label-text text-sm">{{currentEmbeddingHandle.description}}</span>
+        <span class="label-text text-sm">{{currentModelHandle.description}}</span>
     </div>
 </ng-template>
 </div>
