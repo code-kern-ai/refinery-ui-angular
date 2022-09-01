@@ -74,7 +74,7 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
   @ViewChild("deleteSelectedHeuristics") deleteSelectedHeuristics: ElementRef;
   downloadedModelsList$: any;
   downloadedModelsQuery$: any;
-  downloadedModels: any[] = [];
+  downloadedModels: any[];
 
   constructor(
     private router: Router,

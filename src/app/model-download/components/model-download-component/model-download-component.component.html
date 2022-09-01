@@ -38,7 +38,7 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200">
-                        <tr *ngFor="let model of downloadedModels; let i = index">
+                        <tr *ngFor="let model of downloadedModels">
                             <td class="text-center px-3 py-2 text-sm text-gray-500">{{model.name}}</td>
                             <td class="text-center px-3 py-2 text-sm text-gray-500">
                                 <ng-template [ngIf]="model.revision">{{model.revision}}</ng-template>
@@ -56,7 +56,7 @@
                                 <ng-template [ngIf]="model.status === 'initializing'">{{model.date}}</ng-template>
                             </td>
                             <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                <ng-template [ngIf]="model.status === 'finished'">{{formatBytes(model.size)}}</ng-template>
+                                <ng-template [ngIf]="model.status === 'finished'">{{model.size}}</ng-template>
                             </td>
                             <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
                                 <ng-template [ngIf]="model.zeroShotPipeline">IS ZS</ng-template>
@@ -190,13 +190,6 @@
                                                 (click)="selectEmbeddingHandle(modelHandle,inputEmbeddingHandle)">
                                                 {{modelHandle.configString}}
                                             </label>
-                                            <!-- <svg xmlns="http://www.w3.org/2000/svg" style="margin: auto 0 auto auto" *ngIf=""
-                                                class="icon icon-tabler icon-tabler-file-check" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                                <path d="M14 3v4a1 1 0 0 0 1 1h4"></path>
-                                                <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z"></path>
-                                                <path d="M9 15l2 2l4 -4"></path>
-                                             </svg> -->
                                         </li>
                                     </ul>
                                 </div>

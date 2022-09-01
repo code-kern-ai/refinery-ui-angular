@@ -120,7 +120,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
   @ViewChild('modalInput', { read: ElementRef }) myModalnewRecordTask: ElementRef;
   downloadedModelsList$: any;
   downloadedModelsQuery$: any;
-  downloadedModels: any[] = [];
+  downloadedModels: any[];
 
   constructor(
     private routeService: RouteService,

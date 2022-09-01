@@ -8,7 +8,7 @@ import { NotificationService } from 'src/app/base/services/notification.service'
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { RouteService } from 'src/app/base/services/route.service';
 import { WeakSourceApolloService } from 'src/app/base/services/weak-source/weak-source-apollo.service';
-import { dateAsUTCDate } from 'src/app/util/helper-functions';
+import { dateAsUTCDate, formatBytes } from 'src/app/util/helper-functions';
 
 @Component({
   selector: 'kern-model-download-component',
@@ -26,7 +26,7 @@ export class ModelDownloadComponentComponent implements OnInit {
   models: any[] = [];
   isManaged: boolean = false;
   currentModelHandle: any;
-  downloadedModels: any[] = [];
+  downloadedModels: any[];
   subscriptions$: Subscription[] = [];
 
   constructor(
@@ -44,11 +44,15 @@ export class ModelDownloadComponentComponent implements OnInit {
     [this.projectQuery$, this.project$] = this.projectApolloService.getProjectByIdQuery(this.projectId);
     [this.downloadedModelsQuery$, this.downloadedModelsList$] = this.informationSourceApolloService.getModelProviderInfo();
     this.prepareModels();
-    this.prepareZeroShotRecommendations(this.projectId);
     this.isManaged = ConfigManager.getIsManaged();
 
     this.subscriptions$.push(
-      this.downloadedModelsList$.subscribe((downloadedModels) => this.downloadedModels = downloadedModels));
+      this.downloadedModelsList$.subscribe((downloadedModels) => {
+        this.downloadedModels = downloadedModels;
+        this.downloadedModels.forEach(model => {
+          model.size = formatBytes(model.size);
+        })
+      }));
 
     NotificationService.subscribeToNotification(this, {
       projectId: this.projectId,
@@ -69,20 +73,16 @@ export class ModelDownloadComponentComponent implements OnInit {
   }
 
   deleteModel(name: string, revision: string) {
-    this.subscriptions$.push(
-      this.informationSourceApolloService
-      .deleteModel(name,revision)
-      .pipe(first()).subscribe()
-    );
+    this.informationSourceApolloService
+    .deleteModel(name,revision)
+    .pipe(first()).subscribe();
   }
 
   downloadModel() {
     if(this.form.invalid) return ;
-    this.subscriptions$.push(
-      this.informationSourceApolloService
+    this.informationSourceApolloService
       .downloadModel(this.projectId, this.form.get('name').value)
-      .pipe(first()).subscribe()
-    );
+      .pipe(first()).subscribe();
   }
 
   parseUTC(utc: any) {
@@ -92,27 +92,23 @@ export class ModelDownloadComponentComponent implements OnInit {
   }
 
   prepareModels() {
-    this.subscriptions$.push(this.projectApolloService.getRecomendedEncodersForEmbeddings(this.projectId)
+    this.projectApolloService.getRecomendedEncodersForEmbeddings(this.projectId)
+      .pipe(first())
       .subscribe((models) => {
         this.models = models.filter(el =>
           el.configString != 'bag-of-characters' && el.configString != 'bag-of-words' && el.configString != 'tf-idf');
-      }));
+          this.prepareZeroShotRecommendations(this.projectId);
+      });
+      
   }
 
   prepareZeroShotRecommendations(projectId: string) {
     let q, vc;
     [q, vc] = this.informationSourceApolloService.getZeroShotRecommendations(projectId);
-    this.subscriptions$.push(vc.pipe(first()).subscribe((r) => {
-      r.forEach((rec) => this.models.push(rec))
-    }));
-  }
-
-  formatBytes(bytes, decimals = 2) {
-    if (bytes === 0) return '0 Bytes';
-    const dm = decimals < 0 ? 0 : decimals;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(1024));
-    return parseFloat((bytes / Math.pow(1024, i)).toFixed(dm)) + ' ' + sizes[i];
+    vc.pipe(first()).subscribe((r) => {
+      r.forEach((rec) => this.models.push(rec)
+      )
+    });
   }
 
   selectFirstUnhiddenEmbeddingHandle(inputElement: HTMLInputElement) {

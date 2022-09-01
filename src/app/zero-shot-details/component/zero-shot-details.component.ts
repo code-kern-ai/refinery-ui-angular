@@ -90,7 +90,7 @@ export class ZeroShotDetailsComponent
   confidenceIntervals = [10, 20, 30, 40, 50, 60, 70, 80, 90];
   downloadedModelsList$: any;
   downloadedModelsQuery$: any;
-  downloadedModels: any[] = [];
+  downloadedModels: any[];
   modelsDownloadedState: boolean[] = [];
 
   constructor(
