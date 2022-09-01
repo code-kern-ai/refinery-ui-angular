@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { timer } from 'rxjs';
+import { Subscription, timer } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { ConfigManager } from 'src/app/base/services/config-service';
 import { NotificationService } from 'src/app/base/services/notification.service';
@@ -26,7 +26,8 @@ export class ModelDownloadComponentComponent implements OnInit {
   models: any[] = [];
   isManaged: boolean = false;
   currentModelHandle: any;
-  downloadedModels: any[];
+  downloadedModels: any[] = [];
+  subscriptions$: Subscription[] = [];
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -43,15 +44,22 @@ export class ModelDownloadComponentComponent implements OnInit {
     [this.projectQuery$, this.project$] = this.projectApolloService.getProjectByIdQuery(this.projectId);
     [this.downloadedModelsQuery$, this.downloadedModelsList$] = this.informationSourceApolloService.getModelProviderInfo();
     this.prepareModels();
+    this.prepareZeroShotRecommendations(this.projectId);
     this.isManaged = ConfigManager.getIsManaged();
 
-    this.downloadedModelsList$.subscribe((downloadedModels) => this.downloadedModels = downloadedModels)
+    this.subscriptions$.push(
+      this.downloadedModelsList$.subscribe((downloadedModels) => this.downloadedModels = downloadedModels));
 
     NotificationService.subscribeToNotification(this, {
       projectId: this.projectId,
       whitelist: ['model_provider_download'],
       func: this.handleWebsocketNotification
     });
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions$.forEach((subscription) => subscription.unsubscribe());
+    NotificationService.unsubscribeFromNotification(this, this.projectId)
   }
 
   initForm() {
@@ -61,15 +69,19 @@ export class ModelDownloadComponentComponent implements OnInit {
   }
 
   deleteModel(name: string, revision: string) {
-    this.informationSourceApolloService
+    this.subscriptions$.push(
+      this.informationSourceApolloService
       .deleteModel(name,revision)
-      .pipe(first()).subscribe();
+      .pipe(first()).subscribe()
+    );
   }
 
   downloadModel() {
-    this.informationSourceApolloService
+    this.subscriptions$.push(
+      this.informationSourceApolloService
       .downloadModel(this.projectId, this.form.get('name').value)
-      .pipe(first()).subscribe();
+      .pipe(first()).subscribe()
+    );
   }
 
   parseUTC(utc: any) {
@@ -79,11 +91,19 @@ export class ModelDownloadComponentComponent implements OnInit {
   }
 
   prepareModels() {
-    this.projectApolloService.getRecomendedEncodersForEmbeddings(this.projectId)
+    this.subscriptions$.push(this.projectApolloService.getRecomendedEncodersForEmbeddings(this.projectId)
       .subscribe((models) => {
         this.models = models.filter(el =>
           el.configString != 'bag-of-characters' && el.configString != 'bag-of-words' && el.configString != 'tf-idf');
-      });
+      }));
+  }
+
+  prepareZeroShotRecommendations(projectId: string) {
+    let q, vc;
+    [q, vc] = this.informationSourceApolloService.getZeroShotRecommendations(projectId);
+    this.subscriptions$.push(vc.pipe(first()).subscribe((r) => {
+      r.forEach((rec) => this.models.push(rec))
+    }));
   }
 
   formatBytes(bytes, decimals = 2) {
@@ -137,6 +157,8 @@ export class ModelDownloadComponentComponent implements OnInit {
         "date": dateAsUTCDate(new Date()).toLocaleString(),
         "status": "initializing"
       });
+      timer(2500).subscribe(() => this.downloadedModelsQuery$.refetch());
+    } else if(msgParts[1] === 'model_provider_download' && msgParts[2] === 'finished') {
       timer(2500).subscribe(() => this.downloadedModelsQuery$.refetch());
     }
   }

@@ -285,7 +285,7 @@
                                         [ngClass]="recommendation.hidden?'hidden':null"
                                         (mouseenter)="setCurrentRecommendation(recommendation,hoverBox,me)"
                                         (mouseleave)="setCurrentRecommendation(null)">
-                                        <label class="cursor-pointer label flex-grow"
+                                        <label class="cursor-pointer label flex-grow" [ngClass]="checkIfModelIsDownloaded(recommendation.configString) ? 'text-green-700' : ''"
                                             (click)="selectRecommendation(recommendation,inputConfig)">
                                             {{recommendation.configString}}
                                         </label>

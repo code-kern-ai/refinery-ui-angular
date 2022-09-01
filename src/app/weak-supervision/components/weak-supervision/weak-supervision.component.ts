@@ -72,6 +72,9 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
   @ViewChild("modalCreateAL") modalCreateAL: ElementRef;
   @ViewChild("modalCreateZS") modalCreateZS: ElementRef;
   @ViewChild("deleteSelectedHeuristics") deleteSelectedHeuristics: ElementRef;
+  downloadedModelsList$: any;
+  downloadedModelsQuery$: any;
+  downloadedModels: any[] = [];
 
   constructor(
     private router: Router,
@@ -105,6 +108,9 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
     this.prepareCurrentWeakSupervisionInfo(projectId);
     this.prepareEmbeddingsRequest(projectId);
 
+    [this.downloadedModelsQuery$, this.downloadedModelsList$] = this.informationSourceApolloService.getModelProviderInfo();
+    this.subscriptions$.push(
+      this.downloadedModelsList$.subscribe((downloadedModels) => this.downloadedModels = downloadedModels));
 
     NotificationService.subscribeToNotification(this, {
       projectId: projectId,
@@ -520,5 +526,10 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
         this.prepareSelectionList();
         break;
     }
+  }
+
+  checkIfModelIsDownloaded(modelName: string) {
+    const findModel = this.downloadedModels && this.downloadedModels.find(el => el.name === modelName);
+    return findModel !== undefined ? true : false;
   }
 }

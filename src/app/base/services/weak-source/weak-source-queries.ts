@@ -107,6 +107,7 @@ export const queries = {
       date
       size
       status
+      zeroShotPipeline
     }
   }
   `,

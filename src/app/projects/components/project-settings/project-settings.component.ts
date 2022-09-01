@@ -11,6 +11,7 @@ import { schemeCategory24 } from 'src/app/util/colors';
 import { DownloadState } from 'src/app/import/services/s3.enums';
 import { HttpClient } from '@angular/common/http';
 import { S3Service } from 'src/app/import/services/s3.service';
+import { WeakSourceApolloService } from 'src/app/base/services/weak-source/weak-source-apollo.service';
 
 @Component({
   selector: 'kern-project-settings',
@@ -117,6 +118,9 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
   }
   labelMap: Map<string, []> = new Map<string, []>();
   @ViewChild('modalInput', { read: ElementRef }) myModalnewRecordTask: ElementRef;
+  downloadedModelsList$: any;
+  downloadedModelsQuery$: any;
+  downloadedModels: any[] = [];
 
   constructor(
     private routeService: RouteService,
@@ -125,7 +129,8 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     private router: Router,
     private formBuilder: FormBuilder,
     private http: HttpClient,
-    private s3Service: S3Service
+    private s3Service: S3Service,
+    private informationSourceApolloService: WeakSourceApolloService
   ) { }
 
   ngAfterViewInit() {
@@ -153,6 +158,10 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
 
     this.requestPKeyCheck(projectId);
     this.checkProjectTokenization(projectId);
+
+    [this.downloadedModelsQuery$, this.downloadedModelsList$] = this.informationSourceApolloService.getModelProviderInfo();
+    this.subscriptions$.push(
+      this.downloadedModelsList$.subscribe((downloadedModels) => this.downloadedModels = downloadedModels));
 
     let preparationTasks$ = [];
     preparationTasks$.push(this.prepareAttributesRequest(projectId));
@@ -974,5 +983,10 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     if (!currentData || !currentData[this.project.id]) return;
     delete currentData[this.project.id];
     localStorage.setItem('projectOverviewData', JSON.stringify(currentData));
+  }
+
+  checkIfModelIsDownloaded(modelName: string) {
+    const findModel = this.downloadedModels && this.downloadedModels.find(el => el.name === modelName);
+    return findModel !== undefined ? true : false;
   }
 }

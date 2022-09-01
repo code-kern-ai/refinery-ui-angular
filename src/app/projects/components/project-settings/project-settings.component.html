@@ -273,17 +273,20 @@
 
         <div class="mt-8">
             <div class="text-lg leading-6 text-gray-900 font-medium inline-block w-full">
-                <label>Embeddings</label> 
-                <label class="ml-3 text-green-700 hover:text-green-500 text-sm font-medium cursor-pointer"
-                    [routerLink]="['../model-download']">
-                    <span class="leading-5">downloaded models
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                        </svg>
-                    </span>
-                </label>
+                <div class="flex flex-row items-center">
+                    <label>Embeddings</label> 
+                    <label class="ml-3 text-green-700 hover:text-green-500 text-base font-medium cursor-pointer"
+                        [routerLink]="['../model-download']">
+                        <span class="leading-5">downloaded models
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                            </svg>
+                        </span>
+                    </label>
+                </div>
+                
             <div class="mt-1">
                 <div class="text-sm leading-5 font-medium text-gray-700 inline-block">You can enrich your records with
                     embeddings, e.g. to use them for vector search or active transfer learning.</div>
@@ -481,7 +484,7 @@
                                             (mouseenter)="setCurrentEmbeddingHandle(embeddingHandle,hoverBox,me)"
                                             (mouseleave)="setCurrentEmbeddingHandle(null)">
 
-                                            <label class="cursor-pointer label"
+                                            <label class="cursor-pointer label" [ngClass]="checkIfModelIsDownloaded(embeddingHandle.configString) ? 'text-green-700' : ''"
                                                 (click)="selectEmbeddingHandle(embeddingHandle,inputEmbeddingHandle)">
                                                 {{embeddingHandle.configString}}
                                             </label>
