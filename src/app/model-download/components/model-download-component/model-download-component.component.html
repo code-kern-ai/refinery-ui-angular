@@ -38,14 +38,16 @@
                         <tr *ngFor="let model of downloadedModels">
                             <td class="text-center px-3 py-2 text-sm text-gray-500">
                                 <span class="inline-block mr-2">{{model.name}}</span>
-                                <svg xmlns="http://www.w3.org/2000/svg" *ngIf="model.zeroShotPipeline"
-                                    class="icon icon-tabler icon-tabler-bow inline-block" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                    <path d="M17 3h4v4"></path>
-                                    <path d="M21 3l-15 15"></path>
-                                    <path d="M3 18h3v3"></path>
-                                    <path d="M16.5 20c1.576 -1.576 2.5 -4.095 2.5 -6.5c0 -4.81 -3.69 -8.5 -8.5 -8.5c-2.415 0 -4.922 .913 -6.5 2.5l12.5 12.5z"></path>
-                                </svg>
+                                <label *ngIf="model.zeroShotPipeline" class="tooltip tooltip-right" data-tip="Can be used for zero-shot">
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                        class="icon icon-tabler icon-tabler-bow inline-block" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <path d="M17 3h4v4"></path>
+                                        <path d="M21 3l-15 15"></path>
+                                        <path d="M3 18h3v3"></path>
+                                        <path d="M16.5 20c1.576 -1.576 2.5 -4.095 2.5 -6.5c0 -4.81 -3.69 -8.5 -8.5 -8.5c-2.415 0 -4.922 .913 -6.5 2.5l12.5 12.5z"></path>
+                                    </svg>
+                                </label>
                             </td>
                             <td class="text-center px-3 py-2 text-sm text-gray-500">
                                 <ng-template [ngIf]="model.revision">{{model.revision}}</ng-template>
