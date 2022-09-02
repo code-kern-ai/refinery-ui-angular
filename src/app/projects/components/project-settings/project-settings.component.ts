@@ -12,6 +12,7 @@ import { DownloadState } from 'src/app/import/services/s3.enums';
 import { HttpClient } from '@angular/common/http';
 import { S3Service } from 'src/app/import/services/s3.service';
 import { WeakSourceApolloService } from 'src/app/base/services/weak-source/weak-source-apollo.service';
+import { ConfigManager } from 'src/app/base/services/config-service';
 
 @Component({
   selector: 'kern-project-settings',
@@ -121,6 +122,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
   downloadedModelsList$: any;
   downloadedModelsQuery$: any;
   downloadedModels: any[];
+  isManaged: boolean = true;
 
   constructor(
     private routeService: RouteService,
@@ -182,6 +184,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
         }
       })
     }
+    this.isManaged = ConfigManager.getIsManaged();
   }
 
 

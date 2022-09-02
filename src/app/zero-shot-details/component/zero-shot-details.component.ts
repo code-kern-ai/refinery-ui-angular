@@ -25,6 +25,7 @@ import { dateAsUTCDate } from 'src/app/util/helper-functions';
 import { NotificationService } from 'src/app/base/services/notification.service';
 import { schemeCategory24 } from 'src/app/util/colors';
 import { parseToSettingsJson, parseZeroShotSettings, ZeroShotSettings } from './zero-shot-settings';
+import { ConfigManager } from 'src/app/base/services/config-service';
 
 @Component({
   selector: 'kern-zero-shot-details',
@@ -92,6 +93,7 @@ export class ZeroShotDetailsComponent
   downloadedModelsQuery$: any;
   downloadedModels: any[];
   modelsDownloadedState: boolean[] = [];
+  isManaged: boolean = true;
 
   constructor(
     private router: Router,
@@ -120,6 +122,8 @@ export class ZeroShotDetailsComponent
         this.downloadedModels = downloadedModels;
         this.createModelsDownloadedStateList();
       }));
+
+    this.isManaged = ConfigManager.getIsManaged();
 
     NotificationService.subscribeToNotification(this, {
       projectId: projectId,
