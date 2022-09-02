@@ -101,16 +101,16 @@ export const mutations = {
   `,
 
   MODEL_PROVIDER_DELETE_MODEL: gql`
-    mutation($modelName: String!, $revision: String!) {
-      modelProviderDeleteModel(modelName: $modelName, revision: $revision) {
+    mutation($modelName: String!) {
+      modelProviderDeleteModel(modelName: $modelName) {
         ok
       }
     }
 `,
 
   MODEL_PROVIDER_DOWNLOAD_MODEL: gql`
-  mutation($projectId: ID!, $modelName: String!) {
-    modelProviderDownloadModel(projectId: $projectId, modelName: $modelName) {
+  mutation($modelName: String!) {
+    modelProviderDownloadModel(modelName: $modelName) {
       ok
     }
 }

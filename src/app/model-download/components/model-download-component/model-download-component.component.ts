@@ -57,7 +57,6 @@ export class ModelDownloadComponentComponent implements OnInit {
       }));
 
     NotificationService.subscribeToNotification(this, {
-      projectId: this.projectId,
       whitelist: ['model_provider_download'],
       func: this.handleWebsocketNotification
     });
@@ -74,16 +73,16 @@ export class ModelDownloadComponentComponent implements OnInit {
     })
   }
 
-  deleteModel(name: string, revision: string) {
+  deleteModel(name: string) {
     this.informationSourceApolloService
-    .deleteModel(name,revision)
-    .pipe(first()).subscribe();
+      .deleteModel(name)
+      .pipe(first()).subscribe();
   }
 
   downloadModel() {
-    if(this.form.invalid) return ;
+    if (this.form.invalid) return;
     this.informationSourceApolloService
-      .downloadModel(this.projectId, this.form.get('name').value)
+      .downloadModel(this.form.get('name').value)
       .pipe(first()).subscribe();
   }
 
@@ -101,7 +100,7 @@ export class ModelDownloadComponentComponent implements OnInit {
     combineLatest(tasks$).subscribe((models: any) => {
       this.models = models[0].filter(el =>
         el.configString != 'bag-of-characters' && el.configString != 'bag-of-words' && el.configString != 'tf-idf');
-        this.models.push(...models[1]);
+      this.models.push(...models[1]);
     });
 
 
@@ -133,7 +132,7 @@ export class ModelDownloadComponentComponent implements OnInit {
     }
 
   }
-  
+
   setCurrentEmbeddingHandle(modelHandle, hoverBox: HTMLElement, listElement: HTMLElement) {
     this.currentModelHandle = modelHandle;
     if (modelHandle) {
@@ -144,14 +143,14 @@ export class ModelDownloadComponentComponent implements OnInit {
   }
 
   handleWebsocketNotification(msgParts) {
-    if(msgParts[1] === 'model_provider_download' && msgParts[2] === 'started') {
+    if (msgParts[1] === 'model_provider_download' && msgParts[2] === 'started') {
       this.downloadedModels.push({
         "name": msgParts[3],
         "date": dateAsUTCDate(new Date()).toLocaleString(),
         "status": "initializing"
       });
       timer(2500).subscribe(() => this.downloadedModelsQuery$.refetch());
-    } else if(msgParts[1] === 'model_provider_download' && msgParts[2] === 'finished') {
+    } else if (msgParts[1] === 'model_provider_download' && msgParts[2] === 'finished') {
       timer(2500).subscribe(() => this.downloadedModelsQuery$.refetch());
     }
   }

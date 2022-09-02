@@ -431,7 +431,7 @@ export class WeakSourceApolloService {
   getModelProviderInfo() {
     const query = this.apollo
       .watchQuery({
-        query:  queries.GET_MODEL_PROVIDER_INFO,
+        query: queries.GET_MODEL_PROVIDER_INFO,
         fetchPolicy: 'network-only', // Used for first execution
         nextFetchPolicy: 'cache-first', // Used for subsequent executions (refetch query updates the cache != triggers the function)
       });
@@ -441,22 +441,20 @@ export class WeakSourceApolloService {
     return [query, vc]
   }
 
-  downloadModel(projectId: string, name: string) {
+  downloadModel(name: string) {
     return this.apollo.mutate({
       mutation: mutations.MODEL_PROVIDER_DOWNLOAD_MODEL,
       variables: {
-        projectId: projectId,
         modelName: name
       }
     });
   }
 
-  deleteModel(name: string, revision: string) {
+  deleteModel(name: string) {
     return this.apollo.mutate({
       mutation: mutations.MODEL_PROVIDER_DELETE_MODEL,
       variables: {
-        modelName: name,
-        revision: revision
+        modelName: name
       },
       refetchQueries: [
         {
