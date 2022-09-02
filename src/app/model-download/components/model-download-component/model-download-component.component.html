@@ -52,11 +52,11 @@
                                 </svg></a>
                             </td>
                             <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                <ng-template [ngIf]="model.date != 0 && (model.status === 'finished' || model.status === 'downloading')">{{parseUTC(model.date)}}</ng-template>
+                                <ng-template [ngIf]="model.date != 0 && (model.status === 'finished' || model.status === 'downloading')">{{model.parseDate}}</ng-template>
                                 <ng-template [ngIf]="model.status === 'initializing'">{{model.date}}</ng-template>
                             </td>
                             <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                <ng-template [ngIf]="model.status === 'finished'">{{model.size}}</ng-template>
+                                <ng-template [ngIf]="model.status === 'finished'">{{model.sizeFormatted}}</ng-template>
                             </td>
                             <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
                                 <ng-template [ngIf]="model.zeroShotPipeline">IS ZS</ng-template>

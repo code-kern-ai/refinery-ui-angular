@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { Subscription, timer } from 'rxjs';
+import { combineLatest, Subscription, timer } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { ConfigManager } from 'src/app/base/services/config-service';
 import { NotificationService } from 'src/app/base/services/notification.service';
@@ -51,7 +51,8 @@ export class ModelDownloadComponentComponent implements OnInit {
       this.downloadedModelsList$.subscribe((downloadedModels) => {
         this.downloadedModels = downloadedModels;
         this.downloadedModels.forEach(model => {
-          model.size = formatBytes(model.size);
+          model.sizeFormatted = formatBytes(model.size);
+          model.parseDate = this.parseUTC(model.date);
         })
       }));
 
@@ -86,30 +87,24 @@ export class ModelDownloadComponentComponent implements OnInit {
       .pipe(first()).subscribe();
   }
 
-  parseUTC(utc: any) {
-    const milliseconds = +utc * 1000;
-    const utcDate = dateAsUTCDate(new Date(milliseconds));
+  parseUTC(utc: string) {
+    const utcDate = dateAsUTCDate(new Date(utc));
     return utcDate.toLocaleString();
   }
 
   prepareModels() {
-    this.projectApolloService.getRecomendedEncodersForEmbeddings(this.projectId)
-      .pipe(first())
-      .subscribe((models) => {
-        this.models = models.filter(el =>
-          el.configString != 'bag-of-characters' && el.configString != 'bag-of-words' && el.configString != 'tf-idf');
-          this.prepareZeroShotRecommendations(this.projectId);
-      });
-      
-  }
-
-  prepareZeroShotRecommendations(projectId: string) {
+    let tasks$ = [];
     let q, vc;
-    [q, vc] = this.informationSourceApolloService.getZeroShotRecommendations(projectId);
-    vc.pipe(first()).subscribe((r) => {
-      r.forEach((rec) => this.models.push(rec)
-      )
+    [q, vc] = this.informationSourceApolloService.getZeroShotRecommendations(this.projectId);
+    tasks$.push(this.projectApolloService.getRecomendedEncodersForEmbeddings(this.projectId));
+    tasks$.push(vc);
+    combineLatest(tasks$).subscribe((models: any) => {
+      this.models = models[0].filter(el =>
+        el.configString != 'bag-of-characters' && el.configString != 'bag-of-words' && el.configString != 'tf-idf');
+      models[1].forEach((el) => this.models.push(el));
     });
+
+
   }
 
   selectFirstUnhiddenEmbeddingHandle(inputElement: HTMLInputElement) {
