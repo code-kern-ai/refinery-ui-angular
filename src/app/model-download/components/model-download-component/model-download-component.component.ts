@@ -28,6 +28,7 @@ export class ModelDownloadComponentComponent implements OnInit {
   currentModelHandle: any;
   downloadedModels: any[];
   subscriptions$: Subscription[] = [];
+  currentModel: any;
 
   constructor(
     private activatedRoute: ActivatedRoute,
