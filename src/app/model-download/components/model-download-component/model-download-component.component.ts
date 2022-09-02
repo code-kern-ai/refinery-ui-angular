@@ -101,7 +101,7 @@ export class ModelDownloadComponentComponent implements OnInit {
     combineLatest(tasks$).subscribe((models: any) => {
       this.models = models[0].filter(el =>
         el.configString != 'bag-of-characters' && el.configString != 'bag-of-words' && el.configString != 'tf-idf');
-      models[1].forEach((el) => this.models.push(el));
+        this.models.push(...models[1]);
     });
 
 
