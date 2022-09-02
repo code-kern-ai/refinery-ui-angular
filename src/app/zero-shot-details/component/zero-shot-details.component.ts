@@ -463,10 +463,7 @@ export class ZeroShotDetailsComponent
   createModelsDownloadedStateList() {
     this.zeroShotRecommendations.forEach(rec => {
       const isDownloaded = this.downloadedModels.find(el => el.name === rec.configString);
-      console.log(isDownloaded)
-      console.log(this.downloadedModels)
       this.modelsDownloadedState.push(isDownloaded!=undefined ? true : false);
     })
-    console.log(this.modelsDownloadedState)
   }
 }

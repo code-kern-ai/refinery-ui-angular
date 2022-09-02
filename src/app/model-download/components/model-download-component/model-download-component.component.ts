@@ -29,6 +29,7 @@ export class ModelDownloadComponentComponent implements OnInit {
   downloadedModels: any[];
   subscriptions$: Subscription[] = [];
   currentModel: any;
+  indexSeparator: number;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -98,8 +99,11 @@ export class ModelDownloadComponentComponent implements OnInit {
     tasks$.push(this.projectApolloService.getRecomendedEncodersForEmbeddings(this.projectId));
     tasks$.push(vc);
     combineLatest(tasks$).subscribe((models: any) => {
+      models[0].forEach(model => model.isZeroShot = false);
       this.models = models[0].filter(el =>
         el.configString != 'bag-of-characters' && el.configString != 'bag-of-words' && el.configString != 'tf-idf');
+      models[1].forEach(model => model.isZeroShot = true);
+      this.indexSeparator = this.models.length-1;
       this.models.push(...models[1]);
     });
 

@@ -28,9 +28,6 @@
                                 Size</th>
                             <th scope="col"
                                 class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                Type</th>
-                            <th scope="col"
-                                class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
                                 Status</th>
                             <th scope="col"
                                 class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
@@ -39,7 +36,17 @@
                     </thead>
                     <tbody class="divide-y divide-gray-200">
                         <tr *ngFor="let model of downloadedModels">
-                            <td class="text-center px-3 py-2 text-sm text-gray-500">{{model.name}}</td>
+                            <td class="text-center px-3 py-2 text-sm text-gray-500">
+                                <span class="inline-block mr-2">{{model.name}}</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" *ngIf="model.zeroShotPipeline"
+                                    class="icon icon-tabler icon-tabler-bow inline-block" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M17 3h4v4"></path>
+                                    <path d="M21 3l-15 15"></path>
+                                    <path d="M3 18h3v3"></path>
+                                    <path d="M16.5 20c1.576 -1.576 2.5 -4.095 2.5 -6.5c0 -4.81 -3.69 -8.5 -8.5 -8.5c-2.415 0 -4.922 .913 -6.5 2.5l12.5 12.5z"></path>
+                                </svg>
+                            </td>
                             <td class="text-center px-3 py-2 text-sm text-gray-500">
                                 <ng-template [ngIf]="model.revision">{{model.revision}}</ng-template>
                             </td>
@@ -57,10 +64,6 @@
                             </td>
                             <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
                                 <ng-template [ngIf]="model.status === 'finished'">{{model.sizeFormatted}}</ng-template>
-                            </td>
-                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                <ng-template [ngIf]="model.zeroShotPipeline">IS ZS</ng-template>
-                                <ng-template [ngIf]="!model.zeroShotPipeline">IS NOT ZS</ng-template>
                             </td>
                             <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
                                 <div *ngIf="model.status === 'finished'" data-tip="Successfully created." class="tooltip">
@@ -163,7 +166,8 @@
                                             (mouseenter)="setCurrentEmbeddingHandle(modelHandle,hoverBox,me)"
                                             (mouseleave)="setCurrentEmbeddingHandle(null)">
 
-                                            <label class="cursor-pointer label" [ngClass]="checkIfModelIsDownloaded(modelHandle.configString) ? 'text-green-700' : ''"
+                                            <label class="cursor-pointer label" 
+                                                [ngClass]="[checkIfModelIsDownloaded(modelHandle.configString) ? 'text-green-700' : '', k == indexSeparator ? 'line-separator' : '']"
                                                 (click)="selectEmbeddingHandle(modelHandle,inputEmbeddingHandle)">
                                                 {{modelHandle.configString}}
                                             </label>
@@ -195,7 +199,16 @@
         <div class="flex justify-center">
             <span class="card-title mb-2 label-text">Info</span>
         </div>
-        <span class="label-text text-sm">{{currentModelHandle.description}}</span>
+        <span class="label-text text-sm" *ngIf="!currentModelHandle.isZeroShot">{{currentModelHandle.description}}</span>
+        <div class="grid grid-cols-2  gap-2 items-center" *ngIf="currentModelHandle.isZeroShot"
+            style="grid-template-columns: max-content auto;">
+            <span class="label-text text-sm font-bold">Avg Time</span>
+            <span class="label-text text-sm">{{currentModelHandle.avgTime}}</span>
+            <span class="label-text text-sm font-bold">Based on</span>
+            <span class="label-text text-sm">{{currentModelHandle.base}}</span>
+            <span class="label-text text-sm font-bold">Size</span>
+            <span class="label-text text-sm">{{currentModelHandle.size}}</span>
+        </div>
     </div>
 </ng-template>
 </div>
