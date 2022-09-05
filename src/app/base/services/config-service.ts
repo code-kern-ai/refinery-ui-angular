@@ -68,8 +68,8 @@ export class ConfigManager {
         return ConfigManager.config[key][subkey]
     }
 
-    public static getIsManaged(): boolean {
-        if (!ConfigManager.isInit()) throw new Error("ConfigManager not initialized");
+    public static getIsManaged(ignoreCheck: boolean = false): boolean {
+        if (!ignoreCheck && !ConfigManager.isInit()) console.log("ConfigManager not initialized");
         return ConfigManager.isManaged;
     }
 
@@ -87,16 +87,16 @@ export class ConfigManager {
     public static setIsAdmin(value: boolean) {
         ConfigManager.isAdmin = value;
     }
-    public static getIsAdmin() {
-        if (!ConfigManager.isInit()) throw new Error("ConfigManager not initialized");
+    public static getIsAdmin(ignoreCheck: boolean = false): boolean {
+        if (!ignoreCheck && !ConfigManager.isInit()) console.log("ConfigManager not initialized");
         return ConfigManager.isAdmin;
     }
 
     public static setIsDemo(value: boolean) {
         ConfigManager.isDemo = value;
     }
-    public static getIsDemo() {
-        if (!ConfigManager.isInit()) throw new Error("ConfigManager not initialized");
+    public static getIsDemo(ignoreCheck: boolean = false): boolean {
+        if (!ignoreCheck && !ConfigManager.isInit()) console.log("ConfigManager not initialized");
         return ConfigManager.isDemo;
     }
 
