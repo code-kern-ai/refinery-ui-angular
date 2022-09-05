@@ -184,9 +184,16 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
         }
       })
     }
-    this.isManaged = ConfigManager.getIsManaged();
+    this.checkIfManagedVersion();
   }
 
+  checkIfManagedVersion() {
+    if (!ConfigManager.isInit()) {
+      timer(250).subscribe(() => this.checkIfManagedVersion());
+      return;
+    }
+    this.isManaged = ConfigManager.getIsManaged();
+  }
 
   prepareEmbeddingFormGroup(attributes) {
     if (attributes.length > 0) {

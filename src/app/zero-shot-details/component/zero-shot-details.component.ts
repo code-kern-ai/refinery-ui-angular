@@ -123,7 +123,7 @@ export class ZeroShotDetailsComponent
         this.createModelsDownloadedStateList();
       }));
 
-    this.isManaged = ConfigManager.getIsManaged();
+    this.checkIfManagedVersion();
 
     NotificationService.subscribeToNotification(this, {
       projectId: projectId,
@@ -140,6 +140,14 @@ export class ZeroShotDetailsComponent
     toReturn.push(...['zero-shot', 'label_deleted']);
     toReturn.push(...['zero_shot_download']);
     return toReturn;
+  }
+
+  checkIfManagedVersion() {
+    if (!ConfigManager.isInit()) {
+      timer(250).subscribe(() => this.checkIfManagedVersion());
+      return;
+    }
+    this.isManaged = ConfigManager.getIsManaged();
   }
 
   ngOnDestroy() {
@@ -461,9 +469,11 @@ export class ZeroShotDetailsComponent
   }
 
   createModelsDownloadedStateList() {
-    this.zeroShotRecommendations.forEach(rec => {
-      const isDownloaded = this.downloadedModels.find(el => el.name === rec.configString);
-      this.modelsDownloadedState.push(isDownloaded!=undefined ? true : false);
-    })
+    if(this.zeroShotRecommendations !== undefined) {
+      this.zeroShotRecommendations.forEach(rec => {
+        const isDownloaded = this.downloadedModels.find(el => el.name === rec.configString);
+        this.modelsDownloadedState.push(isDownloaded!=undefined ? true : false);
+      })
+    }
   }
 }

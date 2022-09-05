@@ -103,6 +103,7 @@ export class ModelDownloadComponentComponent implements OnInit {
       this.models = models[0].filter(el =>
         el.configString != 'bag-of-characters' && el.configString != 'bag-of-words' && el.configString != 'tf-idf');
       models[1].forEach(model => model.isZeroShot = true);
+      models[1].sort((a, b) => a.prio - b.prio);
       this.indexSeparator = this.models.length-1;
       this.models.push(...models[1]);
     });

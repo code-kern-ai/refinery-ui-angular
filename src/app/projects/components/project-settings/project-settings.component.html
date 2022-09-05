@@ -278,7 +278,7 @@
                     <button class="ml-3 text-green-700 hover:text-green-500 text-base font-medium"
                         [routerLink]="['../model-download']"
                         [disabled]="!isManaged"
-                        [ngClass]="!isManaged ? 'tooltip tooltip-right opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
+                        [ngClass]="!isManaged ? 'tooltip tooltip-right cursor-not-allowed' : 'opacity-100 cursor-pointer'"
                         [attr.data-tip]="!isManaged ? 'Check out our hosted version to use this function' : ''">
                         <span class="leading-5">
                             downloaded models
