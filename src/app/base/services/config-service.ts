@@ -69,6 +69,7 @@ export class ConfigManager {
     }
 
     public static getIsManaged(): boolean {
+        if (!ConfigManager.isInit()) throw new Error("ConfigManager not initialized");
         return ConfigManager.isManaged;
     }
 
@@ -87,6 +88,7 @@ export class ConfigManager {
         ConfigManager.isAdmin = value;
     }
     public static getIsAdmin() {
+        if (!ConfigManager.isInit()) throw new Error("ConfigManager not initialized");
         return ConfigManager.isAdmin;
     }
 
@@ -94,6 +96,7 @@ export class ConfigManager {
         ConfigManager.isDemo = value;
     }
     public static getIsDemo() {
+        if (!ConfigManager.isInit()) throw new Error("ConfigManager not initialized");
         return ConfigManager.isDemo;
     }
 
