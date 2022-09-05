@@ -14,6 +14,7 @@ import { OrganizationApolloService } from '../../services/organization/organizat
 import { RouteService } from '../../services/route.service';
 import { DOCUMENT } from '@angular/common';
 import { ProjectApolloService } from '../../services/project/project-apollo.service';
+import { ConfigApolloService } from '../../services/config/config-apollo.service';
 
 
 @Component({
@@ -60,6 +61,7 @@ export class SidebarPmComponent implements OnInit {
   isFullscreen: boolean = false;
   @Output() firstName = new EventEmitter<Observable<any>>();
   toggleClass = 'ft-maximize';
+  versionOverview: any[] = [];
 
   constructor(
     private organizationService: OrganizationApolloService,
@@ -67,6 +69,7 @@ export class SidebarPmComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private auth: AuthApiService,
     private projectApolloService: ProjectApolloService,
+    private configService: ConfigApolloService,
     @Inject(DOCUMENT) private document: any
   ) { }
 
@@ -89,6 +92,10 @@ export class SidebarPmComponent implements OnInit {
         })
       )
       .subscribe());
+    
+    this.subscriptions$.push(this.configService
+      .getVersionOverview()
+      .subscribe((versionOverview) => this.versionOverview = versionOverview));
   }
 
   onDestroy() {

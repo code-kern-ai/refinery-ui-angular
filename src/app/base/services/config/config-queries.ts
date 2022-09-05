@@ -62,5 +62,16 @@ export const queries = {
   {
     getBlackWhiteDemo
   }  
-  `
+  `,
+  GET_VERSION_OVERVIEW: gql`
+    query {
+      versionOverview {
+        service
+        installedVersion
+        checkedVersion
+        lastChecked
+        link
+      }
+    }
+  `,
 };

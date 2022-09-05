@@ -60,4 +60,13 @@ export class ConfigApolloService {
       .pipe(map((result) => JSON.parse(result['data']['getBlackWhiteDemo'])));
   }
 
+  getVersionOverview() {
+    return this.apollo
+      .query({
+        query: queries.GET_VERSION_OVERVIEW,
+        fetchPolicy: 'no-cache',
+      })
+      .pipe(map((result) => result['data']['versionOverview']));
+  }
+
 }
