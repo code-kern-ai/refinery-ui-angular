@@ -5,3 +5,14 @@
 .border-bottom {
   border-bottom: 1px solid #4F46E5;
 }
+
+ol {
+  list-style: decimal;
+  li {
+    margin-top: 8px;
+  }
+}
+
+ol.list-letters {
+  list-style-type: lower-alpha !important;
+}

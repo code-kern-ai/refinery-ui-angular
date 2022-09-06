@@ -197,4 +197,8 @@ export class SidebarPmComponent implements OnInit {
   toggleTabs(index: number) {
     this.openTab = index;
   }
+
+  copyToClipboard(textToCopy) {
+    navigator.clipboard.writeText(textToCopy);
+  }
 }

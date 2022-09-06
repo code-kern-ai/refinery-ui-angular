@@ -294,8 +294,8 @@
 
 <input #stepsUpdate type="checkbox" id="steps-update" class="modal-toggle">
 <div class="modal">
-    <div class="modal-box text-black bg-white justify-center modal-configuration text-center">
-        <div class="inline-block justify-center text-lg leading-6 text-gray-900 font-medium">
+    <div class="modal-box text-black bg-white justify-center modal-configuration">
+        <div class="text-center">
             <button class="text-green-800 text-base font-medium mr-3" (click)="back()">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block" fill="none"
                     viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -303,10 +303,12 @@
                 </svg>
                 <span class="leading-5">Go back</span>
             </button> 
-            How to update
+            <div class="inline-block justify-center text-lg leading-6 text-gray-900 font-medium">
+                How to update
+            </div>
         </div>
 
-        <div class="flex border-b-2 border-b-gray-200 max-w-full overflow-x-auto">
+        <div class="flex border-b-2 border-b-gray-200 max-w-full overflow-x-auto text-center">
             <div (click)="toggleTabs(0)"
                 [ngClass]="openTab == 0 ? 'text-indigo-700 border-bottom' : 'text-gray-500' "
                 class="text-sm leading-5 font-medium mr-10 cursor-pointer py-5">
@@ -327,6 +329,77 @@
                 class="text-sm leading-5 font-medium mr-10 cursor-pointer py-5">
                 Executing from explorer (Windows from File Explorer)
             </div>
+        </div>
+
+        <div class="mt-3 px-5">
+            <ng-container [ngSwitch]="openTab">
+                <ng-template [ngSwitchCase]="0">
+                    <ol class="font-dmMono">
+                        <li>Open a Terminal</li>
+                        <li>Change to refinery directory (using cd) - 
+                            <span class="bg-gray-200 text-red-700 rounded-md p-1">$ 
+                                <span class="cursor-pointer tooltip tooltip-top" data-tip="Click to copy" (click)="copyToClipboard('cd /path/to/refinery')">cd /path/to/refinery</span>
+                            </span>
+                        </li>
+                        <li>Run the update script - 
+                            <span class="bg-gray-200 text-red-700 rounded-md p-1">$ 
+                                <span class="cursor-pointer tooltip tooltip-top" data-tip="Click to copy" (click)="copyToClipboard('./update')">./update</span>
+                            </span>
+                        </li>
+                    </ol>
+                </ng-template>
+                <ng-template [ngSwitchCase]="1">
+                    <ol class="font-dmMono">
+                        <li>Open a Terminal</li>
+                        <li>Change to refinery directory 
+                            <ol class="list-letters">
+                                <li>Linux/Mac - 
+                                    <span class="bg-gray-200 text-red-700 rounded-md p-1">$ 
+                                        <span class="cursor-pointer tooltip tooltip-top" data-tip="Click to copy" (click)="copyToClipboard('cd path/to/refinery')">cd path/to/refinery</span>
+                                    </span>
+                                </li>
+                                <li>Windows -
+                                    <span class="bg-gray-200 text-red-700 rounded-md p-1">$ 
+                                        <span class="cursor-pointer tooltip tooltip-top" data-tip="Click to copy" (click)="copyToClipboard('cd path\to\refinery')">cd path\to\refinery</span>
+                                    </span>
+                                </li>
+                            </ol>
+                        </li>
+                        <li>
+                            Run the CLI update command
+                            <span class="bg-gray-200 text-red-700 rounded-md p-1">$ 
+                                <span class="cursor-pointer tooltip tooltip-top" data-tip="Click to copy" (click)="copyToClipboard('refinery update')">refinery update</span>
+                            </span>
+                        </li>
+                    </ol>
+                </ng-template>
+                <ng-template [ngSwitchCase]="2">
+                    <ol class="font-dmMono">
+                        <li>Open a Terminal</li>
+                        <li>Change to refinery directory
+                            <span class="bg-gray-200 text-red-700 rounded-md p-1">$ 
+                                <span class="cursor-pointer tooltip tooltip-top" data-tip="Click to copy" (click)="copyToClipboard('cd path\to\refinery')">cd path\to\refinery</span>
+                            </span>
+                        </li>
+                        <li>Run the update script - 
+                            <span class="bg-gray-200 text-red-700 rounded-md p-1">$ 
+                                <span class="cursor-pointer tooltip tooltip-top" data-tip="Click to copy" (click)="copyToClipboard('update.bat')">update.bat</span>
+                            </span>
+                        </li>
+                    </ol>
+                </ng-template>
+                <ng-template [ngSwitchCase]="3">
+                    <ol class="font-dmMono">
+                        <li>Open the File Explorer</li>
+                        <li>Navigate to the refinery directory</li>
+                        <li>Launch the update script by double-clicking 
+                            <span class="bg-gray-200 text-red-700 rounded-md p-1">$ 
+                                <span class="cursor-pointer tooltip tooltip-top" data-tip="Click to copy" (click)="copyToClipboard('update.bat')">update.bat</span>
+                            </span>
+                        </li>
+                    </ol>
+                </ng-template>
+            </ng-container>
         </div>
 
         <div class="modal-action">
