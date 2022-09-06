@@ -65,7 +65,7 @@ export class SidebarPmComponent implements OnInit {
   versionOverview: any[] = [];
   @ViewChild('versionOverviewModal', { read: ElementRef }) versionOverviewModal: ElementRef;
   @ViewChild('stepsUpdate', { read: ElementRef }) stepsUpdate: ElementRef;
-
+  openTab: number = 0;
 
   constructor(
     private organizationService: OrganizationApolloService,
@@ -103,7 +103,7 @@ export class SidebarPmComponent implements OnInit {
         this.versionOverview = versionOverview;
         this.versionOverview.forEach((version)=> {
           version.parseDate = this.parseUTC(version.lastChecked);
-          version.hasNewerVersion = version.installedVersion !== version.checkedVersion;
+          version.hasNewerVersion = version.installedVersion !== version.remoteVersion;
         });
       }));
   }
@@ -192,5 +192,9 @@ export class SidebarPmComponent implements OnInit {
   back() {
     this.stepsUpdate.nativeElement.checked = false;
     this.versionOverviewModal.nativeElement.checked = true;
+  }
+
+  toggleTabs(index: number) {
+    this.openTab = index;
   }
 }

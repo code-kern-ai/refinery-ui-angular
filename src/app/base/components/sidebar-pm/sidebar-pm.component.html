@@ -255,7 +255,7 @@
                                 {{service.installedVersion}}
                             </td>
                             <td class="text-center px-3 py-2 text-sm text-gray-500">
-                                <span class="inline-block mr-2">{{service.checkedVersion}}</span>
+                                <span class="inline-block mr-2">{{service.remoteVersion}}</span>
                                 <span *ngIf="service.hasNewerVersion" class="tooltip tooltip-right" data-tip="Newer version available">
                                     <svg xmlns="http://www.w3.org/2000/svg" 
                                         class="icon icon-tabler icon-tabler-alert-circle inline-block text-yellow-700" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -304,6 +304,29 @@
                 <span class="leading-5">Go back</span>
             </button> 
             How to update
+        </div>
+
+        <div class="flex border-b-2 border-b-gray-200 max-w-full overflow-x-auto">
+            <div (click)="toggleTabs(0)"
+                [ngClass]="openTab == 0 ? 'text-indigo-700 border-bottom' : 'text-gray-500' "
+                class="text-sm leading-5 font-medium mr-10 cursor-pointer py-5">
+                Bash Users (Linux/Mac)
+            </div>
+            <div (click)="toggleTabs(1)"
+                [ngClass]="openTab == 1 ? 'text-indigo-700 border-bottom' : 'text-gray-500' "
+                class="text-sm leading-5 font-medium mr-10 cursor-pointer py-5">
+                CLI Users (installed refinery with pip)
+            </div>
+            <div (click)="toggleTabs(2)"
+                [ngClass]="openTab == 2 ? 'text-indigo-700 border-bottom' : 'text-gray-500' "
+                class="text-sm leading-5 font-medium mr-10 cursor-pointer py-5">
+                cmd (Windows terminal)
+            </div>
+            <div (click)="toggleTabs(3)"
+                [ngClass]="openTab == 3 ? 'text-indigo-700 border-bottom' : 'text-gray-500' "
+                class="text-sm leading-5 font-medium mr-10 cursor-pointer py-5">
+                Executing from explorer (Windows from File Explorer)
+            </div>
         </div>
 
         <div class="modal-action">

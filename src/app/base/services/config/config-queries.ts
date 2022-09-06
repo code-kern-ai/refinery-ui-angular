@@ -68,7 +68,7 @@ export const queries = {
       versionOverview {
         service
         installedVersion
-        checkedVersion
+        remoteVersion
         lastChecked
         link
       }
