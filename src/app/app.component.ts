@@ -53,6 +53,7 @@ export class AppComponent implements OnDestroy, OnInit {
     this.configService.isDemo().pipe(first()).subscribe((v) => ConfigManager.setIsDemo(v));
     this.configService.isAdmin().pipe(first()).subscribe((v) => ConfigManager.setIsAdmin(v));
     this.configService.getBlackWhiteDemo().pipe(first()).subscribe((v) => ConfigManager.setBlackWhiteListDemo(v));
+    this.configService.getVersionOverview().pipe(first()).subscribe((v) => ConfigManager.setVersionOverview(v));
   }
 
 

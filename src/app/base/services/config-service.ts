@@ -14,6 +14,7 @@ export class ConfigManager {
     private static blackWhiteListDemo: any;
     private static registedUpdateListeners: Map<Object, () => void> = new Map<Object, () => void>();
     private static justUpdated = false;
+    private static versionOverride: any = [];
 
     //needs to be called once from app (because of the http injection)
     public static initConfigManager(httpClient: HttpClient, configApolloService: ConfigApolloService, isManaged: boolean) {
@@ -117,6 +118,14 @@ export class ConfigManager {
             }
             return false;
         }
+    }
+
+    public static setVersionOverview(setVersionOverview: any) {
+        ConfigManager.versionOverride = setVersionOverview;
+    }
+
+    public static getVersionOverview(): any {
+        return ConfigManager.versionOverride;
     }
 }
 

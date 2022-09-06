@@ -100,7 +100,6 @@ export class SidebarPmComponent implements OnInit {
       )
       .subscribe());
 
-    this.requestVersionOverview();
     this.checkIfManagedVersion();
     this.hasUpdates$ = this.configService.hasUpdates();
   }
@@ -219,5 +218,6 @@ export class SidebarPmComponent implements OnInit {
       return;
     }
     this.isManaged = ConfigManager.getIsManaged();
+    this.versionOverview = ConfigManager.getVersionOverview();
   }
 }
