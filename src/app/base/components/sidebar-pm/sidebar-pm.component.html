@@ -295,7 +295,7 @@
         <kern-loading *ngIf="versionOverview == null" color="yellow" class="mt-3"></kern-loading>
 
         <div class="modal-action">
-            <label (click)="howToUpdate()"
+            <label (click)="howToUpdate()" *ngIf="!isManaged"
                 class="mr-2 bg-green-100 text-green-700 border border-green-400 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">How to update</label>
             <label for="version-overview"
                 class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
@@ -319,26 +319,26 @@
             </div>
         </div>
 
-        <div class="flex border-b-2 border-b-gray-200 max-w-full overflow-x-auto text-center">
+        <div class="flex border-b-2 border-b-gray-200 max-w-full overflow-x-auto text-center pt-3">
             <div (click)="toggleTabs(0)"
                 [ngClass]="openTab == 0 ? 'text-indigo-700 border-bottom' : 'text-gray-500' "
                 class="text-sm leading-5 font-medium mr-10 cursor-pointer py-5">
-                Bash Users (Linux/Mac)
+                <span class="tooltip tooltip-top tooltip-margin" data-tip="Linux/Mac">Bash users</span>
             </div>
             <div (click)="toggleTabs(1)"
                 [ngClass]="openTab == 1 ? 'text-indigo-700 border-bottom' : 'text-gray-500' "
                 class="text-sm leading-5 font-medium mr-10 cursor-pointer py-5">
-                CLI Users (installed refinery with pip)
+                <span class="tooltip tooltip-top" data-tip="Installed refinery with pip">CLI users</span>
             </div>
             <div (click)="toggleTabs(2)"
                 [ngClass]="openTab == 2 ? 'text-indigo-700 border-bottom' : 'text-gray-500' "
                 class="text-sm leading-5 font-medium mr-10 cursor-pointer py-5">
-                cmd (Windows terminal)
+                <span class="tooltip tooltip-top" data-tip="Windows terminal">cmd</span> 
             </div>
             <div (click)="toggleTabs(3)"
                 [ngClass]="openTab == 3 ? 'text-indigo-700 border-bottom' : 'text-gray-500' "
                 class="text-sm leading-5 font-medium mr-10 cursor-pointer py-5">
-                Executing from explorer (Windows from File Explorer)
+                <span class="tooltip tooltip-top" data-tip="Windows from File Explorer">Executing from explorer</span> 
             </div>
         </div>
 
