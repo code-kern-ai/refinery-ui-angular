@@ -98,4 +98,17 @@ export const queries = {
   }
   `,
 
+  GET_MODEL_PROVIDER_INFO: gql`
+  query{
+    modelProviderInfo {
+      name
+      revision
+      link
+      date
+      size
+      status
+      zeroShotPipeline
+    }
+  }
+  `,
 };
