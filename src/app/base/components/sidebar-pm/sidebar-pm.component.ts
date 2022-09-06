@@ -115,6 +115,7 @@ export class SidebarPmComponent implements OnInit {
       this.versionOverview.forEach((version)=> {
         version.parseDate = this.parseUTC(version.lastChecked);
       });
+      this.versionOverview.sort((a, b) => a.service.localeCompare(b.service));
     });
   }
 
