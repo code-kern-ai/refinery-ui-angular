@@ -192,9 +192,18 @@
                     </button>
                 </div>
                 <div class="flex-shrink-0 flex py-6 justify-center">
-                    <label data-tip="Changelog" for="version-overview"
-                      class="z-50 tooltip tooltip-right cursor-pointer select-none text-white">v1.1.1</label>
-                    
+                    <label data-tip="Changelog" for="version-overview" (click)="requestVersionOverview()"
+                      class="z-50 tooltip tooltip-right cursor-pointer select-none text-white ml-1">v1.1.1
+                        <span *ngIf="(hasUpdates$ | async)" class="tooltip tooltip-right" data-tip="Newer version available">
+                            <svg xmlns="http://www.w3.org/2000/svg" 
+                                class="icon icon-tabler icon-tabler-alert-circle inline-block text-yellow-700" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <circle cx="12" cy="12" r="9"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                        </span>
+                    </label>
                 </div>
             </div>
         </div>
@@ -224,7 +233,7 @@
             </a> 
         </div>
        
-        <div class="inline-block min-w-full align-middle mt-3">
+        <div class="inline-block min-w-full align-middle mt-3" *ngIf="versionOverview">
             <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
                 <table class="min-w-full divide-y divide-gray-300">
                     <thead class="bg-gray-50">
@@ -256,7 +265,7 @@
                             </td>
                             <td class="text-center px-3 py-2 text-sm text-gray-500">
                                 <span class="inline-block mr-2">{{service.remoteVersion}}</span>
-                                <span *ngIf="service.hasNewerVersion" class="tooltip tooltip-right" data-tip="Newer version available">
+                                <span *ngIf="service.remoteHasNewer" class="tooltip tooltip-right" data-tip="Newer version available">
                                     <svg xmlns="http://www.w3.org/2000/svg" 
                                         class="icon icon-tabler icon-tabler-alert-circle inline-block text-yellow-700" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                         <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
@@ -283,8 +292,10 @@
             </div>
         </div>
 
+        <kern-loading *ngIf="versionOverview == null" color="yellow" class="mt-3"></kern-loading>
+
         <div class="modal-action">
-            <label (click)="howToUpdate()"
+            <label (click)="howToUpdate()" *ngIf="isManaged"
                 class="mr-2 bg-green-100 text-green-700 border border-green-400 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">How to update</label>
             <label for="version-overview"
                 class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>

@@ -7,8 +7,8 @@ import {
 } from '@angular/animations';
 import { Component, Inject, EventEmitter, OnInit, Output, Input, HostListener, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Observable, Subscription } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { Observable, Subscription, timer } from 'rxjs';
+import { first, tap } from 'rxjs/operators';
 import { AuthApiService } from '../../services/auth-api.service';
 import { OrganizationApolloService } from '../../services/organization/organization-apollo.service';
 import { RouteService } from '../../services/route.service';
@@ -16,6 +16,7 @@ import { DOCUMENT } from '@angular/common';
 import { ProjectApolloService } from '../../services/project/project-apollo.service';
 import { ConfigApolloService } from '../../services/config/config-apollo.service';
 import { dateAsUTCDate } from 'src/app/util/helper-functions';
+import { ConfigManager } from '../../services/config-service';
 
 
 @Component({
@@ -66,6 +67,8 @@ export class SidebarPmComponent implements OnInit {
   @ViewChild('versionOverviewModal', { read: ElementRef }) versionOverviewModal: ElementRef;
   @ViewChild('stepsUpdate', { read: ElementRef }) stepsUpdate: ElementRef;
   openTab: number = 0;
+  isManaged: boolean = true;
+  hasUpdates$: Observable<boolean>;
 
   constructor(
     private organizationService: OrganizationApolloService,
@@ -96,16 +99,23 @@ export class SidebarPmComponent implements OnInit {
         })
       )
       .subscribe());
-    
-    this.subscriptions$.push(this.configService
-      .getVersionOverview()
-      .subscribe((versionOverview) => {
-        this.versionOverview = versionOverview;
-        this.versionOverview.forEach((version)=> {
-          version.parseDate = this.parseUTC(version.lastChecked);
-          version.hasNewerVersion = version.installedVersion !== version.remoteVersion;
-        });
-      }));
+
+    this.requestVersionOverview();
+    this.checkIfManagedVersion();
+    this.hasUpdates$ = this.configService.hasUpdates();
+  }
+
+  requestVersionOverview() {
+    this.versionOverview = null; 
+    this.configService
+    .getVersionOverview()
+    .pipe(first())
+    .subscribe((versionOverview) => {
+      this.versionOverview = versionOverview;
+      this.versionOverview.forEach((version)=> {
+        version.parseDate = this.parseUTC(version.lastChecked);
+      });
+    });
   }
 
   onDestroy() {
@@ -200,5 +210,13 @@ export class SidebarPmComponent implements OnInit {
 
   copyToClipboard(textToCopy) {
     navigator.clipboard.writeText(textToCopy);
+  }
+
+  checkIfManagedVersion() {
+    if (!ConfigManager.isInit()) {
+      timer(250).subscribe(() => this.checkIfManagedVersion());
+      return;
+    }
+    this.isManaged = ConfigManager.getIsManaged();
   }
 }

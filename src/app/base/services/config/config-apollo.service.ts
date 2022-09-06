@@ -69,4 +69,13 @@ export class ConfigApolloService {
       .pipe(map((result) => result['data']['versionOverview']));
   }
 
+  hasUpdates() {
+    return this.apollo
+      .query({
+        query: queries.GET_HAS_UPDATES,
+        fetchPolicy: 'no-cache',
+      })
+      .pipe(map((result) => result['data']['hasUpdates']));
+  }
+
 }

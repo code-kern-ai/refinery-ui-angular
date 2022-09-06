@@ -71,7 +71,13 @@ export const queries = {
         remoteVersion
         lastChecked
         link
+        remoteHasNewer
       }
     }
   `,
+
+  GET_HAS_UPDATES: gql`
+  {
+    hasUpdates
+  }`
 };
