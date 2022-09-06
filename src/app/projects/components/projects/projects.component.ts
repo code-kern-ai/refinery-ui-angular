@@ -124,8 +124,6 @@ export class ProjectsComponent implements OnInit, OnDestroy {
         this.avatarUri = "assets/avatars/" + avatarSelector + ".png"
         if (this.organizationInactive) {
           this.createDefaultOrg(user);
-        } else {
-          this.isManaged = ConfigManager.getIsManaged();
         }
       });
     this.checkIfDemoUser();
@@ -136,6 +134,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
       timer(250).subscribe(() => this.checkIfDemoUser());
       return;
     }
+    this.isManaged = ConfigManager.getIsManaged();
     this.isDemoUser = ConfigManager.getIsDemo() && !ConfigManager.getIsAdmin();
   }
 

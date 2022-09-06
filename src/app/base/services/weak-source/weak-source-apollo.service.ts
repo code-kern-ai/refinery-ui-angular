@@ -428,4 +428,40 @@ export class WeakSourceApolloService {
     });
   }
 
+  getModelProviderInfo() {
+    const query = this.apollo
+      .watchQuery({
+        query: queries.GET_MODEL_PROVIDER_INFO,
+        fetchPolicy: 'network-only', // Used for first execution
+        nextFetchPolicy: 'cache-first', // Used for subsequent executions (refetch query updates the cache != triggers the function)
+      });
+    const vc = query.valueChanges.pipe(
+      map((result) => result['data']['modelProviderInfo'])
+    );
+    return [query, vc]
+  }
+
+  downloadModel(name: string) {
+    return this.apollo.mutate({
+      mutation: mutations.MODEL_PROVIDER_DOWNLOAD_MODEL,
+      variables: {
+        modelName: name
+      }
+    });
+  }
+
+  deleteModel(name: string) {
+    return this.apollo.mutate({
+      mutation: mutations.MODEL_PROVIDER_DELETE_MODEL,
+      variables: {
+        modelName: name
+      },
+      refetchQueries: [
+        {
+          query: queries.GET_MODEL_PROVIDER_INFO
+        },
+      ],
+    });
+  }
+
 }
