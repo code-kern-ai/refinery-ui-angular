@@ -192,7 +192,7 @@
                     </button>
                 </div>
                 <div class="flex-shrink-0 flex py-6 justify-center">
-                    <label data-tip="Changelog" for="change-log"
+                    <label data-tip="Changelog" for="version-overview"
                       class="z-50 tooltip tooltip-right cursor-pointer select-none text-white">v1.1.1</label>
                     
                 </div>
@@ -208,26 +208,107 @@
     </div>
 </div>
 
-<input type="checkbox" id="change-log" class="modal-toggle">
-<div class="modal" id="change-log">
-    <div class="modal-box text-black bg-white justify-center">
-        <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
-            Changelog information</div>
+<input #versionOverviewModal type="checkbox" id="version-overview" class="modal-toggle">
+<div class="modal">
+    <div class="modal-box text-black bg-white justify-center modal-configuration text-center">
+        <div class="inline-block justify-center text-lg leading-6 text-gray-900 font-medium">
+            Version overview
 
-        <div class="flex flex-col justify-center">
-            <div *ngFor="let service of versionOverview">
-                {{service.service}}
-                {{service.installedVersion}}
-                {{service.checkedVersion}}
-                {{service.lastChecked}}
-                {{service.link}}
-
+            <a class="text-green-800 text-base font-medium ml-3" href="https://docs.kern.ai/changelog" target="_blank">
+                <span class="leading-5">Changelog</span>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+            </a> 
+        </div>
+       
+        <div class="inline-block min-w-full align-middle mt-3">
+            <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+                <table class="min-w-full divide-y divide-gray-300">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col"
+                                class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                Service</th>
+                            <th scope="col"
+                                class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                Installed version</th>
+                            <th scope="col"
+                                class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                Remote version</th>
+                            <th scope="col"
+                                class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                Last checked</th>
+                            <th scope="col"
+                                class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                Link</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        <tr *ngFor="let service of versionOverview">
+                            <td class="text-center px-3 py-2 text-sm text-gray-500">
+                                {{service.service}}
+                            </td>
+                            <td class="text-center px-3 py-2 text-sm text-gray-500">
+                                {{service.installedVersion}}
+                            </td>
+                            <td class="text-center px-3 py-2 text-sm text-gray-500">
+                                <span class="inline-block mr-2">{{service.checkedVersion}}</span>
+                                <span *ngIf="service.hasNewerVersion" class="tooltip tooltip-right" data-tip="Newer version available">
+                                    <svg xmlns="http://www.w3.org/2000/svg" 
+                                        class="icon icon-tabler icon-tabler-alert-circle inline-block text-yellow-700" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <circle cx="12" cy="12" r="9"></circle>
+                                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                    </svg>
+                                </span>
+                            </td>
+                            <td class="text-center px-3 py-2 text-sm text-gray-500">
+                                {{service.parseDate}}
+                            </td>
+                            <td class="text-center px-3 py-2 text-sm text-gray-500">
+                                <a [href]="service.link" target="_blank" class="h4 w-4 m-auto block"
+                                    style="padding:0px"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 m-auto"
+                                    fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                </svg></a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
         <div class="modal-action">
-            <label for="change-log"
-                class="mr-2 bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
+            <label (click)="howToUpdate()"
+                class="mr-2 bg-green-100 text-green-700 border border-green-400 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">How to update</label>
+            <label for="version-overview"
+                class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
+        </div>
+    </div>
+</div>
+
+<input #stepsUpdate type="checkbox" id="steps-update" class="modal-toggle">
+<div class="modal">
+    <div class="modal-box text-black bg-white justify-center modal-configuration text-center">
+        <div class="inline-block justify-center text-lg leading-6 text-gray-900 font-medium">
+            <button class="text-green-800 text-base font-medium mr-3" (click)="back()">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M7 16l-4-4m0 0l4-4m-4 4h18" />
+                </svg>
+                <span class="leading-5">Go back</span>
+            </button> 
+            How to update
+        </div>
+
+        <div class="modal-action">
+            <label for="steps-update"
+                class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
         </div>
     </div>
 </div>

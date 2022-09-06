@@ -5,7 +5,7 @@ import {
   transition,
   trigger,
 } from '@angular/animations';
-import { Component, Inject, EventEmitter, OnInit, Output, Input, HostListener } from '@angular/core';
+import { Component, Inject, EventEmitter, OnInit, Output, Input, HostListener, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 import { tap } from 'rxjs/operators';
@@ -15,6 +15,7 @@ import { RouteService } from '../../services/route.service';
 import { DOCUMENT } from '@angular/common';
 import { ProjectApolloService } from '../../services/project/project-apollo.service';
 import { ConfigApolloService } from '../../services/config/config-apollo.service';
+import { dateAsUTCDate } from 'src/app/util/helper-functions';
 
 
 @Component({
@@ -62,6 +63,9 @@ export class SidebarPmComponent implements OnInit {
   @Output() firstName = new EventEmitter<Observable<any>>();
   toggleClass = 'ft-maximize';
   versionOverview: any[] = [];
+  @ViewChild('versionOverviewModal', { read: ElementRef }) versionOverviewModal: ElementRef;
+  @ViewChild('stepsUpdate', { read: ElementRef }) stepsUpdate: ElementRef;
+
 
   constructor(
     private organizationService: OrganizationApolloService,
@@ -95,7 +99,13 @@ export class SidebarPmComponent implements OnInit {
     
     this.subscriptions$.push(this.configService
       .getVersionOverview()
-      .subscribe((versionOverview) => this.versionOverview = versionOverview));
+      .subscribe((versionOverview) => {
+        this.versionOverview = versionOverview;
+        this.versionOverview.forEach((version)=> {
+          version.parseDate = this.parseUTC(version.lastChecked);
+          version.hasNewerVersion = version.installedVersion !== version.checkedVersion;
+        });
+      }));
   }
 
   onDestroy() {
@@ -167,5 +177,20 @@ export class SidebarPmComponent implements OnInit {
       this.isFullscreen = true;
 
     }
+  }
+
+  parseUTC(utc: string) {
+    const utcDate = dateAsUTCDate(new Date(utc));
+    return utcDate.toLocaleString();
+  }
+
+  howToUpdate() {
+    this.versionOverviewModal.nativeElement.checked = false;
+    this.stepsUpdate.nativeElement.checked = true;
+  }
+
+  back() {
+    this.stepsUpdate.nativeElement.checked = false;
+    this.versionOverviewModal.nativeElement.checked = true;
   }
 }
