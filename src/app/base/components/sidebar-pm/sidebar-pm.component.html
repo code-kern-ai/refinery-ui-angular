@@ -192,17 +192,15 @@
                     </button>
                 </div>
                 <div class="flex-shrink-0 flex py-6 justify-center">
-                    <label data-tip="Changelog" for="version-overview" (click)="requestVersionOverview()"
-                      class="z-50 tooltip tooltip-right cursor-pointer select-none text-white ml-1">v1.1.1
-                        <span *ngIf="hasUpdates" class="tooltip tooltip-right" data-tip="Newer version available">
-                            <svg xmlns="http://www.w3.org/2000/svg" 
-                                class="icon icon-tabler icon-tabler-alert-circle inline-block text-yellow-700" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <label data-tip="Version overview" for="version-overview" (click)="requestVersionOverview()"
+                      class="z-50 tooltip tooltip-right cursor-pointer select-none text-white flex items-center">v1.1.1
+                        <svg  *ngIf="hasUpdates" xmlns="http://www.w3.org/2000/svg"  data-tip="Newer version available"
+                                class="icon icon-tabler icon-tabler-alert-circle inline-block text-yellow-700 tooltip tooltip-right align-top ml-1 mt-px" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                                 <circle cx="12" cy="12" r="9"></circle>
                                 <line x1="12" y1="8" x2="12" y2="12"></line>
                                 <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                            </svg>
-                        </span>
+                        </svg>
                     </label>
                 </div>
             </div>
@@ -264,16 +262,17 @@
                                 {{service.installedVersion}}
                             </td>
                             <td class="text-center px-3 py-2 text-sm text-gray-500">
-                                <span class="inline-block mr-2">{{service.remoteVersion}}</span>
-                                <span *ngIf="service.remoteHasNewer" class="tooltip tooltip-right" data-tip="Newer version available">
-                                    <svg xmlns="http://www.w3.org/2000/svg" 
-                                        class="icon icon-tabler icon-tabler-alert-circle inline-block text-yellow-700" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                        <circle cx="12" cy="12" r="9"></circle>
-                                        <line x1="12" y1="8" x2="12" y2="12"></line>
-                                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                                    </svg>
-                                </span>
+                                <div class="flex flex-row items-center justify-center">
+                                    <div class="mr-2">{{service.remoteVersion}}</div>
+                                    <div *ngIf="service.remoteHasNewer">
+                                        <svg xmlns="http://www.w3.org/2000/svg" 
+                                            class="icon icon-tabler icon-tabler-alert-circle inline-block text-yellow-700 align-top" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                            <circle cx="12" cy="12" r="9"></circle>
+                                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                        </svg></div>
+                                </div>
                             </td>
                             <td class="text-center px-3 py-2 text-sm text-gray-500">
                                 {{service.parseDate}}
