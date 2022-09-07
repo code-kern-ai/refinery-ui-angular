@@ -124,8 +124,6 @@ export class SidebarPmComponent implements OnInit {
         .hasUpdates()
         .pipe(first())
         .subscribe((hasUpdates) => this.hasUpdates = hasUpdates);
-      
-      // ConfigManager.setVersionOverview(versionOverview);
     });
   }
 
