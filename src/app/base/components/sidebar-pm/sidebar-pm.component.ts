@@ -68,7 +68,7 @@ export class SidebarPmComponent implements OnInit {
   @ViewChild('stepsUpdate', { read: ElementRef }) stepsUpdate: ElementRef;
   openTab: number = 0;
   isManaged: boolean = true;
-  hasUpdates$: Observable<boolean>;
+  hasUpdates: boolean;
 
   constructor(
     private organizationService: OrganizationApolloService,
@@ -101,7 +101,6 @@ export class SidebarPmComponent implements OnInit {
       .subscribe());
 
     this.checkIfManagedVersion();
-    this.hasUpdates$ = this.configService.hasUpdates();
   }
 
   requestVersionOverview() {
@@ -115,6 +114,10 @@ export class SidebarPmComponent implements OnInit {
         version.parseDate = this.parseUTC(version.lastChecked);
       });
       this.versionOverview.sort((a, b) => a.service.localeCompare(b.service));
+      this.configService
+        .hasUpdates()
+        .pipe(first())
+        .subscribe((hasUpdates) => this.hasUpdates = hasUpdates);
     });
   }
 

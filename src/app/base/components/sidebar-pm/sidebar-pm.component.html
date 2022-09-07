@@ -194,7 +194,7 @@
                 <div class="flex-shrink-0 flex py-6 justify-center">
                     <label data-tip="Changelog" for="version-overview" (click)="requestVersionOverview()"
                       class="z-50 tooltip tooltip-right cursor-pointer select-none text-white ml-1">v1.1.1
-                        <span *ngIf="(hasUpdates$ | async)" class="tooltip tooltip-right" data-tip="Newer version available">
+                        <span *ngIf="hasUpdates" class="tooltip tooltip-right" data-tip="Newer version available">
                             <svg xmlns="http://www.w3.org/2000/svg" 
                                 class="icon icon-tabler icon-tabler-alert-circle inline-block text-yellow-700" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
@@ -306,39 +306,30 @@
 <input #stepsUpdate type="checkbox" id="steps-update" class="modal-toggle">
 <div class="modal">
     <div class="modal-box text-black bg-white justify-center modal-configuration">
-        <div class="text-center">
-            <button class="text-green-800 text-base font-medium mr-3" (click)="back()">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block" fill="none"
-                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M7 16l-4-4m0 0l4-4m-4 4h18" />
-                </svg>
-                <span class="leading-5">Go back</span>
-            </button> 
-            <div class="inline-block justify-center text-lg leading-6 text-gray-900 font-medium">
-                How to update
-            </div>
+        <div class="text-center justify-center text-lg leading-6 text-gray-900 font-medium">
+            How to update
         </div>
 
-        <div class="flex border-b-2 border-b-gray-200 max-w-full overflow-x-auto text-center pt-3">
+        <div class="flex border-b-2 border-b-gray-200 max-w-full text-center overflow-visible">
             <div (click)="toggleTabs(0)"
                 [ngClass]="openTab == 0 ? 'text-indigo-700 border-bottom' : 'text-gray-500' "
-                class="text-sm leading-5 font-medium mr-10 cursor-pointer py-5">
-                <span class="tooltip tooltip-top tooltip-margin" data-tip="Linux/Mac">Bash users</span>
+                class="text-sm leading-5 font-medium mr-10 cursor-help py-3">
+                <span class="tooltip tooltip-bottom tooltip-margin border-dotted" data-tip="Linux/Mac">Bash users</span>
             </div>
             <div (click)="toggleTabs(1)"
                 [ngClass]="openTab == 1 ? 'text-indigo-700 border-bottom' : 'text-gray-500' "
-                class="text-sm leading-5 font-medium mr-10 cursor-pointer py-5">
-                <span class="tooltip tooltip-top" data-tip="Installed refinery with pip">CLI users</span>
+                class="text-sm leading-5 font-medium mr-10 cursor-help py-3">
+                <span class="tooltip tooltip-bottom border-dotted" data-tip="Installed refinery with pip">CLI users</span>
             </div>
             <div (click)="toggleTabs(2)"
                 [ngClass]="openTab == 2 ? 'text-indigo-700 border-bottom' : 'text-gray-500' "
-                class="text-sm leading-5 font-medium mr-10 cursor-pointer py-5">
-                <span class="tooltip tooltip-top" data-tip="Windows terminal">cmd</span> 
+                class="text-sm leading-5 font-medium mr-10 cursor-help py-3">
+                <span class="tooltip tooltip-bottom border-dotted" data-tip="Windows terminal">cmd</span> 
             </div>
             <div (click)="toggleTabs(3)"
                 [ngClass]="openTab == 3 ? 'text-indigo-700 border-bottom' : 'text-gray-500' "
-                class="text-sm leading-5 font-medium mr-10 cursor-pointer py-5">
-                <span class="tooltip tooltip-top" data-tip="Windows from File Explorer">Executing from explorer</span> 
+                class="text-sm leading-5 font-medium mr-10 cursor-help py-3">
+                <span class="tooltip tooltip-bottom border-dotted" data-tip="Windows from File Explorer">Executing from explorer</span> 
             </div>
         </div>
 
@@ -406,6 +397,8 @@
         </div>
 
         <div class="modal-action">
+            <label (click)="back()"
+                class="bg-white text-gray-700 text-xs font-semibold mr-2 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Go back</label>
             <label for="steps-update"
                 class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
         </div>
