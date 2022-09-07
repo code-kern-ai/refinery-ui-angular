@@ -264,7 +264,7 @@
                             <td class="text-center px-3 py-2 text-sm text-gray-500">
                                 <div class="flex flex-row items-center justify-center">
                                     <div class="mr-2">{{service.remoteVersion}}</div>
-                                    <div *ngIf="service.remoteHasNewer">
+                                    <div *ngIf="service.remoteHasNewer" class="tooltip tooltip-right" data-tip="Newer version available">
                                         <svg xmlns="http://www.w3.org/2000/svg" 
                                             class="icon icon-tabler icon-tabler-alert-circle inline-block text-yellow-700 align-top" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                             <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
