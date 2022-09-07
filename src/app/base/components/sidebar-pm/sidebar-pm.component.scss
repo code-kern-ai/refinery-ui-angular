@@ -29,3 +29,13 @@ ol.list-letters {
 .border-dotted {
   border-bottom: 2px dotted #22c55e;
 }
+
+.modal-sizes {
+  min-width: 750px;
+}
+
+@media (max-width: 1024px) {
+  .modal-sizes {
+    min-width: 400px;
+  }
+}
