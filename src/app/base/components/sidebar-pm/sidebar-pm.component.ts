@@ -17,6 +17,7 @@ import { ProjectApolloService } from '../../services/project/project-apollo.serv
 import { ConfigApolloService } from '../../services/config/config-apollo.service';
 import { dateAsUTCDate } from 'src/app/util/helper-functions';
 import { ConfigManager } from '../../services/config-service';
+import { ConfigService } from 'aws-sdk';
 
 
 @Component({
@@ -69,6 +70,7 @@ export class SidebarPmComponent implements OnInit {
   openTab: number = 0;
   isManaged: boolean = true;
   hasUpdates: boolean;
+  private static initialConfigRequest: boolean = false;
 
   constructor(
     private organizationService: OrganizationApolloService,
@@ -99,7 +101,11 @@ export class SidebarPmComponent implements OnInit {
         })
       )
       .subscribe());
-
+    
+    if(!SidebarPmComponent.initialConfigRequest) {
+      this.requestVersionOverview();
+      SidebarPmComponent.initialConfigRequest = true;
+    }
     this.checkIfManagedVersion();
   }
 
@@ -118,6 +124,8 @@ export class SidebarPmComponent implements OnInit {
         .hasUpdates()
         .pipe(first())
         .subscribe((hasUpdates) => this.hasUpdates = hasUpdates);
+      
+      // ConfigManager.setVersionOverview(versionOverview);
     });
   }
 
@@ -221,6 +229,5 @@ export class SidebarPmComponent implements OnInit {
       return;
     }
     this.isManaged = ConfigManager.getIsManaged();
-    this.versionOverview = ConfigManager.getVersionOverview();
   }
 }
