@@ -24,7 +24,7 @@ export class ModelDownloadComponentComponent implements OnInit {
   projectId: string;
   form: FormGroup;
   models: any[] = [];
-  isManaged: boolean = false;
+  isManaged: boolean = true;
   currentModelHandle: any;
   downloadedModels: any[];
   subscriptions$: Subscription[] = [];
@@ -50,7 +50,6 @@ export class ModelDownloadComponentComponent implements OnInit {
     [this.projectQuery$, this.project$] = this.projectApolloService.getProjectByIdQuery(this.projectId);
     [this.downloadedModelsQuery$, this.downloadedModelsList$] = this.informationSourceApolloService.getModelProviderInfo();
     this.prepareModels();
-    this.isManaged = ConfigManager.getIsManaged();
 
     this.subscriptions$.push(
       this.downloadedModelsList$.subscribe((downloadedModels) => {
@@ -60,6 +59,8 @@ export class ModelDownloadComponentComponent implements OnInit {
           model.parseDate = this.parseUTC(model.date);
         })
       }));
+    
+    this.checkIfManagedVersion();
 
     NotificationService.subscribeToNotification(this, {
       whitelist: ['model_provider_download'],
@@ -173,4 +174,11 @@ export class ModelDownloadComponentComponent implements OnInit {
     this.router.navigate(["../"+this.lastPage], { relativeTo: this.activatedRoute });
   }
 
+  checkIfManagedVersion() {
+    if (!ConfigManager.isInit()) {
+      timer(250).subscribe(() => this.checkIfManagedVersion());
+      return;
+    }
+    this.isManaged = ConfigManager.getIsManaged();
+  }
 }
