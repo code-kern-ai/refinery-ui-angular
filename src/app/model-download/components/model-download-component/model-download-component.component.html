@@ -162,7 +162,7 @@
                                             (input)="checkEmbeddingHandles($event.target)">
                                     </div>
                                     <ul tabindex="0"
-                                        class="p-2 w-full menu dropdown-content bg-base-100 shadow max-h-80 overflow-y-auto">
+                                        class="p-2 w-full menu dropdown-content bg-base-100 shadow height-dropdown overflow-y-auto">
                                         <li #me *ngFor="let modelHandle of suggestions; let k = index"
                                             [ngClass]="modelHandle.hidden || modelHandle.forceHidden?'hidden':null"
                                             (mouseenter)="setCurrentEmbeddingHandle(modelHandle,hoverBox,me)"

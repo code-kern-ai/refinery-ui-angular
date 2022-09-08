@@ -192,9 +192,16 @@
                     </button>
                 </div>
                 <div class="flex-shrink-0 flex py-6 justify-center">
-                    <a data-tip="Changelog" target="_blank" rel="noopener noreferrer"
-                        class="z-50 tooltip tooltip-right cursor-pointer select-none text-white"
-                        href="https://docs.kern.ai/changelog">v1.1.1</a>
+                    <label data-tip="Version overview" for="version-overview" (click)="requestVersionOverview()"
+                      class="z-50 tooltip tooltip-right cursor-pointer select-none text-white flex items-center">v1.1.1
+                        <svg  *ngIf="hasUpdates" xmlns="http://www.w3.org/2000/svg"  data-tip="Newer version available"
+                                class="icon icon-tabler icon-tabler-alert-circle inline-block text-yellow-700 tooltip tooltip-right align-top ml-1 mt-px" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <circle cx="12" cy="12" r="9"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                    </label>
                 </div>
             </div>
         </div>
@@ -205,5 +212,194 @@
             stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
         </svg>
+    </div>
+</div>
+
+<input #versionOverviewModal type="checkbox" id="version-overview" class="modal-toggle">
+<div class="modal">
+    <div class="modal-box text-black bg-white justify-center modal-configuration text-center">
+        <div class="inline-block justify-center text-lg leading-6 text-gray-900 font-medium">
+            Version overview
+
+            <a class="text-green-800 text-base font-medium ml-3" href="https://docs.kern.ai/changelog" target="_blank">
+                <span class="leading-5">Changelog</span>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+            </a> 
+        </div>
+       
+        <div class="inline-block min-w-full align-middle mt-3" *ngIf="versionOverview">
+            <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg scrollable-size">
+                <table class="min-w-full divide-y divide-gray-300">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col"
+                                class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wide text-gray-500">
+                                Service</th>
+                            <th scope="col"
+                                class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                Installed version</th>
+                            <th scope="col"
+                                class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                Remote version</th>
+                            <th scope="col"
+                                class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                Last checked</th>
+                            <th scope="col"
+                                class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                Link</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        <tr *ngFor="let service of versionOverview">
+                            <td class="text-left px-3 py-2 text-sm text-gray-500">
+                                {{service.service}}
+                            </td>
+                            <td class="text-center px-3 py-2 text-sm text-gray-500">
+                                {{service.installedVersion}}
+                            </td>
+                            <td class="text-center px-3 py-2 text-sm text-gray-500">
+                                <div class="flex flex-row items-center justify-center">
+                                    <div class="mr-2">{{service.remoteVersion}}</div>
+                                    <div *ngIf="service.remoteHasNewer" class="tooltip tooltip-right" data-tip="Newer version available">
+                                        <svg xmlns="http://www.w3.org/2000/svg" 
+                                            class="icon icon-tabler icon-tabler-alert-circle inline-block text-yellow-700 align-top" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                            <circle cx="12" cy="12" r="9"></circle>
+                                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                        </svg></div>
+                                </div>
+                            </td>
+                            <td class="text-center px-3 py-2 text-sm text-gray-500">
+                                {{service.parseDate}}
+                            </td>
+                            <td class="text-center px-3 py-2 text-sm text-gray-500">
+                                <a [href]="service.link" target="_blank" class="h4 w-4 m-auto block"
+                                    style="padding:0px"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 m-auto"
+                                    fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                </svg></a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <kern-loading *ngIf="versionOverview == null" color="yellow" class="mt-3"></kern-loading>
+
+        <div class="modal-action">
+            <label (click)="howToUpdate()" *ngIf="!isManaged"
+                class="mr-2 bg-green-100 text-green-700 border border-green-400 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">How to update</label>
+            <label for="version-overview"
+                class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
+        </div>
+    </div>
+</div>
+
+<input #stepsUpdate type="checkbox" id="steps-update" class="modal-toggle">
+<div class="modal">
+    <div class="modal-box text-black bg-white justify-center modal-sizes">
+        <div class="text-center justify-center text-lg leading-6 text-gray-900 font-medium">
+            How to update
+        </div>
+
+        <div class="flex border-b-2 border-b-gray-200 max-w-full text-center overflow-visible">
+            <div (click)="toggleTabs(0)"
+                [ngClass]="openTab == 0 ? 'text-indigo-700 border-bottom' : 'text-gray-500' "
+                class="text-sm leading-5 font-medium mr-10 cursor-help py-3">
+                <span class="tooltip tooltip-bottom tooltip-margin border-dotted" data-tip="Linux/Mac">Bash users</span>
+            </div>
+            <div (click)="toggleTabs(1)"
+                [ngClass]="openTab == 1 ? 'text-indigo-700 border-bottom' : 'text-gray-500' "
+                class="text-sm leading-5 font-medium mr-10 cursor-help py-3">
+                <span class="tooltip tooltip-bottom border-dotted" data-tip="Installed refinery with pip">CLI users</span>
+            </div>
+            <div (click)="toggleTabs(2)"
+                [ngClass]="openTab == 2 ? 'text-indigo-700 border-bottom' : 'text-gray-500' "
+                class="text-sm leading-5 font-medium mr-10 cursor-help py-3">
+                <span class="tooltip tooltip-bottom border-dotted" data-tip="Windows terminal">cmd</span> 
+            </div>
+            <div (click)="toggleTabs(3)"
+                [ngClass]="openTab == 3 ? 'text-indigo-700 border-bottom' : 'text-gray-500' "
+                class="text-sm leading-5 font-medium mr-10 cursor-help py-3">
+                <span class="tooltip tooltip-bottom border-dotted" data-tip="Windows from File Explorer">Executing from explorer</span> 
+            </div>
+        </div>
+
+        <div class="mt-3 px-5 h-40">
+            <ng-container [ngSwitch]="openTab">
+                <ng-template [ngSwitchCase]="0">
+                    <ol class="font-dmMono">
+                        <li>Open a Terminal</li>
+                        <li>Change to refinery directory (using cd) - 
+                            <span class="bg-gray-200 text-red-700 rounded-md p-1 whitespace-nowrap">$ cd /path/to/refinery</span>
+                        </li>
+                        <li>Run the update script - 
+                            <span class="bg-gray-200 text-red-700 rounded-md p-1 whitespace-nowrap">$ 
+                                <span class="cursor-pointer tooltip tooltip-top" data-tip="Click to copy" (click)="copyToClipboard('./update')">./update</span>
+                            </span>
+                        </li>
+                    </ol>
+                </ng-template>
+                <ng-template [ngSwitchCase]="1">
+                    <ol class="font-dmMono">
+                        <li>Open a Terminal</li>
+                        <li>Change to refinery directory 
+                            <ol class="list-letters px-8">
+                                <li>Linux/Mac - 
+                                    <span class="bg-gray-200 text-red-700 rounded-md p-1 whitespace-nowrap">$ cd path/to/refinery</span>
+                                </li>
+                                <li>Windows -
+                                    <span class="bg-gray-200 text-red-700 rounded-md p-1 whitespace-nowrap">cd path\to\refinery</span>
+                                </li>
+                            </ol>
+                        </li>
+                        <li>
+                            Run the CLI update command
+                            <span class="bg-gray-200 text-red-700 rounded-md p-1 whitespace-nowrap">$ 
+                                <span class="cursor-pointer tooltip tooltip-top" data-tip="Click to copy" (click)="copyToClipboard('refinery update')">refinery update</span>
+                            </span>
+                        </li>
+                    </ol>
+                </ng-template>
+                <ng-template [ngSwitchCase]="2">
+                    <ol class="font-dmMono">
+                        <li>Open a Terminal</li>
+                        <li>Change to refinery directory
+                            <span class="bg-gray-200 text-red-700 rounded-md p-1 whitespace-nowrap">cd path\to\refinery</span>
+                        </li>
+                        <li>Run the update script - 
+                            <span class="bg-gray-200 text-red-700 rounded-md p-1 whitespace-nowrap">
+                                <span class="cursor-pointer tooltip tooltip-top" data-tip="Click to copy" (click)="copyToClipboard('update.bat')">update.bat</span>
+                            </span>
+                        </li>
+                    </ol>
+                </ng-template>
+                <ng-template [ngSwitchCase]="3">
+                    <ol class="font-dmMono">
+                        <li>Open the File Explorer</li>
+                        <li>Navigate to the refinery directory</li>
+                        <li>Launch the update script by double-clicking 
+                            <span class="bg-gray-200 text-red-700 rounded-md p-1 whitespace-nowrap"> 
+                                <span class="cursor-pointer tooltip tooltip-top" data-tip="Click to copy" (click)="copyToClipboard('update.bat')">update.bat</span>
+                            </span>
+                        </li>
+                    </ol>
+                </ng-template>
+            </ng-container>
+        </div>
+
+        <div class="modal-action">
+            <label (click)="back()"
+                class="bg-white text-gray-700 text-xs font-semibold mr-2 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Go back</label>
+            <label for="steps-update"
+                class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
+        </div>
     </div>
 </div>

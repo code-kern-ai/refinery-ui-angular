@@ -1,3 +1,41 @@
 .overflow-initial {
   overflow: initial;
 }
+
+.border-bottom {
+  border-bottom: 1px solid #4F46E5;
+}
+
+ol {
+  list-style: decimal;
+  li {
+    margin-top: 8px;
+  }
+}
+
+ol.list-letters {
+  list-style-type: lower-alpha !important;
+}
+
+.scrollable-size {
+  max-height: calc(100vh - 230px);
+  overflow-y: auto;
+}
+
+.tooltip-margin::before {
+  margin-left: 8px;
+}
+
+.border-dotted {
+  border-bottom: 2px dotted #22c55e;
+}
+
+.modal-sizes {
+  min-width: 750px;
+}
+
+@media (max-width: 1024px) {
+  .modal-sizes {
+    min-width: 400px;
+  }
+}
