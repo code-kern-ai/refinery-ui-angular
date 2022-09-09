@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, Subscription, timer } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { ConfigManager } from 'src/app/base/services/config-service';
@@ -24,29 +24,32 @@ export class ModelDownloadComponentComponent implements OnInit {
   projectId: string;
   form: FormGroup;
   models: any[] = [];
-  isManaged: boolean = false;
+  isManaged: boolean = true;
   currentModelHandle: any;
   downloadedModels: any[];
   subscriptions$: Subscription[] = [];
   currentModel: any;
   indexSeparator: number;
+  lastPage: string;
 
   constructor(
     private activatedRoute: ActivatedRoute,
     private projectApolloService: ProjectApolloService,
     private routeService: RouteService,
     private informationSourceApolloService: WeakSourceApolloService,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
     this.initForm();
     this.routeService.updateActivatedRoute(this.activatedRoute);
     this.projectId = this.activatedRoute.parent.snapshot.paramMap.get('projectId');
+    this.lastPage = this.activatedRoute.snapshot.queryParamMap.get('lastPage');
+
     [this.projectQuery$, this.project$] = this.projectApolloService.getProjectByIdQuery(this.projectId);
     [this.downloadedModelsQuery$, this.downloadedModelsList$] = this.informationSourceApolloService.getModelProviderInfo();
     this.prepareModels();
-    this.isManaged = ConfigManager.getIsManaged();
 
     this.subscriptions$.push(
       this.downloadedModelsList$.subscribe((downloadedModels) => {
@@ -56,6 +59,8 @@ export class ModelDownloadComponentComponent implements OnInit {
           model.parseDate = this.parseUTC(model.date);
         })
       }));
+    
+    this.checkIfManagedVersion();
 
     NotificationService.subscribeToNotification(this, {
       whitelist: ['model_provider_download'],
@@ -165,4 +170,15 @@ export class ModelDownloadComponentComponent implements OnInit {
     return findModel !== undefined ? true : false;
   }
 
+  goBack() {
+    this.router.navigate(["../"+this.lastPage], { relativeTo: this.activatedRoute });
+  }
+
+  checkIfManagedVersion() {
+    if (!ConfigManager.isInit()) {
+      timer(250).subscribe(() => this.checkIfManagedVersion());
+      return;
+    }
+    this.isManaged = ConfigManager.getIsManaged();
+  }
 }
