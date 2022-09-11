@@ -1,13 +1,15 @@
 export enum LabelSource {
     MANUAL = "MANUAL",
     WEAK_SUPERVISION = "WEAK_SUPERVISION",
-    INFORMATION_SOURCE = "INFORMATION_SOURCE"
+    INFORMATION_SOURCE = "INFORMATION_SOURCE",
+    MODEL_CALLBACK = "MODEL_CALLBACK",
 }
 export function labelSourceToString(source: LabelSource, forDisplay: boolean = true) {
     if (forDisplay) {
         switch (source) {
             case LabelSource.MANUAL: return "Manual";
             case LabelSource.WEAK_SUPERVISION: return "Weak Supervision";
+            case LabelSource.MODEL_CALLBACK: return "Model Callback";
             case LabelSource.INFORMATION_SOURCE: return "Information Source";
             default: return source;
         }

@@ -1154,7 +1154,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
             };
           }
           element.rla_aggregation[rlaAggParts.key].amount++;
-          if (rlaLine.confidence != null && rlaLine.source_type == LabelSource.WEAK_SUPERVISION) {
+          if (rlaLine.confidence != null && (rlaLine.source_type == LabelSource.WEAK_SUPERVISION || rlaLine.source_type == LabelSource.MODEL_CALLBACK)) {
             element.rla_aggregation[rlaAggParts.key].confidence.push(rlaLine.confidence);
           }
         }
