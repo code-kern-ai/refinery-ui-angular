@@ -20,12 +20,6 @@
                 </div>
                 <div
                     class="grid grid-cols-2 sm:grid-cols-3 gap-4 md:flex md:gap-0 flex-row flex-nowrap items-center mt-4 xl:mt-0 ">
-                    <div class="flex justify-center overflow-visible">
-                        <button [routerLink]="['../knowledge-base']" data-tip="Go to the lookup lists"
-                            class="tooltip tooltip-bottom bg-white text-gray-700 text-xs font-semibold mr-3 px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                            Lookup lists
-                        </button>
-                    </div>
                     <ng-template [ngIf]="labelingTasks && labelingTasks.length > 0" [ngIfElse]="noTasks">
                         <kern-dropdown class="mr-3" [dropdownOptions]="{
                             optionArray: ['Labeling function', 'Active learning', 'Zero-shot'],
@@ -225,6 +219,18 @@
                             </label>
                         </div>
                     </ng-template>
+                    <div class="flex justify-center overflow-visible">
+                        <button [routerLink]="['../model-callbacks']" data-tip="Go to the model callbacks"
+                            class="tooltip tooltip-bottom bg-white text-gray-700 text-xs font-semibold mr-3 px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            Model callbacks
+                        </button>
+                    </div>
+                    <div class="flex justify-center overflow-visible">
+                        <button [routerLink]="['../knowledge-base']" data-tip="Go to the lookup lists"
+                            class="tooltip tooltip-bottom bg-white text-gray-700 text-xs font-semibold mr-3 px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            Lookup lists
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -232,7 +238,8 @@
                 <input #modalCreateZS type="checkbox" id="zero-shot-modal" class="modal-toggle">
 
                 <div class="modal">
-                    <div class="modal-box text-black bg-white justify-center modal-configuration" style="overflow: initial;">
+                    <div class="modal-box text-black bg-white justify-center modal-configuration"
+                        style="overflow: initial;">
                         <h1 class="text-lg text-gray-900 mb-2 text-center mb-4">Add new zero shot classification</h1>
 
                         <div *ngIf="attributes && labelingTasksClassification"
@@ -285,7 +292,8 @@
                                         [ngClass]="recommendation.hidden?'hidden':null"
                                         (mouseenter)="setCurrentRecommendation(recommendation,hoverBox,me)"
                                         (mouseleave)="setCurrentRecommendation(null)">
-                                        <label class="cursor-pointer label flex-grow" [ngClass]="checkIfModelIsDownloaded(recommendation.configString) ? 'text-green-700' : ''"
+                                        <label class="cursor-pointer label flex-grow"
+                                            [ngClass]="checkIfModelIsDownloaded(recommendation.configString) ? 'text-green-700' : ''"
                                             (click)="selectRecommendation(recommendation,inputConfig)">
                                             {{recommendation.configString}}
                                         </label>
@@ -523,67 +531,70 @@
                             <span class="text-gray-500 text-base leading-6 font-normal mt-4">No heuristics for this
                                 labeling task</span>
                         </ng-template>
-                        <div *ngFor="let source of filteredSourcesList; let i = index"
-                            class="relative flex space-x-3 items-center rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm hover:border-gray-400"
-                            [ngStyle]="{'height': getHeightInPx(source.stats)}"
-                            [ngClass]="filteredSourcesList.length > 2 ? 'item' : ''">
-                            <div class="h-full">
-                                <label (click)="toggleInformationSource(project.id, source.id)" class="cursor-pointer">
-                                    <input type="checkbox" [checked]='source.selected'>
-                                </label>
-                            </div>
-                            <div class="flex-1 min-w-0 text-sm leading-5">
-                                <div class="flow-root font-medium">
-                                    <div class="text-gray-900 float-left">
-                                        {{source.name}}
-                                    </div>
-                                    <div class="text-green-800 float-right cursor-pointer"
-                                        [routerLink]="[source.informationSourceType == 'ZERO_SHOT'?('../zero-shot/' + source.id):('./' + source.id)]"
-                                        [queryParams]="{type: source.informationSourceType, status: source?.state}">
-                                        Details
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block" fill="none"
-                                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                                        </svg>
-                                    </div>
+                        <div *ngFor="let source of filteredSourcesList; let i = index">
+                            <div class="relative flex space-x-3 items-center rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm hover:border-gray-400"
+                                [ngStyle]="{'height': getHeightInPx(source.stats)}"
+                                [ngClass]="filteredSourcesList.length > 2 ? 'item' : ''">
+                                <div class="h-full">
+                                    <label (click)="toggleInformationSource(project.id, source.id)"
+                                        class="cursor-pointer">
+                                        <input type="checkbox" [checked]='source.selected'>
+                                    </label>
                                 </div>
-                                <div class="flow-root font-normal">
-                                    <div class="text-gray-500 float-left max-w-xs-1">
-                                        {{source.description}}
-                                    </div>
-                                    <div class="float-right">
-                                        <kern-heuristic-statuses [status]="source?.state"
-                                            tooltipPosition="tooltip-left"></kern-heuristic-statuses>
-                                    </div>
-                                </div>
-                                <ng-template [ngIf]="!(source.stats.length == 1 && source.stats[0].label == '-' )">
-                                    <div class="flex items-center" *ngFor="let stat of source.stats">
-                                        <div class="py-2">
-                                            <span
-                                                [ngClass]="[getBackground(stat.color), getText(stat.color), getBorder(stat.color), getHover(stat.color)]"
-                                                class="inline-flex items-center px-2 py-0.5 rounded text-sm font-medium border">
-                                                {{stat.label}}
-                                            </span>
+                                <div class="flex-1 min-w-0 text-sm leading-5">
+                                    <div class="flow-root font-medium">
+                                        <div class="text-gray-900 float-left">
+                                            {{source.name}}
                                         </div>
-                                        <div class="py-4 ml-auto text-sm leading-5 font-medium text-gray-900">
-                                            <div class="flex flex-row">
-                                                <div class="mr-4">
-                                                    <div>Est. Precision</div>
-                                                    <div class="font-normal text-gray-500">{{stat.values.Precision |
-                                                        percentRound : '2'}}</div>
-                                                </div>
-                                                <div>
-                                                    <div>Coverage</div>
-                                                    <div class="font-normal text-gray-500">{{stat.values.Coverage}} {{
-                                                        stat.values.Coverage == 1 ? 'record' : 'records' }}
+                                        <div class="text-green-800 float-right cursor-pointer"
+                                            [routerLink]="[source.informationSourceType == 'ZERO_SHOT'?('../zero-shot/' + source.id):('./' + source.id)]"
+                                            [queryParams]="{type: source.informationSourceType, status: source?.state}">
+                                            Details
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <div class="flow-root font-normal">
+                                        <div class="text-gray-500 float-left max-w-xs-1">
+                                            {{source.description}}
+                                        </div>
+                                        <div class="float-right">
+                                            <kern-heuristic-statuses [status]="source?.state"
+                                                tooltipPosition="tooltip-left"></kern-heuristic-statuses>
+                                        </div>
+                                    </div>
+                                    <ng-template [ngIf]="!(source.stats.length == 1 && source.stats[0].label == '-' )">
+                                        <div class="flex items-center" *ngFor="let stat of source.stats">
+                                            <div class="py-2">
+                                                <span
+                                                    [ngClass]="[getBackground(stat.color), getText(stat.color), getBorder(stat.color), getHover(stat.color)]"
+                                                    class="inline-flex items-center px-2 py-0.5 rounded text-sm font-medium border">
+                                                    {{stat.label}}
+                                                </span>
+                                            </div>
+                                            <div class="py-4 ml-auto text-sm leading-5 font-medium text-gray-900">
+                                                <div class="flex flex-row">
+                                                    <div class="mr-4">
+                                                        <div>Est. Precision</div>
+                                                        <div class="font-normal text-gray-500">{{stat.values.Precision |
+                                                            percentRound : '2'}}</div>
                                                     </div>
+                                                    <div>
+                                                        <div>Coverage</div>
+                                                        <div class="font-normal text-gray-500">{{stat.values.Coverage}}
+                                                            {{
+                                                            stat.values.Coverage == 1 ? 'record' : 'records' }}
+                                                        </div>
 
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </ng-template>
+                                    </ng-template>
+                                </div>
                             </div>
                         </div>
                     </div>

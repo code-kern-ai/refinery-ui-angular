@@ -6,12 +6,6 @@
                     Lookup lists
                 </div>
                 <div class="grid grid-cols-1 gap-4 xs:flex xs:gap-0 flex-row flex-nowrap items-center">
-                    <div class="flex justify-center overflow-visible">
-                        <button [routerLink]="['../heuristics']" data-tip="Go to heuristics overview"
-                            class="tooltip tooltip-bottom bg-white text-gray-700 text-xs font-medium mr-3 px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                            Heuristics
-                        </button>
-                    </div>
 
                     <ng-template [ngIf]="knowledgeBases.length > 0" [ngIfElse]="noLookupLists">
                         <kern-dropdown class="mr-3" [dropdownOptions]="{
@@ -67,6 +61,20 @@
                         <button data-tip="Create a new lookup list"
                             class="tooltip tooltip-left bg-white text-gray-700 text-xs font-medium mr-3 px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                             New list
+                        </button>
+                    </div>
+
+                    <div class="flex justify-center overflow-visible">
+                        <button [routerLink]="['../heuristics']" data-tip="Go to heuristics overview"
+                            class="tooltip tooltip-bottom bg-white text-gray-700 text-xs font-medium mr-3 px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            Heuristics
+                        </button>
+                    </div>
+
+                    <div class="flex justify-center overflow-visible">
+                        <button [routerLink]="['../model-callbacks']" data-tip="Go to the model callbacks"
+                            class="tooltip tooltip-bottom bg-white text-gray-700 text-xs font-semibold mr-3 px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            Model callbacks
                         </button>
                     </div>
                 </div>
