@@ -27,7 +27,7 @@
                         <kern-dropdown class="mr-3" [dropdownOptions]="{
                             optionArray:['Select all','Deselect all', 'Delete selected'],
                             optionIcons:['select-all','deselect-all', 'delete-selected'],
-                            buttonTooltip:'Multi-heuristic action',
+                            buttonTooltip:'Multi-callback action',
                             buttonCaption: 'Actions',
                             isOptionDisabled: [false, false, this.selectedInformationSources.length == 0]
                         }" (optionClicked)="executeOption($event)">
@@ -68,10 +68,10 @@
                     <div class="modal text-center items-center">
                         <div class="modal-box">
                             <h1 class="text-lg text-gray-900 mb-2">Delete {{ selectedInformationSources.length == 1 ?
-                                'heuristic' : 'heuristics' }}</h1>
+                                'callback' : 'callbacks' }}</h1>
                             <div class="text-sm text-gray-500 my-2 flex flex-col">
                                 <span>Are you sure you want to delete selected {{ selectedInformationSources.length == 1
-                                    ? 'heuristic' : 'heuristics' }}?</span>
+                                    ? 'callback' : 'callbacks' }}?</span>
                                 <span>Currently selected {{ selectedInformationSources.length == 1 ? 'is' : 'are'
                                     }}:</span>
                                 <span class="whitespace-pre-line font-bold">{{selectionList}}</span>
