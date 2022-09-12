@@ -5,15 +5,19 @@ import {
   transition,
   trigger,
 } from '@angular/animations';
-import { Component, Inject, EventEmitter, OnInit, Output, Input, HostListener } from '@angular/core';
+import { Component, Inject, EventEmitter, OnInit, Output, Input, HostListener, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Observable, Subscription } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { Observable, Subscription, timer } from 'rxjs';
+import { first, tap } from 'rxjs/operators';
 import { AuthApiService } from '../../services/auth-api.service';
 import { OrganizationApolloService } from '../../services/organization/organization-apollo.service';
 import { RouteService } from '../../services/route.service';
 import { DOCUMENT } from '@angular/common';
 import { ProjectApolloService } from '../../services/project/project-apollo.service';
+import { ConfigApolloService } from '../../services/config/config-apollo.service';
+import { dateAsUTCDate } from 'src/app/util/helper-functions';
+import { ConfigManager } from '../../services/config-service';
+import { ConfigService } from 'aws-sdk';
 
 
 @Component({
@@ -60,6 +64,13 @@ export class SidebarPmComponent implements OnInit {
   isFullscreen: boolean = false;
   @Output() firstName = new EventEmitter<Observable<any>>();
   toggleClass = 'ft-maximize';
+  versionOverview: any[] = [];
+  @ViewChild('versionOverviewModal', { read: ElementRef }) versionOverviewModal: ElementRef;
+  @ViewChild('stepsUpdate', { read: ElementRef }) stepsUpdate: ElementRef;
+  openTab: number = 0;
+  isManaged: boolean = true;
+  hasUpdates: boolean;
+  private static initialConfigRequest: boolean = false;
 
   constructor(
     private organizationService: OrganizationApolloService,
@@ -67,6 +78,7 @@ export class SidebarPmComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private auth: AuthApiService,
     private projectApolloService: ProjectApolloService,
+    private configService: ConfigApolloService,
     @Inject(DOCUMENT) private document: any
   ) { }
 
@@ -89,6 +101,30 @@ export class SidebarPmComponent implements OnInit {
         })
       )
       .subscribe());
+    
+    if(!SidebarPmComponent.initialConfigRequest) {
+      this.requestVersionOverview();
+      SidebarPmComponent.initialConfigRequest = true;
+    }
+    this.checkIfManagedVersion();
+  }
+
+  requestVersionOverview() {
+    this.versionOverview = null; 
+    this.configService
+    .getVersionOverview()
+    .pipe(first())
+    .subscribe((versionOverview) => {
+      this.versionOverview = versionOverview;
+      this.versionOverview.forEach((version)=> {
+        version.parseDate = this.parseUTC(version.lastChecked);
+      });
+      this.versionOverview.sort((a, b) => a.service.localeCompare(b.service));
+      this.configService
+        .hasUpdates()
+        .pipe(first())
+        .subscribe((hasUpdates) => this.hasUpdates = hasUpdates);
+    });
   }
 
   onDestroy() {
@@ -160,5 +196,36 @@ export class SidebarPmComponent implements OnInit {
       this.isFullscreen = true;
 
     }
+  }
+
+  parseUTC(utc: string) {
+    const utcDate = dateAsUTCDate(new Date(utc));
+    return utcDate.toLocaleString();
+  }
+
+  howToUpdate() {
+    this.versionOverviewModal.nativeElement.checked = false;
+    this.stepsUpdate.nativeElement.checked = true;
+  }
+
+  back() {
+    this.stepsUpdate.nativeElement.checked = false;
+    this.versionOverviewModal.nativeElement.checked = true;
+  }
+
+  toggleTabs(index: number) {
+    this.openTab = index;
+  }
+
+  copyToClipboard(textToCopy) {
+    navigator.clipboard.writeText(textToCopy);
+  }
+
+  checkIfManagedVersion() {
+    if (!ConfigManager.isInit()) {
+      timer(250).subscribe(() => this.checkIfManagedVersion());
+      return;
+    }
+    this.isManaged = ConfigManager.getIsManaged();
   }
 }

@@ -1,3 +1,7 @@
 .line-separator {
     border-bottom: 1px gray dashed;
 }
+
+.height-dropdown {
+    max-height: calc(100vh - 400px);
+}

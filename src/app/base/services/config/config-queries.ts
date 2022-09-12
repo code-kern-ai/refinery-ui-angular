@@ -62,5 +62,22 @@ export const queries = {
   {
     getBlackWhiteDemo
   }  
-  `
+  `,
+  GET_VERSION_OVERVIEW: gql`
+    query {
+      versionOverview {
+        service
+        installedVersion
+        remoteVersion
+        lastChecked
+        link
+        remoteHasNewer
+      }
+    }
+  `,
+
+  GET_HAS_UPDATES: gql`
+  {
+    hasUpdates
+  }`
 };
