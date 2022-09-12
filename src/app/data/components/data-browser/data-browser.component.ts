@@ -738,6 +738,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       active: true,
       manualLabels: this._labelingTaskLabelFormArray(task),
       weakSupervisionLabels: this._labelingTaskLabelFormArray(task),
+      modelCallbackLabels: this._labelingTaskLabelFormArray(task),
       sortByConfidence: this.getOrderByGroup(StaticOrderByKeys.CONFIDENCE, false, -1), //1, //-1 desc, 1 asc
       confidence: this.getConfidenceFilterGroup(),
       informationSources: this._labelingTaskInformationSourceFormArray(task),
@@ -796,6 +797,10 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       if (values.weakSupervisionLabels[i].active != previousValues.weakSupervisionLabels[i].active ||
         values.weakSupervisionLabels[i].negate != previousValues.weakSupervisionLabels[i].negate) return false;
     }
+    for (var i = 0; i < values.modelCallbackLabels.length; i++) {
+      if (values.modelCallbackLabels[i].active != previousValues.modelCallbackLabels[i].active ||
+        values.modelCallbackLabels[i].negate != previousValues.modelCallbackLabels[i].negate) return false;
+    }
     for (var i = 0; i < values.informationSources.length; i++) {
       if (values.informationSources[i].active != previousValues.informationSources[i].active ||
         values.informationSources[i].negate != previousValues.informationSources[i].negate) return false;
@@ -812,6 +817,9 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       if (c.active) return true;
     }
     for (let c of values.weakSupervisionLabels) {
+      if (c.active) return true;
+    }
+    for (let c of values.modelCallbackLabels) {
       if (c.active) return true;
     }
     for (let c of values.informationSources) {
@@ -834,6 +842,12 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     tmp = this._labelingTaskBuildSearchParamTextPart(
       values.weakSupervisionLabels,
       'WS-label'
+    );
+    if (tmp) text += (text ? '\nAND ' : '') + ' (' + tmp + ')';
+
+    tmp = this._labelingTaskBuildSearchParamTextPart(
+      values.modelCallbackLabels,
+      'MC-label'
     );
     if (tmp) text += (text ? '\nAND ' : '') + ' (' + tmp + ')';
 

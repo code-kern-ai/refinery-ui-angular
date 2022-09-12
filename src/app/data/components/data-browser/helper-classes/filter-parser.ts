@@ -148,6 +148,12 @@ export class DataBrowserFilterParser {
         );
         this.appendBlackAndWhiteListLabelingTaskForArray(
             appendTo,
+            searchElement.values.modelCallbackLabels,
+            LabelSource.MODEL_CALLBACK,
+            drillDown
+        );
+        this.appendBlackAndWhiteListLabelingTaskForArray(
+            appendTo,
             searchElement.values.informationSources,
             LabelSource.INFORMATION_SOURCE,
             drillDown

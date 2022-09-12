@@ -347,44 +347,86 @@
                                                                         </ng-template>
                                                                     </div>
                                                                 </div>
-                                                                <div class="mt-2">Weakly supervised</div>
-                                                                <div class="flex-grow min-w-0">
-                                                                    <div class="dropdown">
-                                                                        <ng-template
-                                                                            [ngIf]="groupItem.get('weakSupervisionLabels').controls.length == 0"
-                                                                            formArrayName="manualLabels"
-                                                                            [ngIfElse]="dropDownWS">
-                                                                            <ng-container
-                                                                                [ngTemplateOutlet]="buttonLabelsDisabled">
-                                                                            </ng-container>
-                                                                        </ng-template>
-                                                                        <ng-template #dropDownWS>
-                                                                            <kern-dropdown [dropdownOptions]="{
+                                                                <div>
+                                                                    <div class="mt-2">Weakly supervised</div>
+                                                                    <div class="flex-grow min-w-0">
+                                                                        <div class="dropdown">
+                                                                            <ng-template
+                                                                                [ngIf]="groupItem.get('weakSupervisionLabels').controls.length == 0"
+                                                                                formArrayName="manualLabels"
+                                                                                [ngIfElse]="dropDownWS">
+                                                                                <ng-container
+                                                                                    [ngTemplateOutlet]="buttonLabelsDisabled">
+                                                                                </ng-container>
+                                                                            </ng-template>
+                                                                            <ng-template #dropDownWS>
+                                                                                <kern-dropdown [dropdownOptions]="{
                                                                                 optionArray:groupItem.get('weakSupervisionLabels').controls,
                                                                                 hasCheckboxes:true,
                                                                                 keepDropdownOpen:true
-                                                                            }"
-                                                                                (optionClicked)="setActiveNegateGroup($event)">
-                                                                            </kern-dropdown>
-                                                                        </ng-template>
+                                                                            }" (optionClicked)="setActiveNegateGroup($event)">
+                                                                                </kern-dropdown>
+                                                                            </ng-template>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="flex-grow min-w-0 mt-1">
+                                                                        <div class="flex flex-row items-center"
+                                                                            [formGroup]="groupItem.get('confidence')">
+                                                                            <span
+                                                                                class="label-text mr-1 font-dmMono">CONFIDENCE
+                                                                                BETWEEN</span><input
+                                                                                formControlName="lower" type="number"
+                                                                                class="w-12 px-2 input input-sm input-bordered"
+                                                                                (blur)="ensureValidConfidence(groupItem.get('confidence'))">
+                                                                            <span class="label-text mx-1 font-dmMono">%
+                                                                                AND</span>
+                                                                            <input formControlName="upper" type="number"
+                                                                                class="w-12 input input-sm input-bordered px-2"
+                                                                                (blur)="ensureValidConfidence(groupItem.get('confidence'))">
+                                                                            <span
+                                                                                class="label-text mx-1 font-dmMono">%</span>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
-                                                                <div class="flex-grow min-w-0 mt-1">
-                                                                    <div class="flex flex-row items-center"
-                                                                        [formGroup]="groupItem.get('confidence')">
-                                                                        <span
-                                                                            class="label-text mr-1 font-dmMono">CONFIDENCE
-                                                                            BETWEEN</span><input formControlName="lower"
-                                                                            type="number"
-                                                                            class="w-12 px-2 input input-sm input-bordered"
-                                                                            (blur)="ensureValidConfidence(groupItem.get('confidence'))">
-                                                                        <span class="label-text mx-1 font-dmMono">%
-                                                                            AND</span>
-                                                                        <input formControlName="upper" type="number"
-                                                                            class="w-12 input input-sm input-bordered px-2"
-                                                                            (blur)="ensureValidConfidence(groupItem.get('confidence'))">
-                                                                        <span
-                                                                            class="label-text mx-1 font-dmMono">%</span>
+                                                                <div>
+                                                                    <div class="mt-2">Model callback</div>
+                                                                    <div class="flex-grow min-w-0">
+                                                                        <div class="dropdown">
+                                                                            <ng-template
+                                                                                [ngIf]="groupItem.get('modelCallbackLabels').controls.length == 0"
+                                                                                formArrayName="manualLabels"
+                                                                                [ngIfElse]="dropDownMC">
+                                                                                <ng-container
+                                                                                    [ngTemplateOutlet]="buttonLabelsDisabled">
+                                                                                </ng-container>
+                                                                            </ng-template>
+                                                                            <ng-template #dropDownMC>
+                                                                                <kern-dropdown [dropdownOptions]="{
+                                                                                optionArray:groupItem.get('modelCallbackLabels').controls,
+                                                                                hasCheckboxes:true,
+                                                                                keepDropdownOpen:true
+                                                                            }" (optionClicked)="setActiveNegateGroup($event)">
+                                                                                </kern-dropdown>
+                                                                            </ng-template>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="flex-grow min-w-0 mt-1">
+                                                                        <div class="flex flex-row items-center"
+                                                                            [formGroup]="groupItem.get('confidence')">
+                                                                            <span
+                                                                                class="label-text mr-1 font-dmMono">CONFIDENCE
+                                                                                BETWEEN</span><input
+                                                                                formControlName="lower" type="number"
+                                                                                class="w-12 px-2 input input-sm input-bordered"
+                                                                                (blur)="ensureValidConfidence(groupItem.get('confidence'))">
+                                                                            <span class="label-text mx-1 font-dmMono">%
+                                                                                AND</span>
+                                                                            <input formControlName="upper" type="number"
+                                                                                class="w-12 input input-sm input-bordered px-2"
+                                                                                (blur)="ensureValidConfidence(groupItem.get('confidence'))">
+                                                                            <span
+                                                                                class="label-text mx-1 font-dmMono">%</span>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                                 <div class="mt-2 font-bold">Heuristics
