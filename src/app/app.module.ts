@@ -22,6 +22,7 @@ import { ConfigModule } from './config/config.module'
 import { IntercomModule } from 'ng-intercom';
 import { NotificationCenterModule } from './notification-center/notification-center.module';
 import { RecordIDEModule } from './record-ide/record-ide.module';
+import { ModelDownloadModule } from './model-download/model-download.module';
 
 @NgModule({
   declarations: [AppComponent],
@@ -40,6 +41,7 @@ import { RecordIDEModule } from './record-ide/record-ide.module';
     ZeroShotModule,
     LabelingModule,
     RecordIDEModule,
+    ModelDownloadModule,
     NotificationCenterModule,
     MonacoEditorModule.forRoot(),
     KnowledgeBasesModule,

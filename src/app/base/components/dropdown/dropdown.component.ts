@@ -79,6 +79,7 @@ export class DropdownComponent implements OnChanges {
     if (this.dropdownOptions.optionDescriptions && this.dropdownOptions.optionArray.length != this.dropdownOptions.optionDescriptions.length) this.hasInputErrors = "array options != optionDescriptions length\n";
     if (this.dropdownOptions.optionIcons && this.dropdownOptions.optionIcons.length != this.dropdownOptions.optionIcons.length) this.hasInputErrors = "array options != optionIcons length\n";
     if (!this.dropdownOptions.buttonVersion) this.dropdownOptions.buttonVersion = "default";
+    if (this.dropdownOptions.isModelDownloaded && this.dropdownOptions.isModelDownloaded.length != this.dropdownOptions.optionArray.length) this.hasInputErrors = "array options != isModelDownloaded length\n";
 
     this.buttonClassList = "";
     if (!this.dropdownOptions.buttonBgColor) this.dropdownOptions.buttonBgColor = "bg-white ";

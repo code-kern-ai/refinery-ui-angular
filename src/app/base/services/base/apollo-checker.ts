@@ -29,8 +29,8 @@ export class ApolloChecker {
     }
 
     private static checkBlackWhiteList(type: string, queryText: string) {
-        if (!ConfigManager.getIsDemo()) return;
-        if (ConfigManager.getIsAdmin()) return;
+        if (!ConfigManager.getIsDemo(true)) return;
+        if (ConfigManager.getIsAdmin(true)) return;
         if (!queryText) throw new Error("Can't find query text");
         if (!ConfigManager.checkBlackWhiteList(type, queryText)) throw new DemoError(type, queryText);
     }
