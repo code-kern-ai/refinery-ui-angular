@@ -72,6 +72,9 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
   @ViewChild("modalCreateAL") modalCreateAL: ElementRef;
   @ViewChild("modalCreateZS") modalCreateZS: ElementRef;
   @ViewChild("deleteSelectedHeuristics") deleteSelectedHeuristics: ElementRef;
+  downloadedModelsList$: any;
+  downloadedModelsQuery$: any;
+  downloadedModels: any[];
 
   constructor(
     private router: Router,
@@ -105,6 +108,9 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
     this.prepareCurrentWeakSupervisionInfo(projectId);
     this.prepareEmbeddingsRequest(projectId);
 
+    [this.downloadedModelsQuery$, this.downloadedModelsList$] = this.informationSourceApolloService.getModelProviderInfo();
+    this.subscriptions$.push(
+      this.downloadedModelsList$.subscribe((downloadedModels) => this.downloadedModels = downloadedModels));
 
     NotificationService.subscribeToNotification(this, {
       projectId: projectId,
@@ -430,7 +436,7 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
     const numLabels = stats[0].label == '-' ? 0 : stats.length;
     const numLabelsPx = (numLabels * 70) + "px";
     let additionalPx = 0 + "px";
-    if(stats.length > 3) additionalPx = 20 + "px";
+    if (stats.length > 3) additionalPx = 20 + "px";
     return parseInt("88px", 10) + parseInt(numLabelsPx, 10) + parseInt(additionalPx, 10) + "px";
   }
 
@@ -494,8 +500,8 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
   }
 
   executeOption(value: string) {
-    switch(value) {
-      case 'Labeling function': 
+    switch (value) {
+      case 'Labeling function':
         this.modalCreateLF.nativeElement.checked = true;
         this.modalChangeForCreation(true, InformationSourceType.LABELING_FUNCTION);
         break;
@@ -520,5 +526,10 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
         this.prepareSelectionList();
         break;
     }
+  }
+
+  checkIfModelIsDownloaded(modelName: string) {
+    const findModel = this.downloadedModels && this.downloadedModels.find(el => el.name === modelName);
+    return findModel !== undefined ? true : false;
   }
 }
