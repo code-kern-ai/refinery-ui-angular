@@ -160,8 +160,15 @@ export class DataBrowserFilterParser {
         );
         this.appendBlackAndWhiteListLabelingTaskForConfidence(
             appendTo,
-            searchElement.values.confidence,
-            this.dataBrowser.tasks.get(searchElement.values.taskId).labels.map(l => l.id)
+            searchElement.values.weakSupervisionConfidence,
+            this.dataBrowser.tasks.get(searchElement.values.taskId).labels.map(l => l.id),
+            true
+        );
+        this.appendBlackAndWhiteListLabelingTaskForConfidence(
+            appendTo,
+            searchElement.values.modelCallbackConfidence,
+            this.dataBrowser.tasks.get(searchElement.values.taskId).labels.map(l => l.id),
+            false
         );
         const isMixed = searchElement.values.isWithDifferentResults
         if (isMixed.active) {
@@ -184,14 +191,17 @@ export class DataBrowserFilterParser {
     private appendBlackAndWhiteListLabelingTaskForConfidence(
         appendTo: string[],
         confidence,
-        labelIds: string[]
+        labelIds: string[],
+        forWeakSupervision: boolean = true
     ): any {
         if (!confidence.active) return;
+
+        const source = forWeakSupervision ? LabelSource.WEAK_SUPERVISION : LabelSource.MODEL_CALLBACK;
         let whitelist = {
             SUBQUERY_TYPE: 'WHITELIST',
             SUBQUERIES: [{
                 QUERY_TEMPLATE: 'SUBQUERY_RLA_LABEL',
-                VALUES: [LabelSource.WEAK_SUPERVISION, ...labelIds],
+                VALUES: [source, ...labelIds],
             }],
         };
         appendTo.push(JSON.stringify(whitelist));
@@ -201,8 +211,9 @@ export class DataBrowserFilterParser {
             SUBQUERIES: [],
         };
 
+        const query = forWeakSupervision ? 'SUBQUERY_RLA_CONFIDENCE' : 'SUBQUERY_CALLBACK_CONFIDENCE';
         list.SUBQUERIES.push({
-            QUERY_TEMPLATE: 'SUBQUERY_RLA_CONFIDENCE',
+            QUERY_TEMPLATE: query,
             VALUES: [confidence.lower * 0.01, confidence.upper * 0.01],
         });
 

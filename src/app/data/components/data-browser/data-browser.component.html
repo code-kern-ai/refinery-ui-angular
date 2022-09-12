@@ -371,18 +371,18 @@
                                                                     </div>
                                                                     <div class="flex-grow min-w-0 mt-1">
                                                                         <div class="flex flex-row items-center"
-                                                                            [formGroup]="groupItem.get('confidence')">
+                                                                            [formGroup]="groupItem.get('weakSupervisionConfidence')">
                                                                             <span
                                                                                 class="label-text mr-1 font-dmMono">CONFIDENCE
                                                                                 BETWEEN</span><input
                                                                                 formControlName="lower" type="number"
                                                                                 class="w-12 px-2 input input-sm input-bordered"
-                                                                                (blur)="ensureValidConfidence(groupItem.get('confidence'))">
+                                                                                (blur)="ensureValidConfidence(groupItem.get('weakSupervisionConfidence'))">
                                                                             <span class="label-text mx-1 font-dmMono">%
                                                                                 AND</span>
                                                                             <input formControlName="upper" type="number"
                                                                                 class="w-12 input input-sm input-bordered px-2"
-                                                                                (blur)="ensureValidConfidence(groupItem.get('confidence'))">
+                                                                                (blur)="ensureValidConfidence(groupItem.get('weakSupervisionConfidence'))">
                                                                             <span
                                                                                 class="label-text mx-1 font-dmMono">%</span>
                                                                         </div>
@@ -412,18 +412,18 @@
                                                                     </div>
                                                                     <div class="flex-grow min-w-0 mt-1">
                                                                         <div class="flex flex-row items-center"
-                                                                            [formGroup]="groupItem.get('confidence')">
+                                                                            [formGroup]="groupItem.get('modelCallbackConfidence')">
                                                                             <span
                                                                                 class="label-text mr-1 font-dmMono">CONFIDENCE
                                                                                 BETWEEN</span><input
                                                                                 formControlName="lower" type="number"
                                                                                 class="w-12 px-2 input input-sm input-bordered"
-                                                                                (blur)="ensureValidConfidence(groupItem.get('confidence'))">
+                                                                                (blur)="ensureValidConfidence(groupItem.get('modelCallbackConfidence'))">
                                                                             <span class="label-text mx-1 font-dmMono">%
                                                                                 AND</span>
                                                                             <input formControlName="upper" type="number"
                                                                                 class="w-12 input input-sm input-bordered px-2"
-                                                                                (blur)="ensureValidConfidence(groupItem.get('confidence'))">
+                                                                                (blur)="ensureValidConfidence(groupItem.get('modelCallbackConfidence'))">
                                                                             <span
                                                                                 class="label-text mx-1 font-dmMono">%</span>
                                                                         </div>
