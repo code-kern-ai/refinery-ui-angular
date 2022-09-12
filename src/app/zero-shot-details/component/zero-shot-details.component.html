@@ -103,7 +103,8 @@
                     <div *ngIf="!isModelDownloading" class="font-normal" style="height: 24px;">
                         Model
                         <button class="ml-3 text-green-700 hover:text-green-500 text-sm font-medium cursor-pointer"
-                            [routerLink]="['../../model-download']" [disabled]="!isManaged"
+                            [routerLink]="['../../model-download']"
+                            [queryParams]="{lastPage: 'zero-shot/'+informationSource.id}" [disabled]="!isManaged"
                             [ngClass]="!isManaged ? 'tooltip tooltip-right cursor-not-allowed' : 'opacity-100 cursor-pointer'"
                             [attr.data-tip]="!isManaged ? 'Check out our hosted version to use this function' : ''">
                             <span class="leading-5">downloaded models
