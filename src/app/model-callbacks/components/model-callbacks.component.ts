@@ -1,9 +1,8 @@
 import { Component, OnDestroy, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription, timer } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { first } from 'rxjs/operators';
-import { InformationSourceType, LabelingTask, LabelingTaskTarget, LabelSource } from 'src/app/base/enum/graphql-enums';
+import { InformationSourceType, LabelingTask, LabelSource } from 'src/app/base/enum/graphql-enums';
 import { NotificationService } from 'src/app/base/services/notification.service';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { RouteService } from 'src/app/base/services/route.service';
@@ -23,57 +22,26 @@ export class ModelCallbackComponent implements OnInit, OnDestroy {
     return InformationSourceType;
   }
 
-  @ViewChild('inputConfig', { read: ElementRef }) inputConfig: ElementRef;
-  @ViewChild('attributesSelect', { read: ElementRef }) attributesSelect: ElementRef;
-  @ViewChild('labelingTasksSelect', { read: ElementRef }) labelingTasksSelect: ElementRef;
-
   project: any;
   informationSources$: any;
   informationSourcesQuery$: any;
 
-  currentWeakSupervisionRun$: any;
-  currentWeakSupervisionRunQuery$: any;
-  currentWeakSupervisionRun: any;
   subscriptions$: Subscription[] = [];
   labelingTasks;
   labelingTasksClassification;
   labelingTasksQuery$: any;
-  attributes;
-  attributesQuery$: any;
-  hideZeroShotAttribute: boolean = null;
-  zeroShotRecommendations: any;
-  currentRecommendation: any;
-  requestTimeOut: boolean = false;
-  justClickedRun: boolean = false;
+
   modalOpen: boolean = false;
   selectedInformationSources = [];
   informationSourcesArray = [];
   filteredSourcesList = [];
 
-
-  confidenceControl = new FormControl(0.01);
-  confidenceList = [
-    { name: 'Hit rate optimized', value: 0.01 },
-    { name: 'Balance Optimized', value: 0.1 },
-    { name: 'Quality Optimized', value: 0.2 },
-  ];
-  enoughInformationSources = false;
   openTab: number = -1;
   functionName: string = '';
-  embeddings: any;
-  embeddingsFiltered: any;
   labelingTaskId: any;
-  embedding: string;
-  embeddingQuery$: any;
   description: string;
   selectionList: string = "";
-  @ViewChild("modalCreateLF") modalCreateLF: ElementRef;
-  @ViewChild("modalCreateAL") modalCreateAL: ElementRef;
-  @ViewChild("modalCreateZS") modalCreateZS: ElementRef;
   @ViewChild("deleteSelectedHeuristics") deleteSelectedHeuristics: ElementRef;
-  downloadedModelsList$: any;
-  downloadedModelsQuery$: any;
-  downloadedModels: any[];
 
   constructor(
     private router: Router,
@@ -95,18 +63,12 @@ export class ModelCallbackComponent implements OnInit, OnDestroy {
 
     [this.informationSourcesQuery$, this.informationSources$] = this.informationSourceApolloService.getModelCallbacksOverviewData(projectId);
     this.subscriptions$.push(this.informationSources$.subscribe((sources) => {
-      this.justClickedRun = false;
       this.selectedInformationSources = sources.filter((i) => i.selected);
       this.informationSourcesArray = sources;
       const currentTaskFilter = this.labelingTasks && this.openTab != -1 ? this.labelingTasks[this.openTab] : null;
       this.toggleTabs(this.openTab, currentTaskFilter);
     }));
     this.prepareLabelingTasks(projectId);
-    this.prepareAttributes(projectId);
-    [this.downloadedModelsQuery$, this.downloadedModelsList$] = this.informationSourceApolloService.getModelProviderInfo();
-    this.subscriptions$.push(
-      this.downloadedModelsList$.subscribe((downloadedModels) => this.downloadedModels = downloadedModels));
-
     NotificationService.subscribeToNotification(this, {
       projectId: projectId,
       whitelist: this.getWhiteListNotificationService(),
@@ -116,10 +78,7 @@ export class ModelCallbackComponent implements OnInit, OnDestroy {
 
   getWhiteListNotificationService(): string[] {
     let toReturn = ['information_source_created', 'information_source_updated', 'information_source_deleted'];
-    toReturn.push(...['payload_finished', 'payload_failed', 'payload_created', 'payload_update_statistics']);
-    toReturn.push(...['labeling_task_deleted', 'labeling_task_updated', 'labeling_task_created']);
-    toReturn.push(...['weak_supervision_started', 'weak_supervision_finished']);
-    toReturn.push(...['embedding_deleted', 'embedding']);
+    toReturn.push(...['labeling_task_deleted', 'labeling_task_updated', 'labeling_task_created', 'model_callback_update_statistics']);
     return toReturn;
   }
 
@@ -134,20 +93,11 @@ export class ModelCallbackComponent implements OnInit, OnDestroy {
       tasks.forEach((task) => {
         labelIds.push(...task.labels.map((label) => label.id));
       });
-      if (this.labelingTasksClassification.length) {
-        this.hideZeroShotAttribute = this.labelingTasksClassification[0].taskTarget == 'ON_ATTRIBUTE'
-      }
       labelIds.push("-");
       if (this.labelingTasks.length > 0) this.labelingTaskId = this.labelingTasks[0].id;
     }));
   }
 
-
-  prepareAttributes(projectId: string) {
-    let attributes$;
-    [this.attributesQuery$, attributes$] = this.projectApolloService.getAttributesByProjectId(projectId);;
-    this.subscriptions$.push(attributes$.subscribe((attributes) => this.attributes = attributes.filter(a => a.dataType == 'TEXT')));
-  }
 
   toggleInformationSource(projectId: string, informationSourceId: string) {
     this.informationSourceApolloService
@@ -188,15 +138,8 @@ export class ModelCallbackComponent implements OnInit, OnDestroy {
       this.labelingTasksQuery$.refetch();
       this.informationSourcesQuery$.refetch();
     }
-    if (['information_source_created', 'information_source_updated', 'information_source_deleted', 'payload_finished', 'payload_failed', 'payload_created', 'payload_update_statistics']) {
+    if (['information_source_created', 'information_source_updated', 'information_source_deleted', 'model_callback_update_statistics']) {
       this.informationSourcesQuery$.refetch();
-    }
-    if (['weak_supervision_started', 'weak_supervision_finished'].includes(msgParts[1])) {
-      this.currentWeakSupervisionRun = null;
-      this.currentWeakSupervisionRunQuery$.refetch();
-    }
-    if (msgParts[1] == 'embedding_deleted' || (msgParts[1] == 'embedding' && msgParts[3] == 'state')) {
-      if (this.embeddingQuery$) this.embeddingQuery$.refetch();
     }
   }
 
