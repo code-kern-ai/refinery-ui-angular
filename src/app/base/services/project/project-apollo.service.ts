@@ -933,12 +933,11 @@ export class ProjectApolloService {
     });
   }
 
-  addNewAttribute(projectId: string, attributeName: string): Observable<any> {
+  addNewAttribute(projectId: string): Observable<any> {
     return this.apollo.mutate({
       mutation: mutations.ADD_NEW_ATTRIBUTE,
       variables: {
-        projectId: projectId,
-        attributeName: attributeName,
+        projectId: projectId
       },
     });
   }
