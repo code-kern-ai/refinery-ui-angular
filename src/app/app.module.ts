@@ -23,6 +23,7 @@ import { IntercomModule } from 'ng-intercom';
 import { NotificationCenterModule } from './notification-center/notification-center.module';
 import { RecordIDEModule } from './record-ide/record-ide.module';
 import { ModelDownloadModule } from './model-download/model-download.module';
+import { ModelCallbackModule } from './model-callbacks/model-callbacks.module';
 
 @NgModule({
   declarations: [AppComponent],
@@ -41,6 +42,7 @@ import { ModelDownloadModule } from './model-download/model-download.module';
     ZeroShotModule,
     LabelingModule,
     RecordIDEModule,
+    ModelCallbackModule,
     ModelDownloadModule,
     NotificationCenterModule,
     MonacoEditorModule.forRoot(),

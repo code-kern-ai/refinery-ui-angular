@@ -101,8 +101,8 @@ export class SidebarPmComponent implements OnInit {
         })
       )
       .subscribe());
-    
-    if(!SidebarPmComponent.initialConfigRequest) {
+
+    if (!SidebarPmComponent.initialConfigRequest) {
       this.requestVersionOverview();
       SidebarPmComponent.initialConfigRequest = true;
     }
@@ -110,21 +110,21 @@ export class SidebarPmComponent implements OnInit {
   }
 
   requestVersionOverview() {
-    this.versionOverview = null; 
+    this.versionOverview = null;
     this.configService
-    .getVersionOverview()
-    .pipe(first())
-    .subscribe((versionOverview) => {
-      this.versionOverview = versionOverview;
-      this.versionOverview.forEach((version)=> {
-        version.parseDate = this.parseUTC(version.lastChecked);
+      .getVersionOverview()
+      .pipe(first())
+      .subscribe((versionOverview) => {
+        this.versionOverview = versionOverview;
+        this.versionOverview.forEach((version) => {
+          version.parseDate = this.parseUTC(version.lastChecked);
+        });
+        this.versionOverview.sort((a, b) => a.service.localeCompare(b.service));
+        this.configService
+          .hasUpdates()
+          .pipe(first())
+          .subscribe((hasUpdates) => this.hasUpdates = hasUpdates);
       });
-      this.versionOverview.sort((a, b) => a.service.localeCompare(b.service));
-      this.configService
-        .hasUpdates()
-        .pipe(first())
-        .subscribe((hasUpdates) => this.hasUpdates = hasUpdates);
-    });
   }
 
   onDestroy() {
@@ -187,11 +187,11 @@ export class SidebarPmComponent implements OnInit {
   @HostListener('document:mozfullscreenchange', ['$event'])
   @HostListener('document:MSFullscreenChange', ['$event'])
   onEscapeClick() {
-    if(this.toggleClass == 'ft-minimize'){
+    if (this.toggleClass == 'ft-minimize') {
       this.toggleClass = 'ft-maximize';
       this.isFullscreen = false;
     }
-    else{
+    else {
       this.toggleClass = 'ft-minimize';
       this.isFullscreen = true;
 

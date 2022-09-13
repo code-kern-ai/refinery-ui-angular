@@ -7,6 +7,12 @@ export const queries = {
   }
   `,
 
+  GET_MODEL_CALLBACKS_OVERVIEW_DATA: gql`
+  query($projectId:ID!){
+    modelCallbacksOverviewData(projectId:$projectId)
+  }
+  `,
+
   GET_INFORMATION_SOURCE_BY_SOURCE_ID: gql`
   query ($projectId: ID!, $informationSourceId: ID!) {
     informationSourceBySourceId(projectId: $projectId, informationSourceId: $informationSourceId) {
