@@ -127,6 +127,9 @@ export const queries = {
       dataType
       isPrimaryKey
       relativePosition    
+      isCreated
+      codeColumn
+      state
     }
   }  
   `,

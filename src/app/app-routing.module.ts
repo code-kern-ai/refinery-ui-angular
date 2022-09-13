@@ -17,6 +17,7 @@ import { ProjectAddComponent } from './projects/components/project-add/project-a
 import { RecordIDEComponent } from './record-ide/components/record-ide.component';
 import { ConfigComponent } from './config/components/config.component';
 import { ModelDownloadComponent } from './model-download/pages/model-download/model-download.component';
+import { CreateNewAttributeComponent } from './projects/components/create-new-attribute/create-new-attribute.component';
 
 const routes: Routes = [
   {
@@ -57,6 +58,8 @@ const routes: Routes = [
         component: KnowledgeBaseDetailsComponent, data: { name: 'KnowledgeBaseDetailsComponent' }
       },
       { path: 'model-download', component: ModelDownloadComponent, data: { name: 'ModelDownloadComponent' } },
+      //   TODO: Add attributeId
+      { path: 'attributes', component: CreateNewAttributeComponent, data: { name: 'CreateNewAttributeComponent' } },
       { path: '**', component: ProjectOverviewComponent, data: { name: 'ProjectOverviewComponent' } },
       //TODO: redirecting to projects overview page and errors
     ],

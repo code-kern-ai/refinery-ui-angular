@@ -300,7 +300,10 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
           id: att.id,
           name: att.name,
           dataType: att.dataType,
-          isPrimaryKey: att.isPrimaryKey
+          isPrimaryKey: att.isPrimaryKey,
+          isCreated: att.isCreated,
+          codeColumn: att.codeColumn,
+          state: att.state
         });
         group.valueChanges.pipe(distinctUntilChanged()).subscribe(() => {
           let values = group.getRawValue(); //to ensure disabled will be returned as well          
@@ -319,6 +322,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
       this.prepareEmbeddingHandles(projectId, onlyTextAttributes);
 
     }));
+    attributes$.subscribe(val => console.log(val))
     return attributes$;
   }
 
@@ -998,5 +1002,19 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
   checkIfModelIsDownloaded(modelName: string) {
     const findModel = this.downloadedModels && this.downloadedModels.find(el => el.name === modelName);
     return findModel !== undefined ? true : false;
+  }
+
+  addNewAttribute() {
+    this.projectApolloService
+      .addNewAttribute(this.project.id, '').pipe(first())
+      .subscribe((res) => {
+        const id = res?.data?.id;
+          if (id) {
+            this.router.navigate([id], {
+              relativeTo: this.activatedRoute,
+            });
+          }
+        this.project.attributes.push(res);
+      });
   }
 }

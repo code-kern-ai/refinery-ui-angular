@@ -53,6 +53,14 @@
                                                 </div>
                                             </div>
                                         </th>
+                                        <th scope="col"
+                                            class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                            Is created
+                                        </th>
+                                        <th scope="col"
+                                            class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                            Code column
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-gray-200">
@@ -74,6 +82,17 @@
                                             <label class="cursor-pointer">
                                                 <input formControlName="isPrimaryKey" type="checkbox">
                                             </label>
+                                        </td>
+                                        <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                            {{attributeContainer.get("isCreated").value}}
+                                        </td>
+                                        <td class="text-center px-3 py-2 text-sm text-gray-500">
+                                            <button [routerLink]="['../attributes']" target="_blank" class="h4 w-4 m-auto block"
+                                                style="padding:0px"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 m-auto"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                            </svg></button>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -268,6 +287,16 @@
                     </div>
                 </div>
             </div>
+            <!-- TODO: Add attributeId -->
+            <button (click)="addNewAttribute()"
+                data-tip="Add new attribute"
+                class="tooltip tooltip-right mt-3 inline-block items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 h-5 w-5 inline-block stroke-current" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                Add new attibute
+            </button>
         </div>
 
 

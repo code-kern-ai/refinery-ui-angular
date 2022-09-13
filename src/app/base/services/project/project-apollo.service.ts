@@ -235,6 +235,9 @@ export class ProjectApolloService {
             dataType: data.dataType,
             isPrimaryKey: data.isPrimaryKey,
             relativePosition: data.relativePosition,
+            isCreated: data.isCreated,
+            codeColumn: data.codeColumn,
+            state: data.state
           };
         });
       })
@@ -927,6 +930,16 @@ export class ProjectApolloService {
           },
         },
       ],
+    });
+  }
+
+  addNewAttribute(projectId: string, attributeName: string): Observable<any> {
+    return this.apollo.mutate({
+      mutation: mutations.ADD_NEW_ATTRIBUTE,
+      variables: {
+        projectId: projectId,
+        attributeName: attributeName,
+      },
     });
   }
 

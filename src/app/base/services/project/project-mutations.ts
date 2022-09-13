@@ -190,5 +190,11 @@ export const mutations = {
     } 
   }
   `,
-
+  ADD_NEW_ATTRIBUTE: gql`
+  mutation($projectId: ID!, $attributeName: String!){
+    createAttribute(projectId: $projectId, attributeName: $attributeName) {
+      ok
+    } 
+  }
+  `,
 };
