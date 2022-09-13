@@ -366,5 +366,19 @@ export const queries = {
       finishedAt
     }
   }  
-  `
+  `,
+  GET_ATTRIBUTE_BY_ATTRIBUTE_ID: gql`
+  query($projectId: ID!, $attributeId: ID!){
+    attributeByAttributeId(projectId: $projectId, attributeId: $attributeId) {
+      id
+      name
+      dataType
+      isPrimaryKey
+      relativePosition    
+      isCreated
+      codeColumn
+      state
+    }
+  }
+  `,
 };

@@ -1,10 +1,24 @@
 <div *ngIf="project" class="bg-white p-4">
-    <ng-container *ngIf="attribute$ | async as attribute">
-        <div class="w-full h-full">
-            <div class="flex-shrink-0 block xl:flex justify-between items-center">
-                <div class="flex width-line border-b-2 border-b-gray-200 max-w-full overflow-x-auto">
+    <div *ngIf="attribute">
+
+        <div #stickyHeader class="pt-2 sticky -top-2 z-40 h-12">
+            <div class="bg-white flex-grow " [ngClass]="isHeaderNormal?'':'shadow'">
+                <div class="flex-row justify-start items-center inline-block" style="transition: all .25s ease-in-out;" [ngClass]="isHeaderNormal?'p-0':'flex py-2'">
+
+                    <button [routerLink]="['../../settings']" class="text-green-800 text-sm font-medium">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M7 16l-4-4m0 0l4-4m-4 4h18" />
+                        </svg>
+                        <span class="leading-5">Go back</span>
+                    </button>
+
+                    {{isHeaderNormal}}
+
+                    <div class="mx-4 text-sm leading-5 font-medium text-gray-500 inline-block">
+                        {{attribute.name}}</div>
                 </div>
             </div>
         </div>
-    </ng-container>
+    </div>
 </div>

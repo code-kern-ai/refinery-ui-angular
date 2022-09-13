@@ -1005,7 +1005,8 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
 
   addNewAttribute() {
     this.projectApolloService
-      .addNewAttribute(this.project.id, '').pipe(first())
+      .addNewAttribute(this.project.id, '')
+      .pipe(first())
       .subscribe((res) => {
         const id = res?.data?.createAttribute.attributeId;
           if (id) {
