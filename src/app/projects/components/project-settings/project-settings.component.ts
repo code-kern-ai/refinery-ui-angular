@@ -322,7 +322,6 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
       this.prepareEmbeddingHandles(projectId, onlyTextAttributes);
 
     }));
-    attributes$.subscribe(val => console.log(val))
     return attributes$;
   }
 
@@ -1008,13 +1007,12 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     this.projectApolloService
       .addNewAttribute(this.project.id, '').pipe(first())
       .subscribe((res) => {
-        const id = res?.data?.id;
+        const id = res?.data?.createAttribute.attributeId;
           if (id) {
-            this.router.navigate([id], {
+            this.router.navigate(['../attributes/' + id], {
               relativeTo: this.activatedRoute,
             });
           }
-        this.project.attributes.push(res);
       });
   }
 }

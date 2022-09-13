@@ -194,6 +194,7 @@ export const mutations = {
   mutation($projectId: ID!, $attributeName: String!){
     createAttribute(projectId: $projectId, attributeName: $attributeName) {
       ok
+      attributeId
     } 
   }
   `,

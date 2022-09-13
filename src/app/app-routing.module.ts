@@ -58,8 +58,7 @@ const routes: Routes = [
         component: KnowledgeBaseDetailsComponent, data: { name: 'KnowledgeBaseDetailsComponent' }
       },
       { path: 'model-download', component: ModelDownloadComponent, data: { name: 'ModelDownloadComponent' } },
-      //   TODO: Add attributeId
-      { path: 'attributes', component: CreateNewAttributeComponent, data: { name: 'CreateNewAttributeComponent' } },
+      { path: 'attributes/:attributeId', component: CreateNewAttributeComponent, data: { name: 'CreateNewAttributeComponent' } },
       { path: '**', component: ProjectOverviewComponent, data: { name: 'ProjectOverviewComponent' } },
       //TODO: redirecting to projects overview page and errors
     ],
