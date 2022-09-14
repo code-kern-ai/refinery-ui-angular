@@ -381,4 +381,14 @@ export const queries = {
     }
   }
   `,
+  GET_LAST_RUN_BY_ATTRIBUTE_ID: gql`
+  query($projectId: ID!, $attributeId: ID!){
+    lastRunByAttributeId(projectId: $projectId, attributeId: $attributeId) {
+      createdAt
+      state
+      logs
+      iteration
+    }
+  }
+  `,
 };

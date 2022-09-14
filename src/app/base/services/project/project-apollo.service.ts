@@ -978,4 +978,23 @@ export class ProjectApolloService {
       ],
     });
   }
+
+  getLastRunByAttributeId(projectId: string, attributeId: string) {
+    const query = this.apollo
+      .watchQuery({
+        query: queries.GET_LAST_RUN_BY_ATTRIBUTE_ID,
+        variables: {
+          projectId: projectId,
+          attributeId: attributeId,
+        },
+        fetchPolicy: 'network-only',
+      });
+    const vc = query.valueChanges.pipe(
+      map((result) => {
+        return result['data']['lastRunByAttributeId'];
+      })
+    );
+    return [query, vc];
+  }
+
 }

@@ -31,6 +31,8 @@ export class CreateNewAttributeComponent implements OnInit {
   attributeName: string;
   codeFormCtrl = new FormControl('');
   editorOptions = { theme: 'vs-light', language: 'python' };
+  lastTask$: any;
+  lastTaskQuery$: any;
 
   constructor( 
     private activatedRoute: ActivatedRoute,
@@ -41,12 +43,15 @@ export class CreateNewAttributeComponent implements OnInit {
   ngOnInit(): void {
     this.routeService.updateActivatedRoute(this.activatedRoute);
     const projectId = this.activatedRoute.parent.snapshot.paramMap.get('projectId');
+    const attributeId = this.activatedRoute.snapshot.paramMap.get('attributeId');
     const project$ = this.projectApolloService.getProjectById(projectId);
     let tasks$ = [];
     tasks$.push(project$.pipe(first()));
+    tasks$.push(this.prepareAttributes(projectId, attributeId));
+    tasks$.push(this.prepareLastRun(projectId, attributeId))
 
     this.subscriptions$.push(project$.subscribe((project) => this.project = project));
-    combineLatest(tasks$).subscribe(() => this.prepareAttributes(projectId));
+    combineLatest(tasks$).subscribe();
 
   }
 
@@ -81,14 +86,18 @@ export class CreateNewAttributeComponent implements OnInit {
     this.stickyObserver.observe(toObserve)
   }
 
-  prepareAttributes(projectId: string) {
-    const attributeId = this.activatedRoute.snapshot.paramMap.get('attributeId');
+  prepareAttributes(projectId: string, attributeId: string) {
     [this.attributeQuery$, this.attribute$] = this.projectApolloService.getAttributeByAttributeId(projectId, attributeId);
     this.subscriptions$.push(this.attribute$.subscribe((attribute) => {
       this.attribute = attribute;
       this.attributeName = this.attribute.name;
       this.attribute.column = 'test';
     }));
+  }
+
+  prepareLastRun(projectId: string, attributeId: string) {
+    [this.lastTaskQuery$, this.lastTask$] = this.projectApolloService.getLastRunByAttributeId(projectId, attributeId);
+    this.subscriptions$.push(this.lastTask$.subscribe());
   }
 
   openName(open: boolean, projectId) {
@@ -150,6 +159,10 @@ export class CreateNewAttributeComponent implements OnInit {
       .subscribe(() => {
         this.router.navigate(["../../settings"], { relativeTo: this.activatedRoute });
       });
+  }
+
+  copyToClipboard(textToCopy: string) {
+    navigator.clipboard.writeText(textToCopy);
   }
 
 }
