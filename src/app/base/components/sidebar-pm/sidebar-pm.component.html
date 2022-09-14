@@ -3,8 +3,7 @@
         <div class="flex flex-col w-20 overflow-visible">
             <div class="flex-1 flex flex-col min-h-0 overflow-y-auto bg-kernindigo overflow-initial">
                 <div class="flex-1 flex flex-col">
-                    <div *ngIf="user.role == 'ENGINEER'"
-                        class="flex-shrink-0 bg-kernindigo pt-4 flex items-center justify-center">
+                    <div class="flex-shrink-0 bg-kernindigo pt-4 flex items-center justify-center">
                         <a [routerLink]="['/projects']"
                             class="inline-flex items-center p-2 rounded-full hover:bg-kernindigo-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-kernindigo-dark"
                             data-intercom-target="Home Button">
@@ -30,33 +29,6 @@
                                 </defs>
                             </svg>
                         </a>
-                    </div>
-                    <div *ngIf="user.role != 'ENGINEER'"
-                        class="flex-shrink-0 bg-kernindigo pt-4 flex items-center justify-center">
-                        <div class="p-2">
-
-                            <svg width="32" height="30" viewBox="0 0 32 30" fill="none"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path
-                                    d="M5.67491 11.8223H0V29.3048C0 29.6614 0.289047 29.9504 0.645605 29.9504H29.1477C29.5042 29.9504 29.7933 29.6614 29.7933 29.3048V18.1277H24.1184V23.6299C24.1184 23.9865 23.8293 24.2755 23.4728 24.2755H6.32051C5.96396 24.2755 5.67491 23.9865 5.67491 23.6299V11.8223Z"
-                                    fill="url(#paint0_linear_220_314)" />
-                                <path
-                                    d="M26.3251 18.1289H32V0.646334C32 0.289776 31.711 0.000727048 31.3544 0.000727048L2.85234 0.000727048C2.49578 0.000727048 2.20673 0.289776 2.20673 0.646334L2.20673 11.8235H7.88164V6.32124C7.88164 5.96468 8.17069 5.67563 8.52725 5.67563L25.6795 5.67563C26.036 5.67563 26.3251 5.96468 26.3251 6.32124V18.1289Z"
-                                    fill="url(#paint1_linear_220_314)" />
-                                <defs>
-                                    <linearGradient id="paint0_linear_220_314" x1="6.12865" y1="20.8369" x2="23.4115"
-                                        y2="20.8369" gradientUnits="userSpaceOnUse">
-                                        <stop stop-color="#75EA8E" />
-                                        <stop offset="1" stop-color="#5DE079" />
-                                    </linearGradient>
-                                    <linearGradient id="paint1_linear_220_314" x1="26.1079" y1="9.07118" x2="8.2122"
-                                        y2="9.07118" gradientUnits="userSpaceOnUse">
-                                        <stop stop-color="#75EA8E" />
-                                        <stop offset="1" stop-color="#5DE079" />
-                                    </linearGradient>
-                                </defs>
-                            </svg>
-                        </div>
                     </div>
                     <div>
                         <div *ngIf="project$ | async as project">

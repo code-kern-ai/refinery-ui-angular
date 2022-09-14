@@ -286,12 +286,15 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   }
 
   manageProject(projectId: string, recordsInProject: Number): void {
-    if (recordsInProject == 0) {
-      this.router.navigate(['projects', projectId, 'settings']);
+    if (this.user.role == 'ENGINEER') {
+      if (recordsInProject == 0) {
+        this.router.navigate(['projects', projectId, 'settings']);
+      } else {
+        this.router.navigate(['projects', projectId, 'overview']);
+      }
     } else {
-      this.router.navigate(['projects', projectId, 'overview']);
+      this.router.navigate(['projects', projectId, 'labeling']);
     }
-
   }
 
   handleWebsocketNotification(msgParts) {
