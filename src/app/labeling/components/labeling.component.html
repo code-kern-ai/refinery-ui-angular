@@ -519,8 +519,8 @@
                         </ng-template>
                     </div>
 
-                    <div class="ml-8 flex justify-center overflow-visible items-center cursor-pointer"
-                        (click)="toggleAutoJumpNextRecord()">
+                    <div class="flex justify-center overflow-visible items-center cursor-pointer"
+                        [ngClass]="user.role == 'ENGINEER'?'ml-8':null" (click)="toggleAutoJumpNextRecord()">
                         <ng-template [ngIf]="isBottom && fullRecordData?.id != 'deleted'">
                             <label
                                 class="flex-shrink-0 group relative inline-flex items-center justify-center  cursor-pointer focus:outline-none"
