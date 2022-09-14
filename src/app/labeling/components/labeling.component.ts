@@ -56,6 +56,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
   fullRecordData: any;
   project: Project;
   project$: any;
+  user$: any;
 
   loggedInUser: any;
   displayUserId: any;
@@ -107,6 +108,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
   showTokenDisabled: boolean = true;
   extendedDisplay: any = {};
   tokenOverlayData: any = {};
+  user: any;
 
   labelingTaskWait: boolean;
   labelingTasks$: any;
@@ -138,6 +140,11 @@ export class LabelingComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.routeService.updateActivatedRoute(this.activatedRoute);
+    // this.user$ = this.organizationService.getUserInfo();
+    this.organizationService.getUserInfo().subscribe((user) => {
+      this.user = user;
+      console.log("user", user);
+    });
 
     const sessionId = this.activatedRoute.snapshot.paramMap.get("sessionId");
 
@@ -1420,7 +1427,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
       )
       .pipe(first())
       .subscribe();
-      
+
   }
 
   addLabelToTask(labelingTaskId: string, labelId: string) {
