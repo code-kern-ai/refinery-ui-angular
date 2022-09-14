@@ -58,6 +58,9 @@ export class LabelingComponent implements OnInit, OnDestroy {
   project$: any;
   user$: any;
 
+  dataSliceQuery$: any;
+  dataSlices$: any;
+
   loggedInUser: any;
   displayUserId: any;
   rlaGroupMap: Map<string, any[]> = new Map<string, any[]>();
@@ -317,6 +320,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
 
   prepareLabelingTask(projectID: string) {
     [this.labelingTasksQuery$, this.labelingTasks$] = this.projectApolloService.getLabelingTasksByProjectId(projectID);
+    [this.dataSliceQuery$, this.dataSlices$] = this.projectApolloService.getDataSlices(projectID);
     this.subscriptions$.push(this.labelingTasks$.subscribe((tasks) => {
       tasks.sort((a, b) => this.compareOrderLabelingTasks(a, b)) //ensure same position
 

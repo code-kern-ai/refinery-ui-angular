@@ -557,6 +557,98 @@
                 </ng-template>
                 <div>
                     <ng-template #usersTop>
+                        <div *ngIf="user.role != 'ENGINEER'" class="flex justify-center overflow-visible">
+                            <div data-tip="Find information about your task"
+                                class="tooltip tooltip-right normal-case font-normal">
+                                <label [for]="'my-modal-information'"
+                                    class="cursor-pointer bg-white text-gray-700 text-xs font-semibold px-2 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                        class="inline-block icon icon-tabler icon-tabler-info-square" width="24"
+                                        height="24" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                                        fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                                        <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+                                        <polyline points="11 12 12 12 12 16 13 16"></polyline>
+                                    </svg>
+                                    Information
+                                </label>
+                            </div>
+                            <input type="checkbox" [id]="'my-modal-information'" class="modal-toggle">
+                            <div class="modal text-center items-center">
+                                <div class="modal-box"
+                                    style="max-width: 60%; width:fit-content; height:fit-content; max-height: 80%;">
+                                    <div class="relative mx-auto max-w-lg divide-y-1 divide-gray-200 lg:max-w-7xl">
+                                        <div>
+                                            <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+                                                About project "{{project.name}}"</h2>
+                                            <p class="mt-3 text-xl text-gray-500 sm:mt-4">
+                                                {{project.description}}
+                                            </p>
+                                        </div>
+                                        <div class="mt-8 grid gap-16 pt-4 lg:grid-cols-3 lg:gap-x-5 lg:gap-y-12">
+                                            <div>
+                                                <div
+                                                    class="float-left inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                                                    Tips
+                                                </div>
+                                                <div
+                                                    class="mt-3 w-full text-left float-left text-gray-900 font-semibold">
+                                                    How to help your engineer
+                                                </div>
+                                                <div class="mt-2 w-full text-left float-left text-base text-gray-500">
+                                                    Building an artificial intelligence is no easy job. The engineer
+                                                    working on this needs to teach an algorithm using high-quality
+                                                    training data. To make sure this is met, please look to label the
+                                                    data as extensively and accurate as possible.
+                                                </div>
+                                            </div>
+                                            <div *ngIf="labelingTasks$ | async as labelingTasks">
+                                                <div
+                                                    class="float-left inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800">
+                                                    Labeling tasks
+                                                </div>
+                                                <div *ngFor="let task of labelingTasks">
+                                                    <div
+                                                        class="mt-3 w-full text-left float-left text-gray-900 font-semibold">
+                                                        {{task.name}}
+                                                    </div>
+                                                    <div
+                                                        class="mt-2 w-full text-left float-left text-base text-gray-500">
+                                                        # TODO: Add description
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div *ngIf="dataSlices$ | async as dataSlices">
+                                                <div
+                                                    class="float-left inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-pink-100 text-pink-800">
+                                                    Data
+                                                    slices
+                                                </div>
+                                                <div *ngFor="let slice of dataSlices">
+                                                    <div
+                                                        class="mt-3 w-full text-left float-left text-gray-900 font-semibold">
+                                                        {{slice.name}}
+                                                    </div>
+                                                    <div
+                                                        class="mt-2 w-full text-left float-left text-base text-gray-500">
+                                                        # TODO: Add description
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+                                    </div>
+
+                                    <div class="modal-action text-center">
+                                        <label [for]="'my-modal-information'"
+                                            class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div *ngIf="user.role == 'ENGINEER'" class="flex justify-center overflow-visible">
                             <div data-tip="Go to the browser" class="tooltip tooltip-bottom relative">
                                 <button [routerLink]="['../../data']"
