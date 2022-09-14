@@ -33,12 +33,13 @@ export const mutations = {
   `,
 
   UPDATE_ATTRIBUTE: gql`
-  mutation($projectId: ID!, $attributeId: ID!, $dataType: String!, $isPrimaryKey: Boolean!) {
+  mutation($projectId: ID!, $attributeId: ID!, $dataType: String!, $isPrimaryKey: Boolean!, $name: String!) {
     updateAttribute(
       projectId: $projectId, 
       attributeId: $attributeId, 
       dataType: $dataType,
-      isPrimaryKey:$isPrimaryKey
+      isPrimaryKey:$isPrimaryKey,
+      name: $name
     ) {
       ok
     }

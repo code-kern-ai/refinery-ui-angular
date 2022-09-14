@@ -310,7 +310,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
           if (this.pKeyChanged()) this.requestPKeyCheck(this.project.id);
           if (this.attributeChangedToText()) this.createAttributeTokenStatistics(this.project.id, values.id);
           this.projectApolloService.
-            updateAttribute(this.project.id, values.id, values.dataType, values.isPrimaryKey).pipe(first()).subscribe();
+            updateAttribute(this.project.id, values.id, values.dataType, values.isPrimaryKey, values.name).pipe(first()).subscribe();
         });
         this.attributesArray.push(group);
         if (att.dataType == 'TEXT') {

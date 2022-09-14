@@ -86,15 +86,14 @@ export class CreateNewAttributeComponent implements OnInit {
     [this.attributeQuery$, this.attribute$] = this.projectApolloService.getAttributeByAttributeId(projectId, attributeId);
     this.subscriptions$.push(this.attribute$.subscribe((attribute) => {
       this.attribute = attribute;
+      this.attributeName = this.attribute.name;
       this.attribute.column = 'test';
     }));
   }
 
   openName(open: boolean, projectId) {
     this.nameOpen = open;
-    this.attributeName = this.attribute.name;
     if (!open && this.attributeName != this.attribute.name) {
-      // TODO: update code
       this.saveAttribute(projectId);
     }
   }
@@ -109,7 +108,7 @@ export class CreateNewAttributeComponent implements OnInit {
 
   saveAttribute(projectId: string) {
     this.projectApolloService
-      .updateAttribute(projectId, this.attribute.id, this.attribute.dataType, this.attribute.isPrimaryKey)
+      .updateAttribute(projectId, this.attribute.id, this.attribute.dataType, this.attribute.isPrimaryKey, this.attributeName)
       .pipe(first())
       .subscribe();
   }
@@ -149,7 +148,7 @@ export class CreateNewAttributeComponent implements OnInit {
       .deleteAttribute(projectId, attributeId)
       .pipe(first())
       .subscribe(() => {
-        this.router.navigate(["../"], { relativeTo: this.activatedRoute });
+        this.router.navigate(["../../settings"], { relativeTo: this.activatedRoute });
       });
   }
 
