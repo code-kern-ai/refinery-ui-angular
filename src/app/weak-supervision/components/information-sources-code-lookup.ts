@@ -61,7 +61,13 @@ class ATLClassifier(LearningClassifier):
 class ATLExtractor(LearningExtractor):
 
     def __init__(self):
-        self.model = CRFTagger()
+        self.model = CRFTagger(
+            num_epochs = 100, # Number of epochs to train the CRF tagger
+            learning_rate = 0.001, # Factor to apply during backpropagation
+            momentum = 0.9, # Factor to weigh previous iteration during training
+            random_seed = None, # Random seed to use for reproducibility. If None, a random seed is chosen
+            verbose = False, # set to True to see the training progress
+        )
 
     @params_fit(
         embedding_name = "@@EMBEDDING@@", # pick this from the options above
