@@ -619,6 +619,32 @@
                                                         class="mt-2 w-full text-left float-left text-base text-gray-500">
                                                         # TODO: Add description
                                                     </div>
+                                                    <div *ngFor="let label of this.labelingTasksMap.get(task.id).labels; let i=index"
+                                                        class="mt-2 flex items-center text-left w-full cursor-text">
+                                                        <button class="text-sm font-medium mr-3 px-2
+                                                            py-0.5 rounded-md border cursor-text"
+                                                            [ngClass]="[getBackground(label.color), getText(label.color), getBorder(label.color)]">
+                                                            <label
+                                                                class="leading-5 truncate max-w-xs cursor-text">{{label.name}}
+                                                            </label>
+                                                        </button>
+                                                        <div class="py-0.5 text-sm">
+                                                            test
+                                                        </div>
+                                                    </div>
+                                                    <!-- <div *ngFor="let label of this.labelingTasksMap.get(task.id).labels; let i=index"
+                                                        class="align-middle w-full cursor-text">
+                                                        <button class="float-left text-sm font-medium mr-3 px-2 mt-2
+                                                            py-0.5 rounded-md border cursor-text"
+                                                            [ngClass]="[getBackground(label.color), getText(label.color), getBorder(label.color)]">
+                                                            <label
+                                                                class="leading-5 truncate max-w-xs cursor-text">{{label.name}}
+                                                            </label>
+                                                        </button>
+                                                        <div class="float-left text-sm">
+                                                            test
+                                                        </div>
+                                                    </div> -->
                                                 </div>
                                             </div>
                                             <div *ngIf="dataSlices$ | async as dataSlices">
