@@ -78,6 +78,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   project$: Observable<Project>;
   project: Project;
   user$: any;
+  user: any;
   avatarUri: string;
   @ViewChild(UploadComponent) uploadComponent;
   file: File;
@@ -120,6 +121,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
       });
     this.organizationApolloService.getUserInfo().pipe(first())
       .subscribe((user) => {
+        this.user = user;
         const avatarSelector = (user.firstName[0].charCodeAt(0) + user.lastName[0].charCodeAt(0)) % 5;
         this.avatarUri = "assets/avatars/" + avatarSelector + ".png"
         if (this.organizationInactive) {
