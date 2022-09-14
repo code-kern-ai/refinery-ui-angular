@@ -17,6 +17,7 @@ export const queries = {
         firstName
         lastName
         mail
+        role
       }
     }
   `,
