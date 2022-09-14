@@ -27,7 +27,7 @@
                                 name...</label>
                             <div #labelSearchBlinker class="my-0.5 py-2 w-px"></div>
                         </div>
-                        <div data-tip="Create label" class="tooltip  tooltip-left">
+                        <div *ngIf="user.role == 'ENGINEER'" data-tip="Create label" class="tooltip  tooltip-left">
                             <button class="ml-2 relative top-1" (mouseup)="createLabelFromSearchBox($event)"
                                 [disabled]="disableLabelAddButton()?true: null"
                                 [ngClass]="disableLabelAddButton() ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'">
