@@ -588,23 +588,7 @@
                                                 {{project.description}}
                                             </p>
                                         </div>
-                                        <div class="mt-8 grid gap-16 pt-4 lg:grid-cols-3 lg:gap-x-5 lg:gap-y-12">
-                                            <div>
-                                                <div
-                                                    class="float-left inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                                                    Tips
-                                                </div>
-                                                <div
-                                                    class="mt-3 w-full text-left float-left text-gray-900 font-semibold">
-                                                    How to help your engineer
-                                                </div>
-                                                <div class="mt-2 w-full text-left float-left text-base text-gray-500">
-                                                    Building an artificial intelligence is no easy job. The engineer
-                                                    working on this needs to teach an algorithm using high-quality
-                                                    training data. To make sure this is met, please look to label the
-                                                    data as extensively and accurate as possible.
-                                                </div>
-                                            </div>
+                                        <div class="mt-8 grid gap-16 pt-4 lg:grid-cols-2 lg:gap-x-5 lg:gap-y-12">
                                             <div *ngIf="labelingTasks$ | async as labelingTasks">
                                                 <div
                                                     class="float-left inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800">
@@ -616,7 +600,7 @@
                                                         {{task.name}}
                                                     </div>
                                                     <div
-                                                        class="mt-2 w-full text-left float-left text-base text-gray-500">
+                                                        class="mt-2 mb-3 w-full text-left float-left text-base text-gray-500">
                                                         # TODO: Add description
                                                     </div>
                                                     <div *ngFor="let label of this.labelingTasksMap.get(task.id).labels; let i=index"
@@ -632,35 +616,41 @@
                                                             test
                                                         </div>
                                                     </div>
-                                                    <!-- <div *ngFor="let label of this.labelingTasksMap.get(task.id).labels; let i=index"
-                                                        class="align-middle w-full cursor-text">
-                                                        <button class="float-left text-sm font-medium mr-3 px-2 mt-2
-                                                            py-0.5 rounded-md border cursor-text"
-                                                            [ngClass]="[getBackground(label.color), getText(label.color), getBorder(label.color)]">
-                                                            <label
-                                                                class="leading-5 truncate max-w-xs cursor-text">{{label.name}}
-                                                            </label>
-                                                        </button>
-                                                        <div class="float-left text-sm">
-                                                            test
-                                                        </div>
-                                                    </div> -->
                                                 </div>
                                             </div>
                                             <div *ngIf="dataSlices$ | async as dataSlices">
-                                                <div
-                                                    class="float-left inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-pink-100 text-pink-800">
-                                                    Data
-                                                    slices
-                                                </div>
-                                                <div *ngFor="let slice of dataSlices">
+                                                <div>
+                                                    <div
+                                                        class="float-left inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                                                        Tips
+                                                    </div>
                                                     <div
                                                         class="mt-3 w-full text-left float-left text-gray-900 font-semibold">
-                                                        {{slice.name}}
+                                                        How to help your engineer
                                                     </div>
                                                     <div
                                                         class="mt-2 w-full text-left float-left text-base text-gray-500">
-                                                        # TODO: Add description
+                                                        Building an AI is no easy job. The engineer working on this
+                                                        needs to teach an algorithm using high-quality
+                                                        training data. To make sure this is met, please label the data
+                                                        as extensively and accurate as possible.
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <div
+                                                        class="mt-4 float-left inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-pink-100 text-pink-800">
+                                                        Data
+                                                        slices
+                                                    </div>
+                                                    <div *ngFor="let slice of dataSlices">
+                                                        <div
+                                                            class="mt-3 w-full text-left float-left text-gray-900 font-semibold">
+                                                            {{slice.name}}
+                                                        </div>
+                                                        <div
+                                                            class="mt-2 w-full text-left float-left text-base text-gray-500">
+                                                            # TODO: Add description
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
