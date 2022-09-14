@@ -4,6 +4,12 @@ import { ProjectApolloService } from 'src/app/base/services/project/project-apol
 import { RouteService } from 'src/app/base/services/route.service';
 import { first } from 'rxjs/operators';
 import { combineLatest, Subscription } from 'rxjs';
+import { FormControl } from '@angular/forms';
+import {
+  debounceTime,
+  startWith,
+  distinctUntilChanged,
+} from 'rxjs/operators';
 
 @Component({
   selector: 'kern-create-new-attribute',
@@ -18,8 +24,13 @@ export class CreateNewAttributeComponent implements OnInit {
   stickyObserver: IntersectionObserver;
   attributeQuery$: any;
   @ViewChildren('stickyHeader', { read: ElementRef }) stickyHeader: QueryList<ElementRef>;
+  @ViewChildren('nameArea') nameArea: QueryList<ElementRef>;
   subscriptions$: Subscription[] = [];
   attribute: any;
+  nameOpen: boolean = false;
+  attributeName: string;
+  codeFormCtrl = new FormControl('');
+  editorOptions = { theme: 'vs-light', language: 'python' };
 
   constructor( 
     private activatedRoute: ActivatedRoute,
@@ -39,9 +50,9 @@ export class CreateNewAttributeComponent implements OnInit {
   }
 
   ngAfterViewInit() {
-    // this.nameArea.changes.subscribe(() => {
-    //   this.setFocus(this.nameArea);
-    // });
+    this.nameArea.changes.subscribe(() => {
+      this.setFocus(this.nameArea);
+    });
     this.stickyHeader.changes.subscribe(() => {
       if (this.stickyHeader.length) {
         this.prepareStickyObserver(this.stickyHeader.first.nativeElement);
@@ -74,7 +85,62 @@ export class CreateNewAttributeComponent implements OnInit {
     [this.attributeQuery$, this.attribute$] = this.projectApolloService.getAttributeByAttributeId(projectId, attributeId);
     this.subscriptions$.push(this.attribute$.subscribe((attribute) => {
       this.attribute = attribute;
+      this.attribute.column = 'test';
     }));
+  }
+
+  openName(open: boolean, projectId) {
+    this.nameOpen = open;
+    this.attributeName = this.attribute.name;
+    if (!open && this.attributeName != this.attribute.name) {
+      // TODO: update code
+      this.saveAttribute(projectId);
+    }
+  }
+
+  getPythonClassRegExMatch(codeToCheck: string): any {
+    return /class ([\w]+)\([^)]+\):/.exec(codeToCheck);
+  }
+
+  toPythonFunctionName(str: string) {
+    return str.replace(/\s+/g, '_').replace(/[^\w]/gi, '').trim();
+  }
+
+  saveAttribute(projectId: string) {
+    this.projectApolloService
+      .updateAttribute(projectId, this.attribute.id, this.attribute.dataType, this.attribute.isPrimaryKey)
+      .pipe(first())
+      .subscribe();
+  }
+
+  changeAttributeName(event) {
+    this.attributeName = this.toPythonFunctionName(event.target.value);
+    if (this.attributeName != event.target.value) {
+      event.target.value = this.attributeName;
+    }
+    this.isHeaderNormal = true;
+  }
+
+  isNameOpen(): boolean {
+    return this.nameOpen;
+  }
+
+  initEditor(editor, projectId) {
+    this.codeFormCtrl.valueChanges
+      .pipe(
+        debounceTime(2000), //5 sec
+        distinctUntilChanged(),
+        startWith('')
+      )
+      .subscribe(() => {
+        if (this.hasUnsavedChanges()) {
+          this.saveAttribute(projectId);
+        }
+      });
+  }
+
+  hasUnsavedChanges(): boolean {
+    return false
   }
 
 }

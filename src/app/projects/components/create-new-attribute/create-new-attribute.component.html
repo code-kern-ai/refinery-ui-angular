@@ -18,5 +18,35 @@
                 </div>
             </div>
         </div>
+
+        <div class="overflow-x-hidden overflow-y-hidden">
+            <div class="grid gap-4 " [ngClass]="isHeaderNormal ? 'grid-cols-2' : 'grid-cols-1'">
+                <div class="flex items-center mt-2" *ngIf="isHeaderNormal">
+                    <button (click)="openName(true)" data-tip="Edit your attribute's name"
+                        class="tooltip tooltip-right flex-shrink-0 bg-white text-gray-700 text-xs font-semibold mr-3 px-4 py-2 rounded-md border border-gray-300 block float-left hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Edit name
+                    </button>
+
+                    <div class="inline-block" (dblclick)="openName(true)" class="inline-flex w-full">
+                        <ng-template [ngIf]="isNameOpen()" [ngIfElse]="displayName">
+                            <input #nameArea type="text" class="p-2 flex-grow input input-sm"
+                                (input)="changeAttributeName($event)" (blur)="openName(false,project.id)"
+                                (keydown.enter)="openName(false,project.id)" [(ngModel)]="attributeName">
+                        </ng-template>
+
+                        <ng-template #displayName>
+                            <div class="mr-4 text-sm leading-5 font-medium text-gray-500 inline-block">
+                                {{attribute.name}}</div>
+                        </ng-template>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border mt-4">
+                <ngx-monaco-editor class="w-full" style="height: 400px;" [options]="editorOptions" [(ngModel)]="attribute.codeColumn"
+                    (onInit)="initEditor($event,project.id)" [formControl]="codeFormCtrl">
+                </ngx-monaco-editor>
+            </div>
+        </div>
     </div>
 </div>
