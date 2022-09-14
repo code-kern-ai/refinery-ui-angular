@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnInit, QueryList, ViewChildren } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { RouteService } from 'src/app/base/services/route.service';
 import { first } from 'rxjs/operators';
@@ -35,7 +35,8 @@ export class CreateNewAttributeComponent implements OnInit {
   constructor( 
     private activatedRoute: ActivatedRoute,
     private projectApolloService: ProjectApolloService,
-    private routeService: RouteService,) { }
+    private routeService: RouteService,
+    private router: Router) { }
 
   ngOnInit(): void {
     this.routeService.updateActivatedRoute(this.activatedRoute);
@@ -141,6 +142,15 @@ export class CreateNewAttributeComponent implements OnInit {
 
   hasUnsavedChanges(): boolean {
     return false
+  }
+
+  deleteAttribute(projectId, attributeId) {
+    this.projectApolloService
+      .deleteAttribute(projectId, attributeId)
+      .pipe(first())
+      .subscribe(() => {
+        this.router.navigate(["../"], { relativeTo: this.activatedRoute });
+      });
   }
 
 }

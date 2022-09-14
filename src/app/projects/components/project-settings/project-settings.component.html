@@ -59,7 +59,7 @@
                                         </th>
                                         <th scope="col"
                                             class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                            Code column
+                                            Modify
                                         </th>
                                     </tr>
                                 </thead>
@@ -84,10 +84,13 @@
                                             </label>
                                         </td>
                                         <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                            {{attributeContainer.get("isCreated").value}}
+                                            <label class="cursor-pointer">
+                                                <input type="checkbox" [checked]="attributeContainer.get('isCreated').value" [disabled]="true">
+                                            </label>
                                         </td>
                                         <td class="text-center px-3 py-2 text-sm text-gray-500">
-                                            <button [routerLink]="['../attributes/' + attributeContainer.get('id').value]" class="h4 w-4 m-auto block"
+                                            <button [routerLink]="['../attributes/' + attributeContainer.get('id').value]" *ngIf="attributeContainer.get('isCreated').value"
+                                                class="h4 w-4 m-auto block"
                                                 style="padding:0px"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 m-auto"
                                                 fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -103,7 +106,7 @@
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-2 mt-1 align-top">
-                <div>
+                <div class="items-center flex flex-row">
                     <button [routerLink]="['../add']" data-tip="Upload more records to the project"
                         class="tooltip tooltip-right mr-1 inline-flex items-center px-2.5 py-2 border border-gray-300 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none cursor-pointer">
                         <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 h-4 w-4" fill="none" viewBox="0 0 24 24"
@@ -256,6 +259,15 @@
                             </div>
                         </div>
                     </div>
+                    <button (click)="addNewAttribute()"
+                        data-tip="Add new attribute"
+                        class="tooltip tooltip-bottom inline-flex items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 h-5 w-5 inline-block stroke-current" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        Add new attibute
+                    </button>
                 </div>
 
                 <div class="text-left lg:text-right">
@@ -287,15 +299,6 @@
                     </div>
                 </div>
             </div>
-            <button (click)="addNewAttribute()"
-                data-tip="Add new attribute"
-                class="tooltip tooltip-right mt-3 inline-block items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none cursor-pointer">
-                <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 h-5 w-5 inline-block stroke-current" fill="none"
-                    viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                </svg>
-                Add new attibute
-            </button>
         </div>
 
 

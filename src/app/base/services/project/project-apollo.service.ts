@@ -960,4 +960,20 @@ export class ProjectApolloService {
     return [query, vc];
   }
 
+  deleteAttribute(projectId: string, attributeId: string) {
+    return this.apollo.mutate({
+      mutation: mutations.DELETE_ATTRIBUTE,
+      variables: {
+        projectId: projectId,
+        attributeId: attributeId
+      }, refetchQueries: [
+        {
+          query: queries.GET_ATTRIBUTES_BY_PROJECT_ID,
+          variables: {
+            projectId: projectId,
+          },
+        },
+      ],
+    });
+  }
 }
