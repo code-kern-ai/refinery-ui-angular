@@ -32,11 +32,11 @@ export class CreateNewAttributeComponent implements OnInit {
   attributeName: string;
   codeFormCtrl = new FormControl('');
   editorOptions = { theme: 'vs-light', language: 'python' };
-  lastTask$: any;
-  lastTaskQuery$: any;
+  attributeLogs: any;
   testerRequestedSomething: boolean = false;
   canRunProject: boolean = false;
-  random10RecordsResult: any;
+  sampleRecords: any;
+  code: string = '';
 
   constructor( 
     private activatedRoute: ActivatedRoute,
@@ -52,7 +52,6 @@ export class CreateNewAttributeComponent implements OnInit {
     let tasks$ = [];
     tasks$.push(project$.pipe(first()));
     tasks$.push(this.prepareAttributes(projectId, attributeId));
-    tasks$.push(this.prepareLastRun(projectId, attributeId))
 
     this.subscriptions$.push(project$.subscribe((project) => this.project = project));
     combineLatest(tasks$).subscribe();
@@ -114,13 +113,10 @@ export class CreateNewAttributeComponent implements OnInit {
     this.subscriptions$.push(this.attribute$.subscribe((attribute) => {
       this.attribute = attribute;
       this.attributeName = this.attribute.name;
-      this.canRunProject = this.attribute.codeColumn !== '';
+      this.code = this.attribute.sourceCode;
+      this.attributeLogs = this.attribute.logs;
+      this.canRunProject = this.attribute.sourceCode !== '';
     }));
-  }
-
-  prepareLastRun(projectId: string, attributeId: string) {
-    [this.lastTaskQuery$, this.lastTask$] = this.projectApolloService.getLastRunByAttributeId(projectId, attributeId);
-    this.subscriptions$.push(this.lastTask$.subscribe());
   }
 
   openName(open: boolean, projectId) {
@@ -175,28 +171,28 @@ export class CreateNewAttributeComponent implements OnInit {
     return false
   }
 
-  deleteAttribute(projectId, attributeId) {
+  deleteUserAttribute(projectId, attributeId) {
     this.projectApolloService
-      .deleteAttribute(projectId, attributeId)
+      .deleteUserAttribute(projectId, attributeId)
       .pipe(first())
       .subscribe(() => {
         this.router.navigate(["../../settings"], { relativeTo: this.activatedRoute });
       });
   }
   
-  runAttribute10Records() {
+  calculateUserAttributeSampleRecords() {
     if (this.testerRequestedSomething) return;
     this.testerRequestedSomething = true;
     this.projectApolloService
-      .runAttribute10Records(this.project.id, this.attribute.id).pipe(first()).subscribe((records10) => {
-        this.random10RecordsResult = records10;
+      .calculateUserAttributeSampleRecords(this.project.id, this.attribute.id).pipe(first()).subscribe((sampleRecords) => {
+        this.sampleRecords = sampleRecords;
         this.testerRequestedSomething = false;
       });
   }
 
-  runAttributeAllRecords() {
+  calculateUserAttributeAllRecords() {
     this.projectApolloService
-    .runAttributeAllRecords(this.project.id, this.attribute.id)
+    .calculateUserAttributeAllRecords(this.project.id, this.attribute.id)
     .pipe(first())
     .subscribe();
   }
@@ -214,6 +210,24 @@ export class CreateNewAttributeComponent implements OnInit {
         this.copyClicked = -1;
       })
     }
+  }
+
+  getPythonFunctionToSave(codeToSave: string): string {
+    if (codeToSave.includes('\t')) {
+      console.log(
+        'Function code holds tab characters -- replaced with 4 spaces to prevent unwanted behaviour'
+      );
+      codeToSave = codeToSave.replace(/\t/g, '    ');
+      this.code = this.code.replace(/\t/g, '    ');
+    }
+    var regMatch: any = this.getPythonFunctionRegExMatch(codeToSave);
+    if (!regMatch) return codeToSave;
+
+    return codeToSave.replace(regMatch[0], 'def ac(record)');
+  }
+
+  getPythonFunctionRegExMatch(codeToCheck: string): any {
+    return /(def)\s(\w+)\([a-zA-Z0-9_:\[\]=, ]*\)/.exec(codeToCheck);
   }
 
 

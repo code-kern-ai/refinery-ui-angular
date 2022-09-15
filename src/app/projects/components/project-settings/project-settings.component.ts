@@ -301,8 +301,8 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
           name: att.name,
           dataType: att.dataType,
           isPrimaryKey: att.isPrimaryKey,
-          isCreated: att.isCreated,
-          codeColumn: att.codeColumn,
+          userCreated: att.userCreated,
+          sourceCode: att.sourceCode,
           state: att.state
         });
         group.valueChanges.pipe(distinctUntilChanged()).subscribe(() => {
@@ -1003,12 +1003,12 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     return findModel !== undefined ? true : false;
   }
 
-  addNewAttribute() {
+  createUserAttribute() {
     this.projectApolloService
-      .addNewAttribute(this.project.id)
+      .createUserAttribute(this.project.id)
       .pipe(first())
       .subscribe((res) => {
-        const id = res?.data?.createAttribute.attributeId;
+        const id = res?.data?.createUserAttribute.attributeId;
           if (id) {
             this.router.navigate(['../attributes/' + id], {
               relativeTo: this.activatedRoute,

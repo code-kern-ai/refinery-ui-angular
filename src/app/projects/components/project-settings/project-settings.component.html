@@ -85,11 +85,11 @@
                                         </td>
                                         <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
                                             <label class="cursor-pointer">
-                                                <input type="checkbox" [checked]="attributeContainer.get('isCreated').value" [disabled]="true">
+                                                <input type="checkbox" [checked]="attributeContainer.get('userCreated').value" [disabled]="true">
                                             </label>
                                         </td>
                                         <td class="text-center px-3 py-2 text-sm text-gray-500">
-                                            <button [routerLink]="['../attributes/' + attributeContainer.get('id').value]" *ngIf="attributeContainer.get('isCreated').value"
+                                            <button [routerLink]="['../attributes/' + attributeContainer.get('id').value]" *ngIf="attributeContainer.get('userCreated').value"
                                                 class="h4 w-4 m-auto block"
                                                 style="padding:0px"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 m-auto"
                                                 fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -259,7 +259,7 @@
                             </div>
                         </div>
                     </div>
-                    <button (click)="addNewAttribute()"
+                    <button (click)="createUserAttribute()"
                         data-tip="Add new attribute"
                         class="tooltip tooltip-bottom inline-flex items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none cursor-pointer">
                         <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 h-5 w-5 inline-block stroke-current" fill="none"

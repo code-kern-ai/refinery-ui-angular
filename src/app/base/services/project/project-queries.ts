@@ -127,9 +127,10 @@ export const queries = {
       dataType
       isPrimaryKey
       relativePosition    
-      isCreated
-      codeColumn
+      userCreated
+      sourceCode
       state
+      logs
     }
   }  
   `,
@@ -375,30 +376,18 @@ export const queries = {
       dataType
       isPrimaryKey
       relativePosition    
-      isCreated
-      codeColumn
-      state
-    }
-  }
-  `,
-  GET_LAST_RUN_BY_ATTRIBUTE_ID: gql`
-  query($projectId: ID!, $attributeId: ID!){
-    lastRunByAttributeId(projectId: $projectId, attributeId: $attributeId) {
-      createdAt
+      userCreated
+      sourceCode
       state
       logs
-      iteration
     }
   }
   `,
-  RUN_ATTRIBUTE_10_RECORDS: gql`
+  CALCULATED_USER_ATTRIBUTE_SAMPLE_RECORDS: gql`
   query($projectId: ID!, $attributeId: ID!){
-    runAttribute10Records(projectId: $projectId, attributeId: $attributeId) {
-      duration
-      records {
-        text
-        confidence
-      }
+    calculateUserAttributeSampleRecords(projectId: $projectId, attributeId: $attributeId) {
+      record_ids
+      calculatesAttributes 
     }
   }
   `,

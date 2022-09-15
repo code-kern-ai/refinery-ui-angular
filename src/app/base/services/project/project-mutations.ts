@@ -110,7 +110,7 @@ export const mutations = {
     }
   `,
 
-  DELETE_ATTRIBUTE: gql`
+  DELETE_USER_ATTRIBUTE: gql`
     mutation($projectId:ID!,$attributeId:ID!){
       deleteAttribute(projectId:$projectId,attributeId:$attributeId){
         ok
@@ -191,17 +191,17 @@ export const mutations = {
     } 
   }
   `,
-  ADD_NEW_ATTRIBUTE: gql`
+  CREATE_USER_ATTRIBUTE: gql`
   mutation($projectId: ID!){
-    createAttribute(projectId: $projectId) {
+    createUserAttribute(projectId: $projectId) {
       ok
       attributeId
     } 
   }
   `,
-  RUN_ATTRIBUTE_ALL_RECORDS: gql`
+  CALCULATED_USER_ATTRIBUTE_ALL_RECORDS: gql`
   mutation($projectId: ID!, $attributeId: ID!){
-    runAttributeAllRecords(projectId: $projectId, attributeId: $attributeId) {
+    calculateUserAttributeAllRecords(projectId: $projectId, attributeId: $attributeId) {
       ok
     } 
   }
