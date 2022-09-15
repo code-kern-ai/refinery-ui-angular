@@ -191,4 +191,23 @@ export const mutations = {
   }
   `,
 
+  CREATE_ACCESS_LINK: gql`
+  mutation ($projectId: ID!, $id: ID!, $type: String!) {
+    generateAccessLink(projectId: $projectId, id: $id, type: $type) {
+      link {
+        id
+        link
+      }
+    }
+  }
+`,
+
+  REMOVE_ACCESS_LINK: gql`
+mutation ($projectId: ID!, $linkId: ID!) {
+  removeAccessLink(projectId: $projectId, linkId: $linkId) {
+    ok
+  }
+}
+`
+
 };

@@ -71,6 +71,8 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
   @ViewChild("modalCreateLF") modalCreateLF: ElementRef;
   @ViewChild("modalCreateAL") modalCreateAL: ElementRef;
   @ViewChild("modalCreateZS") modalCreateZS: ElementRef;
+  @ViewChild("modalCreateCL") modalCreateCL: ElementRef;
+
   @ViewChild("deleteSelectedHeuristics") deleteSelectedHeuristics: ElementRef;
   downloadedModelsList$: any;
   downloadedModelsQuery$: any;
@@ -99,6 +101,11 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
       this.justClickedRun = false;
       this.selectedInformationSources = sources.filter((i) => i.selected);
       this.informationSourcesArray = sources;
+      this.informationSourcesArray.forEach(s => {
+        if (s.informationSourceType == 'ZERO_SHOT') s.routerLink = '../zero-shot/' + s.id;
+        else if (s.informationSourceType == 'CROWD_LABELER') s.routerLink = '../crowd-labeler/' + s.id;
+        else s.routerLink = './' + s.id
+      })
       const currentTaskFilter = this.labelingTasks && this.openTab != -1 ? this.labelingTasks[this.openTab] : null;
       this.toggleTabs(this.openTab, currentTaskFilter);
     }));
@@ -279,7 +286,28 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
       console.log('currently only possible to create labeling functions & classification');
     }
   }
+  createCrowdLabelerInformationSource(projectId: string) {
+    this.informationSourceApolloService
+      .createInformationSource(
+        projectId,
+        this.labelingTaskId,
+        this.functionName,
+        this.description,
+        "",
+        InformationSourceType.CROWD_LABELER
+      )
+      .subscribe((re) => {
+        const id = re['data']['createInformationSource']['informationSource']['id'];
+        if (id) {
+          this.router.navigate(["../crowd-labeler/" + id], {
+            relativeTo: this.activatedRoute,
+          });
+        } else {
+          console.log("can't find newly created id for CROWD_LABELER --> can't open");
+        }
+      });
 
+  }
   createZeroShotInformationSource(projectId: string) {
     const targetConfig = this.inputConfig.nativeElement.value;
     const labelingTaskId = this.labelingTasksSelect.nativeElement.options[this.labelingTasksSelect.nativeElement.selectedIndex].value;
@@ -404,9 +432,12 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
       else if (type == InformationSourceType.ACTIVE_LEARNING) {
         this.functionName = "MyActiveLearner";
         this.filterEmbeddingsForCurrentTask();
+      } else if (type == InformationSourceType.CROWD_LABELER) {
+        this.functionName = "Crowd Heuristic";
       }
       else this.functionName = "Zero shot module";
     }
+    console.log(checked, type, this.functionName, this.description)
   }
 
   toggleTabs(index: number, labelingTask: any) {
@@ -436,7 +467,7 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
     const numLabels = stats[0].label == '-' ? 0 : stats.length;
     const numLabelsPx = (numLabels * 70) + "px";
     let additionalPx = 0 + "px";
-    if(stats.length > 3) additionalPx = 20 + "px";
+    if (stats.length > 3) additionalPx = 20 + "px";
     return parseInt("88px", 10) + parseInt(numLabelsPx, 10) + parseInt(additionalPx, 10) + "px";
   }
 
@@ -500,8 +531,8 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
   }
 
   executeOption(value: string) {
-    switch(value) {
-      case 'Labeling function': 
+    switch (value) {
+      case 'Labeling function':
         this.modalCreateLF.nativeElement.checked = true;
         this.modalChangeForCreation(true, InformationSourceType.LABELING_FUNCTION);
         break;
@@ -511,7 +542,13 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
         break;
       case 'Zero-shot':
         this.modalCreateZS.nativeElement.checked = true;
+        this.modalChangeForCreation(true, InformationSourceType.ZERO_SHOT)
         break;
+      case 'Crowd labeling':
+        this.modalCreateCL.nativeElement.checked = true;
+        this.modalChangeForCreation(true, InformationSourceType.CROWD_LABELER)
+        break;
+
       case 'Select all':
         this.setAllInformationSources(true);
         break;

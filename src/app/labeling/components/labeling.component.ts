@@ -30,6 +30,7 @@ import { NotificationApolloService } from 'src/app/base/services/notification/no
 import { dateAsUTCDate } from 'src/app/util/helper-functions';
 import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
 import { NotificationService } from 'src/app/base/services/notification.service';
+import { labelingLinkData, parseLabelingLinkData } from './labeling-helper';
 
 @Component({
   selector: 'kern-labeling',
@@ -123,6 +124,9 @@ export class LabelingComponent implements OnInit, OnDestroy {
   debounceTimer;
   autoNextRecord: boolean = false;
 
+
+  labelingLinkData: labelingLinkData;
+
   constructor(
     private router: Router,
     private routeService: RouteService,
@@ -141,21 +145,24 @@ export class LabelingComponent implements OnInit, OnDestroy {
     if (this.project) NotificationService.unsubscribeFromNotification(this, this.project.id)
   }
 
+
   ngOnInit(): void {
     this.routeService.updateActivatedRoute(this.activatedRoute);
-    // this.user$ = this.organizationService.getUserInfo();
+    this.labelingLinkData = parseLabelingLinkData(this.activatedRoute);
+    console.log(this.labelingLinkData);
+
     this.organizationService.getUserInfo().subscribe((user) => {
       this.user = user;
     });
+    //check id type
 
-    const sessionId = this.activatedRoute.snapshot.paramMap.get("sessionId");
 
-    if (!sessionId) {
+    if (!this.labelingLinkData.id) {
       this.router.navigate([LabelingComponent.DUMMY_SESSION_ID], { relativeTo: this.activatedRoute });
       return;
     }
 
-    const projectId = this.activatedRoute.parent.snapshot.paramMap.get('projectId');
+    const projectId = this.labelingLinkData.projectId;
 
     NotificationService.subscribeToNotification(this, {
       projectId: projectId,
@@ -255,6 +262,9 @@ export class LabelingComponent implements OnInit, OnDestroy {
   }
 
   verifyAndHandleQueryParams(projectId: string) {
+
+    this.prepareLabelingSession(projectId, this.labelingLinkData.id, this.labelingLinkData.requestedPos);
+    return
     const sessionId = this.activatedRoute.snapshot.paramMap.get("sessionId");
     const requestedPos = this.activatedRoute.snapshot.queryParamMap.get("pos");
 

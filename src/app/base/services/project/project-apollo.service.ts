@@ -876,12 +876,13 @@ export class ProjectApolloService {
     });
   }
 
-  getDataSlices(projectId: string) {
+  getDataSlices(projectId: string, sliceType: string = null) {
     const query = this.apollo
       .watchQuery({
         query: queries.DATA_SLICES,
         variables: {
           projectId: projectId,
+          sliceType: sliceType
         },
         fetchPolicy: 'network-only',
       });
@@ -927,6 +928,44 @@ export class ProjectApolloService {
           },
         },
       ],
+    });
+  }
+
+  getAccessLink(projectId: string, linkId: string) {
+    return this.apollo
+      .query({
+        query: queries.GET_ACCESS_LINK,
+        variables: {
+          projectId: projectId,
+          linkId: linkId
+        },
+        fetchPolicy: 'cache-first', //this shouldnt change often (also default value)
+      })
+      .pipe(map((result) => result['data']['accessLink']));
+  }
+
+  createAccessLink(
+    projectId: string,
+    type: string,
+    id: string): Observable<any> {
+    return this.apollo.mutate({
+      mutation: mutations.CREATE_ACCESS_LINK,
+      variables: {
+        projectId: projectId,
+        type: type,
+        id: id,
+      },
+    });
+  }
+  removeAccessLink(
+    projectId: string,
+    linkId: string): Observable<any> {
+    return this.apollo.mutate({
+      mutation: mutations.REMOVE_ACCESS_LINK,
+      variables: {
+        projectId: projectId,
+        linkId: linkId
+      },
     });
   }
 

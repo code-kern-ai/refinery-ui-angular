@@ -22,14 +22,15 @@ export const queries = {
     }
   `,
   GET_ORGANIZATION_USERS: gql`
-    query{
-      allUsers{
-        id
-        mail
-        firstName
-        lastName
-      }
+  query($userRole:String){
+    allUsers(userRole:$userRole) {
+      id
+      mail
+      firstName
+      lastName
+      role
     }
+  }
   `,
   GET_ORGANIZATION_USERS_WITH_COUNT: gql`
   query($projectId:ID!){
