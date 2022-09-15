@@ -50,29 +50,6 @@
 
             <div class="mt-8 text-sm leading-5">
                 <div class="text-gray-700 font-medium mr-2">
-                    Playground
-                    <span class="text-gray-500 font-normal">
-                        Try attributes on any text before running them on your data
-                    </span>
-                </div>
-
-                <div class="flex flex-row">
-                    <input #testInput placeholder="Enter any text..."
-                        class="input input-sm input-bordered placeholder-italic w-full" (focus)="$event.target.select()"
-                        (keydown.enter)="runAttributeTest(testInput.value.trim())">
-
-                    <button [disabled]="testerRequestedSomething"
-                        class="ml-3 bg-indigo-700 text-white text-xs leading-4 font-medium px-4 py-2 rounded-md border cursor-pointer hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                        style="flex-shrink: 0;"
-                        (click)="runAttributeTest(testInput.value.trim())">
-                        Compute example
-                    </button>
-                </div>
-                
-            </div>
-
-            <div class="mt-8 text-sm leading-5">
-                <div class="text-gray-700 font-medium mr-2">
                     Execution
                 </div>
 
@@ -105,11 +82,36 @@
                 </div>
             </div>
 
+            <div *ngIf="random10RecordsResult" class="mt-4 flex flex-col">
+                <div class="overflow-x-auto">
+                    <div class="inline-block min-w-full align-middle">
+                        <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+                            <table class="min-w-full border divide-y divide-gray-300">
+                                <div class="divide-y divide-gray-200 bg-white"
+                                    *ngFor="let record of random10RecordsResult.records">
+                                    <div class="flex-shrink-0 border-b border-gray-200 shadow-sm flex justify-between items-center">
+                                        <div class="flex items-center text-xs leading-5 text-gray-500 font-normal text-center ml-4 my-3 text-left">
+                                            {{record.text}}
+                                        </div>
+                                        <div class="flex flex-row flex-nowrap items-center my-3 grid"
+                                            style="grid-template-columns: auto 40px 40px 80px;">
+                                            <div class="flex items-center justify-center mr-5">
+                                                {{record.confidence}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="mt-8 text-sm leading-5">
                 <div class="font-medium text-gray-700 inline-block">Container Logs</div>
                 <div class="inline-block">
                     <button *ngIf="lastTask$ | async as task; else disabledIcon"
-                        (click)="copyToClipboard(task.logs.join('\n'))">
+                        (click)="copyToClipboard(task.logs.join('\n'),0)">
                         <svg xmlns="http://www.w3.org/2000/svg"
                             class="transition-all duration-500 ease-in-out  h-6 w-6 text-gray-600 cursor-pointer inline-block"
                             viewBox="0 0 20 20" fill="currentColor" [ngClass]="copyClicked == 0 ? 'opacity-0' : null">

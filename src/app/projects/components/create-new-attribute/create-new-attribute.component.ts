@@ -3,13 +3,14 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { RouteService } from 'src/app/base/services/route.service';
 import { first } from 'rxjs/operators';
-import { combineLatest, Subscription } from 'rxjs';
+import { combineLatest, Subscription, timer } from 'rxjs';
 import { FormControl } from '@angular/forms';
 import {
   debounceTime,
   startWith,
   distinctUntilChanged,
 } from 'rxjs/operators';
+import { NotificationService } from 'src/app/base/services/notification.service';
 
 @Component({
   selector: 'kern-create-new-attribute',
@@ -35,7 +36,6 @@ export class CreateNewAttributeComponent implements OnInit {
   lastTaskQuery$: any;
   testerRequestedSomething: boolean = false;
   canRunProject: boolean = false;
-  recordTestResult: any;
   random10RecordsResult: any;
 
   constructor( 
@@ -57,6 +57,11 @@ export class CreateNewAttributeComponent implements OnInit {
     this.subscriptions$.push(project$.subscribe((project) => this.project = project));
     combineLatest(tasks$).subscribe();
 
+    NotificationService.subscribeToNotification(this, {
+      projectId: projectId,
+      whitelist: this.getWhiteListNotificationService(),
+      func: this.handleWebsocketNotification
+    });
   }
 
   ngAfterViewInit() {
@@ -70,6 +75,20 @@ export class CreateNewAttributeComponent implements OnInit {
         this.stickyObserver = null;
       }
     });
+  }
+  
+  ngOnDestroy() {
+    this.subscriptions$.forEach((subscription) => subscription.unsubscribe());
+    for (const e of this.stickyHeader) {
+      this.stickyObserver.unobserve(e.nativeElement);
+    }
+    NotificationService.unsubscribeFromNotification(this, this.project.id);
+  }
+
+  getWhiteListNotificationService(): string[] {
+    // TODO: add all notifications that are part of the component
+    let toReturn = [];
+    return toReturn;
   }
 
   setFocus(focusArea) {
@@ -164,22 +183,7 @@ export class CreateNewAttributeComponent implements OnInit {
         this.router.navigate(["../../settings"], { relativeTo: this.activatedRoute });
       });
   }
-
-  copyToClipboard(textToCopy: string) {
-    navigator.clipboard.writeText(textToCopy);
-  }
-
-  runAttributeTest(text: string) {
-    if (text.length == 0) return;
-    if (this.testerRequestedSomething) return;
-    this.testerRequestedSomething = true;
-    this.projectApolloService
-      .runAttributeTest(this.project.id, this.attribute.id, text).pipe(first()).subscribe((testResult) => {
-        this.recordTestResult = testResult;
-        this.testerRequestedSomething = false;
-      });
-  }
-
+  
   runAttribute10Records() {
     if (this.testerRequestedSomething) return;
     this.testerRequestedSomething = true;
@@ -196,5 +200,21 @@ export class CreateNewAttributeComponent implements OnInit {
     .pipe(first())
     .subscribe();
   }
+
+  handleWebsocketNotification(msgParts) {
+    // TO DO: handle websocket notification (depends on which notifications are subscribed to)
+  }
+
+  copyClicked: Number = -1;
+  copyToClipboard(textToCopy, i = -1) {
+    navigator.clipboard.writeText(textToCopy);
+    if (i != -1) {
+      this.copyClicked = i;
+      timer(1000).pipe(first()).subscribe(() => {
+        this.copyClicked = -1;
+      })
+    }
+  }
+
 
 }
