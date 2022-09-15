@@ -27,7 +27,7 @@
                                 name...</label>
                             <div #labelSearchBlinker class="my-0.5 py-2 w-px"></div>
                         </div>
-                        <div *ngIf="user.role == 'ENGINEER'" data-tip="Create label" class="tooltip  tooltip-left">
+                        <div *ngIf="user?.role == 'ENGINEER'" data-tip="Create label" class="tooltip  tooltip-left">
                             <button class="ml-2 relative top-1" (mouseup)="createLabelFromSearchBox($event)"
                                 [disabled]="disableLabelAddButton()?true: null"
                                 [ngClass]="disableLabelAddButton() ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'">
@@ -276,7 +276,7 @@
                                                                             <ng-template
                                                                                 [ngIf]="rla.sourceType == LabelSourceType.WEAK_SUPERVISION"
                                                                                 [ngIfElse]="displayCallback">
-                                                                                <div *ngIf="user.role == 'ENGINEER'"
+                                                                                <div *ngIf="user?.role == 'ENGINEER'"
                                                                                     class="text-sm font-medium mr-3 px-2 py-0.5 rounded-md border border-dotted mr-2 pr-0.5 cursor-default"
                                                                                     [ngClass]="[getBackground(rla.labelingTaskLabel.color), getText(rla.labelingTaskLabel.color), getBorder(rla.labelingTaskLabel.color)]">
                                                                                     <svg xmlns="http://www.w3.org/2000/svg"
@@ -304,7 +304,7 @@
 
 
                                                                             <ng-template #displayCallback>
-                                                                                <div *ngIf="user.role == 'ENGINEER'"
+                                                                                <div *ngIf="user?.role == 'ENGINEER'"
                                                                                     class="inline-flex items-center text-sm font-medium mr-3 px-2 py-0.5 rounded-md border border-dashed mr-2 pr-2 cursor-default"
                                                                                     [ngClass]="[getBackground(rla.labelingTaskLabel.color), getText(rla.labelingTaskLabel.color), getBorder(rla.labelingTaskLabel.color)]">
                                                                                     <svg xmlns="http://www.w3.org/2000/svg"
@@ -366,7 +366,8 @@
             </div>
 
             <!-- Information Source Div  -->
-            <ng-template [ngIf]="this.fullRecordData?.id && fullRecordData?.id != 'deleted' && user.role == 'ENGINEER'">
+            <ng-template
+                [ngIf]="this.fullRecordData?.id && fullRecordData?.id != 'deleted' && user?.role == 'ENGINEER'">
                 <!-- Entities Table -->
                 <ng-template [ngIf]="overviewDisplay.length > 0" [ngIfElse]="nothingToShow">
                     <div class="flex flex-col p-4">
@@ -468,7 +469,7 @@
             <div class="flex flex-row flex-nowrap items-center">
                 <ng-template [ngIf]="isBottom" [ngIfElse]="usersTop">
                     <div class="flex justify-center overflow-visible">
-                        <div *ngIf="user.role == 'ENGINEER'" data-tip="Delete current record"
+                        <div *ngIf="user?.role == 'ENGINEER'" data-tip="Delete current record"
                             class="tooltip tooltip-top normal-case font-normal"
                             [ngClass]="!(this.fullRecordData?.id && this.fullRecordData.id != 'deleted') ? 'cursor-not-allowed': ''">
                             <label [for]="'my-modal-recordDel'"
@@ -500,7 +501,7 @@
                             </div>
                         </div>
                     </div>
-                    <div *ngIf="user.role == 'ENGINEER'"
+                    <div *ngIf="user?.role == 'ENGINEER'"
                         class="ml-20 flex justify-center overflow-visible items-center cursor-pointer"
                         (click)="toggleInformationSourceSwitch()">
                         <ng-template [ngIf]="isBottom && fullRecordData?.id != 'deleted'">
@@ -522,7 +523,7 @@
                     </div>
 
                     <div class="flex justify-center overflow-visible items-center cursor-pointer"
-                        [ngClass]="user.role == 'ENGINEER'?'ml-8':null" (click)="toggleAutoJumpNextRecord()">
+                        [ngClass]="user?.role == 'ENGINEER'?'ml-8':null" (click)="toggleAutoJumpNextRecord()">
                         <ng-template [ngIf]="isBottom && fullRecordData?.id != 'deleted'">
                             <label
                                 class="flex-shrink-0 group relative inline-flex items-center justify-center  cursor-pointer focus:outline-none"
@@ -559,7 +560,7 @@
                 </ng-template>
                 <div>
                     <ng-template #usersTop>
-                        <div *ngIf="user.role != 'ENGINEER'" class="flex justify-center overflow-visible">
+                        <div *ngIf="user?.role != 'ENGINEER'" class="flex justify-center overflow-visible">
                             <div data-tip="Find information about your task"
                                 class="tooltip tooltip-right normal-case font-normal">
                                 <label [for]="'my-modal-information'"
@@ -583,9 +584,9 @@
                                     <div class="relative mx-auto max-w-lg divide-y-1 divide-gray-200 lg:max-w-7xl">
                                         <div>
                                             <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-                                                About project "{{project.name}}"</h2>
+                                                About project "{{project?.name}}"</h2>
                                             <p class="mt-3 text-xl text-gray-500 sm:mt-4">
-                                                {{project.description}}
+                                                {{project?.description}}
                                             </p>
                                         </div>
                                         <div class="mt-8 grid gap-16 pt-4 lg:grid-cols-2 lg:gap-x-5 lg:gap-y-12">
@@ -667,7 +668,7 @@
                             </div>
                         </div>
 
-                        <div *ngIf="user.role == 'ENGINEER'" class="flex justify-center overflow-visible">
+                        <div *ngIf="user?.role == 'ENGINEER'" class="flex justify-center overflow-visible">
                             <div data-tip="Go to the browser" class="tooltip tooltip-bottom relative">
                                 <button [routerLink]="['../../data']"
                                     class="bg-white text-gray-700 text-xs font-semibold mr-3 px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
@@ -676,7 +677,7 @@
                             </div>
                         </div>
 
-                        <div *ngIf="user.role == 'ENGINEER'" class="flex justify-center overflow-visible">
+                        <div *ngIf="user?.role == 'ENGINEER'" class="flex justify-center overflow-visible">
                             <div data-tip="See the programmatic view for your current record"
                                 class="tooltip tooltip-right relative">
                                 <button (click)="goToRecordIde()"
@@ -686,7 +687,7 @@
                             </div>
                         </div>
 
-                        <div *ngIf="userIcons && user.role == 'ENGINEER'">
+                        <div *ngIf="userIcons && user?.role == 'ENGINEER'">
                             <ng-template [ngIf]="userIcons.length <=5" [ngIfElse]="userDropdown">
                                 <div class="flex justify-center overflow-visible">
                                     <div *ngFor="let userIcon of userIcons" [attr.data-tip]="userIcon.name"

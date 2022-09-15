@@ -286,7 +286,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   }
 
   manageProject(projectId: string, recordsInProject: Number): void {
-    if (this.user.role == 'ENGINEER') {
+    if (this.user?.role == 'ENGINEER') {
       if (recordsInProject == 0) {
         this.router.navigate(['projects', projectId, 'settings']);
       } else {

@@ -146,7 +146,6 @@ export class LabelingComponent implements OnInit, OnDestroy {
     // this.user$ = this.organizationService.getUserInfo();
     this.organizationService.getUserInfo().subscribe((user) => {
       this.user = user;
-      console.log("user", user);
     });
 
     const sessionId = this.activatedRoute.snapshot.paramMap.get("sessionId");
