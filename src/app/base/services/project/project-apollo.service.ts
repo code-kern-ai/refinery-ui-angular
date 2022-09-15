@@ -997,4 +997,41 @@ export class ProjectApolloService {
     return [query, vc];
   }
 
+  runAttributeTest(projectId: string, attributeId: string, text: string) {
+    return this.apollo
+      .query({
+        query: queries.RUN_ATTRIBUTE_TEST,
+        variables: {
+          projectId: projectId,
+          attributeId: attributeId,
+          text: text
+        },
+        fetchPolicy: 'no-cache'
+      }).pipe(
+        map((result) => result['data']['runAttributeTest']));
+  }
+
+  runAttribute10Records(projectId: string, attributeId: string) {
+    return this.apollo
+      .query({
+        query: queries.RUN_ATTRIBUTE_10_RECORDS,
+        variables: {
+          projectId: projectId,
+          attributeId: attributeId,
+        },
+        fetchPolicy: 'no-cache'
+      }).pipe(
+        map((result) => result['data']['runAttribute10Records']));
+  }
+
+  runAttributeAllRecords(projectId: string, attributeId: string) {
+    return this.apollo.mutate({
+      mutation: mutations.RUN_ATTRIBUTE_ALL_RECORDS,
+      variables: {
+        projectId: projectId,
+        attributeId: attributeId
+      },
+    });
+  }
+
 }

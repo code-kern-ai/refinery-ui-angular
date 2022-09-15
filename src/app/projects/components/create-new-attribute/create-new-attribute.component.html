@@ -48,7 +48,64 @@
                 </ngx-monaco-editor>
             </div>
 
-            <div class="mt-16 text-sm leading-5">
+            <div class="mt-8 text-sm leading-5">
+                <div class="text-gray-700 font-medium mr-2">
+                    Playground
+                    <span class="text-gray-500 font-normal">
+                        Try attributes on any text before running them on your data
+                    </span>
+                </div>
+
+                <div class="flex flex-row">
+                    <input #testInput placeholder="Enter any text..."
+                        class="input input-sm input-bordered placeholder-italic w-full" (focus)="$event.target.select()"
+                        (keydown.enter)="runAttributeTest(testInput.value.trim())">
+
+                    <button [disabled]="testerRequestedSomething"
+                        class="ml-3 bg-indigo-700 text-white text-xs leading-4 font-medium px-4 py-2 rounded-md border cursor-pointer hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        style="flex-shrink: 0;"
+                        (click)="runAttributeTest(testInput.value.trim())">
+                        Compute example
+                    </button>
+                </div>
+                
+            </div>
+
+            <div class="mt-8 text-sm leading-5">
+                <div class="text-gray-700 font-medium mr-2">
+                    Execution
+                </div>
+
+                <div class="grid items-center" style="grid-template-columns: auto max-content 0px 0px;">
+                    <div class="text-gray-500 font-normal">You can execute your attribute
+                        on all records, or test-run it on 10 examples (which are sampled randomly). Test results are
+                        shown
+                        below after computation.</div>
+                    <div>
+                        <div [ngClass]="testerRequestedSomething?null:'hidden'" class="inline-block">
+                            <kern-loading color="indigo"></kern-loading>
+                        </div>
+                        <div data-tip="Execute the attribute on 10 records" class="tooltip tooltip-left">
+                            <button [disabled]="testerRequestedSomething"
+                                [ngClass]="testerRequestedSomething ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
+                                (click)="runAttribute10Records()"
+                                class="bg-white text-gray-700 text-xs font-semibold px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                Run on 10
+                            </button>
+                        </div>
+                        <div data-tip="Execute the attribute on all records" class="tooltip tooltip-left">
+                            <button [disabled]="!canRunProject" data-tip="Execute the attribute on all records"
+                                [ngClass]="!canRunProject ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
+                                (click)="runAttributeAllRecords()"
+                                class="bg-indigo-700 text-white text-xs leading-4 font-semibold px-4 py-2 rounded-md cursor-pointer ml-3 hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                Run
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-8 text-sm leading-5">
                 <div class="font-medium text-gray-700 inline-block">Container Logs</div>
                 <div class="inline-block">
                     <button *ngIf="lastTask$ | async as task; else disabledIcon"
@@ -116,6 +173,7 @@
                         <h1 class="text-lg text-gray-900 mb-2">Delete attribute</h1>
                         <div class="text-sm text-gray-500 my-2">
                             Are you sure you want to delete this attribute?
+                            <p>This will delete all data associated with it, including labeling tasks.</p>
                         </div>
 
                         <div class="modal-action text-center mt-0">

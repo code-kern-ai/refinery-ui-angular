@@ -33,6 +33,10 @@ export class CreateNewAttributeComponent implements OnInit {
   editorOptions = { theme: 'vs-light', language: 'python' };
   lastTask$: any;
   lastTaskQuery$: any;
+  testerRequestedSomething: boolean = false;
+  canRunProject: boolean = false;
+  recordTestResult: any;
+  random10RecordsResult: any;
 
   constructor( 
     private activatedRoute: ActivatedRoute,
@@ -91,7 +95,7 @@ export class CreateNewAttributeComponent implements OnInit {
     this.subscriptions$.push(this.attribute$.subscribe((attribute) => {
       this.attribute = attribute;
       this.attributeName = this.attribute.name;
-      this.attribute.column = 'test';
+      this.canRunProject = this.attribute.codeColumn !== '';
     }));
   }
 
@@ -163,6 +167,34 @@ export class CreateNewAttributeComponent implements OnInit {
 
   copyToClipboard(textToCopy: string) {
     navigator.clipboard.writeText(textToCopy);
+  }
+
+  runAttributeTest(text: string) {
+    if (text.length == 0) return;
+    if (this.testerRequestedSomething) return;
+    this.testerRequestedSomething = true;
+    this.projectApolloService
+      .runAttributeTest(this.project.id, this.attribute.id, text).pipe(first()).subscribe((testResult) => {
+        this.recordTestResult = testResult;
+        this.testerRequestedSomething = false;
+      });
+  }
+
+  runAttribute10Records() {
+    if (this.testerRequestedSomething) return;
+    this.testerRequestedSomething = true;
+    this.projectApolloService
+      .runAttribute10Records(this.project.id, this.attribute.id).pipe(first()).subscribe((records10) => {
+        this.random10RecordsResult = records10;
+        this.testerRequestedSomething = false;
+      });
+  }
+
+  runAttributeAllRecords() {
+    this.projectApolloService
+    .runAttributeAllRecords(this.project.id, this.attribute.id)
+    .pipe(first())
+    .subscribe();
   }
 
 }

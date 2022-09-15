@@ -391,4 +391,18 @@ export const queries = {
     }
   }
   `,
+  RUN_ATTRIBUTE_TEST: gql`
+  query($projectId: ID!, $attributeId: ID!, $text: String!){
+    runAttributeTest(projectId: $projectId, attributeId: $attributeId, text: $text) {
+      ok
+    }
+  }
+  `,
+  RUN_ATTRIBUTE_10_RECORDS: gql`
+  query($projectId: ID!, $attributeId: ID!){
+    runAttribute10Records(projectId: $projectId, attributeId: $attributeId) {
+      ok
+    }
+  }
+  `,
 };

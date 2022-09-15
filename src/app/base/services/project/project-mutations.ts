@@ -199,4 +199,11 @@ export const mutations = {
     } 
   }
   `,
+  RUN_ATTRIBUTE_ALL_RECORDS: gql`
+  mutation($projectId: ID!, $attributeId: ID!){
+    runAttributeAllRecords(projectId: $projectId, attributeId: $attributeId) {
+      ok
+    } 
+  }
+  `,
 };
