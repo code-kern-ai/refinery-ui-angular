@@ -126,6 +126,7 @@ export class CreateNewAttributeComponent implements OnInit {
   openName(open: boolean, projectId) {
     this.nameOpen = open;
     if (!open && this.attributeName != this.attribute.name) {
+      this.code = AttributeCodeLookup.getAttributeCalculationTemplate(AttributeCalculationExamples.AC_EMPTY_TEMPLATE, this.attributeName).code;
       this.saveAttribute(projectId);
     }
   }
@@ -139,7 +140,7 @@ export class CreateNewAttributeComponent implements OnInit {
   }
 
   saveAttribute(projectId: string) {
-    this.code = AttributeCodeLookup.getAttributeCalculationTemplate(AttributeCalculationExamples.AC_EMPTY_TEMPLATE, this.attributeName).code;
+   
     this.projectApolloService
       .updateAttribute(projectId, this.attribute.id, this.attribute.dataType, this.attribute.isPrimaryKey, this.attributeName, this.code)
       .pipe(first())
