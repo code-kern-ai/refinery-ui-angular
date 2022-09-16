@@ -174,19 +174,7 @@ export class CreateNewAttributeComponent implements OnInit {
 
   hasUnsavedChanges(): boolean {
     if (!this.attribute) return false;
-    if (this.attributeName != this.attribute.name) return true;
-    if (
-      this.code !=
-      this.attribute.sourceCode.replace(
-        'def ac(record):',
-        'def ' + this.attribute.name + '(record):'
-      )
-    ) {
-      return true;
-    }
-    else if (this.code != this.attribute.sourceCode) {
-      return true;
-    }
+    if (this.attributeName != this.attribute.name || this.code != this.attribute.sourceCode) return true;
     return false;
   }
 
