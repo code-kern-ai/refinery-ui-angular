@@ -11,6 +11,7 @@ import {
   distinctUntilChanged,
 } from 'rxjs/operators';
 import { NotificationService } from 'src/app/base/services/notification.service';
+import { AttributeCalculationExamples, AttributeCodeLookup } from './new-attribute-code-lookup';
 
 @Component({
   selector: 'kern-create-new-attribute',
@@ -114,6 +115,9 @@ export class CreateNewAttributeComponent implements OnInit {
       this.attribute = attribute;
       this.attributeName = this.attribute.name;
       this.code = this.attribute.sourceCode;
+      if (this.code == null) {
+        this.code = AttributeCodeLookup.getAttributeCalculationTemplate(AttributeCalculationExamples.AC_EMPTY_TEMPLATE, this.attributeName).code;
+      }
       this.attributeLogs = this.attribute.logs;
       this.canRunProject = this.attribute.sourceCode !== '';
     }));
@@ -135,8 +139,9 @@ export class CreateNewAttributeComponent implements OnInit {
   }
 
   saveAttribute(projectId: string) {
+    this.code = AttributeCodeLookup.getAttributeCalculationTemplate(AttributeCalculationExamples.AC_EMPTY_TEMPLATE, this.attributeName).code;
     this.projectApolloService
-      .updateAttribute(projectId, this.attribute.id, this.attribute.dataType, this.attribute.isPrimaryKey, this.attributeName)
+      .updateAttribute(projectId, this.attribute.id, this.attribute.dataType, this.attribute.isPrimaryKey, this.attributeName, this.code)
       .pipe(first())
       .subscribe();
   }
@@ -168,7 +173,21 @@ export class CreateNewAttributeComponent implements OnInit {
   }
 
   hasUnsavedChanges(): boolean {
-    return false
+    if (!this.attribute) return false;
+    if (this.attributeName != this.attribute.name) return true;
+    if (
+      this.code !=
+      this.attribute.sourceCode.replace(
+        'def ac(record):',
+        'def ' + this.attribute.name + '(record):'
+      )
+    ) {
+      return true;
+    }
+    else if (this.code != this.attribute.sourceCode) {
+      return true;
+    }
+    return false;
   }
 
   deleteUserAttribute(projectId, attributeId) {

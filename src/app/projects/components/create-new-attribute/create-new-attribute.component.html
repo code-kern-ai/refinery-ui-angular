@@ -12,9 +12,6 @@
                         </svg>
                         <span class="leading-5">Go back</span>
                     </button>
-
-                    <div class="mx-4 text-sm leading-5 font-medium text-gray-500 inline-block">
-                        {{attribute.name}}</div>
                 </div>
             </div>
         </div>
@@ -46,6 +43,15 @@
                 <ngx-monaco-editor class="w-full" style="height: 400px;" [options]="editorOptions" [(ngModel)]="code"
                     (onInit)="initEditor($event,project.id)" [formControl]="codeFormCtrl">
                 </ngx-monaco-editor>
+            </div>
+
+            <div class="mt-2 flex flex-grow justify-between items-center float-right">
+                <div class="flex items-center">
+                    <div *ngIf="hasUnsavedChanges()" class="flex items-center">
+                        <div class="text-sm font-normal text-gray-500">Saving...</div>
+                        <kern-loading color="indigo"></kern-loading>
+                    </div>
+                </div>
             </div>
 
             <div class="mt-8 text-sm leading-5">

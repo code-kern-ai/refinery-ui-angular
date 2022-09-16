@@ -437,7 +437,8 @@ export class ProjectApolloService {
     attributeId: string,
     dataType: string,
     isPrimaryKey: boolean,
-    name: string
+    name: string,
+    sourceCode: string
   ) {
     return this.apollo.mutate({
       mutation: mutations.UPDATE_ATTRIBUTE,
@@ -446,13 +447,15 @@ export class ProjectApolloService {
         attributeId: attributeId,
         dataType: dataType,
         isPrimaryKey: isPrimaryKey,
-        name: name
+        name: name,
+        sourceCode: sourceCode
       },
       refetchQueries: [
         {
-          query: queries.GET_ATTRIBUTES_BY_PROJECT_ID,
+          query: queries.GET_ATTRIBUTE_BY_ATTRIBUTE_ID,
           variables: {
             projectId: projectId,
+            attributeId: attributeId
           },
         },
       ],
