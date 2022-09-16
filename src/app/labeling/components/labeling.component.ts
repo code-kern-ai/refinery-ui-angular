@@ -62,6 +62,8 @@ export class LabelingComponent implements OnInit, OnDestroy {
   dataSliceQuery$: any;
   dataSlices$: any;
 
+  sourceId: string; // if the session is from an annotator heuristic
+
   user: any;
   displayUserId: any;
   rlaGroupMap: Map<string, any[]> = new Map<string, any[]>();
@@ -155,9 +157,6 @@ export class LabelingComponent implements OnInit, OnDestroy {
     // });
     //check id type
 
-
-    console.log("init")
-
     let initialTasks$ = [];
     initialTasks$.push(this.prepareUser());
     forkJoin(initialTasks$).pipe(first()).subscribe(() => {
@@ -172,10 +171,6 @@ export class LabelingComponent implements OnInit, OnDestroy {
       //wait for preparation tasks to finish
       forkJoin(initialTasks$).pipe(first()).subscribe(() => this.verifyAndHandleQueryParams(this.labelingLinkData.projectId));
     });
-
-
-
-
   }
 
   private initialSetupNoWait() {
@@ -230,6 +225,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
         .pipe(first())
         .subscribe();
     }
+
     //default handling
     if (pos == null && this.huddleData?.linkData.requestedPos) pos = this.huddleData.linkData.requestedPos;
     if (pos == null) pos = 0;
@@ -249,6 +245,8 @@ export class LabelingComponent implements OnInit, OnDestroy {
     if (this.huddleData) this.jumpToPosition(projectId, pos);
 
     this.sessionRequested = true;
+
+    this.sourceId = this.inferSourceID()
   }
 
   requestHuddleData(projectId: string, sessionId: string) {
@@ -1482,11 +1480,19 @@ export class LabelingComponent implements OnInit, OnDestroy {
         dataEntry.endIdx,
         dataEntry.value,
         labelId,
-        this.displayUserId == this.GOLD_USER_ID ? true : null
+        this.displayUserId == this.GOLD_USER_ID ? true : null,
+        this.inferSourceID(),
       )
       .pipe(first())
       .subscribe();
 
+  }
+
+  inferSourceID() {
+    const labelingUrlFull = this.activatedRoute.snapshot['_routerState'].url;
+    const typeIndex = /\&type/.exec(labelingUrlFull).index;
+    const type = labelingUrlFull.substring(typeIndex + 6); // get rid of "?type=" (6 chars)
+    return type == "HEURISTIC" ? this.huddleData.linkData.id : null;
   }
 
   addLabelToTask(labelingTaskId: string, labelId: string) {
@@ -1503,7 +1509,8 @@ export class LabelingComponent implements OnInit, OnDestroy {
         this.fullRecordData.id,
         labelingTaskId,
         labelId,
-        this.displayUserId == this.GOLD_USER_ID ? true : null
+        this.displayUserId == this.GOLD_USER_ID ? true : null,
+        this.inferSourceID(),
       )
       .pipe(first())
       .subscribe();
@@ -1574,11 +1581,21 @@ export class LabelingComponent implements OnInit, OnDestroy {
     if (!this.fullRecordData) return [];
     let found = [];
     for (let rla of this.fullRecordData.recordLabelAssociations) {
-      if (
-        rla.labelingTaskLabel.labelingTask.id == taskId &&
-        rla.sourceType != LabelSource.INFORMATION_SOURCE
-      )
-        found.push(rla);
+      if (this.sourceId == null) {
+        if (
+          rla.labelingTaskLabel.labelingTask.id == taskId &&
+          rla.sourceType != LabelSource.INFORMATION_SOURCE
+        )
+          found.push(rla);
+      } else {
+        if (
+          rla.labelingTaskLabel.labelingTask.id == taskId &&
+          rla.sourceType == LabelSource.INFORMATION_SOURCE &&
+          rla.sourceId == this.sourceId
+        )
+          found.push(rla);
+      }
+
     }
     return found;
   }

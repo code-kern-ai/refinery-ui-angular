@@ -267,17 +267,15 @@
                                                                         class="max-w-xxs truncate mx-1">{{task.name}}</span>
                                                                     <span>options</span>
                                                                 </button>
-
                                                             </div>
                                                             <div>
-
                                                                 <ng-template ngFor let-rla [ngForOf]="taskLabels">
-                                                                    <div *ngIf="rla.sourceType != LabelSourceType.INFORMATION_SOURCE || (rla.sourceType == LabelSourceType.INFORMATION_SOURCE && showInformationSourcesFlag)"
+                                                                    <div *ngIf="rla.sourceType != LabelSourceType.INFORMATION_SOURCE || (rla.sourceType == LabelSourceType.INFORMATION_SOURCE && showInformationSourcesFlag) || rla.sourceId == sourceId"
                                                                         [attr.data-tip]="rla.dataTip"
                                                                         class="tooltip table"
                                                                         [ngClass]="(displayUserId == GOLD_USER_ID || displayUserId == user.id)?'mt-3':null">
                                                                         <ng-template
-                                                                            [ngIf]="rla.sourceType != LabelSourceType.MANUAL"
+                                                                            [ngIf]="rla.sourceType != LabelSourceType.MANUAL && rla.sourceId != sourceId"
                                                                             [ngIfElse]="displayNormalLabel">
                                                                             <ng-template
                                                                                 [ngIf]="rla.sourceType == LabelSourceType.WEAK_SUPERVISION"
