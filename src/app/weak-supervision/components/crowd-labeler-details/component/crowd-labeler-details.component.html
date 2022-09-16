@@ -65,147 +65,243 @@
                 </div>
             </div>
 
-            <div class="mt-8 text-sm text-gray-700 leading-5" *ngIf="crowdSettings && annotators">
-                <div class="font-medium">Settings</div>
-                <div class="font-normal mt-2">Labeling task</div>
-
-
-                <div class="relative flex flex-col gap-y-2 mb-8">
-                    <div class="flex items-center">
-                        <kern-dropdown class="mr-2" [dropdownOptions]="{
-                            optionArray:labelingTasksClassification,
-                            buttonCaption:labelingTasks.get(crowdSettings.taskId).name,
-                            buttonTooltip: 'Select the labeling task',
-                            valuePropertyPath:'id'
-                        }" (optionClicked)="changeSettings('taskId',$event)">
-                        </kern-dropdown>
-                        <div *ngIf="!labelingTasks.get(crowdSettings.taskId)?.labels.length"
-                            class="font-normal text-gray-500 p-3 inline-block">
-                            No labels for target task
+            <ng-template [ngIf]="annotators.length == 0 || dataSlices.length == 0" [ngIfElse]="showSettings">
+                <div class="overflow-hidden bg-white">
+                    <div class="relative py-8 pr-4">
+                        <div class="absolute top-0 bottom-0 left-3/4 hidden w-screen bg-gray-50 lg:block"></div>
+                        <div class="mx-auto max-w-prose text-base lg:grid lg:max-w-none lg:grid-cols-2 lg:gap-8">
+                            <div>
+                                <h2 class="text-lg font-semibold text-indigo-600">Integrating crowd labelers</h2>
+                                <h3 class="mt-2 text-3xl font-bold leading-8 tracking-tight text-gray-900 sm:text-4xl">
+                                    How it works</h3>
+                            </div>
                         </div>
-                        <ng-container *ngFor="let label of labelingTasks.get(crowdSettings.taskId)?.labels">
-                            <span
-                                [ngClass]="[getBackground(label.color), getText(label.color), getBorder(label.color), getHover(label.color)]"
-                                class="inline-flex border items-center px-2 py-0.5 rounded text-xs font-medium cursor-pointer h-6 mr-5 my-2">
-                                <span class="font-medium">{{label.name}}</span>
-                            </span>
-                        </ng-container>
-                    </div>
-                    <div class="flex items-center">
-                        <kern-dropdown class="mr-2" [dropdownOptions]="{
-                            optionArray:annotators,
-                            buttonCaption:crowdSettings.annotatorId?annotatorLookup[crowdSettings.annotatorId]?.mail:'Select annotator',
-                            buttonTooltip: 'Select an annotator',
-                            valuePropertyPath:'id',
-                            isDisabled:annotators.length == 0
-                        }" (optionClicked)="changeSettings('annotatorId',$event)">
-                        </kern-dropdown>
-                        <kern-dropdown class="mr-2" [dropdownOptions]="{
-                            optionArray:dataSlices,
-                            buttonCaption:crowdSettings.dataSliceId?sliceLookup[crowdSettings.dataSliceId]?.name:'Select slice',
-                            buttonTooltip: 'Select a static slice',
-                            valuePropertyPath:'id',
-                            isDisabled:dataSlices.length == 0
-                        }" (optionClicked)="changeSettings('dataSliceId',$event)">
-                        </kern-dropdown>
-
-                    </div>
-                    <div class="max-w-full overflow-x-auto" *ngIf="crowdSettings.accessLinkId">
-                        <span>{{crowdSettings.accessLinkParsed}}</span>
-                        <kern-loading *ngIf="!crowdSettings.accessLinkParsed"></kern-loading>
-                    </div>
-                    <button #genButton (click)="generateAccessLink()"
-                        [ngClass]="genButton.disabled ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
-                        [disabled]="!crowdSettings.taskId || !crowdSettings.annotatorId || !crowdSettings.dataSliceId"
-                        class="w-40 bg-indigo-700 text-white text-xs leading-4 font-semibold px-4 py-2 rounded-md cursor-pointer hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                        Generate Link
-                    </button>
-                </div>
-            </div>
-            <div class="mt-8">
-                <div class="text-sm leading-5 font-medium text-gray-700 inline-block">Statistics</div>
-                <div class="mt-1 flex flex-col">
-                    <div class="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                        <div class="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-                            <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-                                <table class="min-w-full border divide-y divide-gray-300">
-                                    <thead class="bg-gray-50">
-                                        <tr>
-                                            <th scope="col"
-                                                class="py-2 pl-4 pr-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500 sm:pl-6">
-                                                Label</th>
-                                            <th scope="col"
-                                                class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                                <span class="tooltip-text-smaller tooltip tooltip-right"
-                                                    data-tip="True positives / (True positives + False positives) for the reference data you labeled">Est.
-                                                    Precision</span>
-                                            </th>
-                                            <th *ngIf="informationSource.returnType == 'YIELD'" scope="col"
-                                                class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                                <span class="tooltip-text-smaller tooltip tooltip-right"
-                                                    data-tip="True positives / (True positives + False negatives) for the reference data you labeled">Est.
-                                                    Recall</span>
-                                            </th>
-                                            <th scope="col"
-                                                class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                                <span class="tooltip-text-smaller tooltip tooltip-left"
-                                                    data-tip="How many records does this heuristic generally hit?">Coverage</span>
-                                            </th>
-                                            <th scope="col"
-                                                class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                                <span class="tooltip-text-no-margin tooltip tooltip-left"
-                                                    data-tip="How many spans are hit by this heuristic?">Hits</span>
-                                            </th>
-                                            <th scope="col"
-                                                class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                                <span class="tooltip-text-bigger tooltip tooltip-left"
-                                                    data-tip="On how many records (or spans) does this heuristic create conflicting expressions to other heuristics?">Conflicts</span>
-                                            </th>
-                                            <th scope="col"
-                                                class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                                <span class="tooltip-text-bigger tooltip tooltip-left"
-                                                    data-tip="On how many records (or spans) does this heuristic create overlapping expressions to other heuristics?">Overlaps</span>
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-gray-200">
-                                        <tr *ngFor="let sourceContainer of informationSource.stats; let j = index"
-                                            [ngClass]="j%2!=0 ? 'bg-gray-50':'bg-white'">
-                                            <td
-                                                class="whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-                                                <span
-                                                    [ngClass]="[getBackground(sourceContainer.color), getText(sourceContainer.color), getBorder(sourceContainer.color), getHover(sourceContainer.color)]"
-                                                    class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border">
-                                                    {{sourceContainer.label}}
-                                                </span>
-                                            </td>
-                                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                                {{sourceContainer.values.Precision | percentRound: 2}}
-                                            </td>
-                                            <td *ngIf="informationSource.returnType == 'YIELD'"
-                                                class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                                {{sourceContainer.values.Recall | percentRound: 2}}
-                                            </td>
-                                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                                {{sourceContainer.values.Coverage}}
-                                            </td>
-                                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                                {{sourceContainer.values.TotalHits}}
-                                            </td>
-                                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                                {{sourceContainer.values.Conflicts}}
-                                            </td>
-                                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                                {{sourceContainer.values.Overlaps}}
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                        <div class="pl-4 mt-8 lg:grid lg:grid-cols-2 lg:gap-8 max-w-7xl">
+                            <div class="relative lg:col-start-2 lg:row-start-1">
+                                <svg class="absolute top-0 right-0 -mt-20 -mr-20 hidden lg:block" width="404"
+                                    height="384" fill="none" viewBox="0 0 404 384" aria-hidden="true">
+                                    <defs>
+                                        <pattern id="de316486-4a29-4312-bdfc-fbce2132a2c1" x="0" y="0" width="20"
+                                            height="20" patternUnits="userSpaceOnUse">
+                                            <rect x="0" y="0" width="4" height="4" class="text-gray-200"
+                                                fill="currentColor" />
+                                        </pattern>
+                                    </defs>
+                                    <rect width="404" height="384" fill="url(#de316486-4a29-4312-bdfc-fbce2132a2c1)" />
+                                </svg>
+                                <div class="relative mx-auto max-w-prose text-base lg:max-w-none">
+                                    <figure>
+                                        <div class="aspect-w-12 aspect-h-7 lg:aspect-none">
+                                            <img class="rounded-lg object-cover object-center shadow-lg"
+                                                src="https://images.unsplash.com/photo-1618004912476-29818d81ae2e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1664&q=80"
+                                                alt="Whitney leaning against a railing on a downtown street"
+                                                width="1184" height="1376">
+                                        </div>
+                                    </figure>
+                                </div>
+                            </div>
+                            <div class="mt-8 lg:mt-0">
+                                <div class="mx-auto max-w-prose text-base lg:max-w-none">
+                                    <p class="text-lg text-gray-500">You can create slice-specific annotation tasks for
+                                        your annotators. If you have no annotators yet, you can reach out to the
+                                        support, so we can add some to your organization.</p>
+                                </div>
+                                <div
+                                    class="prose prose-indigo mx-auto mt-5 text-gray-500 lg:col-start-1 lg:row-start-1 lg:max-w-none">
+                                    <p>Annotators will receive an annotator/slice-specific URL, which shows them records
+                                        of the respective data slice. They can label through this slice, but their
+                                        labels won't be set as your manual reference labels. Instead, their output will
+                                        be considered a heuristic just like a labeling function.</p>
+                                    <p>To get started, please ensure the following:</p>
+                                    <ul role="list">
+                                        <li>Create static data slices that you want to have labeled manually. These can
+                                            be e.g. records with low weak supervision confidence.</li>
+                                        <li>Contact the support on how many annotators you require. We will create those
+                                            slots for you.</li>
+                                        <li>Revisit this page afterwards. You will be able to configure the heuristic.
+                                        </li>
+                                    </ul>
+                                    <p>You can then either send the link to an annotator you want to work with, or let
+                                        us manage that.</p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </ng-template>
+            <ng-template #showSettings>
+                <div class="mt-8 text-sm text-gray-700 leading-5" *ngIf="crowdSettings && annotators">
+                    <div class="font-medium">Settings</div>
+                    <div class="font-normal mt-2">Labeling task</div>
+                    <div class="relative flex flex-col gap-y-2 mb-8">
+                        <div class="flex items-center">
+                            <kern-dropdown class="mr-2" [dropdownOptions]="{
+                                optionArray:labelingTasksClassification,
+                                buttonCaption:labelingTasks.get(crowdSettings.taskId).name,
+                                buttonTooltip: 'Select the labeling task',
+                                valuePropertyPath:'id'
+                            }" (optionClicked)="changeSettings('taskId',$event)">
+                            </kern-dropdown>
+                            <div *ngIf="!labelingTasks.get(crowdSettings.taskId)?.labels.length"
+                                class="font-normal text-gray-500 p-3 inline-block">
+                                No labels for target task
+                            </div>
+                            <ng-container *ngFor="let label of labelingTasks.get(crowdSettings.taskId)?.labels">
+                                <span
+                                    [ngClass]="[getBackground(label.color), getText(label.color), getBorder(label.color), getHover(label.color)]"
+                                    class="inline-flex border items-center px-2 py-0.5 rounded text-xs font-medium cursor-pointer h-6 mr-5 my-2">
+                                    <span class="font-medium">{{label.name}}</span>
+                                </span>
+                            </ng-container>
+                        </div>
+
+
+                    </div>
+                    <div class="font-normal mt-2">Annotator and slice</div>
+
+                    <div>
+                        <div class="flex items-center">
+                            <kern-dropdown [dropdownOptions]="{
+                                optionArray:annotators,
+                                buttonCaption:crowdSettings.annotatorId?annotatorLookup[crowdSettings.annotatorId]?.mail:'Select annotator',
+                                buttonTooltip: 'Select an annotator',
+                                valuePropertyPath:'id',
+                                isDisabled:annotators.length == 0
+                            }" (optionClicked)="changeSettings('annotatorId',$event)">
+                            </kern-dropdown>
+                            <p class="px-2"> is going to work on slice </p>
+                            <kern-dropdown [dropdownOptions]="{
+                                optionArray:dataSlices,
+                                buttonCaption:crowdSettings.dataSliceId?sliceLookup[crowdSettings.dataSliceId]?.name:'Select slice',
+                                buttonTooltip: 'Select a static slice',
+                                valuePropertyPath:'id',
+                                isDisabled:dataSlices.length == 0
+                            }" (optionClicked)="changeSettings('dataSliceId',$event)">
+                            </kern-dropdown>
+
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <button #genButton (click)="generateAccessLink()"
+                            [ngClass]="genButton.disabled ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
+                            [disabled]="!crowdSettings.taskId || !crowdSettings.annotatorId || !crowdSettings.dataSliceId"
+                            class="mt-2 w-40 bg-indigo-700 text-white text-xs leading-4 font-semibold px-4 py-2 rounded-md cursor-pointer hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            Generate Link
+                        </button>
+
+                        <div *ngIf="crowdSettings.accessLinkParsed" class="mt-4">
+                            <label class="text-sm font-medium text-gray-700">Heuristic URL</label>
+                            <div class="mt-1 flex rounded-md">
+                                <ng-template [ngIf]="crowdSettings.isHTTPS" [ngIfElse]="displayHTTP">
+                                    <span
+                                        class="inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-50 px-3 text-gray-500 sm:text-sm">https://</span>
+                                    <span data-tip="Copy to clipboard"
+                                        (click)="copyToClipboard(crowdSettings.accessLinkParsed)" type="text"
+                                        class="cursor-pointer tooltip border rounded-none rounded-r-md border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">{{crowdSettings.accessLinkParsed.substring(8)}}</span>
+                                </ng-template>
+                                <ng-template #displayHTTP>
+                                    <span
+                                        class="inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-50 px-3 text-gray-500 sm:text-sm">http://</span>
+                                    <span data-tip="Copy to clipboard"
+                                        (click)="copyToClipboard(crowdSettings.accessLinkParsed)" type="text"
+                                        class="cursor-pointer tooltip border rounded-none rounded-r-md border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">{{crowdSettings.accessLinkParsed.substring(7)}}</span>
+                                </ng-template>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-8">
+                    <div class="text-sm leading-5 font-medium text-gray-700 inline-block">Statistics</div>
+                    <div class="mt-1 flex flex-col">
+                        <div class="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                            <div class="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
+                                <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+                                    <table class="min-w-full border divide-y divide-gray-300">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th scope="col"
+                                                    class="py-2 pl-4 pr-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500 sm:pl-6">
+                                                    Label</th>
+                                                <th scope="col"
+                                                    class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                                    <span class="tooltip-text-smaller tooltip tooltip-right"
+                                                        data-tip="True positives / (True positives + False positives) for the reference data you labeled">Est.
+                                                        Precision</span>
+                                                </th>
+                                                <th *ngIf="informationSource.returnType == 'YIELD'" scope="col"
+                                                    class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                                    <span class="tooltip-text-smaller tooltip tooltip-right"
+                                                        data-tip="True positives / (True positives + False negatives) for the reference data you labeled">Est.
+                                                        Recall</span>
+                                                </th>
+                                                <th scope="col"
+                                                    class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                                    <span class="tooltip-text-smaller tooltip tooltip-left"
+                                                        data-tip="How many records does this heuristic generally hit?">Coverage</span>
+                                                </th>
+                                                <th scope="col"
+                                                    class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                                    <span class="tooltip-text-no-margin tooltip tooltip-left"
+                                                        data-tip="How many spans are hit by this heuristic?">Hits</span>
+                                                </th>
+                                                <th scope="col"
+                                                    class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                                    <span class="tooltip-text-bigger tooltip tooltip-left"
+                                                        data-tip="On how many records (or spans) does this heuristic create conflicting expressions to other heuristics?">Conflicts</span>
+                                                </th>
+                                                <th scope="col"
+                                                    class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                                    <span class="tooltip-text-bigger tooltip tooltip-left"
+                                                        data-tip="On how many records (or spans) does this heuristic create overlapping expressions to other heuristics?">Overlaps</span>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-gray-200">
+                                            <tr *ngFor="let sourceContainer of informationSource.stats; let j = index"
+                                                [ngClass]="j%2!=0 ? 'bg-gray-50':'bg-white'">
+                                                <td
+                                                    class="whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                                                    <span
+                                                        [ngClass]="[getBackground(sourceContainer.color), getText(sourceContainer.color), getBorder(sourceContainer.color), getHover(sourceContainer.color)]"
+                                                        class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border">
+                                                        {{sourceContainer.label}}
+                                                    </span>
+                                                </td>
+                                                <td
+                                                    class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                                    {{sourceContainer.values.Precision | percentRound: 2}}
+                                                </td>
+                                                <td *ngIf="informationSource.returnType == 'YIELD'"
+                                                    class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                                    {{sourceContainer.values.Recall | percentRound: 2}}
+                                                </td>
+                                                <td
+                                                    class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                                    {{sourceContainer.values.Coverage}}
+                                                </td>
+                                                <td
+                                                    class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                                    {{sourceContainer.values.TotalHits}}
+                                                </td>
+                                                <td
+                                                    class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                                    {{sourceContainer.values.Conflicts}}
+                                                </td>
+                                                <td
+                                                    class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                                    {{sourceContainer.values.Overlaps}}
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+
+
 
             <div class="mt-8 pb-8">
                 <div class="text-gray-900 text-lg leading-6 font-medium">Danger zone</div>
@@ -216,7 +312,7 @@
                 <div data-tip="This can't be reverted!" class="tooltip tooltip-right">
                     <label [for]="'delete-modal-'+informationSource.id"
                         class="bg-red-100 text-red-700 border border-red-400 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer ml-6 h-9 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-                        Delete zero_shot
+                        Delete {{informationSource.name}}
                     </label>
                 </div>
                 <input type="checkbox" [id]="'delete-modal-'+informationSource.id" class="modal-toggle">

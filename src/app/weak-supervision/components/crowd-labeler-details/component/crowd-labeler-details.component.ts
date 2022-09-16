@@ -186,6 +186,11 @@ export class CrowdLabelerDetailsComponent
         this.removeAccessLink();
         this.fillLinkData(res.data.generateAccessLink.link.link);
         this.crowdSettings.accessLinkId = res.data.generateAccessLink.link.id
+        if (window.location.protocol == 'https:') {
+          this.crowdSettings.isHTTPS = true;
+        } else {
+          this.crowdSettings.isHTTPS = false;
+        }
         this.saveInformationSource();
       }
     });
@@ -372,6 +377,10 @@ export class CrowdLabelerDetailsComponent
 
   getHover(color) {
     return `hover:bg-${color}-200`
+  }
+
+  copyToClipboard(textToCopy) {
+    navigator.clipboard.writeText(textToCopy);
   }
 
 }

@@ -6,6 +6,7 @@ export type CrowdLabelerHeuristicSettings = {
     accessLinkId: string;
     accessLink?: any;
     accessLinkParsed?: string;
+    isHTTPS?: boolean;
 };
 
 
