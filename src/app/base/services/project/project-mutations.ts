@@ -113,7 +113,7 @@ export const mutations = {
 
   DELETE_USER_ATTRIBUTE: gql`
     mutation($projectId:ID!,$attributeId:ID!){
-      deleteAttribute(projectId:$projectId,attributeId:$attributeId){
+      deleteUserAttribute(projectId:$projectId,attributeId:$attributeId){
         ok
       }
     }
