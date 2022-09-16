@@ -930,6 +930,19 @@ export class ProjectApolloService {
       ],
     });
   }
+  requestHuddleData(projectId: string, huddleId: string, huddleType: string) {
+    return this.apollo
+      .query({
+        query: queries.REQUEST_HUDDLE_DATA,
+        variables: {
+          projectId: projectId,
+          huddleId: huddleId,
+          huddleType: huddleType
+        },
+        fetchPolicy: 'no-cache',
+      })
+      .pipe(map((result) => result['data']['requestHuddleData']));
+  }
 
   getAccessLink(projectId: string, linkId: string) {
     return this.apollo

@@ -1,5 +1,11 @@
 <div *ngIf="user" class="h-full grid gap-0 bg-white" style="grid-template-rows: 65px minmax(auto,92%) 65px; "
     [ngClass]="somethingLoading?'wait':null">
+    <div *ngIf="roleAssumed" class="absolute left-0 right-0 flex items-center justify-center pointer-events-none"
+        style="top:17px;z-index:100">
+        <span class="inline-flex items-center px-2 py-0.5 rounded font-medium bg-red-100 text-red-800">
+            You are viewing this page as {{user.role}}
+        </span>
+    </div>
     <ng-container [ngTemplateOutlet]="navigationBar" [ngTemplateOutletContext]="{isBottom:false}">
     </ng-container>
     <ng-template #dummyDiv>
@@ -50,7 +56,7 @@
                                 [ngStyle]="{'display':isThisTheLabelImLookingFor(label.name,i,activeTask.taskType)?null:'none'}"
                                 [ngClass]="[getBackground(label.color), getText(label.color), getBorder(label.color), getHover(label.color)]">
                                 <div class="truncate" style="max-width: 260px;">{{label.name}}
-                                    <kbd *ngIf="label.hotkey && (displayUserId == GOLD_USER_ID || displayUserId == loggedInUser.id)"
+                                    <kbd *ngIf="label.hotkey && (displayUserId == GOLD_USER_ID || displayUserId == user.id)"
                                         class="ml-1 uppercase inline-flex items-center border bg-white border-gray-200 rounded px-2 text-sm font-sans font-medium text-gray-400">{{label.hotkey}}</kbd>
                                 </div>
                             </button>
@@ -235,7 +241,7 @@
 
                                                             <div class="flex flex-grow items-center">
                                                                 <!--first N options as buttons-->
-                                                                <div *ngIf="(displayUserId == GOLD_USER_ID || displayUserId == loggedInUser.id) && this.labelingTasksMap.get(task.id)"
+                                                                <div *ngIf="(displayUserId == GOLD_USER_ID || displayUserId == user.id) && this.labelingTasksMap.get(task.id)"
                                                                     class="flex flex-row"
                                                                     [ngClass]="[this.labelingTasksMap.get(task.id).labels.length && showNLabelButton?'':'hidden']">
                                                                     <button
@@ -245,7 +251,7 @@
                                                                         [ngClass]="[getBackground(label.color), getText(label.color), getBorder(label.color), getHover(label.color)]">
                                                                         <label
                                                                             class="leading-5 truncate max-w-xs cursor-pointer">{{label.name}}
-                                                                            <kbd *ngIf="label.hotkey && (displayUserId == GOLD_USER_ID || displayUserId == loggedInUser.id)"
+                                                                            <kbd *ngIf="label.hotkey && (displayUserId == GOLD_USER_ID || displayUserId == user.id)"
                                                                                 class="ml-1 uppercase inline-flex items-center border bg-white border-gray-200 rounded px-2 text-sm font-sans font-medium text-gray-400">{{label.hotkey}}</kbd>
                                                                         </label>
                                                                     </button>
@@ -253,7 +259,7 @@
                                                                 <!--Button with all posibilities and search-->
 
                                                                 <button data-tip="Choose from your labels"
-                                                                    *ngIf="(displayUserId == GOLD_USER_ID || displayUserId == loggedInUser.id)"
+                                                                    *ngIf="(displayUserId == GOLD_USER_ID || displayUserId == user.id)"
                                                                     (mouseup)="openLabelBoxForTask($event,task.id)"
                                                                     class="tooltip tooltip-top flex flex-row flex-nowrap bg-white text-gray-700 text-sm font-medium mr-3 px-2 py-0.5 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none">
                                                                     <span>other</span>
@@ -269,7 +275,7 @@
                                                                     <div *ngIf="rla.sourceType != LabelSourceType.INFORMATION_SOURCE || (rla.sourceType == LabelSourceType.INFORMATION_SOURCE && showInformationSourcesFlag)"
                                                                         [attr.data-tip]="rla.dataTip"
                                                                         class="tooltip table"
-                                                                        [ngClass]="(displayUserId == GOLD_USER_ID || displayUserId == loggedInUser.id)?'mt-3':null">
+                                                                        [ngClass]="(displayUserId == GOLD_USER_ID || displayUserId == user.id)?'mt-3':null">
                                                                         <ng-template
                                                                             [ngIf]="rla.sourceType != LabelSourceType.MANUAL"
                                                                             [ngIfElse]="displayNormalLabel">
@@ -334,7 +340,7 @@
                                                                                     {{rla.labelingTaskLabel.name}}
                                                                                 </div>
                                                                                 <label
-                                                                                    *ngIf="(displayUserId == GOLD_USER_ID || displayUserId == loggedInUser.id)"
+                                                                                    *ngIf="(displayUserId == GOLD_USER_ID || displayUserId == user.id)"
                                                                                     class="pl-1 cursor-pointer"
                                                                                     (click)="deleteRecordLabelAssociation($event,rla.id)">
                                                                                     <svg xmlns="http://www.w3.org/2000/svg"
@@ -778,7 +784,7 @@
                     <div class="text-sm leading-5 text-gray-500 flex-shrink-0 mr-3 my-3">
                         <div data-tip="If you reached the end, you can select new filters in the browser"
                             class="tooltip tooltip-bottom relative">
-                            {{sessionData?.currentPos}} / {{sessionData?.recordIds.length}} records in <span
+                            {{huddleData?.linkData.requestedPos}} / {{huddleData?.recordIds.length}} records in <span
                                 class="cursor-help underline"
                                 style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">current
                                 session</span>
@@ -786,7 +792,7 @@
                     </div>
                     <div class="tooltip tooltip-left" data-tip="Arrow left">
                         <button #previsousButton tabindex="0"
-                            [disabled]="!sessionData || sessionData.currentPos == 1 ?true:null"
+                            [disabled]="!huddleData || huddleData.linkData.requestedPos == 1 ?true:null"
                             [ngClass]="previsousButton.disabled ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
                             (click)="previousRecord()"
                             class="bg-white text-gray-700 text-xs font-semibold mr-3 px-4 py-1.5 rounded-md border border-gray-300 whitespace-nowrap inline-flex items-center hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Back
@@ -803,7 +809,7 @@
                     </div>
                     <div class="tooltip tooltip-left" data-tip="Arrow right">
                         <button #nextButton tabindex="0"
-                            [disabled]="!sessionData || !sessionData.recordIds || sessionData.currentPos >= sessionData.recordIds.length ?true:null"
+                            [disabled]="!huddleData || !huddleData.recordIds || huddleData.linkData.requestedPos >= huddleData.recordIds.length ?true:null"
                             [ngClass]="nextButton.disabled ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
                             (click)="nextRecord()"
                             class="bg-indigo-700 text-white text-xs font-semibold px-4 py-1.5 rounded-md cursor-pointer whitespace-nowrap inline-flex items-center hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Next
@@ -862,7 +868,7 @@
                     class="rounded-lg text-white pl-2 normal-case self-start border rounded-l-none text-sm leading-5 font-bold pr-1"
                     [ngClass]="[getBackground(exData.labelColor), getText(exData.labelColor), getBorder(exData.labelColor)]">
                     {{exData.labelDisplay}}
-                    <label *ngIf="(displayUserId == GOLD_USER_ID || displayUserId == loggedInUser.id)"
+                    <label *ngIf="(displayUserId == GOLD_USER_ID || displayUserId == user.id)"
                         class="p-1 pl-0 cursor-pointer"
                         (click)="deleteRecordLabelAssociation($event,exData.markedEntry.id)">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block stroke-current relative"

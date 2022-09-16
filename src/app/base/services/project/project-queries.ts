@@ -371,5 +371,19 @@ export const queries = {
       link
     }
   }
+`,
+  REQUEST_HUDDLE_DATA: gql`
+  query ($projectId: ID!, $huddleId: ID!, $huddleType: String!) {
+    requestHuddleData(projectId: $projectId, huddleId: $huddleId, huddleType: $huddleType) {
+      huddleId
+      recordIds
+      huddleType
+      startPos
+      allowedTask
+      canEdit
+    }
+  }
+  
 `
+
 };

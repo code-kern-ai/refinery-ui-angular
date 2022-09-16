@@ -7,13 +7,51 @@ export type labelingLinkData = {
     linkType: labelingLinkType;
 };
 
+export type labelingHuddle = {
+    recordIds: string[],
+    partial: boolean
+    linkData: labelingLinkData,
+    allowedTask: string,
+    canEdit: boolean
+};
+
 export enum labelingLinkType {
     SESSION = "SESSION",
     DATA_SLICE = "DATA_SLICE",
     HEURISTIC = "HEURISTIC"
 }
+export enum userRoles {
+    EXPERT = "EXPERT",
+    ANNOTATOR = "ANNOTATOR",
+    ENGINEER = "ENGINEER"
+}
+
+export function assumeUserRole(userRole: string, linkType: labelingLinkType): string {
+    if (userRole == "ANNOTATOR" || userRole == "EXPERT") return userRole;
+    switch (linkType) {
+        case labelingLinkType.DATA_SLICE:
+            return userRoles.EXPERT;
+        case labelingLinkType.HEURISTIC:
+            return userRoles.ANNOTATOR;
+        case labelingLinkType.SESSION:
+        default:
+            return userRoles.ENGINEER;
+    }
+}
+export function guessLinkType(userRole: string): string {
+    switch (userRole) {
+        case userRoles.EXPERT:
+            return labelingLinkType.DATA_SLICE;
+        case userRoles.ANNOTATOR:
+            return labelingLinkType.HEURISTIC;
+        case userRoles.ENGINEER:
+        default:
+            return labelingLinkType.SESSION;
+    }
+}
 
 function linkTypeFromStr(str: string): labelingLinkType {
+    if (!str) return labelingLinkType.SESSION;
     switch (str.toUpperCase()) {
         case "DATA_SLICE":
             return labelingLinkType.DATA_SLICE;

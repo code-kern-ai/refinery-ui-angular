@@ -30,7 +30,7 @@ import { NotificationApolloService } from 'src/app/base/services/notification/no
 import { dateAsUTCDate } from 'src/app/util/helper-functions';
 import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
 import { NotificationService } from 'src/app/base/services/notification.service';
-import { labelingLinkData, parseLabelingLinkData } from './labeling-helper';
+import { assumeUserRole, guessLinkType, labelingHuddle, labelingLinkData, parseLabelingLinkData } from './helper/labeling-helper';
 
 @Component({
   selector: 'kern-labeling',
@@ -45,7 +45,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
     return LabelingTask;
   }
   static LABEL_SEARCH_TEXT_DEFAULT = "Search label name...";
-  static DUMMY_SESSION_ID = "00000000-0000-0000-0000-000000000000";
+  static DUMMY_HUDDLE_ID = "00000000-0000-0000-0000-000000000000";
   static ALLOWED_KEYS = " 01234567890abcdefghijklmnopqrstuvwxyzöäüß<>|,.;:-_#'\"~+*?\\{}[]()=/&%$§!@^°€";
   GOLD_USER_ID = "GOLD_USER"; //not static to prevent call of getter on every cycle
   firstVisitGold: boolean = true;
@@ -62,7 +62,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
   dataSliceQuery$: any;
   dataSlices$: any;
 
-  loggedInUser: any;
+  user: any;
   displayUserId: any;
   rlaGroupMap: Map<string, any[]> = new Map<string, any[]>();
   userIcons: any[];
@@ -74,13 +74,14 @@ export class LabelingComponent implements OnInit, OnDestroy {
 
   showNLabelButton: Number = 5;
 
-  sessionData: {
-    recordIds: string[],
-    sessionId: string,
-    partial: boolean,
-    projectId: string,
-    currentPos: number
-  };
+  huddleData: labelingHuddle;
+  //  {
+  //   recordIds: string[],
+  //   sessionId: string,
+  //   partial: boolean,
+  //   projectId: string,
+  //   currentPos: number
+  // };
   sessionRequested: boolean = false;
   subscriptions$: Subscription[] = [];
   somethingLoading: boolean = true;
@@ -112,7 +113,6 @@ export class LabelingComponent implements OnInit, OnDestroy {
   showTokenDisabled: boolean = true;
   extendedDisplay: any = {};
   tokenOverlayData: any = {};
-  user: any;
 
   labelingTaskWait: boolean;
   labelingTasks$: any;
@@ -126,6 +126,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
 
 
   labelingLinkData: labelingLinkData;
+  roleAssumed: boolean = false;
 
   constructor(
     private router: Router,
@@ -147,21 +148,39 @@ export class LabelingComponent implements OnInit, OnDestroy {
 
 
   ngOnInit(): void {
-    this.routeService.updateActivatedRoute(this.activatedRoute);
-    this.labelingLinkData = parseLabelingLinkData(this.activatedRoute);
-    console.log(this.labelingLinkData);
+    this.initialSetupNoWait();
 
-    this.organizationService.getUserInfo().subscribe((user) => {
-      this.user = user;
-    });
+    // this.organizationService.getUserInfo().subscribe((user) => {
+    //   this.user = user;
+    // });
     //check id type
 
 
-    if (!this.labelingLinkData.id) {
-      this.router.navigate([LabelingComponent.DUMMY_SESSION_ID], { relativeTo: this.activatedRoute });
-      return;
-    }
+    console.log("init")
 
+    let initialTasks$ = [];
+    initialTasks$.push(this.prepareUser());
+    forkJoin(initialTasks$).pipe(first()).subscribe(() => {
+
+      console.log("user requested")
+      //user is set to null if a redirect is needed
+      if (!this.user) return;
+      let initialTasks$ = [];
+      initialTasks$.push(this.prepareProject(this.labelingLinkData.projectId));
+      initialTasks$.push(this.prepareLabelingTask(this.labelingLinkData.projectId));
+      initialTasks$.push(this.prepareSortOrder(this.labelingLinkData.projectId));
+      //wait for preparation tasks to finish
+      forkJoin(initialTasks$).pipe(first()).subscribe(() => this.verifyAndHandleQueryParams(this.labelingLinkData.projectId));
+    });
+
+
+
+
+  }
+
+  private initialSetupNoWait() {
+    this.routeService.updateActivatedRoute(this.activatedRoute);
+    this.labelingLinkData = parseLabelingLinkData(this.activatedRoute);
     const projectId = this.labelingLinkData.projectId;
 
     NotificationService.subscribeToNotification(this, {
@@ -170,18 +189,11 @@ export class LabelingComponent implements OnInit, OnDestroy {
       func: this.handleWebsocketNotification
     });
 
-    let initialTasks$ = [];
-    initialTasks$.push(this.prepareUser());
-    initialTasks$.push(this.prepareProject(projectId));
-    initialTasks$.push(this.prepareLabelingTask(projectId));
-    initialTasks$.push(this.prepareSortOrder(projectId));
-
-    //wait for preparation tasks to finish
-    forkJoin(initialTasks$).pipe(first()).subscribe(() => this.verifyAndHandleQueryParams(projectId));
     let tmp = localStorage.getItem("showNLabelButton");
     if (tmp) this.showNLabelButton = Number(tmp);
     let autoNextRecord = localStorage.getItem("autoNextRecord");
     if (autoNextRecord) this.autoNextRecord = autoNextRecord === 'true' ? true : false;
+
   }
 
   getWhiteListNotificationService(): string[] {
@@ -207,62 +219,85 @@ export class LabelingComponent implements OnInit, OnDestroy {
     localStorage.setItem("showNLabelButton", "" + this.showNLabelButton);
   }
 
-  prepareLabelingSession(projectId: string, sessionId: string, pos: number) {
+  prepareLabelingSession(projectId: string, huddleId: string, pos: number) {
     if (this.sessionRequested) return;
 
-    this.sessionData = JSON.parse(localStorage.getItem("sessionData"));
-    if (this.sessionData && !this.sessionData.partial
-      && this.sessionData.projectId == projectId
-      && (this.sessionData.sessionId == sessionId || sessionId == LabelingComponent.DUMMY_SESSION_ID)) {
+    this.huddleData = JSON.parse(localStorage.getItem("huddleData"));
+    if (this.huddleData && !this.huddleData.partial
+      && this.huddleData.linkData.projectId == projectId
+      && (this.huddleData.linkData.id == huddleId || huddleId == LabelingComponent.DUMMY_HUDDLE_ID)) {
       this.notificationApolloService.createNotification(projectId, "Continuation of your previous session.")
         .pipe(first())
         .subscribe();
     }
     //default handling
-    if (pos == null && this.sessionData?.currentPos) pos = this.sessionData.currentPos;
+    if (pos == null && this.huddleData?.linkData.requestedPos) pos = this.huddleData.linkData.requestedPos;
     if (pos == null) pos = 0;
-    if (sessionId == LabelingComponent.DUMMY_SESSION_ID && this.sessionData?.sessionId) sessionId = this.sessionData.sessionId;
+    if (huddleId == LabelingComponent.DUMMY_HUDDLE_ID && this.huddleData?.linkData.id) huddleId = this.huddleData.linkData.id;
 
     //request preparation
-    if (!this.sessionData || this.sessionData.sessionId != sessionId || this.sessionData.projectId != projectId) {
+    if (!this.huddleData || this.huddleData.linkData.id != huddleId || this.huddleData.linkData.projectId != projectId) {
       // no/old session data --> refetch
-      this.sessionData = null;
-      localStorage.removeItem("sessionData");
-      this.requestSessionData(projectId, sessionId);
+      this.huddleData = null;
+      localStorage.removeItem("huddleData");
+      this.requestHuddleData(projectId, huddleId);
 
-    } else if (this.sessionData.partial) {
+    } else if (this.huddleData.partial) {
       //collect remaining
-      this.requestSessionData(projectId, sessionId);
+      this.requestHuddleData(projectId, huddleId);
     }
-    if (this.sessionData) this.jumpToPosition(projectId, pos);
+    if (this.huddleData) this.jumpToPosition(projectId, pos);
 
     this.sessionRequested = true;
   }
 
-  requestSessionData(projectId: string, sessionId: string) {
-    const requestedPos = Number(this.activatedRoute.snapshot.queryParamMap.get("pos"));
+  requestHuddleData(projectId: string, sessionId: string) {
+    console.log("requesting huddle data")
+    if (sessionId != this.labelingLinkData.id) {
+      console.log("something wrong with session/huddle integration");
+      return
+    }
 
-    this.recordApolloService.getSessionBySessionId(projectId, sessionId)
-      .pipe(first()).subscribe((result) => {
-        const noDataCollectedYet = this.sessionData == null;
-        this.sessionData = {
-          recordIds: result.sessionRecordIds as string[],
-          partial: false,
-          sessionId: result.sessionId,
-          currentPos: requestedPos,
-          projectId: projectId,
-        }
-        localStorage.setItem('sessionData', JSON.stringify(this.sessionData));
+    this.projectApolloService.requestHuddleData(projectId, this.labelingLinkData.id, this.labelingLinkData.linkType).pipe(first()).subscribe((huddleData) => {
+      const noDataCollectedYet = this.huddleData == null;
+      this.labelingLinkData.requestedPos = huddleData.startPos;
+      this.huddleData = {
+        recordIds: huddleData.recordIds as string[],
+        partial: false,
+        linkData: this.labelingLinkData,
+        allowedTask: huddleData.allowedTask,
+        canEdit: huddleData.canEdit
+      }
+      console.log("huddledata", this.huddleData)
+
+      localStorage.setItem('huddleData', JSON.stringify(this.huddleData));
+
+      if (noDataCollectedYet) {
+        const pos = this.labelingLinkData.requestedPos;
+        this.jumpToPosition(projectId, pos);
+      }
+    });
 
 
-        if (noDataCollectedYet) {
-          this.jumpToPosition(projectId, this.sessionData.currentPos);
-        }
-      });
+    // this.recordApolloService.getSessionBySessionId(projectId, sessionId)
+    //   .pipe(first()).subscribe((result) => {
+    //     const noDataCollectedYet = this.huddleData == null;
+    //     this.huddleData = {
+    //       recordIds: result.sessionRecordIds as string[],
+    //       partial: false,
+    //       linkData: this.labelingLinkData
+    //     }
+    //     localStorage.setItem('huddleData', JSON.stringify(this.huddleData));
+
+
+    //     if (noDataCollectedYet) {
+    //       this.jumpToPosition(projectId, this.huddleData.linkData.requestedPos);
+    //     }
+    //   });
   }
 
   verifyAndHandleQueryParams(projectId: string) {
-
+    console.log("setup queries run")
     this.prepareLabelingSession(projectId, this.labelingLinkData.id, this.labelingLinkData.requestedPos);
     return
     const sessionId = this.activatedRoute.snapshot.paramMap.get("sessionId");
@@ -278,22 +313,22 @@ export class LabelingComponent implements OnInit, OnDestroy {
 
   }
   jumpToPosition(projectId: string, pos: number, setJumpHTMLItem: boolean = false) {
-    if (!this.sessionData || !this.sessionData.recordIds) return;
+    if (!this.huddleData || !this.huddleData.recordIds) return;
     if (pos % 1 != 0) pos = parseInt("" + pos);
     let jumpPos = String(pos).length == 0 ? 1 : pos;
     if (jumpPos <= 0) jumpPos = 1;
-    else if (jumpPos > this.sessionData.recordIds.length) jumpPos = this.sessionData.recordIds.length;
+    else if (jumpPos > this.huddleData.recordIds.length) jumpPos = this.huddleData.recordIds.length;
 
-    this.sessionData.currentPos = jumpPos;
-    localStorage.setItem('sessionData', JSON.stringify(this.sessionData));
+    this.huddleData.linkData.requestedPos = jumpPos;
+    localStorage.setItem('huddleData', JSON.stringify(this.huddleData));
 
     //ensure adress matches request
-    this.router.navigate(["../" + projectId + "/labeling/" + this.sessionData.sessionId],
-      { relativeTo: this.activatedRoute.parent, queryParams: { pos: jumpPos } });
+    this.router.navigate(["../" + projectId + "/labeling/" + this.labelingLinkData.id],
+      { relativeTo: this.activatedRoute.parent, queryParams: { pos: jumpPos, type: this.labelingLinkData.linkType } });
 
     this.resetDataToInitialTask();
     if (this.debounceTimer) this.debounceTimer.unsubscribe();
-    this.debounceTimer = timer(200).subscribe(() => this.collectRecordData(projectId, this.sessionData.recordIds[jumpPos - 1]));
+    this.debounceTimer = timer(200).subscribe(() => this.collectRecordData(projectId, this.huddleData.recordIds[jumpPos - 1]));
 
   }
   checkNumberInput($event) {
@@ -305,8 +340,19 @@ export class LabelingComponent implements OnInit, OnDestroy {
       .pipe(first());
 
     pipeFirst.subscribe((user) => {
-      this.loggedInUser = user;
+
+      if (!this.labelingLinkData.id) {
+        this.user = null;
+        const type = guessLinkType(user.role);
+        this.router.navigate([LabelingComponent.DUMMY_HUDDLE_ID], { relativeTo: this.activatedRoute, queryParams: { pos: 0, type: type }, });
+        return;
+      }
+      this.user = { ...user };
+      this.user.role = assumeUserRole(user.role, this.labelingLinkData.linkType);
+      this.roleAssumed = this.user.role != user.role;
       this.displayUserId = user.id;
+
+      console.log(this.user, this.roleAssumed)
     });
     return pipeFirst;
   }
@@ -483,7 +529,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
   }
 
   resetDataToInitialTask() {
-    this.displayUserId = this.loggedInUser.id;
+    this.displayUserId = this.user.id;
     this.userTaskGold.clear();
     this.rlaGroupMap = null;
     this.fullRecordData = null;
@@ -524,8 +570,8 @@ export class LabelingComponent implements OnInit, OnDestroy {
     this.recordData$ = this.recordApolloService.getRecordByRecordId(projectId, recordId)
       .pipe(first()).subscribe((recordData) => {
         if (!recordData) {
-          this.sessionData.recordIds[this.sessionData.currentPos - 1] = "deleted"
-          this.jumpToPosition(this.project.id, this.sessionData.currentPos)
+          this.huddleData.recordIds[this.huddleData.linkData.requestedPos - 1] = "deleted"
+          this.jumpToPosition(this.project.id, this.huddleData.linkData.requestedPos);
           return;
         }
         this.recordData = recordData;
@@ -885,9 +931,9 @@ export class LabelingComponent implements OnInit, OnDestroy {
       .pipe(first()).subscribe((r) => {
         if (r['data']['deleteRecord']?.ok) {
           this.recordData = null;
-          this.sessionData.recordIds[this.sessionData.currentPos - 1] = "deleted"
-          let jumpPos = this.sessionData.currentPos + 1;
-          if (jumpPos >= this.sessionData.recordIds.length) jumpPos -= 2;
+          this.huddleData.recordIds[this.huddleData.linkData.requestedPos - 1] = "deleted"
+          let jumpPos = this.huddleData.linkData.requestedPos + 1;
+          if (jumpPos >= this.huddleData.recordIds.length) jumpPos -= 2;
           this.jumpToPosition(this.project.id, jumpPos);
         } else {
           console.log("Something went wrong with deletion of record:" + this.fullRecordData.id);
@@ -896,12 +942,12 @@ export class LabelingComponent implements OnInit, OnDestroy {
   }
 
   nextRecord() {
-    this.sessionData.currentPos++;
-    this.jumpToPosition(this.project.id, this.sessionData.currentPos);
+    this.huddleData.linkData.requestedPos++;
+    this.jumpToPosition(this.project.id, this.huddleData.linkData.requestedPos);
   }
   previousRecord() {
-    this.sessionData.currentPos--;
-    this.jumpToPosition(this.project.id, this.sessionData.currentPos);
+    this.huddleData.linkData.requestedPos--;
+    this.jumpToPosition(this.project.id, this.huddleData.linkData.requestedPos);
   }
 
   dataToClear(): boolean {
@@ -971,7 +1017,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
     if (!(this.isCommentBoxOpen && ((target && target.id == 'commentInput') || !target))) {
       this.isCommentBoxOpen = false;
     }
-    if (!(this.displayUserId == this.GOLD_USER_ID || this.displayUserId == this.loggedInUser.id)) return;
+    if (!(this.displayUserId == this.GOLD_USER_ID || this.displayUserId == this.user.id)) return;
     this.checkLabelBlinker(event);
     //mouseup is fired before selection is updated --> wait 1 ms
     timer(1).subscribe(() => {
@@ -1019,7 +1065,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
 
   tokenMouseUp(event: MouseEvent, taskId) {
     if (!(event.target instanceof HTMLElement)) return;
-    if (!(this.displayUserId == this.GOLD_USER_ID || this.displayUserId == this.loggedInUser.id)) return;
+    if (!(this.displayUserId == this.GOLD_USER_ID || this.displayUserId == this.user.id)) return;
     event.stopPropagation();
 
     timer(1).subscribe(() => {
@@ -1233,11 +1279,11 @@ export class LabelingComponent implements OnInit, OnDestroy {
       } else {
         if (!this.rlaGroupMap.has(rla.createdBy)) {
           this.rlaGroupMap.set(rla.createdBy, []);
-          loggedInUserHasRlas = loggedInUserHasRlas || rla.createdBy == this.loggedInUser.id;
+          loggedInUserHasRlas = loggedInUserHasRlas || rla.createdBy == this.user.id;
           const avatarSelector = (rla.createdByShort.charCodeAt(0) + rla.createdByShort.charCodeAt(1)) % 5;
           this.userIcons.push({
             id: rla.createdBy,
-            order: rla.createdBy == this.loggedInUser.id ? 1 : 2,
+            order: rla.createdBy == this.user.id ? 1 : 2,
             initials: rla.createdByShort,
             name: rla.createdByName,
             avatarUri: "assets/avatars/" + avatarSelector + ".png"
@@ -1247,12 +1293,12 @@ export class LabelingComponent implements OnInit, OnDestroy {
       }
     }
     if (!loggedInUserHasRlas) {
-      const avatarSelector = (this.loggedInUser.firstName[0].charCodeAt(0) + this.loggedInUser.lastName[0].charCodeAt(0)) % 5;
+      const avatarSelector = (this.user.firstName[0].charCodeAt(0) + this.user.lastName[0].charCodeAt(0)) % 5;
       this.userIcons.push({
-        id: this.loggedInUser.id,
+        id: this.user.id,
         order: 1,
-        initials: this.loggedInUser.firstName[0] + this.loggedInUser.lastName[0],
-        name: this.loggedInUser.firstName + ' ' + this.loggedInUser.lastName,
+        initials: this.user.firstName[0] + this.user.lastName[0],
+        name: this.user.firstName + ' ' + this.user.lastName,
         avatarUri: "assets/avatars/" + avatarSelector + ".png"
       });
 
@@ -1401,10 +1447,10 @@ export class LabelingComponent implements OnInit, OnDestroy {
         [associationId]
       ).pipe(first())
       .subscribe();
-    if (this.loggedInUser.id != this.displayUserId) {
+    if (this.user.id != this.displayUserId) {
       if (this.fullRecordData.recordLabelAssociations.length == 0 ||
         (this.fullRecordData.recordLabelAssociations.length == 1 && this.fullRecordData.recordLabelAssociations[0].id == associationId)) {
-        this.showUserData(this.loggedInUser.id);
+        this.showUserData(this.user.id);
       }
     }
   }
@@ -1658,8 +1704,8 @@ export class LabelingComponent implements OnInit, OnDestroy {
     }
     else if (msgParts[1] == 'record_deleted') {
       if (msgParts[2] == this.recordData?.id) {
-        this.sessionData.recordIds[this.sessionData.currentPos - 1] = "deleted"
-        this.jumpToPosition(this.project.id, this.sessionData.currentPos);
+        this.huddleData.recordIds[this.huddleData.linkData.requestedPos - 1] = "deleted"
+        this.jumpToPosition(this.project.id, this.huddleData.linkData.requestedPos);
       }
     } else if (msgParts[1] == 'attributes_updated') {
       this.attributesQuery$.refetch();
