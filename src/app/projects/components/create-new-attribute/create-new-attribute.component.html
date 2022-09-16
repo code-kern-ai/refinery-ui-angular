@@ -81,13 +81,14 @@
                             <div class="modal-box">
                                 <h1 class="text-lg text-gray-900 mb-2">Attribute calculation</h1>
                                 <div class="text-sm text-gray-500 my-2">
-                                    
+                                    This action changes the status of the attribute to usable and if that is executed, the attribute cannot be changed anymore.
+                                    <p>If you run into an error, you can get a more detailed info about the error in the logs and change the attribute function.</p>
                                 </div>
 
                                 <div class="modal-action text-center mt-0">
                                     <button [disabled]="!canRunProject" data-tip="Execute the attribute on all records"
                                         [ngClass]="!canRunProject ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
-                                        class="bg-red-100 text-red-700 border border-red-400 text-xs font-semibold mr-2 px-4 py-2 rounded flex cursor-pointer inline-block hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                                        class="bg-green-100 text-green-700 border border-green-400 text-xs font-semibold mr-2 px-4 py-2 rounded flex cursor-pointer inline-block hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
                                         (click)="calculateUserAttributeAllRecords()">Execute</button>
                                     <label [for]="'attribute-calculation'"
                                         class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer inline-block hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Close</label>

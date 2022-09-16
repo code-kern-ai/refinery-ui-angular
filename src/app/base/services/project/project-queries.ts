@@ -387,7 +387,7 @@ export const queries = {
   query($projectId: ID!, $attributeId: ID!){
     calculateUserAttributeSampleRecords(projectId: $projectId, attributeId: $attributeId) {
       recordIds
-      calculatesAttributes 
+      calculatedAttributes 
     }
   }
   `,
