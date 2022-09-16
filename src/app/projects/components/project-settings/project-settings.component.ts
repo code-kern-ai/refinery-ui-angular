@@ -13,6 +13,7 @@ import { HttpClient } from '@angular/common/http';
 import { S3Service } from 'src/app/import/services/s3.service';
 import { WeakSourceApolloService } from 'src/app/base/services/weak-source/weak-source-apollo.service';
 import { ConfigManager } from 'src/app/base/services/config-service';
+import { AttributeCalculationExamples, AttributeCodeLookup } from '../create-new-attribute/new-attribute-code-lookup';
 
 @Component({
   selector: 'kern-project-settings',
@@ -1004,6 +1005,8 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
   }
 
   createUserAttribute() {
+    const templateSourceCode = AttributeCodeLookup.getAttributeCalculationTemplate(AttributeCalculationExamples.AC_EMPTY_TEMPLATE);
+    console.log(templateSourceCode)
     this.projectApolloService
       .createUserAttribute(this.project.id)
       .pipe(first())

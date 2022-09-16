@@ -383,10 +383,10 @@ export const queries = {
     }
   }
   `,
-  CALCULATED_USER_ATTRIBUTE_SAMPLE_RECORDS: gql`
+  CALCULATE_USER_ATTRIBUTE_SAMPLE_RECORDS: gql`
   query($projectId: ID!, $attributeId: ID!){
     calculateUserAttributeSampleRecords(projectId: $projectId, attributeId: $attributeId) {
-      record_ids
+      recordIds
       calculatesAttributes 
     }
   }

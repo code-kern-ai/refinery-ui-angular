@@ -199,7 +199,7 @@ export const mutations = {
     } 
   }
   `,
-  CALCULATED_USER_ATTRIBUTE_ALL_RECORDS: gql`
+  CALCULATE_USER_ATTRIBUTE_ALL_RECORDS: gql`
   mutation($projectId: ID!, $attributeId: ID!){
     calculateUserAttributeAllRecords(projectId: $projectId, attributeId: $attributeId) {
       ok

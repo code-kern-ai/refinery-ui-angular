@@ -983,7 +983,7 @@ export class ProjectApolloService {
   calculateUserAttributeSampleRecords(projectId: string, attributeId: string) {
     return this.apollo
       .query({
-        query: queries.CALCULATED_USER_ATTRIBUTE_SAMPLE_RECORDS,
+        query: queries.CALCULATE_USER_ATTRIBUTE_SAMPLE_RECORDS,
         variables: {
           projectId: projectId,
           attributeId: attributeId,
@@ -995,7 +995,7 @@ export class ProjectApolloService {
 
   calculateUserAttributeAllRecords(projectId: string, attributeId: string) {
     return this.apollo.mutate({
-      mutation: mutations.CALCULATED_USER_ATTRIBUTE_ALL_RECORDS,
+      mutation: mutations.CALCULATE_USER_ATTRIBUTE_ALL_RECORDS,
       variables: {
         projectId: projectId,
         attributeId: attributeId

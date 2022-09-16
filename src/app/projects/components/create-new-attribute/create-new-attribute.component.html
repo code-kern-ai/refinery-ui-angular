@@ -71,12 +71,28 @@
                             </button>
                         </div>
                         <div data-tip="Execute the attribute on all records" class="tooltip tooltip-left">
-                            <button [disabled]="!canRunProject" data-tip="Execute the attribute on all records"
-                                [ngClass]="!canRunProject ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
-                                (click)="runAttributeAllRecords()"
+                            <label [for]="'attribute-calculation'"
                                 class="bg-indigo-700 text-white text-xs leading-4 font-semibold px-4 py-2 rounded-md cursor-pointer ml-3 hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                                 Run
-                            </button>
+                            </label>
+                        </div>
+                        <input type="checkbox" [id]="'attribute-calculation'" class="modal-toggle">
+                        <div class="modal text-center items-center">
+                            <div class="modal-box">
+                                <h1 class="text-lg text-gray-900 mb-2">Attribute calculation</h1>
+                                <div class="text-sm text-gray-500 my-2">
+                                    
+                                </div>
+
+                                <div class="modal-action text-center mt-0">
+                                    <button [disabled]="!canRunProject" data-tip="Execute the attribute on all records"
+                                        [ngClass]="!canRunProject ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
+                                        class="bg-red-100 text-red-700 border border-red-400 text-xs font-semibold mr-2 px-4 py-2 rounded flex cursor-pointer inline-block hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                                        (click)="calculateUserAttributeAllRecords()">Execute</button>
+                                    <label [for]="'attribute-calculation'"
+                                        class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer inline-block hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Close</label>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
