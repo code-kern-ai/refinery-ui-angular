@@ -376,7 +376,7 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
   areInformationSourcesSelected(informationSources: any[], onlyValid: boolean) {
     const selected = informationSources.filter((i) => i.selected).length;
     if (onlyValid) {
-      const selectedFinished = informationSources.filter((i) => i.selected && i?.state == 'FINISHED').length;
+      const selectedFinished = informationSources.filter((i) => i.selected && ['FINISHED', 'STARTED'].includes(i?.state)).length;
       return selected > 0 && selected == selectedFinished;
     }
     return selected > 0;

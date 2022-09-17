@@ -169,7 +169,7 @@
                                 isDisabled:annotators.length == 0
                             }" (optionClicked)="changeSettings('annotatorId',$event)">
                             </kern-dropdown>
-                            <p class="px-2"> is going to work on slice </p>
+                            Annotator <p class="px-2"> is going to work on slice </p>
                             <kern-dropdown [dropdownOptions]="{
                                 optionArray:dataSlices,
                                 buttonCaption:crowdSettings.dataSliceId?sliceLookup[crowdSettings.dataSliceId]?.name:'Select slice',
