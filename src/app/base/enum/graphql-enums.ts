@@ -32,6 +32,7 @@ export function informationSourceTypeToString(source: InformationSourceType, sho
             case InformationSourceType.ACTIVE_LEARNING: return short ? "AL" : "Active Learning module";
             case InformationSourceType.PRE_COMPUTED: return short ? "PC" : "Pre Computed module";
             case InformationSourceType.ZERO_SHOT: return short ? "ZS" : "Zero Shot module";
+            case InformationSourceType.CROWD_LABELER: return short ? "CL" : "Crowd labeler";
             default: return source;
         }
     }
@@ -42,6 +43,7 @@ export enum LabelingTask {
     //BINARY_CLASSIFICATION = "BINARY_CLASSIFICATION", // Currently diabled
     MULTICLASS_CLASSIFICATION = "MULTICLASS_CLASSIFICATION",
     INFORMATION_EXTRACTION = "INFORMATION_EXTRACTION",
+    NOT_USEABLE = "NOT_USEABLE", //e.g. for annotators who can only use one task
     NOT_SET = "NOT_SET"
 }
 

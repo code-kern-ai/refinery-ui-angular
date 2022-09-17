@@ -8,10 +8,10 @@ import {
   FormControl,
   FormGroup,
 } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { KeyValue } from '@angular/common';
 import { combineLatest, forkJoin, interval, Observable, Subscription, timer } from 'rxjs';
-import { dateAsUTCDate } from 'src/app/util/helper-functions';
+import { dateAsUTCDate, requestUserAndRedirect } from 'src/app/util/helper-functions';
 import {
   debounceTime,
   distinctUntilChanged,
@@ -194,7 +194,8 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     private projectApolloService: ProjectApolloService,
     private recordApolloService: RecordApolloService,
     private organizationApolloService: OrganizationApolloService,
-    public formBuilder: FormBuilder
+    public formBuilder: FormBuilder,
+    private router: Router
   ) { }
 
   ngOnDestroy(): void {
@@ -203,6 +204,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    requestUserAndRedirect(this.router, this.organizationApolloService);
     this.routeService.updateActivatedRoute(this.activatedRoute);
 
     this.projectId = this.activatedRoute.parent.snapshot.paramMap.get('projectId');
@@ -231,7 +233,10 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       whitelist: this.getWhiteListNotificationService(),
       func: this.handleWebsocketNotification
     });
+
   }
+
+
 
   getWhiteListNotificationService(): string[] {
     let toReturn = ['label_created', 'label_deleted', 'attributes_updated'];

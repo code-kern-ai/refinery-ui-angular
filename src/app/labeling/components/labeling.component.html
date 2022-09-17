@@ -1,10 +1,10 @@
 <div *ngIf="user" class="h-full grid gap-0 bg-white" style="grid-template-rows: 65px minmax(auto,92%) 65px; "
     [ngClass]="somethingLoading?'wait':null">
-    <div *ngIf="roleAssumed" class="absolute left-0 right-0 flex items-center justify-center pointer-events-none"
+    <div *ngIf="huddleData && (roleAssumed || !huddleData.canEdit)"
+        class="absolute left-0 right-0 flex items-center justify-center pointer-events-none"
         style="top:17px;z-index:100">
         <span class="inline-flex items-center px-2 py-0.5 rounded font-medium bg-red-100 text-red-800">
-            You are viewing this page as {{user.role}}
-        </span>
+            You are viewing this page as {{user.role}} you are not able to edit </span>
     </div>
     <ng-container [ngTemplateOutlet]="navigationBar" [ngTemplateOutletContext]="{isBottom:false}">
     </ng-container>
@@ -444,7 +444,7 @@
 
 </div>
 <ng-template #setAsGoldStar let-task="task">
-    <div class="tooltip tooltip-top self-center"
+    <div *ngIf="user.role=='ENGINEER'" class="tooltip tooltip-top self-center"
         [attr.data-tip]="userTaskGold.get(displayUserId).get(task.id).isGold?'Remove as gold label':'Set as gold label'">
         <div class="cursor-pointer mt-0.5"
             (click)="toggleGoldStar(task.id,userTaskGold.get(displayUserId).get(task.id))">
@@ -778,12 +778,14 @@
             <div class="flex flex-row flex-nowrap items-center">
                 <div *ngIf="!isBottom" class="flex justify-center overflow-visible items-center">
                     <div class="text-sm leading-5 text-gray-500 flex-shrink-0 mr-3 my-3">
-                        <div data-tip="If you reached the end, you can select new filters in the browser"
+                        <div [attr.data-tip]="user.role=='ENGINEER'?'If you reached the end, you can select new filters in the browser':'Slices can be changed by the engineer in your team'"
                             class="tooltip tooltip-bottom relative">
                             {{huddleData?.linkData.requestedPos}} / {{huddleData?.recordIds.length}} records in <span
                                 class="cursor-help underline"
-                                style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">current
-                                session</span>
+                                style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">
+                                {{user.role=='ENGINEER' ? 'current session':'current slice'}}
+
+                            </span>
                         </div>
                     </div>
                     <div class="tooltip tooltip-left" data-tip="Arrow left">

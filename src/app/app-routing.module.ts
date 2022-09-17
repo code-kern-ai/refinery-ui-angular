@@ -55,7 +55,7 @@ const routes: Routes = [
       { path: 'settings', component: ProjectSettingsComponent, data: { name: 'ProjectSettingsComponent' } },
       { path: 'labeling', component: LabelingComponent, data: { name: 'LabelingComponent' } },
       { path: 'labeling/:id', component: LabelingComponent, data: { name: 'LabelingComponent' } },
-      { path: 'record-ide/:sessionId', component: RecordIDEComponent, data: { name: 'RecordIDEComponent' } },
+      { path: 'record-ide/:id', component: RecordIDEComponent, data: { name: 'RecordIDEComponent' } },
       { path: 'knowledge-base', component: KnowledgeBasesComponent, data: { name: 'KnowledgeBasesComponent' } },
       {
         path: 'knowledge-base/:knowledgeBaseId',
