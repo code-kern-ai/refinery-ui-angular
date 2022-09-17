@@ -815,7 +815,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
         md.tokenStartIdx == null
       )
         continue;
-      if ((md.sourceType != sourceToDisplay && md.sourceId != this.getSourceId()) && md.sourceType != sourceOverLay)
+      if (md.sourceType != sourceToDisplay && md.sourceType != sourceOverLay)
         continue;
       const attributeId = md.labelingTaskLabel.labelingTask.attribute.id;
       let att = this.getTokenizedAttribute(task.id, attributeId);
@@ -831,7 +831,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
         let token = this.getToken(att, i);
         token.addInfoKey = task.id + '_T' + String(token.idx).padStart(5, '0');
         this.extendedDisplay[key].token.push(token);
-        if (md.sourceType == sourceToDisplay || md.sourceId == this.getSourceId()) token.extendDisplay = true;
+        if (md.sourceType == sourceToDisplay) token.extendDisplay = true;
         else {
           token.overlayDisplay = true;
 
@@ -911,6 +911,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
       token: [],
     };
   }
+
   resetTokenizedRecord() {
     if (!this.hasTokenData()) return;
     for (let [key, value] of this.labelingTasksMap.entries()) {
