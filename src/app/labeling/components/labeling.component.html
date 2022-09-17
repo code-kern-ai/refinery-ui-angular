@@ -270,12 +270,12 @@
                                                             </div>
                                                             <div>
                                                                 <ng-template ngFor let-rla [ngForOf]="taskLabels">
-                                                                    <div *ngIf="rla.sourceType != LabelSourceType.INFORMATION_SOURCE || (rla.sourceType == LabelSourceType.INFORMATION_SOURCE && showInformationSourcesFlag) || rla.sourceId == sourceId"
+                                                                    <div *ngIf="rla.sourceType != LabelSourceType.INFORMATION_SOURCE || (rla.sourceType == LabelSourceType.INFORMATION_SOURCE && showInformationSourcesFlag)"
                                                                         [attr.data-tip]="rla.dataTip"
                                                                         class="tooltip table"
                                                                         [ngClass]="(displayUserId == GOLD_USER_ID || displayUserId == user.id)?'mt-3':null">
                                                                         <ng-template
-                                                                            [ngIf]="rla.sourceType != LabelSourceType.MANUAL && rla.sourceId != sourceId"
+                                                                            [ngIf]="rla.sourceType != LabelSourceType.MANUAL"
                                                                             [ngIfElse]="displayNormalLabel">
                                                                             <ng-template
                                                                                 [ngIf]="rla.sourceType == LabelSourceType.WEAK_SUPERVISION"
@@ -305,8 +305,6 @@
                                                                                     {{getLabelForDisplay(rla.labelingTaskLabel.name,rla.confidence)}}
                                                                                 </div>
                                                                             </ng-template>
-
-
                                                                             <ng-template #displayCallback>
                                                                                 <div *ngIf="user?.role == 'ENGINEER'"
                                                                                     class="inline-flex items-center text-sm font-medium mr-3 px-2 py-0.5 rounded-md border border-dashed mr-2 pr-2 cursor-default"

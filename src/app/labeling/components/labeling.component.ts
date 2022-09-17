@@ -587,11 +587,23 @@ export class LabelingComponent implements OnInit, OnDestroy {
     this.recordLabelAssociations$ = this.recordLabelAssociations$
       .subscribe((recordLabelAssociations) => {
         if (!recordLabelAssociations) return;
+
+        recordLabelAssociations.forEach((rla) => {
+          if (rla.sourceId == this.sourceId) {
+            console.log("WASSUP")
+            rla.sourceType = LabelSource.MANUAL;
+            rla.sourceId = null;
+          }
+        });
+
         this.extendRecordLabelAssociations(recordLabelAssociations);
         this.parseRlaToGroups(recordLabelAssociations)
         this.prepareFullRecord();
         this.prepareInformationExtractionDisplay();
         this.somethingLoading = false;
+
+        console.log("JOJOJOJO")
+        console.log(this.fullRecordData);
       });
   }
 
@@ -1581,21 +1593,11 @@ export class LabelingComponent implements OnInit, OnDestroy {
     if (!this.fullRecordData) return [];
     let found = [];
     for (let rla of this.fullRecordData.recordLabelAssociations) {
-      if (this.sourceId == null) {
-        if (
-          rla.labelingTaskLabel.labelingTask.id == taskId &&
-          rla.sourceType != LabelSource.INFORMATION_SOURCE
-        )
-          found.push(rla);
-      } else {
-        if (
-          rla.labelingTaskLabel.labelingTask.id == taskId &&
-          rla.sourceType == LabelSource.INFORMATION_SOURCE &&
-          rla.sourceId == this.sourceId
-        )
-          found.push(rla);
-      }
-
+      if (
+        rla.labelingTaskLabel.labelingTask.id == taskId &&
+        rla.sourceType != LabelSource.INFORMATION_SOURCE
+      )
+        found.push(rla);
     }
     return found;
   }
