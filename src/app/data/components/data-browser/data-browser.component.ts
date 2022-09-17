@@ -630,7 +630,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     let array = this.formBuilder.array([]);
     for (let l of task.informationSources) {
       if (l.type == InformationSourceType.LABELING_FUNCTION || l.type == InformationSourceType.ACTIVE_LEARNING
-        || l.type == InformationSourceType.ZERO_SHOT || l.type === undefined) {
+        || l.type == InformationSourceType.ZERO_SHOT || l.type == InformationSourceType.CROWD_LABELER || l.type === undefined) {
         array.push(
           this.formBuilder.group({
             id: l.id,
