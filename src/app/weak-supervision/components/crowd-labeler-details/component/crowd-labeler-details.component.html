@@ -18,6 +18,10 @@
                         {{informationSource.name}}</div>
 
                     <kern-heuristic-statuses [status]="status"></kern-heuristic-statuses>
+
+                    <progress *ngIf="informationSource.lastTask as task" class="m-2 progress progress-primary w-36"
+                        [value]="task.progress" max="1">
+                    </progress>
                 </div>
             </div>
         </div>
