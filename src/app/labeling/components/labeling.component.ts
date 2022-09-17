@@ -833,6 +833,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
         this.extendedDisplay[key].token.push(token);
         if (md.sourceType == sourceToDisplay) token.extendDisplay = true;
         else {
+          if (this.getSourceId() != null) continue;
           token.overlayDisplay = true;
 
           let overlayData = {
