@@ -845,7 +845,8 @@ export class LabelingComponent implements OnInit, OnDestroy {
             labelId: md.labelingTaskLabel.id,
             labelDisplay: this.getLabelForDisplay(
               md.labelingTaskLabel.name,
-              md.confidence
+              md.confidence,
+              sourceOverLay == LabelSource.MANUAL
             ),
             labelColor: md.labelingTaskLabel.color
           };
@@ -870,8 +871,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
       }
     }
 
-    //set overlays know if extention is needed
-
+    //set overlays now if extention is needed
     for (let md of this.fullRecordData.recordLabelAssociations) {
       if (md.sourceType != sourceToDisplay || (!md.tokenStartIdx && md.tokenStartIdx != 0)) continue;
       const attributeId = md.labelingTaskLabel.labelingTask.attribute.id;
@@ -885,7 +885,8 @@ export class LabelingComponent implements OnInit, OnDestroy {
           if (!e.isLast) {
             e.labelAddition = this.getLabelForDisplay(
               md.labelingTaskLabel.name,
-              md.confidence
+              md.confidence,
+              sourceToDisplay == LabelSource.MANUAL
             );
           }
         }
@@ -906,7 +907,8 @@ export class LabelingComponent implements OnInit, OnDestroy {
       taskId: taskId,
       labelDisplay: this.getLabelForDisplay(
         markedData.labelingTaskLabel.name,
-        markedData.confidence
+        markedData.confidence,
+        markedData.sourceType != sourceOverLay
       ),
       labelColor: markedData.labelingTaskLabel.color,
       token: [],
@@ -1658,13 +1660,11 @@ export class LabelingComponent implements OnInit, OnDestroy {
     return style;
   }
 
-  getLabelForDisplay(labelName: string, confidence: number) {
-    return (
-      labelName +
-      (confidence || confidence == 0
-        ? ' - ' + Math.round((confidence + Number.EPSILON) * 10000) / 100 + '%'
-        : '')
-    );
+  getLabelForDisplay(labelName: string, confidence: number, isManual: boolean) {
+    if (isManual) {
+      return labelName;
+    }
+    return labelName + " - " + Math.round((confidence + Number.EPSILON) * 10000) / 100 + '%';
   }
 
   displayEntryAsJSON(dataEntry, like = '') {
