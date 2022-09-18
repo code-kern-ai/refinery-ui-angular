@@ -775,9 +775,13 @@ export class LabelingComponent implements OnInit, OnDestroy {
           let overlayData = {
             token: token,
             group: key,
+            tokenStartIdx: md.tokenStartIdx,
+            tokenEndIdx: md.tokenEndIdx,
+            value: md.value,
             isFirst: i == md.tokenStartIdx,
             isLast: i == md.tokenEndIdx,
             labelName: md.labelingTaskLabel.name,
+            labelingTaskId: md.labelingTaskLabel.labelingTask.id,
             labelId: md.labelingTaskLabel.id,
             labelDisplay: this.getLabelForDisplay(
               md.labelingTaskLabel.name,
@@ -1389,7 +1393,31 @@ export class LabelingComponent implements OnInit, OnDestroy {
     }
   }
 
+  addLabelToMarkedTextFromSuggestion(overlayData) {
+    const dataEntry = {
+      startIdx: overlayData.tokenStartIdx,
+      endIdx: overlayData.tokenEndIdx,
+      value: overlayData.value,
+    };
+
+    this.somethingLoading = true;
+    this.recordApolloService
+      .addExtractionLabelToRecord(
+        this.project.id,
+        this.fullRecordData.id,
+        overlayData.labelingTaskId,
+        dataEntry.startIdx,
+        dataEntry.endIdx,
+        dataEntry.value,
+        overlayData.labelId,
+        this.displayUserId == this.GOLD_USER_ID ? true : null
+      )
+      .pipe(first())
+      .subscribe();
+  }
+
   addLabelToMarkedText(taskId: string, labelId: string) {
+
     if (!this.selectionJSON) return;
     if (this.selectionJSON.error) return;
 
@@ -1420,7 +1448,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
       )
       .pipe(first())
       .subscribe();
-      
+
   }
 
   addLabelToTask(labelingTaskId: string, labelId: string) {
