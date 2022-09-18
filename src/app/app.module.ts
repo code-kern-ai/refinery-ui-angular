@@ -24,6 +24,7 @@ import { NotificationCenterModule } from './notification-center/notification-cen
 import { RecordIDEModule } from './record-ide/record-ide.module';
 import { ModelDownloadModule } from './model-download/model-download.module';
 import { ModelCallbackModule } from './model-callbacks/model-callbacks.module';
+import { UsersModule } from './users/users.module';
 
 @NgModule({
   declarations: [AppComponent],
@@ -33,6 +34,7 @@ import { ModelCallbackModule } from './model-callbacks/model-callbacks.module';
     BaseModule,
     DataModule,
     ProjectsModule,
+    UsersModule,
     ImportModule,
     MonitorModule,
     GraphQLModule,

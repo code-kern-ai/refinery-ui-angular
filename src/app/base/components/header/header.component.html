@@ -80,6 +80,20 @@
             </div>
 
             <div class="flex items-center justify-center">
+                <a [routerLink]="['/users']" class="flex mr-6 tooltip tooltip-left" data-tip="Home page - Users">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hexagons" width="24"
+                        height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                        <path d="M4 18v-5l4 -2l4 2v5l-4 2z"></path>
+                        <path d="M8 11v-5l4 -2l4 2v5"></path>
+                        <path d="M12 13l4 -2l4 2v5l-4 2l-4 -2"></path>
+                    </svg>
+                </a>
+            </div>
+
+
+            <div class="flex items-center justify-center">
                 <a [routerLink]="['/notification-center']" class="flex mr-6 tooltip tooltip-left"
                     data-tip="Notification center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-bell" width="24"

@@ -1,0 +1,410 @@
+<div class="h-screen bg-gray-100 flex overflow-hidden">
+    <kern-sidebar-pm (firstName)="getFirstName($event)">
+    </kern-sidebar-pm>
+    <!-- Content area -->
+    <div class="h-full w-full flex-1 flex flex-col">
+        <kern-header [user]="user$ | async" [organizationName]="organizationName"
+            [organizationInactive]="organizationInactive" [avatarUri]="avatarUri" page="projects"></kern-header>
+
+        <div class="bg-white h-full overflow-y-auto">
+
+            <!-- show team -->
+            <ng-container *ngIf="!organizationInactive && isManaged">
+                <div>
+                    <div class="mx-auto max-w-7xl py-12 px-4 sm:px-6 lg:px-8 lg:py-24">
+                        <div class="grid grid-cols-1 gap-12 lg:grid-cols-3 lg:gap-8">
+                            <div class="space-y-5 sm:space-y-4">
+                                <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">Engineering team</h2>
+                                <p class="text-xl text-gray-500">People in your organization with full access to all
+                                    parts of <span class="font-dmMono">refinery</span> to automate workflows and
+                                    identify critical data slices. They have access to the Python SDK.</p>
+                            </div>
+                            <div class="lg:col-span-2">
+                                <div role="list"
+                                    class="space-y-12 sm:grid sm:grid-cols-2 sm:gap-12 sm:space-y-0 lg:gap-x-8">
+                                    <div *ngFor="let user of engineers">
+                                        <div class="flex items-center space-x-4 lg:space-x-6">
+                                            <img class="h-16 w-16 rounded-full lg:h-20 lg:w-20" [src]="user.avatarUri"
+                                                alt="">
+                                            <div class="space-y-1 text-lg font-medium leading-6">
+                                                <h3>{{user.firstName}} {{user.lastName}}</h3>
+                                                <p class="text-indigo-600">{{user.mail}}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-4 space-y-5 sm:space-y-4">
+                                <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">Domain experts team</h2>
+                                <p class="text-xl text-gray-500">They help you define gold-set reference manual labels
+                                    you can use for estimating the data quality of the training data. They have access
+                                    to the labeling view, and their labels will be considered as regular manual labels.
+                                </p>
+                            </div>
+                            <div class="lg:col-span-2">
+                                <ul role="list"
+                                    class="space-y-12 sm:grid sm:grid-cols-2 sm:gap-12 sm:space-y-0 lg:gap-x-8">
+                                    <div *ngFor="let user of experts">
+                                        <div class="flex items-center space-x-4 lg:space-x-6">
+                                            <img class="h-16 w-16 rounded-full lg:h-20 lg:w-20" [src]="user.avatarUri"
+                                                alt="">
+                                            <div class="space-y-1 text-lg font-medium leading-6">
+                                                <h3>{{user.firstName}} {{user.lastName}}</h3>
+                                                <p class="text-indigo-600">{{user.mail}}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ul>
+                            </div>
+                            <div class="mt-4 space-y-5 sm:space-y-4">
+                                <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">Annotator team</h2>
+                                <p class="text-xl text-gray-500">Annotators that you can assign only via crowd labeling
+                                    heuristics. Their labeling will be viewed as silver-set labeling, i.e. as noisy and
+                                    imperfect.</p>
+                            </div>
+                            <div class="lg:col-span-2">
+                                <ul role="list"
+                                    class="space-y-12 sm:grid sm:grid-cols-2 sm:gap-12 sm:space-y-0 lg:gap-x-8">
+                                    <div *ngFor="let user of annotators">
+                                        <div class="flex items-center space-x-4 lg:space-x-6">
+                                            <img class="h-16 w-16 rounded-full lg:h-20 lg:w-20" [src]="user.avatarUri"
+                                                alt="">
+                                            <div class="space-y-1 text-lg font-medium leading-6">
+                                                <h3>{{user.firstName}} {{user.lastName}}</h3>
+                                                <p class="text-indigo-600">{{user.mail}}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ng-container>
+
+            <!-- show pricing and options -->
+            <ng-container *ngIf="!organizationInactive && !isManaged">
+                <!-- This example requires Tailwind CSS v2.0+ -->
+                <div class="bg-white h-full">
+                    <div class="mx-auto max-w-7xl py-8 px-4 sm:px-6 lg:px-8">
+                        <div class="sm:align-center sm:flex sm:flex-col">
+                            <h1 class="text-5xl font-bold tracking-tight text-gray-900 sm:text-center"><span
+                                    class="font-dmMono">refinery</span> options
+                            </h1>
+                            <p class="mt-5 text-xl text-gray-500 sm:text-center">Other than our open-source version you
+                                are using right now, we offer the following options.</p>
+
+                        </div>
+                        <div
+                            class="mt-12 space-y-4 sm:mt-16 sm:grid sm:grid-cols-2 sm:gap-6 sm:space-y-0 lg:mx-auto lg:max-w-4xl xl:mx-0 xl:max-w-none xl:grid-cols-3">
+
+                            <div class="divide-y divide-gray-200 rounded-lg border border-gray-200 shadow-sm">
+                                <div class="p-6">
+                                    <h2 class="text-lg font-medium leading-6 text-gray-900">Managed cloud</h2>
+                                    <p class="mt-4 text-sm text-gray-500">Use <span class="font-dmMono">refinery</span>
+                                        online with your team.</p>
+                                    <!-- <p class="mt-8">
+                                        <span class="text-4xl font-bold tracking-tight text-gray-900">$24</span>
+                                        <span class="text-base font-medium text-gray-500">/mo</span>
+                                    </p> -->
+                                    <a href="https://www.kern.ai/pricing/options"
+                                        class="mt-8 block w-full rounded-md border border-gray-800 bg-gray-800 py-2 text-center text-sm font-semibold text-white hover:bg-gray-900">Check
+                                        our options</a>
+                                </div>
+                                <div class="px-6 pt-6 pb-8">
+                                    <h3 class="text-sm font-medium text-gray-900">What's included</h3>
+                                    <ul role="list" class="mt-6 space-y-4">
+                                        <li class="flex space-x-3">
+                                            <!-- Heroicon name: mini/check -->
+                                            <svg class="h-5 w-5 flex-shrink-0 text-green-500"
+                                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                                fill="currentColor" aria-hidden="true">
+                                                <path fill-rule="evenodd"
+                                                    d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                            <span class="text-sm text-gray-500">Managed for you on our scalable cloud,
+                                                accelerated via GPU. </span>
+                                        </li>
+                                        <li class="flex space-x-3">
+                                            <!-- Heroicon name: mini/check -->
+                                            <svg class="h-5 w-5 flex-shrink-0 text-green-500"
+                                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                                fill="currentColor" aria-hidden="true">
+                                                <path fill-rule="evenodd"
+                                                    d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                            <span class="text-sm text-gray-500">Multi-user capabilities.</span>
+                                        </li>
+                                        <li class="flex space-x-3">
+                                            <!-- Heroicon name: mini/check -->
+                                            <svg class="h-5 w-5 flex-shrink-0 text-green-500"
+                                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                                fill="currentColor" aria-hidden="true">
+                                                <path fill-rule="evenodd"
+                                                    d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                            <span class="text-sm text-gray-500">Expert support.
+                                            </span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="divide-y divide-gray-200 rounded-lg border border-gray-200 shadow-sm">
+                                <div class="p-6">
+                                    <h2 class="text-lg font-medium leading-6 text-gray-900">Enterprise</h2>
+                                    <p class="mt-4 text-sm text-gray-500">On-prem deployment and consultation by our
+                                        experts.</p>
+                                    <!-- <p class="mt-8">
+                                        <span class="text-4xl font-bold tracking-tight text-gray-900">$32</span>
+                                        <span class="text-base font-medium text-gray-500">/mo</span>
+                                    </p> -->
+                                    <a href="https://www.kern.ai/pricing/options"
+                                        class="mt-8 block w-full rounded-md border border-gray-800 bg-gray-800 py-2 text-center text-sm font-semibold text-white hover:bg-gray-900">Check
+                                        our options</a>
+                                </div>
+                                <div class="px-6 pt-6 pb-8">
+                                    <h3 class="text-sm font-medium text-gray-900">What's included</h3>
+                                    <ul role="list" class="mt-6 space-y-4">
+                                        <li class="flex space-x-3">
+                                            <!-- Heroicon name: mini/check -->
+                                            <svg class="h-5 w-5 flex-shrink-0 text-green-500"
+                                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                                fill="currentColor" aria-hidden="true">
+                                                <path fill-rule="evenodd"
+                                                    d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                            <span class="text-sm text-gray-500">Multi-user capabilities.
+                                            </span>
+                                        </li>
+
+                                        <li class="flex space-x-3">
+                                            <!-- Heroicon name: mini/check -->
+                                            <svg class="h-5 w-5 flex-shrink-0 text-green-500"
+                                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                                fill="currentColor" aria-hidden="true">
+                                                <path fill-rule="evenodd"
+                                                    d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                            <span class="text-sm text-gray-500">Dedicated support.</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="divide-y divide-gray-200 rounded-lg border border-gray-200 shadow-sm">
+                                <div class="p-6">
+                                    <h2 class="text-lg font-medium leading-6 text-gray-900">Labeling services</h2>
+                                    <p class="mt-4 text-sm text-gray-500">For the managed cloud and
+                                        enterprise solution.</p>
+                                    <!-- <p class="mt-8">
+                                        <span class="text-4xl font-bold tracking-tight text-gray-900">$48</span>
+                                        <span class="text-base font-medium text-gray-500">/mo</span>
+                                    </p> -->
+                                    <a href="https://www.kern.ai/pricing/options"
+                                        class="mt-8 block w-full rounded-md border border-gray-800 bg-gray-800 py-2 text-center text-sm font-semibold text-white hover:bg-gray-900">Check
+                                        our options</a>
+                                </div>
+                                <div class="px-6 pt-6 pb-8">
+                                    <h3 class="text-sm font-medium text-gray-900">What's included</h3>
+                                    <ul role="list" class="mt-6 space-y-4">
+                                        <li class="flex space-x-3">
+                                            <!-- Heroicon name: mini/check -->
+                                            <svg class="h-5 w-5 flex-shrink-0 text-green-500"
+                                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                                fill="currentColor" aria-hidden="true">
+                                                <path fill-rule="evenodd"
+                                                    d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                            <span class="text-sm text-gray-500">Integrated directly in <span
+                                                    class="font-dmMono">refinery</span></span>
+                                        </li>
+
+                                        <li class="flex space-x-3">
+                                            <!-- Heroicon name: mini/check -->
+                                            <svg class="h-5 w-5 flex-shrink-0 text-green-500"
+                                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                                fill="currentColor" aria-hidden="true">
+                                                <path fill-rule="evenodd"
+                                                    d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                            <span class="text-sm text-gray-500">Full insight into labeling quality and
+                                                coverage.</span>
+                                        </li>
+
+                                        <li class="flex space-x-3">
+                                            <!-- Heroicon name: mini/check -->
+                                            <svg class="h-5 w-5 flex-shrink-0 text-green-500"
+                                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                                fill="currentColor" aria-hidden="true">
+                                                <path fill-rule="evenodd"
+                                                    d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                            <span class="text-sm text-gray-500">For all available labeling tasks in
+                                                <span class="font-dmMono">refinery</span>.</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </ng-container>
+
+            <!-- show waiting zone -->
+            <ng-container *ngIf="organizationInactive && isManaged">
+                <div class="h-screen relative bg-white overflow-hidden">
+                    <div class="hidden lg:block lg:absolute lg:inset-0" aria-hidden="true">
+                        <svg class="h-screen absolute top-0 left-1/2 transform translate-x-64 -translate-y-8"
+                            width="640" height="784" fill="none" viewBox="0 0 640 784">
+                            <defs>
+                                <pattern id="9ebea6f4-a1f5-4d96-8c4e-4c2abf658047" x="118" y="0" width="20" height="20"
+                                    patternUnits="userSpaceOnUse">
+                                    <rect x="0" y="0" width="4" height="4" class="text-gray-200" fill="currentColor" />
+                                </pattern>
+                            </defs>
+                            <rect y="72" width="640" height="640" class="text-gray-50" fill="currentColor" />
+                            <rect x="118" width="404" height="784" fill="url(#9ebea6f4-a1f5-4d96-8c4e-4c2abf658047)" />
+                        </svg>
+                    </div>
+                    <div class="relative pt-6 pb-16 sm:pb-24 lg:pb-32">
+                        <main class="mt-16 mx-auto max-w-7xl px-4 sm:mt-24 sm:px-6 lg:mt-32">
+                            <div class="lg:grid lg:grid-cols-12 lg:gap-8">
+                                <div class="sm:text-center md:max-w-2xl md:mx-auto lg:col-span-6 lg:text-left">
+                                    <div class="text-gray-500 font-semibold text-base uppercase">We’re setting up your
+                                        organization
+                                    </div>
+                                    <div class="font-extrabold text-gray-900 text-5xl mt-1">
+                                        A team member is <span class="text-green-800">preparing your account</span>
+                                    </div>
+                                    <div class="font-normal text-xl text-gray-500 mt-5">
+                                        In the meantime, feel free to take a look at a product demo or check out our
+                                        <a href="https://docs.kern.ai/" target="_blank"><span
+                                                class="underline cursor-pointer">documentation</span></a>. If you have
+                                        any
+                                        questions, you can reach out to us.
+                                    </div>
+                                </div>
+                                <div style="width:560px;height:315px" class="overflow-hidden relative">
+                                    <ng-template [ngIf]="saveUrl" [ngIfElse]="showPicture">
+                                        <iframe width="560" height="315" [src]="saveUrl" title="YouTube video player"
+                                            frameborder="0" autoplay="1"
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                            allowfullscreen></iframe>
+
+                                    </ng-template>
+                                    <ng-template #showPicture>
+                                        <div>
+                                            <img class="w-full" src="assets/thumbnail.jpg" alt="">
+
+                                            <span
+                                                class="absolute inset-0 w-full h-full flex items-center justify-center"
+                                                aria-hidden="true">
+                                                <svg class="cursor-pointer h-20 w-20 text-indigo-500"
+                                                    fill="currentColor" (click)="startPlayback()" viewBox="0 0 84 84">
+                                                    <circle opacity="0.9" cx="42" cy="42" r="42" fill="white" />
+                                                    <path
+                                                        d="M55.5039 40.3359L37.1094 28.0729C35.7803 27.1869 34 28.1396 34 29.737V54.263C34 55.8604 35.7803 56.8131 37.1094 55.9271L55.5038 43.6641C56.6913 42.8725 56.6913 41.1275 55.5039 40.3359Z" />
+                                                </svg>
+                                            </span>
+                                        </div>
+                                    </ng-template>
+                                </div>
+                            </div>
+                        </main>
+                    </div>
+                </div>
+            </ng-container>
+
+            <!-- should not occur as local users are directly assigned to localhost org -->
+            <ng-container *ngIf="organizationInactive && !isManaged">
+                <div class="h-screen relative bg-white overflow-hidden">
+                    <div class="hidden lg:block lg:absolute lg:inset-0" aria-hidden="true">
+                        <svg class="h-screen absolute top-0 left-1/2 transform translate-x-64 -translate-y-8"
+                            width="640" height="784" fill="none" viewBox="0 0 640 784">
+                            <defs>
+                                <pattern id="9ebea6f4-a1f5-4d96-8c4e-4c2abf658047" x="118" y="0" width="20" height="20"
+                                    patternUnits="userSpaceOnUse">
+                                    <rect x="0" y="0" width="4" height="4" class="text-gray-200" fill="currentColor" />
+                                </pattern>
+                            </defs>
+                            <rect y="72" width="640" height="640" class="text-gray-50" fill="currentColor" />
+                            <rect x="118" width="404" height="784" fill="url(#9ebea6f4-a1f5-4d96-8c4e-4c2abf658047)" />
+                        </svg>
+                    </div>
+                    <div class="relative pt-6 pb-16 sm:pb-24 lg:pb-32">
+                        <main class="mt-16 mx-auto max-w-7xl px-4 sm:mt-24 sm:px-6 lg:mt-32">
+                            <div class="lg:grid lg:grid-cols-12 lg:gap-8">
+                                <div class="sm:text-center md:max-w-2xl md:mx-auto lg:col-span-6 lg:text-left">
+                                    <div class="text-gray-500 font-semibold text-base uppercase">
+                                        {{ canCreateOrg ? 'Preparing your account' : 'Maximum number of users reached'
+                                        }}
+                                    </div>
+                                    <div class="font-extrabold text-gray-900 text-5xl mt-1">
+                                        <ng-template [ngIf]="canCreateOrg" [ngIfElse]="cannotCreateOrg">
+                                            Currently <span class="text-green-800">preparing your account</span>
+                                        </ng-template>
+                                        <ng-template #cannotCreateOrg>
+                                            <span class="text-green-800">Only one user </span>is allowed
+                                        </ng-template>
+                                    </div>
+                                    <div class="font-normal text-xl text-gray-500 mt-5">
+                                        <ng-template [ngIf]="canCreateOrg" [ngIfElse]="premiumVersion">
+                                            In the meantime, feel free to take a look at a product demo or check out our
+                                            <a href="https://docs.kern.ai/" target="_blank"><span
+                                                    class="underline cursor-pointer">documentation</span></a>. If you
+                                            have
+                                            any
+                                            questions, you can reach out to us.
+                                        </ng-template>
+                                        <ng-template #premiumVersion>
+                                            If you are interested in working with multiple users take a look at our <a
+                                                href="https://kern.ai/pricing" target="_blank"><span
+                                                    class="underline cursor-pointer">managed version</span></a>.
+                                        </ng-template>
+
+                                    </div>
+                                </div>
+                                <div style="width:560px;height:315px" class="overflow-hidden relative">
+                                    <ng-template [ngIf]="saveUrl" [ngIfElse]="showPicture">
+                                        <iframe width="560" height="315" [src]="saveUrl" title="YouTube video player"
+                                            frameborder="0" autoplay="1"
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                            allowfullscreen></iframe>
+
+                                    </ng-template>
+                                    <ng-template #showPicture>
+                                        <div>
+                                            <img class="w-full" src="assets/thumbnail.jpg" alt="">
+
+                                            <span
+                                                class="absolute inset-0 w-full h-full flex items-center justify-center"
+                                                aria-hidden="true">
+                                                <svg class="cursor-pointer h-20 w-20 text-indigo-500"
+                                                    fill="currentColor" (click)="startPlayback()" viewBox="0 0 84 84">
+                                                    <circle opacity="0.9" cx="42" cy="42" r="42" fill="white" />
+                                                    <path
+                                                        d="M55.5039 40.3359L37.1094 28.0729C35.7803 27.1869 34 28.1396 34 29.737V54.263C34 55.8604 35.7803 56.8131 37.1094 55.9271L55.5038 43.6641C56.6913 42.8725 56.6913 41.1275 55.5039 40.3359Z" />
+                                                </svg>
+                                            </span>
+                                        </div>
+                                    </ng-template>
+                                </div>
+                            </div>
+                        </main>
+                    </div>
+                </div>
+            </ng-container>
+        </div>
+
+    </div>
+</div>
