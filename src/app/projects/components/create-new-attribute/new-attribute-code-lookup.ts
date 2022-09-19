@@ -5,15 +5,15 @@ export enum AttributeCalculationExamples {
 }
 
 export class AttributeCodeLookup {
-    private static templateEnumArray = [];
-
-    static getAttributeCalculationTemplate(l: AttributeCalculationExamples, name: string) {
+    static getAttributeCalculationTemplate(l: AttributeCalculationExamples) {
         switch (l) {
             case AttributeCalculationExamples.AC_EMPTY_TEMPLATE:
                 return {
-                   code: `def `+ name + ` (record):
-    #     return "hello world"
-`}
+                    code: `def ac(record):
+# e.g.
+#     return "hello world"
+                `}
         }
     }
+
 }

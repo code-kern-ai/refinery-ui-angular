@@ -961,6 +961,8 @@ export class ProjectApolloService {
     const vc = query.valueChanges.pipe(
       map((result) => {
         return result['data']['attributeByAttributeId'];
+      }, error => {
+        console.log(error)
       })
     );
     return [query, vc];

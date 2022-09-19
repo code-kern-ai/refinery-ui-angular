@@ -39,6 +39,7 @@ export class CreateNewAttributeComponent implements OnInit {
   sampleRecords: any;
   code: string = '';
   @ViewChild('calculateAttribite', { read: ElementRef }) calculateAttribite: ElementRef;
+  updatedThroughWebsocket: boolean = false;
 
   constructor( 
     private activatedRoute: ActivatedRoute,
@@ -87,8 +88,7 @@ export class CreateNewAttributeComponent implements OnInit {
   }
 
   getWhiteListNotificationService(): string[] {
-    // TODO: add all notifications that are part of the component
-    let toReturn = [];
+    let toReturn = ['attributes_updated'];
     return toReturn;
   }
 
@@ -116,18 +116,30 @@ export class CreateNewAttributeComponent implements OnInit {
       this.attribute = attribute;
       this.attributeName = this.attribute.name;
       this.code = this.attribute.sourceCode;
-      if (this.code == null) {
-        this.code = AttributeCodeLookup.getAttributeCalculationTemplate(AttributeCalculationExamples.AC_EMPTY_TEMPLATE, this.attributeName).code;
+      if(this.attribute.sourceCode == null) { 
+        this.code = AttributeCodeLookup.getAttributeCalculationTemplate(AttributeCalculationExamples.AC_EMPTY_TEMPLATE).code;
+      } else {
+        this.code = this.code.replace(
+          'def ac(record):',
+          'def ' + this.attribute.name + '(record):'
+        );
       }
+     
       this.attributeLogs = this.attribute.logs;
       this.canRunProject = this.attribute.sourceCode !== '';
+      timer(250).subscribe(() => this.updatedThroughWebsocket = false);
     }));
   }
 
   openName(open: boolean, projectId) {
     this.nameOpen = open;
     if (!open && this.attributeName != this.attribute.name) {
-      this.code = AttributeCodeLookup.getAttributeCalculationTemplate(AttributeCalculationExamples.AC_EMPTY_TEMPLATE, this.attributeName).code;
+      var regMatch: any = this.getPythonFunctionRegExMatch(this.code);
+        if (!regMatch) return;
+        this.code = this.code.replace(
+          regMatch[0],
+          'def ' + this.attributeName + '(record)'
+        );
       this.saveAttribute(projectId);
     }
   }
@@ -141,9 +153,9 @@ export class CreateNewAttributeComponent implements OnInit {
   }
 
   saveAttribute(projectId: string) {
-   
+    if (this.updatedThroughWebsocket) return;
     this.projectApolloService
-      .updateAttribute(projectId, this.attribute.id, this.attribute.dataType, this.attribute.isPrimaryKey, this.attributeName, this.code)
+      .updateAttribute(projectId, this.attribute.id, this.attribute.dataType, this.attribute.isPrimaryKey, this.attributeName, this.getPythonFunctionToSave(this.code))
       .pipe(first())
       .subscribe();
   }
@@ -176,7 +188,15 @@ export class CreateNewAttributeComponent implements OnInit {
 
   hasUnsavedChanges(): boolean {
     if (!this.attribute) return false;
-    if (this.attributeName != this.attribute.name || this.code != this.attribute.sourceCode) return true;
+    if (this.updatedThroughWebsocket) return false;
+    if (this.attributeName != this.attribute.name) return true;
+    if (this.attribute.sourceCode == null) return true;
+    if (
+      this.code !=
+      this.attribute.sourceCode.replace(
+        'def ac(record):',
+        'def ' + this.attribute.name + '(record):'
+      )) return true;
     return false;
   }
 
@@ -207,7 +227,14 @@ export class CreateNewAttributeComponent implements OnInit {
   }
 
   handleWebsocketNotification(msgParts) {
-    // TO DO: handle websocket notification (depends on which notifications are subscribed to)
+    if(msgParts[1]=='attributes_updated') {
+      this.updatedThroughWebsocket = true;
+      this.attributeQuery$.refetch();
+      this.code = this.code.replace(
+        'def ac(record):',
+        'def ' + this.attribute.name + '(record):'
+      );
+    }
   }
 
   copyClicked: Number = -1;
@@ -238,6 +265,5 @@ export class CreateNewAttributeComponent implements OnInit {
   getPythonFunctionRegExMatch(codeToCheck: string): any {
     return /(def)\s(\w+)\([a-zA-Z0-9_:\[\]=, ]*\)/.exec(codeToCheck);
   }
-
 
 }
