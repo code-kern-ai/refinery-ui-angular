@@ -98,12 +98,14 @@
                                         </td>
                                         <td class="text-center px-3 py-2 text-sm text-gray-500">
                                             <button [routerLink]="['../attributes/' + attributeContainer.get('id').value]" *ngIf="attributeContainer.get('userCreated').value"
-                                                class="h4 w-4 m-auto block"
-                                                style="padding:0px"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 m-auto"
-                                                fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                            </svg></button>
+                                                class="text-green-800 text-sm font-medium">
+                                                <span class="leading-5">Details</span>
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block" fill="none"
+                                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                                                </svg>
+                                            </button> 
                                         </td>
                                     </tr>
                                 </tbody>
@@ -115,6 +117,15 @@
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-2 mt-1 align-top">
                 <div class="items-center flex flex-row">
+                    <button (click)="createUserAttribute()"
+                        data-tip="Add new attribute"
+                        class="tooltip tooltip-bottom mr-1 inline-flex items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 h-5 w-5 inline-block stroke-current" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        Add new attibute
+                    </button>
                     <button [routerLink]="['../add']" data-tip="Upload more records to the project"
                         class="tooltip tooltip-right mr-1 inline-flex items-center px-2.5 py-2 border border-gray-300 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none cursor-pointer">
                         <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 h-4 w-4" fill="none" viewBox="0 0 24 24"
@@ -267,15 +278,6 @@
                             </div>
                         </div>
                     </div>
-                    <button (click)="createUserAttribute()"
-                        data-tip="Add new attribute"
-                        class="tooltip tooltip-bottom inline-flex items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none cursor-pointer">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 h-5 w-5 inline-block stroke-current" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                        </svg>
-                        Add new attibute
-                    </button>
                 </div>
 
                 <div class="text-left lg:text-right">

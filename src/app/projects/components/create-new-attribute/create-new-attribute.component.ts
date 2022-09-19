@@ -41,6 +41,8 @@ export class CreateNewAttributeComponent implements OnInit {
   @ViewChild('calculateAttribite', { read: ElementRef }) calculateAttribite: ElementRef;
   updatedThroughWebsocket: boolean = false;
   checkIfNewAttribute: string;
+  attributesQuery$: any;
+  attributes: any;
 
   constructor( 
     private activatedRoute: ActivatedRoute,
@@ -55,8 +57,12 @@ export class CreateNewAttributeComponent implements OnInit {
     this.checkIfNewAttribute = JSON.parse(localStorage.getItem("isNewAttribute"));
     const project$ = this.projectApolloService.getProjectById(projectId);
 
-    project$.pipe(first()).subscribe((project) => this.project = project);
-    this.prepareAttributes(projectId, attributeId);
+    let tasks$ = [];
+    tasks$.push(this.prepareAttributes(projectId));
+    tasks$.push(project$.pipe(first()));
+
+    this.subscriptions$.push(project$.subscribe((project) => this.project = project));
+    combineLatest(tasks$).subscribe(() => this.prepareAttribute(projectId,attributeId));
 
     NotificationService.subscribeToNotification(this, {
       projectId: projectId,
@@ -87,7 +93,7 @@ export class CreateNewAttributeComponent implements OnInit {
   }
 
   getWhiteListNotificationService(): string[] {
-    let toReturn = ['attributes_updated'];
+    let toReturn = ['attributes_updated','calculate_attribute'];
     return toReturn;
   }
 
@@ -109,7 +115,7 @@ export class CreateNewAttributeComponent implements OnInit {
     this.stickyObserver.observe(toObserve)
   }
 
-  prepareAttributes(projectId: string, attributeId: string) {
+  prepareAttribute(projectId: string, attributeId: string) {
     [this.attributeQuery$, this.attribute$] = this.projectApolloService.getAttributeByAttributeId(projectId, attributeId);
     this.subscriptions$.push(this.attribute$.subscribe((attribute) => {
       this.attribute = attribute;
@@ -227,12 +233,16 @@ export class CreateNewAttributeComponent implements OnInit {
     this.projectApolloService
     .calculateUserAttributeAllRecords(this.project.id, this.attribute.id)
     .pipe(first())
-    .subscribe(() => this.calculateAttribite.nativeElement.checked = false);
+    .subscribe(() => {
+      this.calculateAttribite.nativeElement.checked = false;
+    });
   }
 
   handleWebsocketNotification(msgParts) {
     if(msgParts[1]=='attributes_updated') {
       this.updatedThroughWebsocket = true;
+      this.attributeQuery$.refetch();
+    } else if(msgParts[1]=='calculate_attribute') {
       this.attributeQuery$.refetch();
     }
   }
@@ -271,6 +281,16 @@ export class CreateNewAttributeComponent implements OnInit {
 
   getPythonFunctionRegExMatch(codeToCheck: string): any {
     return /(def)\s(\w+)\([a-zA-Z0-9_:\[\]=, ]*\)/.exec(codeToCheck);
+  }
+
+  prepareAttributes(projectId: string) {
+    let attributes$;
+    [this.attributesQuery$, attributes$] = this.projectApolloService.getAttributesByProjectId(projectId);
+    this.subscriptions$.push(attributes$.subscribe((attributes) => {
+      attributes.sort((a, b) => a.relativePosition - b.relativePosition);
+      this.attributes = attributes;
+    }));
+    return attributes$;
   }
 
 }
