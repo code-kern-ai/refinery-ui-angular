@@ -230,10 +230,6 @@ export class CreateNewAttributeComponent implements OnInit {
     if(msgParts[1]=='attributes_updated') {
       this.updatedThroughWebsocket = true;
       this.attributeQuery$.refetch();
-      this.code = this.code.replace(
-        'def ac(record):',
-        'def ' + this.attribute.name + '(record):'
-      );
     }
   }
 

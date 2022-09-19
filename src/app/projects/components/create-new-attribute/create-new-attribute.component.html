@@ -13,6 +13,9 @@
                         <span class="leading-5">Go back</span>
                     </button>
 
+                    <div *ngIf="!isHeaderNormal" class="mx-4 text-sm leading-5 font-medium text-gray-500 inline-block">
+                        {{attribute.name}}</div>
+
                     <kern-heuristic-statuses [status]="attribute.state"></kern-heuristic-statuses>
 
                 </div>
@@ -20,7 +23,7 @@
         </div>
 
         <div class="overflow-x-hidden overflow-y-hidden">
-            <div class="grid gap-4 grid-cols-2" >
+            <div class="grid gap-4" [ngClass]="isHeaderNormal ? 'grid-cols-2' : 'grid-cols-1'">
                 <div class="flex items-center mt-2" *ngIf="isHeaderNormal">
                     <div class="tooltip tooltip-right" data-tip="Edit your attribute's name">
                         <button [disabled]="attribute.state == 'USABLE'"
@@ -84,8 +87,8 @@
                             <kern-loading color="indigo"></kern-loading>
                         </div>
                         <div data-tip="Execute the attribute on 10 records" class="tooltip tooltip-left">
-                            <button [disabled]="testerRequestedSomething || attribute.state=='USABLE'"
-                                [ngClass]="testerRequestedSomething || attribute.state=='USABLE' ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
+                            <button [disabled]="hasUnsavedChanges() || attribute.state=='USABLE' || testerRequestedSomething"
+                                [ngClass]="hasUnsavedChanges() || attribute.state=='USABLE' || testerRequestedSomething ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
                                 (click)="calculateUserAttributeSampleRecords()"
                                 class="bg-white text-gray-700 text-xs font-semibold px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                                 Run on 10
@@ -108,8 +111,8 @@
                                 </div>
 
                                 <div class="modal-action text-center mt-0">
-                                    <button [disabled]="!canRunProject" data-tip="Execute the attribute on all records"
-                                        [ngClass]="!canRunProject ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
+                                    <button [disabled]="!canRunProject || hasUnsavedChanges() || testerRequestedSomething" data-tip="Execute the attribute on all records"
+                                        [ngClass]="!canRunProject || hasUnsavedChanges() || testerRequestedSomething ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
                                         class="bg-green-100 text-green-700 border border-green-400 text-xs font-semibold mr-2 px-4 py-2 rounded flex cursor-pointer inline-block hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
                                         (click)="calculateUserAttributeAllRecords()">Execute</button>
                                     <label [for]="'attribute-calculation'"
