@@ -140,6 +140,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
     if (this.recordLabelAssociations$) this.recordLabelAssociations$.unsubscribe();
     this.subscriptions$.forEach(element => element.unsubscribe());
     if (this.project) NotificationService.unsubscribeFromNotification(this, this.project.id)
+    if (this.roleAssumed) localStorage.removeItem("huddleData");
   }
 
 
@@ -550,9 +551,9 @@ export class LabelingComponent implements OnInit, OnDestroy {
     this.recordLabelAssociations$ = this.recordLabelAssociations$
       .subscribe((recordLabelAssociations) => {
         if (!recordLabelAssociations) return;
-        this.prepareRLADataForRole(recordLabelAssociations);
-        this.extendRecordLabelAssociations(recordLabelAssociations);
-        this.parseRlaToGroups(recordLabelAssociations)
+        let rlaData = this.prepareRLADataForRole(recordLabelAssociations);
+        this.extendRecordLabelAssociations(rlaData);
+        this.parseRlaToGroups(rlaData)
         this.prepareFullRecord();
         this.prepareInformationExtractionDisplay();
         this.somethingLoading = false;
@@ -560,7 +561,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
       });
   }
 
-  prepareRLADataForRole(rlaData: any[]) {
+  prepareRLADataForRole(rlaData: any[]): any[] {
     if (this.user.role == "ANNOTATOR") {
       rlaData.forEach((rla) => {
         if (rla.sourceId && rla.sourceId == this.getSourceId()) {
@@ -570,9 +571,9 @@ export class LabelingComponent implements OnInit, OnDestroy {
           rla.id = "irrelevant";
         }
       });
-      rlaData = rlaData.filter(rla => rla.id != "irrelevant");
+      return rlaData.filter(rla => rla.id != "irrelevant");
     }
-
+    return rlaData;
   }
 
   getTokenizedRecord(recordId: string, fullRefresh: boolean = false) {
