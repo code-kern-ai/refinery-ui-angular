@@ -1002,7 +1002,14 @@ export class ProjectApolloService {
       variables: {
         projectId: projectId,
         attributeId: attributeId
-      },
+      },refetchQueries: [
+        {
+          query: queries.GET_ATTRIBUTE_BY_ATTRIBUTE_ID,
+          variables: {
+            projectId: projectId,
+          },
+        },
+      ],
     });
   }
 

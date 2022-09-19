@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { RouteService } from 'src/app/base/services/route.service';
@@ -38,6 +38,7 @@ export class CreateNewAttributeComponent implements OnInit {
   canRunProject: boolean = false;
   sampleRecords: any;
   code: string = '';
+  @ViewChild('calculateAttribite', { read: ElementRef }) calculateAttribite: ElementRef;
 
   constructor( 
     private activatedRoute: ActivatedRoute,
@@ -202,7 +203,7 @@ export class CreateNewAttributeComponent implements OnInit {
     this.projectApolloService
     .calculateUserAttributeAllRecords(this.project.id, this.attribute.id)
     .pipe(first())
-    .subscribe();
+    .subscribe(() => this.calculateAttribite.nativeElement.checked = false);
   }
 
   handleWebsocketNotification(msgParts) {

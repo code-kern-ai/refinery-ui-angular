@@ -12,21 +12,26 @@
                         </svg>
                         <span class="leading-5">Go back</span>
                     </button>
+
+                    <kern-heuristic-statuses [status]="attribute.state"></kern-heuristic-statuses>
+
                 </div>
             </div>
         </div>
 
         <div class="overflow-x-hidden overflow-y-hidden">
-            <div class="grid gap-4 " [ngClass]="isHeaderNormal ? 'grid-cols-2' : 'grid-cols-1'">
+            <div class="grid gap-4 grid-cols-2" >
                 <div class="flex items-center mt-2" *ngIf="isHeaderNormal">
-                    <button [disabled]="attribute.state == 'USABLE'"
-                        [ngClass]="attribute.state == 'USABLE' ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
-                        (click)="openName(true)" data-tip="Edit your attribute's name"
-                        class="tooltip tooltip-right flex-shrink-0 bg-white text-gray-700 text-xs font-semibold mr-3 px-4 py-2 rounded-md border border-gray-300 block float-left hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                        Edit name
-                    </button>
-
-                    <div class="inline-block" (dblclick)="openName(true)" class="inline-flex w-full">
+                    <div class="tooltip tooltip-right" data-tip="Edit your attribute's name">
+                        <button [disabled]="attribute.state == 'USABLE'"
+                            [ngClass]="attribute.state == 'USABLE' ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
+                            (click)="openName(true)"
+                            class="flex-shrink-0 bg-white text-gray-700 text-xs font-semibold mr-3 px-4 py-2 rounded-md border border-gray-300 block float-left hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            Edit name
+                        </button>
+                    </div>
+                    
+                    <div class="inline-block" (dblclick)="openName(true)">
                         <ng-template [ngIf]="isNameOpen() && attribute.state!='USABLE'" [ngIfElse]="displayName">
                             <input #nameArea type="text" class="p-2 flex-grow input input-sm"
                                 (input)="changeAttributeName($event)" (blur)="openName(false,project.id)"
@@ -38,6 +43,14 @@
                                 {{attribute.name}}</div>
                         </ng-template>
                     </div>
+                </div>
+
+                <div class="flex items-center mt-2 ml-auto">
+                    <a href="https://github.com/code-kern-ai/refinery-ac-exec-env/blob/initial-implementation/requirements.txt" target="_blank"
+                        data-tip="See available libraries for this labeling function"
+                        class="ml-2 tooltip tooltip-left bg-white text-gray-700 text-xs font-semibold  px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        See installed libraries
+                    </a>
                 </div>
             </div>
 
@@ -71,20 +84,21 @@
                             <kern-loading color="indigo"></kern-loading>
                         </div>
                         <div data-tip="Execute the attribute on 10 records" class="tooltip tooltip-left">
-                            <button [disabled]="testerRequestedSomething"
-                                [ngClass]="testerRequestedSomething ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
+                            <button [disabled]="testerRequestedSomething || attribute.state=='USABLE'"
+                                [ngClass]="testerRequestedSomething || attribute.state=='USABLE' ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
                                 (click)="calculateUserAttributeSampleRecords()"
                                 class="bg-white text-gray-700 text-xs font-semibold px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                                 Run on 10
                             </button>
                         </div>
-                        <div data-tip="Execute the attribute on all records" class="tooltip tooltip-left">
+                        <div data-tip="Execute the attribute on all records" class="tooltip tooltip-left" [ngClass]="attribute.state =='USABLE' ? 'cursor-not-allowed' : ''">
                             <label [for]="'attribute-calculation'"
+                                [ngClass]="attribute.state =='USABLE' ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer'"
                                 class="bg-indigo-700 text-white text-xs leading-4 font-semibold px-4 py-2 rounded-md cursor-pointer ml-3 hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                                 Run
                             </label>
                         </div>
-                        <input type="checkbox" [id]="'attribute-calculation'" class="modal-toggle">
+                        <input #calculateAttribite type="checkbox" [id]="'attribute-calculation'" class="modal-toggle">
                         <div class="modal text-center items-center">
                             <div class="modal-box">
                                 <h1 class="text-lg text-gray-900 mb-2">Attribute calculation</h1>
@@ -113,7 +127,7 @@
                         <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
                             <table class="min-w-full border divide-y divide-gray-300">
                                 <div class="divide-y divide-gray-200 bg-white"
-                                    *ngFor="let record of sampleRecords.calculatesAttributes">
+                                    *ngFor="let record of sampleRecords.calculatedAttributes; let i = index">
                                     <div class="flex-shrink-0 border-b border-gray-200 shadow-sm flex justify-between items-center">
                                         <div class="flex items-center text-xs leading-5 text-gray-500 font-normal text-center ml-4 my-3 text-left">
                                             {{record}}
@@ -121,7 +135,7 @@
                                         <div class="flex flex-row flex-nowrap items-center my-3 grid"
                                             style="grid-template-columns: auto 40px 40px 80px;">
                                             <div class="flex items-center justify-center mr-5">
-                                                TODO: add something else
+                                                {{record}}
                                             </div>
                                         </div>
                                     </div>

@@ -33,6 +33,26 @@ export class HeuristicStatusesComponent implements OnChanges {
         this.statusName = 'Error';
         this.color = 'red';
         break;
+      case 'WORK_IN_PROGRESS':
+          this.dataTip = 'Attribute is in progress.';
+          this.statusName = 'Work in progress';
+          this.color = 'gray';
+          break;
+      case 'USABLE':
+          this.dataTip = 'Attribute is usable.';
+          this.statusName = 'Usable';
+          this.color = 'green';
+          break;
+      case 'EXECUTION':
+          this.dataTip = 'Attribute is being executed.';
+          this.statusName = 'Execution';
+          this.color = 'yellow';
+          break;
+      case 'EXECUTION_FAILED':
+          this.dataTip = 'Attribute execution failed.';
+          this.statusName = 'Execution failed';
+          this.color = 'red';
+          break;
       default: 
         this.dataTip = 'Heuristic was successfully registered.';
         this.statusName = 'Initial';
