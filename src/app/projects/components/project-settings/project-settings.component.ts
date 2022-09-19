@@ -291,7 +291,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
 
   prepareAttributesRequest(projectId: string): Observable<any> {
     let attributes$;
-    [this.attributesQuery$, attributes$] = this.projectApolloService.getAttributesByProjectId(projectId);;
+    [this.attributesQuery$, attributes$] = this.projectApolloService.getAttributesByProjectId(projectId, false);
     this.subscriptions$.push(attributes$.subscribe((attributes) => {
       this.attributes = attributes;
       this.attributesArrayText = [];
@@ -1011,8 +1011,10 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
       .subscribe((res) => {
         const id = res?.data?.createUserAttribute.attributeId;
           if (id) {
-            this.router.navigate(['../attributes/' + id], {
-              relativeTo: this.activatedRoute,
+            localStorage.setItem("isNewAttribute", "true");
+            this.router.navigate(['../attributes/' + id],
+            {
+              relativeTo: this.activatedRoute
             });
           }
       });

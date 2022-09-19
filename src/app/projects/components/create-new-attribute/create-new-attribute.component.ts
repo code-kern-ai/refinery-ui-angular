@@ -40,6 +40,7 @@ export class CreateNewAttributeComponent implements OnInit {
   code: string = '';
   @ViewChild('calculateAttribite', { read: ElementRef }) calculateAttribite: ElementRef;
   updatedThroughWebsocket: boolean = false;
+  checkIfNewAttribute: string;
 
   constructor( 
     private activatedRoute: ActivatedRoute,
@@ -51,13 +52,11 @@ export class CreateNewAttributeComponent implements OnInit {
     this.routeService.updateActivatedRoute(this.activatedRoute);
     const projectId = this.activatedRoute.parent.snapshot.paramMap.get('projectId');
     const attributeId = this.activatedRoute.snapshot.paramMap.get('attributeId');
+    this.checkIfNewAttribute = JSON.parse(localStorage.getItem("isNewAttribute"));
     const project$ = this.projectApolloService.getProjectById(projectId);
-    let tasks$ = [];
-    tasks$.push(project$.pipe(first()));
-    tasks$.push(this.prepareAttributes(projectId, attributeId));
 
-    this.subscriptions$.push(project$.subscribe((project) => this.project = project));
-    combineLatest(tasks$).subscribe();
+    project$.pipe(first()).subscribe((project) => this.project = project);
+    this.prepareAttributes(projectId, attributeId);
 
     NotificationService.subscribeToNotification(this, {
       projectId: projectId,
@@ -125,7 +124,7 @@ export class CreateNewAttributeComponent implements OnInit {
         );
       }
      
-      this.attributeLogs = this.attribute.logs;
+      this.attributeLogs = attribute.logs;
       this.canRunProject = this.attribute.sourceCode !== '';
       timer(250).subscribe(() => this.updatedThroughWebsocket = false);
     }));
@@ -217,6 +216,10 @@ export class CreateNewAttributeComponent implements OnInit {
       .calculateUserAttributeSampleRecords(this.project.id, this.attribute.id).pipe(first()).subscribe((sampleRecords) => {
         this.sampleRecords = sampleRecords;
         this.testerRequestedSomething = false;
+        this.attributeQuery$.refetch();
+      }, (error) => {
+        this.testerRequestedSomething = false;
+        this.attributeQuery$.refetch()
       });
   }
 
@@ -256,7 +259,12 @@ export class CreateNewAttributeComponent implements OnInit {
     var regMatch: any = this.getPythonFunctionRegExMatch(codeToSave);
     if (!regMatch) return codeToSave;
 
-    this.attributeName = regMatch[2];
+    if(!this.checkIfNewAttribute || this.checkIfNewAttribute == null) {
+      this.attributeName = regMatch[2];
+    } else {
+      localStorage.removeItem("isNewAttribute");
+      this.checkIfNewAttribute = null;
+    }
 
     return codeToSave.replace(regMatch[0], 'def ac(record)');
   }

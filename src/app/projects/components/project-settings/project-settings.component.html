@@ -55,7 +55,11 @@
                                         </th>
                                         <th scope="col"
                                             class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                            Is created
+                                            User created
+                                        </th>
+                                        <th scope="col"
+                                            class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                            State
                                         </th>
                                         <th scope="col"
                                             class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
@@ -87,6 +91,10 @@
                                             <label class="cursor-pointer">
                                                 <input type="checkbox" [checked]="attributeContainer.get('userCreated').value" [disabled]="true">
                                             </label>
+                                        </td>
+                                        <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                            <kern-heuristic-statuses [status]="attributeContainer.get('state').value" 
+                                                *ngIf="attributeContainer.get('userCreated').value"></kern-heuristic-statuses>
                                         </td>
                                         <td class="text-center px-3 py-2 text-sm text-gray-500">
                                             <button [routerLink]="['../attributes/' + attributeContainer.get('id').value]" *ngIf="attributeContainer.get('userCreated').value"

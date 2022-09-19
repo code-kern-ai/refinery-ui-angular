@@ -217,12 +217,13 @@ export class ProjectApolloService {
     return [query, vc];
   }
 
-  getAttributesByProjectId(projectId: string) {
+  getAttributesByProjectId(projectId: string, onlyUsable: boolean = true) {
     const query = this.apollo
       .watchQuery({
         query: queries.GET_ATTRIBUTES_BY_PROJECT_ID,
         variables: {
           projectId: projectId,
+          onlyUsable: onlyUsable
         },
         fetchPolicy: 'network-only',
       });
@@ -1009,6 +1010,7 @@ export class ProjectApolloService {
           query: queries.GET_ATTRIBUTE_BY_ATTRIBUTE_ID,
           variables: {
             projectId: projectId,
+            attributeId: attributeId
           },
         },
       ],
