@@ -26,6 +26,7 @@ import { schemeCategory24 } from 'src/app/util/colors';
 import { parseToSettingsJson, parseCrowdSettings, CrowdLabelerHeuristicSettings, buildFullLink } from './crowd-labeler-settings';
 import { ConfigManager } from 'src/app/base/services/config-service';
 import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
+import { UserManager } from 'src/app/util/user-manager';
 
 @Component({
   selector: 'kern-crowd-labeler-details',
@@ -103,6 +104,7 @@ export class CrowdLabelerDetailsComponent
   ) { }
 
   ngOnInit(): void {
+    UserManager.checkUserAndRedirect(this);
     this.routeService.updateActivatedRoute(this.activatedRoute);
     const projectId = this.activatedRoute.parent.snapshot.paramMap.get('projectId');
     this.status = this.activatedRoute.parent.snapshot.queryParams.status;
@@ -148,7 +150,8 @@ export class CrowdLabelerDetailsComponent
     for (const e of this.stickyHeader) {
       this.stickyObserver.unobserve(e.nativeElement);
     }
-    NotificationService.unsubscribeFromNotification(this, this.project.id);
+    const projectId = this.project?.id ? this.project.id : this.activatedRoute.parent.snapshot.paramMap.get('projectId');
+    NotificationService.unsubscribeFromNotification(this, projectId);
   }
 
   ngAfterViewInit() {

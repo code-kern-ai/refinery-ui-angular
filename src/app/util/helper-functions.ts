@@ -1,6 +1,3 @@
-import { Router } from "@angular/router";
-import { first } from "rxjs/operators";
-import { OrganizationApolloService } from "../base/services/organization/organization-apollo.service";
 
 
 export function dateAsUTCDate(date: Date) {
@@ -23,14 +20,3 @@ export function formatBytes(bytes, decimals = 2) {
     return parseFloat((bytes / Math.pow(1024, i)).toFixed(dm)) + ' ' + sizes[i];
 }
 
-
-export function checkUserAndRedirect(router: Router, user: any, allowedRole: string = "ENGINEER") {
-
-    if (user.role != allowedRole && user.role != "ALL") {
-        console.log("you shouldn't be here")
-        router.navigate(["projects"])
-    }
-}
-export function requestUserAndRedirect(router: Router, organizationService: OrganizationApolloService, allowedRole: string = "ENGINEER") {
-    organizationService.getUserInfo().pipe(first()).subscribe((user) => checkUserAndRedirect(router, user, allowedRole));
-}

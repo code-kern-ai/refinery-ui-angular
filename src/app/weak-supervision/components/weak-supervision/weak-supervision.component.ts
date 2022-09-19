@@ -3,12 +3,13 @@ import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription, timer } from 'rxjs';
 import { first } from 'rxjs/operators';
-import { InformationSourceType, LabelingTask, LabelingTaskTarget, LabelSource } from 'src/app/base/enum/graphql-enums';
+import { InformationSourceType, LabelingTask, LabelSource } from 'src/app/base/enum/graphql-enums';
 import { NotificationService } from 'src/app/base/services/notification.service';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { RouteService } from 'src/app/base/services/route.service';
 import { WeakSourceApolloService } from 'src/app/base/services/weak-source/weak-source-apollo.service';
 import { dateAsUTCDate } from 'src/app/util/helper-functions';
+import { UserManager } from 'src/app/util/user-manager';
 import { InformationSourceCodeLookup, InformationSourceExamples } from '../information-sources-code-lookup';
 
 @Component({
@@ -83,15 +84,17 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
     private routeService: RouteService,
     private activatedRoute: ActivatedRoute,
     private projectApolloService: ProjectApolloService,
-    private informationSourceApolloService: WeakSourceApolloService
+    private informationSourceApolloService: WeakSourceApolloService,
   ) { }
 
   ngOnDestroy() {
     this.subscriptions$.forEach((subscription) => subscription.unsubscribe());
-    NotificationService.unsubscribeFromNotification(this, this.project.sid);
+    const projectId = this.project?.id ? this.project.id : this.activatedRoute.parent.snapshot.paramMap.get('projectId');
+    NotificationService.unsubscribeFromNotification(this, projectId);
   }
 
   ngOnInit(): void {
+    UserManager.checkUserAndRedirect(this);
     this.routeService.updateActivatedRoute(this.activatedRoute);
     const projectId = this.activatedRoute.parent.snapshot.paramMap.get('projectId');
     this.projectApolloService.getProjectById(projectId).pipe(first()).subscribe(project => this.project = project);

@@ -11,7 +11,7 @@ import {
 import { ActivatedRoute, Router } from '@angular/router';
 import { KeyValue } from '@angular/common';
 import { combineLatest, forkJoin, interval, Observable, Subscription, timer } from 'rxjs';
-import { dateAsUTCDate, requestUserAndRedirect } from 'src/app/util/helper-functions';
+import { dateAsUTCDate } from 'src/app/util/helper-functions';
 import {
   debounceTime,
   distinctUntilChanged,
@@ -52,6 +52,7 @@ import {
 import { SimilarSearch } from './helper-classes/search-similar';
 import { UserFilter } from './helper-classes/user-filter';
 import { DownloadState } from 'src/app/import/services/s3.enums';
+import { UserManager } from 'src/app/util/user-manager';
 
 
 type DataSlice = {
@@ -195,7 +196,6 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     private recordApolloService: RecordApolloService,
     private organizationApolloService: OrganizationApolloService,
     public formBuilder: FormBuilder,
-    private router: Router
   ) { }
 
   ngOnDestroy(): void {
@@ -204,7 +204,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    requestUserAndRedirect(this.router, this.organizationApolloService);
+    UserManager.checkUserAndRedirect(this);
     this.routeService.updateActivatedRoute(this.activatedRoute);
 
     this.projectId = this.activatedRoute.parent.snapshot.paramMap.get('projectId');

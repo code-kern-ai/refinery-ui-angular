@@ -13,6 +13,7 @@ import { RecordApolloService } from 'src/app/base/services/record/record-apollo.
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { bool } from 'aws-sdk/clients/signer';
 import { labelingHuddle, labelingLinkData, parseLabelingLinkData } from 'src/app/labeling/components/helper/labeling-helper';
+import { UserManager } from 'src/app/util/user-manager';
 
 
 @Component({
@@ -47,18 +48,13 @@ export class RecordIDEComponent implements OnInit {
     private projectApolloService: ProjectApolloService,
     private router: Router,
   ) {
-    // this.router.events.subscribe((event: Event) => {
-    //   if (event instanceof NavigationEnd) {
-    //     this.setLabelingUrlAndPos()
-    //   }
-    // });
   }
 
   ngOnInit(): void {
+    UserManager.checkUserAndRedirect(this);
     this.huddleData = JSON.parse(localStorage.getItem("huddleData"));
     this.routeService.updateActivatedRoute(this.activatedRoute);
     this.linkData = parseLabelingLinkData(this.activatedRoute);
-    console.log(this.linkData)
     this.prepareProject(this.linkData.projectId);
     const existingCode = localStorage.getItem("ideCode");
     if (existingCode) this.code = existingCode;

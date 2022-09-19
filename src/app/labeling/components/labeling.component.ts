@@ -59,7 +59,6 @@ export class LabelingComponent implements OnInit, OnDestroy {
   fullRecordData: any;
   project: Project;
   project$: any;
-  user$: any;
 
   dataSliceQuery$: any;
   dataSlices$: any;
@@ -551,13 +550,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
     this.recordLabelAssociations$ = this.recordLabelAssociations$
       .subscribe((recordLabelAssociations) => {
         if (!recordLabelAssociations) return;
-        recordLabelAssociations.forEach((rla) => {
-          if (rla.sourceId && this.user.role == "ANNOTATOR" && rla.sourceId == this.getSourceId()) {
-            rla.sourceType = LabelSource.MANUAL;
-            rla.sourceId = null;
-          }
-        });
-
+        this.prepareRLADataForRole(recordLabelAssociations);
         this.extendRecordLabelAssociations(recordLabelAssociations);
         this.parseRlaToGroups(recordLabelAssociations)
         this.prepareFullRecord();
@@ -565,6 +558,21 @@ export class LabelingComponent implements OnInit, OnDestroy {
         this.somethingLoading = false;
 
       });
+  }
+
+  prepareRLADataForRole(rlaData: any[]) {
+    if (this.user.role == "ANNOTATOR") {
+      rlaData.forEach((rla) => {
+        if (rla.sourceId && rla.sourceId == this.getSourceId()) {
+          rla.sourceType = LabelSource.MANUAL;
+          rla.sourceId = null;
+        } else {
+          rla.id = "irrelevant";
+        }
+      });
+      rlaData = rlaData.filter(rla => rla.id != "irrelevant");
+    }
+
   }
 
   getTokenizedRecord(recordId: string, fullRefresh: boolean = false) {
