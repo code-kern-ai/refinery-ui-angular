@@ -6,6 +6,7 @@ export type CrowdLabelerHeuristicSettings = {
     accessLinkId: string;
     accessLink?: any;
     accessLinkParsed?: string;
+    accessLinkLocked?: boolean;
     isHTTPS?: boolean;
 };
 
@@ -30,5 +31,5 @@ export function parseToSettingsJson(settings: CrowdLabelerHeuristicSettings): st
 
 
 export function buildFullLink(route: string) {
-    return window.location.protocol + '//' + window.location.host + route;
+    return window.location.protocol + '//' + window.location.host + "/app" + route;
 }

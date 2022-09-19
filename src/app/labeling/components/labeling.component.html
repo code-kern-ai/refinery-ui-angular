@@ -1,19 +1,26 @@
 <div *ngIf="user" class="h-full grid gap-0 bg-white" style="grid-template-rows: 65px minmax(auto,92%) 65px; "
     [ngClass]="somethingLoading?'wait':null">
-    <div *ngIf="huddleData && (roleAssumed || !huddleData.canEdit)"
+    <div *ngIf="huddleData && (roleAssumed || !huddleData.canEdit) && !labelingLinkData?.linkLocked"
         class="absolute left-0 right-0 flex items-center justify-center pointer-events-none"
         style="top:17px;z-index:100">
         <span class="inline-flex items-center px-2 py-0.5 rounded font-medium bg-red-100 text-red-800">
             You are viewing this page as {{user.role}} you are not able to edit </span>
     </div>
+    <div *ngIf="labelingLinkData?.linkLocked"
+        class="absolute left-0 right-0 flex items-center justify-center pointer-events-none"
+        style="top:17px;z-index:101">
+        <span class="inline-flex items-center px-2 py-0.5 rounded font-medium bg-red-100 text-red-800">
+            This link is locked, contact your supervisor to request access</span>
+    </div>
     <ng-container [ngTemplateOutlet]="navigationBar" [ngTemplateOutletContext]="{isBottom:false}">
     </ng-container>
     <ng-template #dummyDiv>
         <div class="h-full flex flex-grow items-center justify-center">
-            <kern-loading size="btn-lg"></kern-loading>
+            <kern-loading size="btn-lg" *ngIf="!labelingLinkData?.linkLocked"></kern-loading>
         </div>
     </ng-template>
-    <div #baseDomElement *ngIf="project;else dummyDiv" class="flex justify-center relative overflow-y-auto -mt-1.5">
+    <div #baseDomElement *ngIf="project && !labelingLinkData?.linkLocked;else dummyDiv"
+        class="flex justify-center relative overflow-y-auto -mt-1.5">
         <div #setLabelBox class="flex flex-col rounded-lg bg-white shadow absolute z-10 top-0 left-0"
             style="transition: max-height 0.25s ease-in-out;"
             [ngClass]="isLabelBoxOpen ? 'max-h-80 overflow-y-auto border border-gray-300' : 'max-h-0 overflow-hidden'"

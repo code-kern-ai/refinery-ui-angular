@@ -20,7 +20,7 @@ import {
 } from 'rxjs/operators';
 import { combineLatest, Subscription, timer } from 'rxjs';
 import { InformationSourceType, informationSourceTypeToString, LabelingTask, LabelSource } from 'src/app/base/enum/graphql-enums';
-import { dateAsUTCDate } from 'src/app/util/helper-functions';
+import { dateAsUTCDate, parseLinkFromText } from 'src/app/util/helper-functions';
 import { NotificationService } from 'src/app/base/services/notification.service';
 import { schemeCategory24 } from 'src/app/util/colors';
 import { parseToSettingsJson, parseCrowdSettings, CrowdLabelerHeuristicSettings, buildFullLink } from './crowd-labeler-settings';
@@ -93,6 +93,7 @@ export class CrowdLabelerDetailsComponent
   dataSlicesQuery$: any;
   dataSlices: any[];
   sliceLookup: {};
+  private fromCreation: boolean = false;
 
   constructor(
     private router: Router,
@@ -186,14 +187,12 @@ export class CrowdLabelerDetailsComponent
     if (this.crowdSettings.accessLinkId) return;
     this.projectApolloService.createAccessLink(this.project.id, "HEURISTIC", this.informationSource.id).pipe(first()).subscribe((res) => {
       if (res?.data?.generateAccessLink?.link?.id) {
+        this.fromCreation = true;
         this.removeAccessLink();
-        this.fillLinkData(res.data.generateAccessLink.link.link);
-        this.crowdSettings.accessLinkId = res.data.generateAccessLink.link.id
-        if (window.location.protocol == 'https:') {
-          this.crowdSettings.isHTTPS = true;
-        } else {
-          this.crowdSettings.isHTTPS = false;
-        }
+        this.fillLinkData(res.data.generateAccessLink.link);
+        this.crowdSettings.accessLinkId = res.data.generateAccessLink.link.id;
+        this.crowdSettings.isHTTPS = window.location.protocol == 'https:';
+        this.crowdSettings.accessLinkLocked = res.data.generateAccessLink.link.isLocked;
         this.saveInformationSource();
       }
     });
@@ -202,6 +201,15 @@ export class CrowdLabelerDetailsComponent
   removeAccessLink() {
     if (!this.crowdSettings.accessLinkId) return
     this.projectApolloService.removeAccessLink(this.project.id, this.crowdSettings.accessLinkId).pipe(first()).subscribe();
+    this.crowdSettings.accessLinkId = null;
+    this.saveInformationSource();
+  }
+
+  changeAccessLinkLock(state: boolean) {
+    if (!this.crowdSettings.accessLinkId) return
+    this.projectApolloService.lockAccessLink(this.project.id, this.crowdSettings.accessLinkId, state).pipe(first()).subscribe();
+    this.crowdSettings.accessLinkLocked = state;
+
   }
   prepareAnnotators() {
     const firstReturn = this.organizationApolloService.getOrganizationUsers("ANNOTATOR").pipe(first());
@@ -237,25 +245,26 @@ export class CrowdLabelerDetailsComponent
       this.fillSettings(informationSource.sourceCode);
       this.description = informationSource.description;
       this.informationSourceName = informationSource.name;
+      this.fromCreation = false;
     }));
 
   }
   fillSettings(settingsJson: string) {
+    if (this.fromCreation) return;
     this.crowdSettings = parseCrowdSettings(settingsJson);
 
     this.crowdSettings.taskId = this.informationSource.labelingTaskId;
     if (this.crowdSettings.accessLinkId) {
       this.projectApolloService.getAccessLink(this.project.id, this.crowdSettings.accessLinkId).pipe(first()).subscribe((res) => {
-        console.log(res)
-        this.fillLinkData(res.link)
+        this.fillLinkData(res)
       });
     }
   }
 
-  private fillLinkData(link: string) {
-
-    this.crowdSettings.accessLink = link;
-    this.crowdSettings.accessLinkParsed = buildFullLink(link);
+  private fillLinkData(linkObj: any) {
+    this.crowdSettings.accessLink = linkObj.link;
+    this.crowdSettings.accessLinkParsed = buildFullLink(linkObj.link);
+    this.crowdSettings.accessLinkLocked = linkObj.isLocked;
   }
 
 
@@ -343,7 +352,6 @@ export class CrowdLabelerDetailsComponent
 
 
   changeSettings(attributeName: string, newValue: any, saveToDb: boolean = true) {
-    console.log("savetry", attributeName, newValue, saveToDb)
     this.crowdSettings[attributeName] = newValue;
     if (saveToDb) this.saveInformationSource();
   }
@@ -365,6 +373,12 @@ export class CrowdLabelerDetailsComponent
 
     }
   }
+
+  testLink() {
+    const linkData = parseLinkFromText(this.crowdSettings.accessLink);
+    this.router.navigate([linkData.route], { queryParams: linkData.queryParams });
+  }
+
 
   getBackground(color) {
     return `bg-${color}-100`

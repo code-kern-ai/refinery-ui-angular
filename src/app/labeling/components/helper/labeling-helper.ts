@@ -5,6 +5,7 @@ export type labelingLinkData = {
     id: string;
     requestedPos: number;
     linkType: labelingLinkType;
+    linkLocked?: boolean;
 };
 
 export type labelingHuddle = {

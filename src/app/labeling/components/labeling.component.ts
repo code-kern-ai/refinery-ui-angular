@@ -27,7 +27,7 @@ import {
   labelSourceToString,
 } from 'src/app/base/enum/graphql-enums';
 import { NotificationApolloService } from 'src/app/base/services/notification/notification-apollo.service';
-import { dateAsUTCDate } from 'src/app/util/helper-functions';
+import { dateAsUTCDate, parseLinkFromText } from 'src/app/util/helper-functions';
 import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
 import { NotificationService } from 'src/app/base/services/notification.service';
 import { assumeUserRole, guessLinkType, labelingHuddle, labelingLinkData, labelingLinkType, parseLabelingLinkData, userRoles } from './helper/labeling-helper';
@@ -149,10 +149,13 @@ export class LabelingComponent implements OnInit, OnDestroy {
 
     let initialTasks$ = [];
     initialTasks$.push(this.prepareUser());
+    if (this.labelingLinkData.linkType == "HEURISTIC") {
+      initialTasks$.push(this.checkLinkAccess());
+    }
     forkJoin(initialTasks$).pipe(first()).subscribe(() => {
 
       //user is set to null if a redirect is needed
-      if (!this.user) return;
+      if (!this.user || this.labelingLinkData.linkLocked) return;
       let initialTasks$ = [];
       initialTasks$.push(this.prepareProject(this.labelingLinkData.projectId));
       initialTasks$.push(this.prepareLabelingTask(this.labelingLinkData.projectId));
@@ -181,11 +184,23 @@ export class LabelingComponent implements OnInit, OnDestroy {
 
   }
 
+  checkLinkAccess() {
+    const pipeFirst = this.projectApolloService.linkLocked(this.labelingLinkData.projectId, this.router.url)
+      .pipe(first());
+
+    pipeFirst.subscribe((isLocked) => {
+      this.labelingLinkData.linkLocked = isLocked;
+      if (isLocked) this.somethingLoading = false;
+    });
+    return pipeFirst;
+  }
+
   getWhiteListNotificationService(): string[] {
     let toReturn = ['label_created', 'label_deleted', 'attributes_updated'];
     toReturn.push(...['payload_finished', 'weak_supervision_finished']);
     toReturn.push(...['labeling_task_deleted', 'labeling_task_updated', 'labeling_task_created']);
     toReturn.push(...['record_deleted', 'rla_created', 'rla_deleted']);
+    toReturn.push(...['access_link_changed', 'access_link_removed']);
     return toReturn;
   }
 
@@ -312,6 +327,8 @@ export class LabelingComponent implements OnInit, OnDestroy {
       this.roleAssumed = this.user.role != user.role;
       this.displayUserId = user.id;
 
+      //no old data to ensure the view is up to date (lockstate etc.)
+      if (this.roleAssumed) localStorage.removeItem("huddleData");
     });
     return pipeFirst;
   }
@@ -1722,6 +1739,18 @@ export class LabelingComponent implements OnInit, OnDestroy {
       }
     } else if (msgParts[1] == 'attributes_updated') {
       this.attributesQuery$.refetch();
+    } else if (['access_link_changed', 'access_link_removed'].includes(msgParts[1])) {
+      if (this.router.url.indexOf(msgParts[3]) > -1 && this.labelingLinkData) {
+        // this.checkLinkAccess();
+        console.log(msgParts[4], !msgParts[4], msgParts[4] === 'true')
+        this.labelingLinkData.linkLocked = !msgParts[4] || msgParts[4] === 'true';
+        // location.reload();
+      }
+
+    } else if (msgParts[1] == 'information_source_updated') {
+      if (this.router.url.indexOf(msgParts[2]) > -1 && this.labelingLinkData) {
+        location.reload();
+      }
     }
   }
 

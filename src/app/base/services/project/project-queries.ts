@@ -369,6 +369,7 @@ export const queries = {
     accessLink(projectId: $projectId, linkId: $linkId) {
       id
       link
+      isLocked
     }
   }
 `,
@@ -384,6 +385,11 @@ export const queries = {
     }
   }
   
-`
+`,
+  LINK_LOCKED: gql`
+  query ($projectId: ID!, $linkRoute: String!) {
+    linkLocked(projectId: $projectId, linkRoute: $linkRoute)
+  }`
+  ,
 
 };

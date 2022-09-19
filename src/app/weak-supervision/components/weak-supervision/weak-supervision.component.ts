@@ -440,7 +440,6 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
       }
       else this.functionName = "Zero shot module";
     }
-    console.log(checked, type, this.functionName, this.description)
   }
 
   toggleTabs(index: number, labelingTask: any) {

@@ -197,6 +197,7 @@ export const mutations = {
       link {
         id
         link
+        isLocked
       }
     }
   }
@@ -205,6 +206,13 @@ export const mutations = {
   REMOVE_ACCESS_LINK: gql`
 mutation ($projectId: ID!, $linkId: ID!) {
   removeAccessLink(projectId: $projectId, linkId: $linkId) {
+    ok
+  }
+}
+`,
+  LOCK_ACCESS_LINK: gql`
+mutation ($projectId: ID!, $linkId: ID!, $lockState: Boolean) {
+  lockAccessLink(projectId: $projectId, linkId: $linkId, lockState: $lockState) {
     ok
   }
 }

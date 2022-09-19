@@ -957,6 +957,17 @@ export class ProjectApolloService {
       .pipe(map((result) => result['data']['accessLink']));
   }
 
+  lockAccessLink(projectId: string, linkId: string, lockState: boolean = true) {
+    return this.apollo.mutate({
+      mutation: mutations.LOCK_ACCESS_LINK,
+      variables: {
+        projectId: projectId,
+        linkId: linkId,
+        lockState: lockState,
+      },
+    });
+  }
+
   createAccessLink(
     projectId: string,
     type: string,
@@ -980,6 +991,20 @@ export class ProjectApolloService {
         linkId: linkId
       },
     });
+  }
+
+  linkLocked(projectId: string, linkRoute: string) {
+    return this.apollo
+      .query({
+        query: queries.LINK_LOCKED,
+        variables: {
+          projectId: projectId,
+          linkRoute: linkRoute
+        },
+        fetchPolicy: 'no-cache', //this shouldnt change often (also default value)
+      })
+      .pipe(map((result) => result['data']['linkLocked']));
+
   }
 
 }
