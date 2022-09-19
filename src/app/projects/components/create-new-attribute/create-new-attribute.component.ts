@@ -154,8 +154,9 @@ export class CreateNewAttributeComponent implements OnInit {
 
   saveAttribute(projectId: string) {
     if (this.updatedThroughWebsocket) return;
+    const getCodeToSave = this.getPythonFunctionToSave(this.code);
     this.projectApolloService
-      .updateAttribute(projectId, this.attribute.id, this.attribute.dataType, this.attribute.isPrimaryKey, this.attributeName, this.getPythonFunctionToSave(this.code))
+      .updateAttribute(projectId, this.attribute.id, this.attribute.dataType, this.attribute.isPrimaryKey, this.attributeName, getCodeToSave)
       .pipe(first())
       .subscribe();
   }
@@ -254,6 +255,8 @@ export class CreateNewAttributeComponent implements OnInit {
     }
     var regMatch: any = this.getPythonFunctionRegExMatch(codeToSave);
     if (!regMatch) return codeToSave;
+
+    this.attributeName = regMatch[2];
 
     return codeToSave.replace(regMatch[0], 'def ac(record)');
   }
