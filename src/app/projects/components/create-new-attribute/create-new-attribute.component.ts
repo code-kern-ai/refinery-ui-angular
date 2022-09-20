@@ -140,6 +140,9 @@ export class CreateNewAttributeComponent implements OnInit {
       if(this.attribute.state == 'FAILED') {
         this.editorOptions = { ...this.editorOptions, readOnly: false };
       }
+      if(this.attribute.state == 'RUNNING' || this.attribute.state == 'USABLE') {
+        this.editorOptions = { ...this.editorOptions, readOnly: true };
+      }
       timer(250).subscribe(() => this.updatedThroughWebsocket = false);
     }));
   }
@@ -231,7 +234,6 @@ export class CreateNewAttributeComponent implements OnInit {
         this.sampleRecords = sampleRecords;
         this.testerRequestedSomething = false;
         this.attributeQuery$.refetch();
-        // this.prepareAttribute(this.project.id, this.attribute.id);
       }, (error) => {
         this.testerRequestedSomething = false;
         this.attributeQuery$.refetch()

@@ -87,7 +87,7 @@
                                             <kern-heuristic-statuses [status]="attributeContainer.get('state').value" page="attributes"></kern-heuristic-statuses>
                                         </td>
                                         <td class="text-center px-3 py-2 text-sm text-gray-500">
-                                            <button [routerLink]="['../attributes/' + attributeContainer.get('id').value]" *ngIf="attributeContainer.get('userCreated').value"
+                                            <button type="button" [routerLink]="['../attributes/' + attributeContainer.get('id').value]" *ngIf="attributeContainer.get('userCreated').value"
                                                 class="text-green-800 text-sm font-medium">
                                                 <span class="leading-5">Details</span>
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block" fill="none"
