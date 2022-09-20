@@ -154,7 +154,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
 
     NotificationService.subscribeToNotification(this, {
       projectId: projectId,
-      whitelist: ['tokenization', 'embedding', 'embedding_deleted', 'label_created', 'label_deleted', 'attributes_updated', 'labeling_task_deleted', 'labeling_task_updated', 'labeling_task_created', 'project_update', 'project_export'],
+      whitelist: ['tokenization', 'embedding', 'embedding_deleted', 'label_created', 'label_deleted', 'attributes_updated', 'labeling_task_deleted', 'labeling_task_updated', 'labeling_task_created', 'project_update', 'project_export', 'calculate_attribute'],
       func: this.handleWebsocketNotification
     });
 
@@ -768,6 +768,8 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     } else if (msgParts[1] == 'project_export') {
       this.downloadPrepareMessage = DownloadState.NONE;
       this.requestProjectExportCredentials();
+    } else if (msgParts[1] == 'calculate_attribute') {
+      this.attributesQuery$.refetch();
     }
   }
 
