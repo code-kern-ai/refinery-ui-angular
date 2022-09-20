@@ -91,7 +91,7 @@ export class ProjectOverviewComponent implements OnInit, OnDestroy {
 
     this.routeService.updateActivatedRoute(this.activatedRoute);
 
-    this.isManaged = ConfigManager.getIsManaged();
+    this.checkIfManagedVersion();
 
 
     const currentProjectID =
@@ -135,6 +135,14 @@ export class ProjectOverviewComponent implements OnInit, OnDestroy {
       this.saveSettingsToLocalStorage();
     });
     this.displayGraphsForm.valueChanges.subscribe(() => this.saveSettingsToLocalStorage())
+  }
+
+  checkIfManagedVersion() {
+    if (!ConfigManager.isInit()) {
+      timer(250).subscribe(() => this.checkIfManagedVersion());
+      return;
+    }
+    this.isManaged = ConfigManager.getIsManaged();
   }
 
   setDisplayNERConfusion(projectId: string, labelingTaskId: string) {
