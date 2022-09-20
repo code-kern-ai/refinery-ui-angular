@@ -160,14 +160,14 @@
                                         </div>
                                         <div class="flex items-center justify-center mr-5 ml-auto">
                                             <label [for]="'attribute-details-'+sampleRecords.recordIds[i]"
-                                                (click)="getRecordByRecordId(sampleRecords.recordIds[i])"
+                                                (click)="getRecordByRecordId(sampleRecords.recordIds[i],i)"
                                                 class="text-xs bg-white text-gray-700 text-xs font-semibold px-4 py-1 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">
                                                 View
                                             </label>
                                         </div>
                                     </div>
-                                    
-                                    <input type="checkbox" [id]="'attribute-details-'+sampleRecords.recordIds[i]" class="modal-toggle">
+                                </div>
+                                <input type="checkbox" [id]="'attribute-details-'+currentRecordId" class="modal-toggle">
                                     <div class="modal text-center items-center">
                                         <div class="modal-box" style="max-width: 48rem;">
                                             <h1 class="text-lg text-gray-900 mb-2">View details</h1>
@@ -180,16 +180,15 @@
                                                     </div>
                                                 </div>
                                                 <div class="text-sm leading-5 text-left text-gray-900 font-medium">Calculated value</div>
-                                                <div class="text-sm leading-5 text-left text-gray-500 font-normal">{{record}}</div>
+                                                <div class="text-sm leading-5 text-left text-gray-500 font-normal">{{sampleRecords.calculatedAttributes[currentRecordIdx]}}</div>
                                             </div>
 
                                             <div class="modal-action text-center">
-                                                <label [for]="'attribute-details-'+sampleRecords.recordIds[i]"
+                                                <label [for]="'attribute-details-'+currentRecordId"
                                                     class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
                             </table>
                         </div>
                     </div>

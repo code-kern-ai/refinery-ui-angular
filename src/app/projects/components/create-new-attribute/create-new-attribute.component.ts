@@ -45,6 +45,8 @@ export class CreateNewAttributeComponent implements OnInit {
   attributesQuery$: any;
   attributes: any;
   recordData: any;
+  currentRecordId: string;
+  currentRecordIdx: number = -1;
 
   constructor( 
     private activatedRoute: ActivatedRoute,
@@ -135,7 +137,6 @@ export class CreateNewAttributeComponent implements OnInit {
      
       this.attributeLogs = attribute.logs;
       this.canRunProject = this.attribute.sourceCode !== '';
-      console.log(this.attribute.state)
       if(this.attribute.state == 'FAILED') {
         this.editorOptions = { ...this.editorOptions, readOnly: false };
       }
@@ -229,7 +230,8 @@ export class CreateNewAttributeComponent implements OnInit {
       .calculateUserAttributeSampleRecords(this.project.id, this.attribute.id).pipe(first()).subscribe((sampleRecords) => {
         this.sampleRecords = sampleRecords;
         this.testerRequestedSomething = false;
-        this.prepareAttribute(this.project.id, this.attribute.id);
+        this.attributeQuery$.refetch();
+        // this.prepareAttribute(this.project.id, this.attribute.id);
       }, (error) => {
         this.testerRequestedSomething = false;
         this.attributeQuery$.refetch()
@@ -301,7 +303,9 @@ export class CreateNewAttributeComponent implements OnInit {
     return attributes$;
   }
 
-  getRecordByRecordId(recordId: string) {
+  getRecordByRecordId(recordId: string, index: number) {
+    this.currentRecordId = recordId;
+    this.currentRecordIdx = index;
     this.recordApolloService
       .getRecordByRecordId(this.project.id, recordId)
       .pipe(first())
