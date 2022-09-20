@@ -11,71 +11,113 @@
             <!-- show team -->
             <ng-container *ngIf="!organizationInactive && isManaged">
                 <div>
-                    <div class="mx-auto max-w-7xl py-12 px-4 sm:px-6 lg:px-8 lg:py-24">
-                        <div class="grid grid-cols-1 gap-12 lg:grid-cols-3 lg:gap-8">
+                    <div class="mx-auto max-w-7xl mt-8 pb-12 px-4 sm:px-6">
+                        <div class="grid grid-cols-1 gap-8">
+
                             <div class="space-y-5 sm:space-y-4">
-                                <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">Engineering team</h2>
-                                <p class="text-xl text-gray-500">People in your organization with full access to all
+                                <h3 class="text-3xl font-bold tracking-tight sm:text-4xl">Engineering team</h3>
+                                <p class="text-gray-500">Have full access to all
                                     parts of <span class="font-dmMono">refinery</span> to automate workflows and
-                                    identify critical data slices. They have access to the Python SDK.</p>
+                                    identify critical data slices. </p>
+                                <p>They have access to the Python SDK.</p>
                             </div>
-                            <div class="lg:col-span-2">
-                                <div role="list"
-                                    class="space-y-12 sm:grid sm:grid-cols-2 sm:gap-12 sm:space-y-0 lg:gap-x-8">
-                                    <div *ngFor="let user of engineers">
-                                        <div class="flex items-center space-x-4 lg:space-x-6">
-                                            <img class="h-16 w-16 rounded-full lg:h-20 lg:w-20" [src]="user.avatarUri"
-                                                alt="">
-                                            <div class="space-y-1 text-lg font-medium leading-6">
-                                                <h3>{{user.firstName}} {{user.lastName}}</h3>
-                                                <p class="text-indigo-600">{{user.mail}}</p>
-                                            </div>
-                                        </div>
+                            <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                                <div *ngFor="let user of engineers"
+                                    class="relative flex items-center space-x-3 rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:border-gray-400">
+                                    <div class="flex-shrink-0">
+                                        <img class="h-10 w-10 rounded-full" [src]="user.avatarUri" alt="">
+                                    </div>
+                                    <div class="min-w-0 flex-1">
+                                        <a class="focus:outline-none">
+                                            <span class="absolute inset-0" aria-hidden="true"></span>
+                                            <p class="text-sm font-medium text-gray-900">{{user.firstName}}
+                                                {{user.lastName}}</p>
+                                            <p class="truncate text-sm text-gray-500">{{user.mail}}</p>
+                                        </a>
                                     </div>
                                 </div>
                             </div>
+                            <div class="relative">
+                                <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                                    <div class="w-full border-t border-gray-300"></div>
+                                </div>
+                            </div>
+
                             <div class="mt-4 space-y-5 sm:space-y-4">
                                 <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">Domain experts team</h2>
-                                <p class="text-xl text-gray-500">They help you define gold-set reference manual labels
-                                    you can use for estimating the data quality of the training data. They have access
-                                    to the labeling view, and their labels will be considered as regular manual labels.
+                                <p class="text-gray-500">They help you define reference manual labels
+                                    you can use for estimating the data quality of the training data.
+                                </p>
+                                <p>They have access to the labeling view, and their labels will be considered as regular
+                                    manual labels.
                                 </p>
                             </div>
-                            <div class="lg:col-span-2">
-                                <ul role="list"
-                                    class="space-y-12 sm:grid sm:grid-cols-2 sm:gap-12 sm:space-y-0 lg:gap-x-8">
-                                    <div *ngFor="let user of experts">
-                                        <div class="flex items-center space-x-4 lg:space-x-6">
-                                            <img class="h-16 w-16 rounded-full lg:h-20 lg:w-20" [src]="user.avatarUri"
-                                                alt="">
-                                            <div class="space-y-1 text-lg font-medium leading-6">
-                                                <h3>{{user.firstName}} {{user.lastName}}</h3>
-                                                <p class="text-indigo-600">{{user.mail}}</p>
-                                            </div>
-                                        </div>
+                            <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                                <div *ngFor="let user of experts"
+                                    class="relative flex items-center space-x-3 rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:border-gray-400">
+                                    <div class="flex-shrink-0">
+                                        <img class="h-10 w-10 rounded-full" [src]="user.avatarUri" alt="">
                                     </div>
-                                </ul>
+                                    <div class="min-w-0 flex-1">
+                                        <a class="focus:outline-none">
+                                            <span class="absolute inset-0" aria-hidden="true"></span>
+                                            <p class="text-sm font-medium text-gray-900">{{user.firstName}}
+                                                {{user.lastName}}</p>
+                                            <p class="truncate text-sm text-gray-500">{{user.mail}}</p>
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
+                            <div *ngIf="experts.length == 0" class="text-center">
+                                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor"
+                                    viewBox="0 0 48 48" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M34 40h10v-4a6 6 0 00-10.712-3.714M34 40H14m20 0v-4a9.971 9.971 0 00-.712-3.714M14 40H4v-4a6 6 0 0110.713-3.714M14 40v-4c0-1.313.253-2.566.713-3.714m0 0A10.003 10.003 0 0124 26c4.21 0 7.813 2.602 9.288 6.286M30 14a6 6 0 11-12 0 6 6 0 0112 0zm12 6a4 4 0 11-8 0 4 4 0 018 0zm-28 0a4 4 0 11-8 0 4 4 0 018 0z" />
+                                </svg>
+                                <h2 class="mt-2 text-lg font-medium text-gray-900">Add experts</h2>
+                                <p class="mt-1 text-sm text-gray-500">Let us know if you want to add experts.
+                                </p>
+                            </div>
+                            <div class="relative">
+                                <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                                    <div class="w-full border-t border-gray-300"></div>
+                                </div>
+                            </div>
+
                             <div class="mt-4 space-y-5 sm:space-y-4">
                                 <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">Annotator team</h2>
-                                <p class="text-xl text-gray-500">Annotators that you can assign only via crowd labeling
-                                    heuristics. Their labeling will be viewed as silver-set labeling, i.e. as noisy and
+                                <p class="text-gray-500">Annotators that you can assign only via crowd
+                                    labeling
+                                    heuristics.</p>
+                                <p>Their labeling will be viewed as heuristic labeling, i.e. as noisy
+                                    and
                                     imperfect.</p>
                             </div>
-                            <div class="lg:col-span-2">
-                                <ul role="list"
-                                    class="space-y-12 sm:grid sm:grid-cols-2 sm:gap-12 sm:space-y-0 lg:gap-x-8">
-                                    <div *ngFor="let user of annotators">
-                                        <div class="flex items-center space-x-4 lg:space-x-6">
-                                            <img class="h-16 w-16 rounded-full lg:h-20 lg:w-20" [src]="user.avatarUri"
-                                                alt="">
-                                            <div class="space-y-1 text-lg font-medium leading-6">
-                                                <h3>{{user.firstName}} {{user.lastName}}</h3>
-                                                <p class="text-indigo-600">{{user.mail}}</p>
-                                            </div>
-                                        </div>
+                            <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                                <div *ngFor="let user of annotators"
+                                    class="relative flex items-center space-x-3 rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:border-gray-400">
+                                    <div class="flex-shrink-0">
+                                        <img class="h-10 w-10 rounded-full" [src]="user.avatarUri" alt="">
                                     </div>
-                                </ul>
+                                    <div class="min-w-0 flex-1">
+                                        <a class="focus:outline-none">
+                                            <span class="absolute inset-0" aria-hidden="true"></span>
+                                            <p class="text-sm font-medium text-gray-900">{{user.firstName}}
+                                                {{user.lastName}}</p>
+                                            <p class="truncate text-sm text-gray-500">{{user.mail}}</p>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div *ngIf="annotators.length == 0" class="text-center">
+                                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor"
+                                    viewBox="0 0 48 48" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M34 40h10v-4a6 6 0 00-10.712-3.714M34 40H14m20 0v-4a9.971 9.971 0 00-.712-3.714M14 40H4v-4a6 6 0 0110.713-3.714M14 40v-4c0-1.313.253-2.566.713-3.714m0 0A10.003 10.003 0 0124 26c4.21 0 7.813 2.602 9.288 6.286M30 14a6 6 0 11-12 0 6 6 0 0112 0zm12 6a4 4 0 11-8 0 4 4 0 018 0zm-28 0a4 4 0 11-8 0 4 4 0 018 0z" />
+                                </svg>
+                                <h2 class="mt-2 text-lg font-medium text-gray-900">Add annotators</h2>
+                                <p class="mt-1 text-sm text-gray-500">Let us know if you want to add annotators.
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -86,7 +128,7 @@
             <ng-container *ngIf="!organizationInactive && !isManaged">
                 <!-- This example requires Tailwind CSS v2.0+ -->
                 <div class="bg-white h-full">
-                    <div class="mx-auto max-w-7xl py-8 px-4 sm:px-6 lg:px-8">
+                    <div class="mx-auto max-w-7xl py-8 px-4 sm:px-6">
                         <div class="sm:align-center sm:flex sm:flex-col">
                             <h1 class="text-5xl font-bold tracking-tight text-gray-900 sm:text-center"><span
                                     class="font-dmMono">refinery</span> options
@@ -95,8 +137,7 @@
                                 are using right now, we offer the following options.</p>
 
                         </div>
-                        <div
-                            class="mt-12 space-y-4 sm:mt-16 sm:grid sm:grid-cols-2 sm:gap-6 sm:space-y-0 lg:mx-auto lg:max-w-4xl xl:mx-0 xl:max-w-none xl:grid-cols-3">
+                        <div class="mt-12 space-y-4 sm:mt-16 sm:grid sm:grid-cols-2 sm:gap-6 sm:space-y-0">
 
                             <div class="divide-y divide-gray-200 rounded-lg border border-gray-200 shadow-sm">
                                 <div class="p-6">
@@ -280,18 +321,24 @@
                         <main class="mt-16 mx-auto max-w-7xl px-4 sm:mt-24 sm:px-6 lg:mt-32">
                             <div class="lg:grid lg:grid-cols-12 lg:gap-8">
                                 <div class="sm:text-center md:max-w-2xl md:mx-auto lg:col-span-6 lg:text-left">
-                                    <div class="text-gray-500 font-semibold text-base uppercase">We’re setting up your
-                                        organization
+                                    <div class="text-gray-500 font-semibold text-base uppercase">You're now on the
+                                        waitlist!
                                     </div>
                                     <div class="font-extrabold text-gray-900 text-5xl mt-1">
-                                        A team member is <span class="text-green-800">preparing your account</span>
+                                        You don't want to <span class="text-green-800">wait?</span>
                                     </div>
                                     <div class="font-normal text-xl text-gray-500 mt-5">
+                                        In a 15 minute onboarding call, we can directly assign you access. Reach out to
+                                        us
+                                        <a href="https://www.kern.ai/waitlist" target="_blank"><span
+                                                class="underline cursor-pointer">here</span></a>.
+                                    </div>
+                                    <div class="text-gray-500 mt-5">
                                         In the meantime, feel free to take a look at a product demo or check out our
                                         <a href="https://docs.kern.ai/" target="_blank"><span
                                                 class="underline cursor-pointer">documentation</span></a>. If you have
                                         any
-                                        questions, you can reach out to us.
+                                        questions, contact us any time.
                                     </div>
                                 </div>
                                 <div style="width:560px;height:315px" class="overflow-hidden relative">
@@ -325,7 +372,7 @@
                 </div>
             </ng-container>
 
-            <!-- should not occur as local users are directly assigned to localhost org -->
+
             <ng-container *ngIf="organizationInactive && !isManaged">
                 <div class="h-screen relative bg-white overflow-hidden">
                     <div class="hidden lg:block lg:absolute lg:inset-0" aria-hidden="true">
@@ -345,18 +392,11 @@
                         <main class="mt-16 mx-auto max-w-7xl px-4 sm:mt-24 sm:px-6 lg:mt-32">
                             <div class="lg:grid lg:grid-cols-12 lg:gap-8">
                                 <div class="sm:text-center md:max-w-2xl md:mx-auto lg:col-span-6 lg:text-left">
-                                    <div class="text-gray-500 font-semibold text-base uppercase">
-                                        {{ canCreateOrg ? 'Preparing your account' : 'Maximum number of users reached'
-                                        }}
+                                    <div *ngIf="canCreateOrg" class="text-gray-500 font-semibold text-base uppercase">
+                                        Preparing your account. Please reload the page.
                                     </div>
-                                    <div class="font-extrabold text-gray-900 text-5xl mt-1">
-                                        <ng-template [ngIf]="canCreateOrg" [ngIfElse]="cannotCreateOrg">
-                                            Currently <span class="text-green-800">preparing your account</span>
-                                        </ng-template>
-                                        <ng-template #cannotCreateOrg>
-                                            <span class="text-green-800">Only one user </span>is allowed
-                                        </ng-template>
-                                    </div>
+                                    <div *ngIf="!canCreateOrg" class="text-gray-500 font-semibold text-base uppercase">
+                                        Maximum number of users reached. Please look into our managed version.</div>
                                     <div class="font-normal text-xl text-gray-500 mt-5">
                                         <ng-template [ngIf]="canCreateOrg" [ngIfElse]="premiumVersion">
                                             In the meantime, feel free to take a look at a product demo or check out our
@@ -368,8 +408,8 @@
                                         </ng-template>
                                         <ng-template #premiumVersion>
                                             If you are interested in working with multiple users take a look at our <a
-                                                href="https://kern.ai/pricing" target="_blank"><span
-                                                    class="underline cursor-pointer">managed version</span></a>.
+                                                href="./users"><span
+                                                    class="underline cursor-pointer">options</span></a>.
                                         </ng-template>
 
                                     </div>

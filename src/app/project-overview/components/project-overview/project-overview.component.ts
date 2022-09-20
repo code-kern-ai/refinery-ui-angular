@@ -9,6 +9,7 @@ import { Subscription, timer } from 'rxjs';
 import { first, tap, distinctUntilChanged, debounceTime } from 'rxjs/operators';
 import { Project } from 'src/app/base/entities/project';
 import { LabelingTaskTarget } from 'src/app/base/enum/graphql-enums';
+import { ConfigManager } from 'src/app/base/services/config-service';
 import { NotificationService } from 'src/app/base/services/notification.service';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { RouteService } from 'src/app/base/services/route.service';
@@ -66,6 +67,7 @@ export class ProjectOverviewComponent implements OnInit, OnDestroy {
   projectStats: ProjectStats = getEmptyProjectStats();
   subscriptions$: Subscription[] = [];
 
+  isManaged: boolean;
 
   constructor(
     private routeService: RouteService,
@@ -85,6 +87,9 @@ export class ProjectOverviewComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
 
     this.routeService.updateActivatedRoute(this.activatedRoute);
+
+    this.isManaged = ConfigManager.getIsManaged();
+
 
     const currentProjectID =
       this.activatedRoute.parent.snapshot.paramMap.get('projectId');
