@@ -254,7 +254,7 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200">
-                        <tr *ngFor="let service of versionOverview">
+                        <tr *ngFor="let service of versionOverview; let i = index" [ngClass]="i%2!=0 ? 'bg-gray-50':'bg-white'">
                             <td class="text-left px-3 py-2 text-sm text-gray-500">
                                 {{service.service}}
                             </td>

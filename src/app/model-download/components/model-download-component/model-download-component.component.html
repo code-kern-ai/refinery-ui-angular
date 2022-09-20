@@ -44,7 +44,7 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200">
-                        <tr *ngFor="let model of downloadedModels">
+                        <tr *ngFor="let model of downloadedModels;let i = index" [ngClass]="i%2!=0 ? 'bg-gray-50':'bg-white'">
                             <td class="text-center px-3 py-2 text-sm text-gray-500">
                                 <span class="inline-block mr-2">{{model.name}}</span>
                                 <label *ngIf="model.zeroShotPipeline" class="tooltip tooltip-right" data-tip="Can be used for zero-shot">

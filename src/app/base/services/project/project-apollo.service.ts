@@ -983,7 +983,7 @@ export class ProjectApolloService {
           sourceCode: task['sourceCode'],
           state: task['state'],
           logs: !task['logs']
-            ? [`Running ...`]
+            ? null
             : task['logs'].map((wrapper, index) => {
               let d: Date = new Date(
                 wrapper.substr(0, wrapper.indexOf(' '))
