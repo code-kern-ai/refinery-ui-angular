@@ -12,6 +12,7 @@ import {
 } from 'rxjs/operators';
 import { NotificationService } from 'src/app/base/services/notification.service';
 import { AttributeCalculationExamples, AttributeCodeLookup } from './new-attribute-code-lookup';
+import { RecordApolloService } from 'src/app/base/services/record/record-apollo.service';
 
 @Component({
   selector: 'kern-create-new-attribute',
@@ -43,10 +44,12 @@ export class CreateNewAttributeComponent implements OnInit {
   checkIfNewAttribute: string;
   attributesQuery$: any;
   attributes: any;
+  recordData: any;
 
   constructor( 
     private activatedRoute: ActivatedRoute,
     private projectApolloService: ProjectApolloService,
+    private recordApolloService: RecordApolloService,
     private routeService: RouteService,
     private router: Router) { }
 
@@ -293,4 +296,12 @@ export class CreateNewAttributeComponent implements OnInit {
     return attributes$;
   }
 
+  getRecordByRecordId(recordId: string) {
+    this.recordApolloService
+      .getRecordByRecordId(this.project.id, recordId)
+      .pipe(first())
+      .subscribe((record) => {
+        this.recordData = record.data;
+      });
+  }
 }

@@ -196,7 +196,7 @@
             <div class="mt-16 text-sm leading-5">
                 <div class="font-medium text-gray-700 inline-block">Container Logs</div>
                 <div class="inline-block">
-                    <button *ngIf="lastTask$ | async as task; else disabledIcon"
+                    <button *ngIf="lastTask$ | async as task; else disabledIcon" [ngClass]="task ? 'tooltip tooltip-top' : ''" [attr.data-tip]="task? 'Click to copy' : ''"
                         (click)="copyToClipboard(task.logs.join('\n'),0)">
                         <svg xmlns="http://www.w3.org/2000/svg"
                             class="transition-all duration-500 ease-in-out  h-6 w-6 text-gray-600 cursor-pointer inline-block"
