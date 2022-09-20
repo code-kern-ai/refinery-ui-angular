@@ -9,6 +9,7 @@ import { Subscription, timer } from 'rxjs';
 import { first, tap, distinctUntilChanged, debounceTime } from 'rxjs/operators';
 import { Project } from 'src/app/base/entities/project';
 import { LabelingTaskTarget } from 'src/app/base/enum/graphql-enums';
+import { ConfigManager } from 'src/app/base/services/config-service';
 import { NotificationService } from 'src/app/base/services/notification.service';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { RouteService } from 'src/app/base/services/route.service';
@@ -67,6 +68,7 @@ export class ProjectOverviewComponent implements OnInit, OnDestroy {
   projectStats: ProjectStats = getEmptyProjectStats();
   subscriptions$: Subscription[] = [];
 
+  isManaged: boolean;
 
   constructor(
     private routeService: RouteService,
@@ -88,6 +90,9 @@ export class ProjectOverviewComponent implements OnInit, OnDestroy {
     UserManager.checkUserAndRedirect(this);
 
     this.routeService.updateActivatedRoute(this.activatedRoute);
+
+    this.checkIfManagedVersion();
+
 
     const currentProjectID =
       this.activatedRoute.parent.snapshot.paramMap.get('projectId');
@@ -130,6 +135,14 @@ export class ProjectOverviewComponent implements OnInit, OnDestroy {
       this.saveSettingsToLocalStorage();
     });
     this.displayGraphsForm.valueChanges.subscribe(() => this.saveSettingsToLocalStorage())
+  }
+
+  checkIfManagedVersion() {
+    if (!ConfigManager.isInit()) {
+      timer(250).subscribe(() => this.checkIfManagedVersion());
+      return;
+    }
+    this.isManaged = ConfigManager.getIsManaged();
   }
 
   setDisplayNERConfusion(projectId: string, labelingTaskId: string) {

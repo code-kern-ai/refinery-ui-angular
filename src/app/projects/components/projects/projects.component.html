@@ -170,17 +170,21 @@
                     <main class="mt-16 mx-auto max-w-7xl px-4 sm:mt-24 sm:px-6 lg:mt-32">
                         <div class="lg:grid lg:grid-cols-12 lg:gap-8">
                             <div class="sm:text-center md:max-w-2xl md:mx-auto lg:col-span-6 lg:text-left">
-                                <div class="text-gray-500 font-semibold text-base uppercase">We’re setting up your
-                                    organization
+                                <div class="text-gray-500 font-semibold text-base uppercase">You're now on the waitlist!
                                 </div>
                                 <div class="font-extrabold text-gray-900 text-5xl mt-1">
-                                    A team member is <span class="text-green-800">preparing your account</span>
+                                    You don't want to <span class="text-green-800">wait?</span>
                                 </div>
                                 <div class="font-normal text-xl text-gray-500 mt-5">
+                                    In a 15 minute onboarding call, we can directly assign you access. Reach out to us
+                                    <a href="https://www.kern.ai/waitlist" target="_blank"><span
+                                            class="underline cursor-pointer">here</span></a>.
+                                </div>
+                                <div class="text-gray-500 mt-5">
                                     In the meantime, feel free to take a look at a product demo or check out our
                                     <a href="https://docs.kern.ai/" target="_blank"><span
                                             class="underline cursor-pointer">documentation</span></a>. If you have any
-                                    questions, you can reach out to us.
+                                    questions, contact us any time.
                                 </div>
                             </div>
                             <div style="width:560px;height:315px" class="overflow-hidden relative">
@@ -232,17 +236,11 @@
                     <main class="mt-16 mx-auto max-w-7xl px-4 sm:mt-24 sm:px-6 lg:mt-32">
                         <div class="lg:grid lg:grid-cols-12 lg:gap-8">
                             <div class="sm:text-center md:max-w-2xl md:mx-auto lg:col-span-6 lg:text-left">
-                                <div class="text-gray-500 font-semibold text-base uppercase">
-                                    {{ canCreateOrg ? 'Preparing your account' : 'Maximum number of users reached' }}
+                                <div *ngIf="canCreateOrg" class="text-gray-500 font-semibold text-base uppercase">
+                                    Preparing your account. Please reload the page.
                                 </div>
-                                <div class="font-extrabold text-gray-900 text-5xl mt-1">
-                                    <ng-template [ngIf]="canCreateOrg" [ngIfElse]="cannotCreateOrg">
-                                        Currently <span class="text-green-800">preparing your account</span>
-                                    </ng-template>
-                                    <ng-template #cannotCreateOrg>
-                                        <span class="text-green-800">Only one user </span>is allowed
-                                    </ng-template>
-                                </div>
+                                <div *ngIf="!canCreateOrg" class="text-gray-500 font-semibold text-base uppercase">
+                                    Maximum number of users reached. Please look into our managed version.</div>
                                 <div class="font-normal text-xl text-gray-500 mt-5">
                                     <ng-template [ngIf]="canCreateOrg" [ngIfElse]="premiumVersion">
                                         In the meantime, feel free to take a look at a product demo or check out our
@@ -253,8 +251,7 @@
                                     </ng-template>
                                     <ng-template #premiumVersion>
                                         If you are interested in working with multiple users take a look at our <a
-                                            href="https://kern.ai/pricing" target="_blank"><span
-                                                class="underline cursor-pointer">managed version</span></a>.
+                                            href="./users"><span class="underline cursor-pointer">options</span></a>.
                                     </ng-template>
 
                                 </div>

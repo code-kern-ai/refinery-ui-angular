@@ -1,9 +1,9 @@
 <div *ngIf="user$ | async as user" class="h-screen flex bg-gray-50 overflow-visible">
-    <div #sideBar class="hidden lg:flex lg:flex-shrink-0 overflow-visible">
+    <div class="flex overflow-visible">
         <div class="flex flex-col w-20 overflow-visible">
             <div class="flex-1 flex flex-col min-h-0 overflow-y-auto bg-kernindigo overflow-initial">
                 <div class="flex-1 flex flex-col">
-                    <div class="flex-shrink-0 bg-kernindigo pt-4 flex items-center justify-center">
+                    <div class="flex-shrink-0 bg-kernindigo pt-4 pb-10 flex items-center justify-center">
                         <a [routerLink]="['/projects']"
                             class="inline-flex items-center p-2 rounded-full hover:bg-kernindigo-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-kernindigo-dark"
                             data-intercom-target="Home Button">
@@ -32,9 +32,9 @@
                     </div>
                     <div>
                         <div *ngIf="project$ | async as project">
-                            <div *ngIf="project.id !== null"
-                                [ngClass]="user?.role == 'ENGINEER' ? 'visible' : 'invisible' ">
-                                <div class="flex items-center justify-center overflow-visible mt-10 2xl:mt-12">
+                            <div *ngIf="project.id !== null">
+                                <div *ngIf="user?.role == 'ENGINEER'"
+                                    class="flex items-center justify-center overflow-visible">
                                     <div data-tip="Overview" class="tooltip tooltip-right relative z-50"
                                         [ngClass]="project.numDataScaleUploaded == 0 ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer'">
                                         <a [routerLink]="['./overview']" rel="noopener noreferrer"
@@ -48,7 +48,8 @@
                                         </a>
                                     </div>
                                 </div>
-                                <div class="flex items-center justify-center overflow-visible mt-10 2xl:mt-12">
+                                <div *ngIf="user?.role == 'ENGINEER'"
+                                    class="flex items-center justify-center overflow-visible mt-10 2xl:mt-12">
                                     <div data-tip="Data Browser" class="tooltip tooltip-right relative z-50"
                                         [ngClass]="project.numDataScaleUploaded == 0 ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer'">
                                         <a [routerLink]="['./data']" rel="noopener noreferrer" class="circle text-white"
@@ -67,7 +68,8 @@
                                         </a>
                                     </div>
                                 </div>
-                                <div class="flex items-center justify-center overflow-visible mt-10 2xl:mt-12">
+                                <div class="flex items-center justify-center overflow-visible"
+                                    [ngClass]="user?.role == 'ENGINEER'?'mt-10 2xl:mt-12':''">
                                     <div data-tip="Labeling" class="tooltip tooltip-right relative z-50"
                                         [ngClass]="project.numDataScaleUploaded == 0 ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer'">
                                         <a [routerLink]="['./labeling']" rel="noopener noreferrer"
@@ -82,7 +84,8 @@
                                         </a>
                                     </div>
                                 </div>
-                                <div class="flex items-center justify-center overflow-visible mt-10 2xl:mt-12">
+                                <div *ngIf="user?.role == 'ENGINEER'"
+                                    class="flex items-center justify-center overflow-visible mt-10 2xl:mt-12">
                                     <div data-tip="Heuristics" class="tooltip tooltip-right relative z-50"
                                         [ngClass]="project.numDataScaleUploaded == 0 ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer'">
                                         <a [routerLink]="['./heuristics']" rel="noopener noreferrer"
@@ -96,7 +99,8 @@
                                         </a>
                                     </div>
                                 </div>
-                                <div class="flex items-center justify-center overflow-visible mt-10 2xl:mt-12">
+                                <div *ngIf="user?.role == 'ENGINEER'"
+                                    class="flex items-center justify-center overflow-visible mt-10 2xl:mt-12">
                                     <div data-tip="Settings" class="tooltip tooltip-right relative z-50">
                                         <a [routerLink]="['./settings']" rel="noopener noreferrer"
                                             class="circle text-white"
@@ -119,7 +123,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div [ngClass]="user?.role == 'ENGINEER' ? 'visible' : 'invisible' ">
+                        <div *ngIf="user?.role == 'ENGINEER'">
                             <div class="flex items-center justify-center overflow-visible mt-6">
                                 <div data-tip="Documentation" class="tooltip tooltip-right relative z-50">
                                     <a href="https://docs.kern.ai/" target="_blank" rel="noopener noreferrer"
@@ -149,29 +153,32 @@
                                     </a>
                                 </div>
                             </div>
-                            <div class="flex items-center justify-center overflow-visible mt-10 2xl:mt-12">
-                                <div data-tip="Join our community" class="tooltip tooltip-right relative z-50">
-                                    <a href="https://discord.com/invite/qf4rGCEphW" target="_blank"
-                                        rel="noopener noreferrer" class="circle text-white">
-                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                            class="icon icon-tabler icon-tabler-brand-discord" width="24" height="24"
-                                            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                                            stroke-linecap="round" stroke-linejoin="round">
-                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                            <circle cx="9" cy="12" r="1"></circle>
-                                            <circle cx="15" cy="12" r="1"></circle>
-                                            <path d="M7.5 7.5c3.5 -1 5.5 -1 9 0"></path>
-                                            <path d="M7 16.5c3.5 1 6.5 1 10 0"></path>
-                                            <path
-                                                d="M15.5 17c0 1 1.5 3 2 3c1.5 0 2.833 -1.667 3.5 -3c.667 -1.667 .5 -5.833 -1.5 -11.5c-1.457 -1.015 -3 -1.34 -4.5 -1.5l-1 2.5">
-                                            </path>
-                                            <path
-                                                d="M8.5 17c0 1 -1.356 3 -1.832 3c-1.429 0 -2.698 -1.667 -3.333 -3c-.635 -1.667 -.476 -5.833 1.428 -11.5c1.388 -1.015 2.782 -1.34 4.237 -1.5l1 2.5">
-                                            </path>
-                                        </svg>
-                                    </a>
-                                </div>
-                            </div>
+
+                        </div>
+                    </div>
+
+
+                    <div class="flex items-center justify-center overflow-visible mt-10 2xl:mt-12">
+                        <div data-tip="Join our community" class="tooltip tooltip-right relative z-50">
+                            <a href="https://discord.com/invite/qf4rGCEphW" target="_blank" rel="noopener noreferrer"
+                                class="circle text-white">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="icon icon-tabler icon-tabler-brand-discord" width="24" height="24"
+                                    viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <circle cx="9" cy="12" r="1"></circle>
+                                    <circle cx="15" cy="12" r="1"></circle>
+                                    <path d="M7.5 7.5c3.5 -1 5.5 -1 9 0"></path>
+                                    <path d="M7 16.5c3.5 1 6.5 1 10 0"></path>
+                                    <path
+                                        d="M15.5 17c0 1 1.5 3 2 3c1.5 0 2.833 -1.667 3.5 -3c.667 -1.667 .5 -5.833 -1.5 -11.5c-1.457 -1.015 -3 -1.34 -4.5 -1.5l-1 2.5">
+                                    </path>
+                                    <path
+                                        d="M8.5 17c0 1 -1.356 3 -1.832 3c-1.429 0 -2.698 -1.667 -3.333 -3c-.635 -1.667 -.476 -5.833 1.428 -11.5c1.388 -1.015 2.782 -1.34 4.237 -1.5l1 2.5">
+                                    </path>
+                                </svg>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -219,13 +226,7 @@
                 </div>
             </div>
         </div>
-    </div>
-    <div #svgMenu class="flex lg:hidden m-4 cursor-pointer" (isMenuOpen)="toggleVisible($event, sideBar, svgMenu)"
-        appDropdown>
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-            stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
+
     </div>
 </div>
 
