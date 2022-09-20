@@ -487,7 +487,7 @@
                                 <select formControlName="targetAttribute"
                                     class="select select-bordered select-sm max-w-xs"
                                     data-intercom-target="Settings Page Embedding Mask Target Attribute Selector">
-                                    <option *ngFor="let attribute of attributesArrayText" [value]="attribute.id">
+                                    <option *ngFor="let attribute of attributesArrayTextUsableUploaded" [value]="attribute.id">
                                         {{attribute.name}}
                                     </option>
                                 </select>
@@ -808,9 +808,8 @@
                                 attribute</span></span>
                         <select #labelingTaskTarget class="select select-bordered select-sm">
                             <option value="@@NO_ATTRIBUTE@@" selected="selected">Full Record</option>
-                            <option *ngFor="let attribute of attributesArray.controls"
-                                [value]="attribute.get('id').value">
-                                {{attribute.get('name').value }}
+                            <option *ngFor="let attribute of attributesArrayUsableUploaded" [value]="attribute.id">
+                                {{attribute.name}}
                             </option>
                         </select>
                         <span data-tip="Name of your labeling task"

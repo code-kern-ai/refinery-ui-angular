@@ -217,13 +217,13 @@ export class ProjectApolloService {
     return [query, vc];
   }
 
-  getAttributesByProjectId(projectId: string, onlyUsable: boolean = true) {
+  getAttributesByProjectId(projectId: string, stateFilter: string[] = null) {
     const query = this.apollo
       .watchQuery({
         query: queries.GET_ATTRIBUTES_BY_PROJECT_ID,
         variables: {
           projectId: projectId,
-          onlyUsable: onlyUsable
+          stateFilter: stateFilter
         },
         fetchPolicy: 'network-only',
       });
@@ -959,11 +959,44 @@ export class ProjectApolloService {
         },
         fetchPolicy: 'network-only',
       });
-    const vc = query.valueChanges.pipe(
+    // const vc = query.valueChanges.pipe(
+    //   map((result) => {
+    //     return result['data']['attributeByAttributeId'];
+    //   }, error => {
+    //     console.log(error)
+    //   })
+    // );
+    const vc = query
+    .valueChanges.pipe(
       map((result) => {
-        return result['data']['attributeByAttributeId'];
-      }, error => {
-        console.log(error)
+        let task = result['data']['attributeByAttributeId'];
+        let neededIDLength = task['logs']
+          ? String(task['logs'].length).length
+          : 0;
+        return {
+          id: task['id'],
+          name: task['name'],
+          dataType: task['dataType'],
+          isPrimaryKey: task['isPrimaryKey'],
+          relativePosition: task['relativePosition'],
+          userCreated: task['userCreated'],
+          sourceCode: task['sourceCode'],
+          state: task['state'],
+          logs: !task['logs']
+            ? [`Running ...`]
+            : task['logs'].map((wrapper, index) => {
+              let d: Date = new Date(
+                wrapper.substr(0, wrapper.indexOf(' '))
+              );
+              return (
+                String(index + 1).padStart(neededIDLength, '0') +
+                ': ' +
+                d.toLocaleString() +
+                ' - ' +
+                wrapper.substr(wrapper.indexOf(' ') + 1)
+              );
+            }),
+        };
       })
     );
     return [query, vc];

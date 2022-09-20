@@ -46,7 +46,7 @@ export class HeuristicStatusesComponent implements OnChanges {
           this.color = 'indigo';
           break;
       default: 
-        this.dataTip = this.page === 'heuristics' ? 'Heuristic' : 'Attribute' + 'was successfully registered.';
+        this.dataTip = this.page === 'heuristics' ? 'Heuristic' : 'Attribute' + ' was successfully registered.';
         this.statusName = 'Initial';
         this.color = 'gray';
     }

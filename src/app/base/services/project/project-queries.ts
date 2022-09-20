@@ -120,8 +120,8 @@ export const queries = {
 `,
 
   GET_ATTRIBUTES_BY_PROJECT_ID: gql`
-  query($projectId: ID!, $onlyUsable: Boolean) {
-    attributesByProjectId(projectId: $projectId, onlyUsable: $onlyUsable) {
+  query($projectId: ID!, $stateFilter: [String!]) {
+    attributesByProjectId(projectId: $projectId, stateFilter: $stateFilter) {
       id
       name
       dataType

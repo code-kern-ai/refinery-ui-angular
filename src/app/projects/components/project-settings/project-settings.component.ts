@@ -106,7 +106,8 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     return this.attributesSchema.get('attributes') as FormArray;
   }
 
-  attributesArrayText: { id: string, name: string }[] = [];
+  attributesArrayTextUsableUploaded: { id: string, name: string }[] = [];
+  attributesArrayUsableUploaded: { id: string, name: string }[] = [];
   attributes;
   pKeyCheckTimer;
   pKeyValid: boolean = null;
@@ -291,10 +292,11 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
 
   prepareAttributesRequest(projectId: string): Observable<any> {
     let attributes$;
-    [this.attributesQuery$, attributes$] = this.projectApolloService.getAttributesByProjectId(projectId, false);
+    [this.attributesQuery$, attributes$] = this.projectApolloService.getAttributesByProjectId(projectId, []);
     this.subscriptions$.push(attributes$.subscribe((attributes) => {
       this.attributes = attributes;
-      this.attributesArrayText = [];
+      this.attributesArrayTextUsableUploaded = [];
+      this.attributesArrayUsableUploaded = [];
       this.attributesArray.clear();
       attributes.forEach((att) => {
         let group = this.formBuilder.group({
@@ -314,8 +316,13 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
             updateAttribute(this.project.id, values.id, values.dataType, values.isPrimaryKey, values.name, values.sourceCode).pipe(first()).subscribe();
         });
         this.attributesArray.push(group);
-        if (att.dataType == 'TEXT') {
-          this.attributesArrayText.push({ id: att.id, name: att.name });
+        if (att.state == 'UPLOADED' || att.state == 'USABLE') {
+          if(att.dataType == 'TEXT') {
+            this.attributesArrayTextUsableUploaded.push({ id: att.id, name: att.name });
+            this.attributesArrayUsableUploaded.push({ id: att.id, name: att.name });
+          } else {
+            this.attributesArrayUsableUploaded.push({ id: att.id, name: att.name });
+          }
         }
       });
       const onlyTextAttributes = attributes.filter(a => a.dataType == 'TEXT');
