@@ -210,7 +210,8 @@
                                                                         </ng-template>
 
                                                                         <!--normal display-->
-                                                                        <ng-template [ngIf]="token.type"
+                                                                        <ng-template
+                                                                            [ngIf]="token.type && user.role !='ANNOTATOR'"
                                                                             [ngIfElse]="tokenValue">
                                                                             <div [attr.data-tip]="'type: ' + token.type"
                                                                                 class="tooltip self-start">
