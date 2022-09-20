@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { timer } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { ConfigManager } from 'src/app/base/services/config-service';
@@ -16,14 +17,17 @@ export class UsersComponent implements OnInit, OnDestroy {
   user$: any;
   avatarUri: string;
   isManaged: boolean = true;
+  static youtubeUrl: string = "https://www.youtube.com/embed/Hwlu6GWzDH8?autoplay=1&enablejsapi=1";
+  saveUrl: SafeResourceUrl;
 
-  engineers: any[] = [];
-  experts: any[] = [];
-  annotators: any[] = [];
+  engineers: any[];
+  experts: any[];
+  annotators: any[];
 
 
   constructor(
     private organizationApolloService: OrganizationApolloService,
+    private urlSanatizer: DomSanitizer
   ) { }
 
 
@@ -37,11 +41,14 @@ export class UsersComponent implements OnInit, OnDestroy {
       .getUserOrganization()
       .pipe(first()).subscribe((org) => {
         this.organizationInactive = org == null;
-        if (!this.organizationInactive) this.organizationName = org.name;
+        if (!this.organizationInactive) {
+          this.organizationName = org.name;
+          this.organizationApolloService.getOrganizationUsers().pipe(first()).subscribe((users) => this.moveAnnotatorsToArr(users));
+        }
 
       });
 
-    this.organizationApolloService.getOrganizationUsers().pipe(first()).subscribe((users) => this.moveAnnotatorsToArr(users));
+
 
     this.organizationApolloService.getUserInfo().pipe(first())
       .subscribe((user) => this.avatarUri = this.getAvatarUri(user));
@@ -54,6 +61,13 @@ export class UsersComponent implements OnInit, OnDestroy {
     this.experts = users.filter(u => u.role == "EXPERT");
     this.annotators = users.filter(u => u.role == "ANNOTATOR");
 
+  }
+
+
+
+
+  startPlayback() {
+    this.saveUrl = this.urlSanatizer.bypassSecurityTrustResourceUrl(UsersComponent.youtubeUrl);
   }
 
   getAvatarUri(user) {
