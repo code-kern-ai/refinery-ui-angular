@@ -13,7 +13,11 @@ export type labelingHuddle = {
     partial: boolean
     linkData: labelingLinkData,
     allowedTask: string,
-    canEdit: boolean
+    canEdit: boolean,
+    checkedAt: {
+        local: Date,
+        db: Date
+    }
 };
 
 export enum labelingLinkType {

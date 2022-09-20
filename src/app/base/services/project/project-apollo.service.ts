@@ -1001,10 +1001,23 @@ export class ProjectApolloService {
           projectId: projectId,
           linkRoute: linkRoute
         },
-        fetchPolicy: 'no-cache', //this shouldnt change often (also default value)
+        fetchPolicy: 'no-cache',
       })
       .pipe(map((result) => result['data']['linkLocked']));
 
   }
+  linkDataOutdated(projectId: string, linkRoute: string, lastRequestedAt: Date) {
+    return this.apollo
+      .query({
+        query: queries.LINK_DATA_OUTDATED,
+        variables: {
+          projectId: projectId,
+          linkRoute: linkRoute,
+          lastRequestedAt: lastRequestedAt
+        },
+        fetchPolicy: 'no-cache',
+      })
+      .pipe(map((result) => result['data']['linkDataOutdated']));
 
+  }
 }

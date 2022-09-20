@@ -382,14 +382,22 @@ export const queries = {
       startPos
       allowedTask
       canEdit
+      checkedAt
     }
   }
   
 `,
   LINK_LOCKED: gql`
-  query ($projectId: ID!, $linkRoute: String!) {
-    linkLocked(projectId: $projectId, linkRoute: $linkRoute)
-  }`
+query ($projectId: ID!, $linkRoute: String!) {
+  linkLocked(projectId: $projectId, linkRoute: $linkRoute)
+}`
   ,
+  LINK_DATA_OUTDATED: gql`
+query ($projectId: ID!, $linkRoute: String!, $lastRequestedAt: DateTime!) {
+  linkDataOutdated(projectId: $projectId, linkRoute: $linkRoute, lastRequestedAt: $lastRequestedAt)
+}`
+  ,
+
+
 
 };

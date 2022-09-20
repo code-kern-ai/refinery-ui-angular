@@ -172,7 +172,7 @@ export class NotificationCenterComponent implements OnInit, OnDestroy {
     }
     else if (msgParts[1] == 'notification_created') {
       //once not only the user filter is active this condition can be changed
-      if (msgParts[2] == this.loggedInUser.id) this.notificationsQuery$.refetch();
+      if (msgParts[2] == this.loggedInUser?.id) this.notificationsQuery$.refetch();
     }
   }
 }

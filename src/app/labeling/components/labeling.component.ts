@@ -49,6 +49,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
   static LABEL_SEARCH_TEXT_DEFAULT = "Search label name...";
   static DUMMY_HUDDLE_ID = "00000000-0000-0000-0000-000000000000";
   static ALLOWED_KEYS = " 01234567890abcdefghijklmnopqrstuvwxyzöäüß<>|,.;:-_#'\"~+*?\\{}[]()=/&%$§!@^°€";
+  static ONE_DAY = 24 * 60 * 60 * 1000; /* ms */
   GOLD_USER_ID = "GOLD_USER"; //not static to prevent call of getter on every cycle
   firstVisitGold: boolean = true;
   attributesQuery$: any;
@@ -149,6 +150,9 @@ export class LabelingComponent implements OnInit, OnDestroy {
 
     let initialTasks$ = [];
     initialTasks$.push(this.prepareUser());
+    if (this.huddleData?.checkedAt.db) {
+      initialTasks$.push(this.checkLocalDataOutdated());
+    }
     if (this.labelingLinkData.linkType == "HEURISTIC") {
       initialTasks$.push(this.checkLinkAccess());
     }
@@ -180,8 +184,55 @@ export class LabelingComponent implements OnInit, OnDestroy {
     if (tmp) this.showNLabelButton = Number(tmp);
     let autoNextRecord = localStorage.getItem("autoNextRecord");
     if (autoNextRecord) this.autoNextRecord = autoNextRecord === 'true' ? true : false;
-    this.huddleData = JSON.parse(localStorage.getItem("huddleData"));
+    this.getHuddleDataFromLocal();
 
+    if (this.huddleOutdated()) {
+      localStorage.removeItem("huddleData");
+      this.huddleData = null;
+    }
+
+  }
+
+  private getHuddleDataFromLocal() {
+    this.huddleData = JSON.parse(localStorage.getItem("huddleData"));
+    if (!this.huddleData) return;
+    if (typeof this.huddleData.checkedAt.db == 'string') {
+      this.huddleData.checkedAt.db = new Date(this.huddleData.checkedAt.db);
+    }
+    if (typeof this.huddleData.checkedAt.local == 'string') {
+      this.huddleData.checkedAt.local = new Date(this.huddleData.checkedAt.local);
+    }
+    if (this.huddleData.linkData.requestedPos != this.labelingLinkData.requestedPos) {
+      //url manual changed
+      this.huddleData.linkData.requestedPos = this.labelingLinkData.requestedPos;
+    }
+  }
+
+  private huddleOutdated(): boolean {
+
+    if (!this.huddleData) return true;
+    for (const key in this.labelingLinkData) {
+      if (key == 'linkLocked') continue;
+      if (this.labelingLinkData[key] != this.huddleData.linkData[key]) return true;
+    }
+    if (this.huddleData.checkedAt?.local) {
+      if ((new Date().getTime() - this.huddleData.checkedAt.local.getTime()) > LabelingComponent.ONE_DAY) return true;
+    }
+    return false;
+  }
+
+  checkLocalDataOutdated() {
+    const dbTime = this.huddleData.checkedAt.db;
+    const pipeFirst = this.projectApolloService.linkDataOutdated(this.labelingLinkData.projectId, this.router.url, dbTime)
+      .pipe(first());
+
+    pipeFirst.subscribe((outdated) => {
+      if (outdated) {
+        localStorage.removeItem("huddleData");
+        this.huddleData = null;
+      }
+    });
+    return pipeFirst;
   }
 
   checkLinkAccess() {
@@ -194,6 +245,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
     });
     return pipeFirst;
   }
+
 
   getWhiteListNotificationService(): string[] {
     let toReturn = ['label_created', 'label_deleted', 'attributes_updated'];
@@ -262,25 +314,31 @@ export class LabelingComponent implements OnInit, OnDestroy {
       if (!huddleData.huddleId) {
         //nothing was found (no slice / heuristic available)
       }
-      this.labelingLinkData.requestedPos = huddleData.startPos;
+      if (huddleData.startPos != -1) this.labelingLinkData.requestedPos = huddleData.startPos;
       this.huddleData = {
         recordIds: huddleData.recordIds as string[],
         partial: false,
         linkData: this.labelingLinkData,
         allowedTask: huddleData.allowedTask,
         canEdit: huddleData.canEdit,
+        checkedAt: this.parseCheckedAt(huddleData.checkedAt)
       }
 
       localStorage.setItem('huddleData', JSON.stringify(this.huddleData));
-
+      console.log("huddleData", this.huddleData);
       const pos = this.labelingLinkData.requestedPos + 1; //zero based in backend
       this.jumpToPosition(projectId, pos);
 
 
     });
-
-
   }
+  private parseCheckedAt(checkedAt: string) {
+    return {
+      local: dateAsUTCDate(new Date(checkedAt)),
+      db: new Date(checkedAt)
+    }
+  }
+
   getSourceId(): string {
     if (!this.huddleData) return null;
     if (this.huddleData.linkData.linkType != labelingLinkType.HEURISTIC) return null;
@@ -568,7 +626,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
     this.recordLabelAssociations$ = this.recordLabelAssociations$
       .subscribe((recordLabelAssociations) => {
         if (!recordLabelAssociations) return;
-        let rlaData = this.prepareRLADataForRole(recordLabelAssociations);
+        const rlaData = this.prepareRLADataForRole(recordLabelAssociations);
         this.extendRecordLabelAssociations(rlaData);
         this.parseRlaToGroups(rlaData)
         this.prepareFullRecord();
@@ -579,8 +637,9 @@ export class LabelingComponent implements OnInit, OnDestroy {
   }
 
   prepareRLADataForRole(rlaData: any[]): any[] {
+    const rlaDataCopy = JSON.parse(JSON.stringify(rlaData));
     if (this.user.role == "ANNOTATOR") {
-      rlaData.forEach((rla) => {
+      rlaDataCopy.forEach((rla) => {
         if (rla.sourceId && rla.sourceId == this.getSourceId()) {
           rla.sourceType = LabelSource.MANUAL;
           rla.sourceId = null;
@@ -588,9 +647,9 @@ export class LabelingComponent implements OnInit, OnDestroy {
           rla.id = "irrelevant";
         }
       });
-      return rlaData.filter(rla => rla.id != "irrelevant");
+      return rlaDataCopy.filter(rla => rla.id != "irrelevant");
     }
-    return rlaData;
+    return rlaDataCopy;
   }
 
   getTokenizedRecord(recordId: string, fullRefresh: boolean = false) {
@@ -1044,7 +1103,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
     if (!(this.isCommentBoxOpen && ((target && target.id == 'commentInput') || !target))) {
       this.isCommentBoxOpen = false;
     }
-    if (!(this.displayUserId == this.GOLD_USER_ID || this.displayUserId == this.user.id)) return;
+    if (!(this.displayUserId == this.GOLD_USER_ID || this.displayUserId == this.user?.id)) return;
     this.checkLabelBlinker(event);
     //mouseup is fired before selection is updated --> wait 1 ms
     timer(1).subscribe(() => {
@@ -1092,7 +1151,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
 
   tokenMouseUp(event: MouseEvent, taskId) {
     if (!(event.target instanceof HTMLElement)) return;
-    if (!(this.displayUserId == this.GOLD_USER_ID || this.displayUserId == this.user.id)) return;
+    if (!(this.displayUserId == this.GOLD_USER_ID || this.displayUserId == this.user?.id)) return;
     event.stopPropagation();
 
     timer(1).subscribe(() => {
@@ -1741,10 +1800,9 @@ export class LabelingComponent implements OnInit, OnDestroy {
       this.attributesQuery$.refetch();
     } else if (['access_link_changed', 'access_link_removed'].includes(msgParts[1])) {
       if (this.router.url.indexOf(msgParts[3]) > -1 && this.labelingLinkData) {
-        // this.checkLinkAccess();
-        console.log(msgParts[4], !msgParts[4], msgParts[4] === 'true')
-        this.labelingLinkData.linkLocked = !msgParts[4] || msgParts[4] === 'true';
-        // location.reload();
+        //python "True" string
+        this.labelingLinkData.linkLocked = !msgParts[4] || msgParts[4] === 'True';
+        location.reload();
       }
 
     } else if (msgParts[1] == 'information_source_updated') {

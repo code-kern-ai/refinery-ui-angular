@@ -53,6 +53,7 @@ import { SimilarSearch } from './helper-classes/search-similar';
 import { UserFilter } from './helper-classes/user-filter';
 import { DownloadState } from 'src/app/import/services/s3.enums';
 import { UserManager } from 'src/app/util/user-manager';
+import { labelingLinkType } from 'src/app/labeling/components/helper/labeling-helper';
 
 
 type DataSlice = {
@@ -1135,14 +1136,21 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   }
 
   storePreliminaryRecordIds(pos: number) {
-    const sessionData = {
+    const huddleData = {
       recordIds: this.extendedRecords.recordList.map((record) => record.id),
-      sessionId: this.extendedRecords.sessionId,
       partial: true,
-      currentPos: pos,
-      projectId: this.projectId
+      linkData: {
+        projectId: this.projectId,
+        id: this.extendedRecords.sessionId,
+        requestedPos: pos,
+        linkType: labelingLinkType.SESSION
+      },
+      allowedTask: null,
+      canEdit: true,
+      checkedAt: { db: null, local: new Date() }
+
     }
-    localStorage.setItem('sessionData', JSON.stringify(sessionData));
+    localStorage.setItem('huddleData', JSON.stringify(huddleData));
   }
 
   setExtendedData(queryResults, extend: boolean) {

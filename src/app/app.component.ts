@@ -160,7 +160,7 @@ export class AppComponent implements OnDestroy, OnInit {
 
   handleWebsocketNotification(msgParts) {
     if (msgParts[1] == 'notification_created') {
-      if (msgParts[2] != this.loggedInUser.id) return;
+      if (msgParts[2] != this.loggedInUser?.id) return;
       if (this.refetchTimer) return;
       this.refetchTimer = timer(500).subscribe(() => {
         this.notificationsQuery$.resetLastResults();
