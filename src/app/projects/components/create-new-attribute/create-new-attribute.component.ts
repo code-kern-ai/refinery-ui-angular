@@ -160,10 +160,6 @@ export class CreateNewAttributeComponent implements OnInit {
     }
   }
 
-  getPythonClassRegExMatch(codeToCheck: string): any {
-    return /class ([\w]+)\([^)]+\):/.exec(codeToCheck);
-  }
-
   toPythonFunctionName(str: string) {
     return str.replace(/\s+/g, '_').replace(/[^\w]/gi, '').trim();
   }

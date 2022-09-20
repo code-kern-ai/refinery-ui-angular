@@ -7,13 +7,11 @@ import { LabelingTask, LabelingTaskTarget, labelingTaskToString } from 'src/app/
 import { NotificationService } from 'src/app/base/services/notification.service';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { RouteService } from 'src/app/base/services/route.service';
-import { schemeCategory24 } from 'src/app/util/colors';
 import { DownloadState } from 'src/app/import/services/s3.enums';
 import { HttpClient } from '@angular/common/http';
 import { S3Service } from 'src/app/import/services/s3.service';
 import { WeakSourceApolloService } from 'src/app/base/services/weak-source/weak-source-apollo.service';
 import { ConfigManager } from 'src/app/base/services/config-service';
-import { AttributeCalculationExamples, AttributeCodeLookup } from '../create-new-attribute/new-attribute-code-lookup';
 
 @Component({
   selector: 'kern-project-settings',

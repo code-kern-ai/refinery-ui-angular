@@ -959,13 +959,6 @@ export class ProjectApolloService {
         },
         fetchPolicy: 'network-only',
       });
-    // const vc = query.valueChanges.pipe(
-    //   map((result) => {
-    //     return result['data']['attributeByAttributeId'];
-    //   }, error => {
-    //     console.log(error)
-    //   })
-    // );
     const vc = query
     .valueChanges.pipe(
       map((result) => {
