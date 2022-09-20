@@ -16,8 +16,8 @@
                     <div *ngIf="!isHeaderNormal" class="mx-4 text-sm leading-5 font-medium text-gray-500 inline-block">
                         {{attribute.name}}</div>
 
-                    <kern-heuristic-statuses [status]="attribute.state"></kern-heuristic-statuses>
-                    <kern-loading *ngIf="attribute.state =='EXECUTION'" [status]="attribute.state"></kern-loading>
+                    <kern-heuristic-statuses [status]="attribute.state" page="attributes"></kern-heuristic-statuses>
+                    <kern-loading *ngIf="attribute.state =='RUNNING'" [status]="attribute.state"></kern-loading>
 
                 </div>
             </div>
@@ -27,8 +27,8 @@
             <div class="grid gap-4" [ngClass]="isHeaderNormal ? 'grid-cols-2' : 'grid-cols-1'">
                 <div class="flex items-center mt-2" *ngIf="isHeaderNormal">
                     <div class="tooltip tooltip-right" data-tip="Edit your attribute's name">
-                        <button [disabled]="attribute.state == 'USABLE' || attribute.state == 'EXECUTION'"
-                            [ngClass]="attribute.state == 'USABLE' || attribute.state == 'EXECUTION' ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
+                        <button [disabled]="attribute.state == 'USABLE' || attribute.state == 'RUNNING'"
+                            [ngClass]="attribute.state == 'USABLE' || attribute.state == 'RUNNING' ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
                             (click)="openName(true)"
                             class="flex-shrink-0 bg-white text-gray-700 text-xs font-semibold mr-3 px-4 py-2 rounded-md border border-gray-300 block float-left hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                             Edit name
@@ -36,7 +36,7 @@
                     </div>
                     
                     <div class="inline-block" (dblclick)="openName(true)">
-                        <ng-template [ngIf]="isNameOpen() && attribute.state!='USABLE'" && attribute.state !="'EXECUTION"  [ngIfElse]="displayName">
+                        <ng-template [ngIf]="isNameOpen() && attribute.state!='USABLE'" && attribute.state !="'RUNNING"  [ngIfElse]="displayName">
                             <input #nameArea type="text" class="p-2 flex-grow input input-sm"
                                 (input)="changeAttributeName($event)" (blur)="openName(false,project.id)"
                                 (keydown.enter)="openName(false,project.id)" [(ngModel)]="attributeName">
@@ -52,13 +52,19 @@
 
             <div class="flex flex-row items-center">
                 <div class="text-sm leading-5 font-medium text-gray-700 inline-block mr-2">Attributes</div>
-                <span *ngFor="let attribute of attributes" (click)="copyToClipboard(attribute.name)"
-                    data-tip="Click to copy" class="tooltip">
-                    <div
-                        class="cursor-pointer border items-center px-2 py-0.5 rounded text-xs font-medium text-center m-2 bg-gray-100 text-gray-700 border-gray-400 hover:bg-gray-200">
-                        {{attribute.name}}
-                    </div>
-                </span>
+                <ng-template [ngIf]="attributes.length > 0" [ngIfElse]="noAttributes">
+                    <span *ngFor="let attribute of attributes" (click)="copyToClipboard(attribute.name)"
+                        data-tip="Click to copy" class="tooltip">
+                        <div
+                            class="cursor-pointer border items-center px-2 py-0.5 rounded text-xs font-medium text-center m-2 bg-gray-100 text-gray-700 border-gray-400 hover:bg-gray-200">
+                            {{attribute.name}}
+                        </div>
+                    </span>
+                </ng-template>
+                <ng-template #noAttributes>
+                    <div class="text-sm font-normal text-gray-500">No usable attributes.</div>
+                </ng-template>
+                
             </div>
 
             <div class="flex flex-row items-center mt-2">
@@ -102,16 +108,16 @@
                             <kern-loading color="indigo"></kern-loading>
                         </div>
                         <div data-tip="Execute the attribute on 10 records" class="tooltip tooltip-left">
-                            <button [disabled]="hasUnsavedChanges() || attribute.state=='USABLE' || attribute.state=='EXECUTION' || testerRequestedSomething"
-                                [ngClass]="hasUnsavedChanges() || attribute.state=='USABLE' || attribute.state=='EXECUTION' || testerRequestedSomething ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
+                            <button [disabled]="hasUnsavedChanges() || attribute.state=='USABLE' || attribute.state=='RUNNING' || testerRequestedSomething"
+                                [ngClass]="hasUnsavedChanges() || attribute.state=='USABLE' || attribute.state=='RUNNING' || testerRequestedSomething ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
                                 (click)="calculateUserAttributeSampleRecords()"
                                 class="bg-white text-gray-700 text-xs font-semibold px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                                 Run on 10
                             </button>
                         </div>
-                        <div data-tip="Execute the attribute on all records" class="tooltip tooltip-left" [ngClass]="hasUnsavedChanges() || attribute.state=='USABLE' || attribute.state=='EXECUTION' || testerRequestedSomething ? 'cursor-not-allowed' : ''">
+                        <div data-tip="Execute the attribute on all records" class="tooltip tooltip-left" [ngClass]="hasUnsavedChanges() || attribute.state=='USABLE' || attribute.state=='RUNNING' || testerRequestedSomething ? 'cursor-not-allowed' : ''">
                             <label [for]="'attribute-calculation'"
-                                [ngClass]="hasUnsavedChanges() || attribute.state=='USABLE' || attribute.state=='EXECUTION' || testerRequestedSomething ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer'"
+                                [ngClass]="hasUnsavedChanges() || attribute.state=='USABLE' || attribute.state=='RUNNING' || testerRequestedSomething ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer'"
                                 class="bg-indigo-700 text-white text-xs leading-4 font-semibold px-4 py-2 rounded-md cursor-pointer ml-3 hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                                 Run
                             </label>
