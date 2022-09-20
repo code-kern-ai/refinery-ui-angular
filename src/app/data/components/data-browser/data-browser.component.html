@@ -1120,7 +1120,8 @@
                         <div class="float-right">
                             <label class="text-green-700 hover:text-green-500 text-sm font-medium cursor-pointer"
                                 (click)="storePreliminaryRecordIds(i+1)"
-                                [routerLink]="['../labeling/' + extendedRecords.sessionId]" [queryParams]="{pos: i+1}">
+                                [routerLink]="['../labeling/' + extendedRecords.sessionId]"
+                                [queryParams]="{pos: i+1,type:'SESSION'}">
                                 <span class="leading-5">Continue with this record
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block" fill="none"
                                         viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">

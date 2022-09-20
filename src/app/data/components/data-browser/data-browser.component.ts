@@ -8,7 +8,7 @@ import {
   FormControl,
   FormGroup,
 } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { KeyValue } from '@angular/common';
 import { combineLatest, forkJoin, interval, Observable, Subscription, timer } from 'rxjs';
 import { dateAsUTCDate } from 'src/app/util/helper-functions';
@@ -52,6 +52,7 @@ import {
 import { SimilarSearch } from './helper-classes/search-similar';
 import { UserFilter } from './helper-classes/user-filter';
 import { DownloadState } from 'src/app/import/services/s3.enums';
+import { UserManager } from 'src/app/util/user-manager';
 
 
 type DataSlice = {
@@ -194,7 +195,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     private projectApolloService: ProjectApolloService,
     private recordApolloService: RecordApolloService,
     private organizationApolloService: OrganizationApolloService,
-    public formBuilder: FormBuilder
+    public formBuilder: FormBuilder,
   ) { }
 
   ngOnDestroy(): void {
@@ -203,6 +204,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    UserManager.checkUserAndRedirect(this);
     this.routeService.updateActivatedRoute(this.activatedRoute);
 
     this.projectId = this.activatedRoute.parent.snapshot.paramMap.get('projectId');
@@ -231,7 +233,10 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       whitelist: this.getWhiteListNotificationService(),
       func: this.handleWebsocketNotification
     });
+
   }
+
+
 
   getWhiteListNotificationService(): string[] {
     let toReturn = ['label_created', 'label_deleted', 'attributes_updated'];
@@ -625,7 +630,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     let array = this.formBuilder.array([]);
     for (let l of task.informationSources) {
       if (l.type == InformationSourceType.LABELING_FUNCTION || l.type == InformationSourceType.ACTIVE_LEARNING
-        || l.type == InformationSourceType.ZERO_SHOT || l.type === undefined) {
+        || l.type == InformationSourceType.ZERO_SHOT || l.type == InformationSourceType.CROWD_LABELER || l.type === undefined) {
         array.push(
           this.formBuilder.group({
             id: l.id,

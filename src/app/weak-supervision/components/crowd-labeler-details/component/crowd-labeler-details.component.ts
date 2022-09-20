@@ -9,26 +9,31 @@ import {
   QueryList,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { first } from 'rxjs/operators';
+import { first, refCount } from 'rxjs/operators';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { RouteService } from 'src/app/base/services/route.service';
 import { WeakSourceApolloService } from 'src/app/base/services/weak-source/weak-source-apollo.service';
-
+import {
+  debounceTime,
+  startWith,
+  distinctUntilChanged,
+} from 'rxjs/operators';
 import { combineLatest, Subscription, timer } from 'rxjs';
 import { InformationSourceType, informationSourceTypeToString, LabelingTask, LabelSource } from 'src/app/base/enum/graphql-enums';
-import { dateAsUTCDate } from 'src/app/util/helper-functions';
+import { dateAsUTCDate, parseLinkFromText } from 'src/app/util/helper-functions';
 import { NotificationService } from 'src/app/base/services/notification.service';
 import { schemeCategory24 } from 'src/app/util/colors';
-import { parseToSettingsJson, parseZeroShotSettings, ZeroShotSettings } from './zero-shot-settings';
+import { parseToSettingsJson, parseCrowdSettings, CrowdLabelerHeuristicSettings, buildFullLink } from './crowd-labeler-settings';
 import { ConfigManager } from 'src/app/base/services/config-service';
+import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
 import { UserManager } from 'src/app/util/user-manager';
 
 @Component({
-  selector: 'kern-zero-shot-details',
-  templateUrl: './zero-shot-details.component.html',
-  styleUrls: ['./zero-shot-details.component.scss'],
+  selector: 'kern-crowd-labeler-details',
+  templateUrl: './crowd-labeler-details.component.html',
+  styleUrls: ['./crowd-labeler-details.component.scss'],
 })
-export class ZeroShotDetailsComponent
+export class CrowdLabelerDetailsComponent
   implements OnInit, OnDestroy, AfterViewInit {
   @ViewChildren('descriptionArea') descriptionArea: QueryList<ElementRef>;
   @ViewChildren('nameArea') nameArea: QueryList<ElementRef>;
@@ -68,7 +73,6 @@ export class ZeroShotDetailsComponent
   informationSourceName: string = '';
   isNameOpen: boolean = false;
 
-  zeroShotSettings: ZeroShotSettings;
 
   stickyObserver: IntersectionObserver;
   isHeaderNormal: boolean = true;
@@ -78,18 +82,18 @@ export class ZeroShotDetailsComponent
   canRunProject: boolean = false;
   singleLineTesterResult: string[];
   randomRecordTesterResult: any;
-  attributesQuery$: any;
-  attributes: any;
-  textAttributes: any;
-  specificRunOpen: Number = -1;
-  specificRunTaskInformation$: any;
   status: string;
-  confidenceIntervals = [10, 20, 30, 40, 50, 60, 70, 80, 90];
-  downloadedModelsList$: any;
-  downloadedModelsQuery$: any;
-  downloadedModels: any[];
-  modelsDownloadedState: boolean[] = [];
   isManaged: boolean = true;
+
+
+
+  crowdSettings: CrowdLabelerHeuristicSettings;
+  annotators: any[];
+  annotatorLookup: {};
+  dataSlicesQuery$: any;
+  dataSlices: any[];
+  sliceLookup: {};
+  private fromCreation: boolean = false;
 
   constructor(
     private router: Router,
@@ -97,6 +101,7 @@ export class ZeroShotDetailsComponent
     private activatedRoute: ActivatedRoute,
     private projectApolloService: ProjectApolloService,
     private informationSourceApolloService: WeakSourceApolloService,
+    private organizationApolloService: OrganizationApolloService,
   ) { }
 
   ngOnInit(): void {
@@ -107,18 +112,13 @@ export class ZeroShotDetailsComponent
     const project$ = this.projectApolloService.getProjectById(projectId);
     let tasks$ = [];
     tasks$.push(this.prepareLabelingTaskRequest(projectId));
+    tasks$.push(this.prepareDataSlicesRequest(projectId));
+    tasks$.push(this.prepareAnnotators());
     tasks$.push(project$.pipe(first()));
-    tasks$.push(this.prepareAttributes(projectId).pipe(first()));
-    this.prepareZeroShotRecommendations(projectId);
+
+
     this.subscriptions$.push(project$.subscribe((project) => this.project = project));
     combineLatest(tasks$).subscribe(() => this.prepareInformationSource(projectId));
-
-    [this.downloadedModelsQuery$, this.downloadedModelsList$] = this.informationSourceApolloService.getModelProviderInfo();
-    this.subscriptions$.push(
-      this.downloadedModelsList$.subscribe((downloadedModels) => {
-        this.downloadedModels = downloadedModels;
-        this.createModelsDownloadedStateList();
-      }));
 
     this.checkIfManagedVersion();
 
@@ -134,8 +134,7 @@ export class ZeroShotDetailsComponent
     toReturn.push(...['labeling_task_deleted', 'labeling_task_updated', 'labeling_task_created']);
     toReturn.push(...['information_source_deleted', 'information_source_updated']);
     toReturn.push(...['label_created', 'label_deleted']);
-    toReturn.push(...['zero-shot', 'label_deleted']);
-    toReturn.push(...['zero_shot_download']);
+    toReturn.push(...['data_slice_created', 'data_slice_updated', 'data_slice_deleted']);
     return toReturn;
   }
 
@@ -171,28 +170,6 @@ export class ZeroShotDetailsComponent
       }
     });
   }
-  prepareZeroShotRecommendations(projectId: string) {
-    let q, vc;
-    [q, vc] = this.informationSourceApolloService.getZeroShotRecommendations(projectId);
-    vc.pipe(first()).subscribe((r) => {
-      if (r) r.forEach(e => e.hidden = false);
-      r.sort((a, b) => a.prio - b.prio);
-      this.zeroShotRecommendations = r;
-    });
-
-  }
-
-  prepareAttributes(projectId: string) {
-    let attributes$;
-    [this.attributesQuery$, attributes$] = this.projectApolloService.getAttributesByProjectId(projectId);
-    this.subscriptions$.push(attributes$.subscribe((attributes) => {
-      attributes.sort((a, b) => a.relativePosition - b.relativePosition);
-      this.attributes = attributes;
-      this.textAttributes = attributes.filter(a => a.dataType == 'TEXT');
-    }));
-    return attributes$;
-  }
-
 
   prepareStickyObserver(element: HTMLElement) {
     if (this.stickyObserver) return;
@@ -206,36 +183,88 @@ export class ZeroShotDetailsComponent
     this.stickyObserver.observe(toObserve)
   }
 
+  generateAccessLink() {
+    if (this.crowdSettings.accessLinkId) return;
+    this.projectApolloService.createAccessLink(this.project.id, "HEURISTIC", this.informationSource.id).pipe(first()).subscribe((res) => {
+      if (res?.data?.generateAccessLink?.link?.id) {
+        this.fromCreation = true;
+        this.removeAccessLink();
+        this.fillLinkData(res.data.generateAccessLink.link);
+        this.crowdSettings.accessLinkId = res.data.generateAccessLink.link.id;
+        this.crowdSettings.isHTTPS = window.location.protocol == 'https:';
+        this.crowdSettings.accessLinkLocked = res.data.generateAccessLink.link.isLocked;
+        this.saveInformationSource();
+      }
+    });
+  }
+
+  removeAccessLink() {
+    if (!this.crowdSettings.accessLinkId) return
+    this.projectApolloService.removeAccessLink(this.project.id, this.crowdSettings.accessLinkId).pipe(first()).subscribe();
+    this.crowdSettings.accessLinkId = null;
+    this.saveInformationSource();
+  }
+
+  changeAccessLinkLock(state: boolean) {
+    if (!this.crowdSettings.accessLinkId) return
+    this.projectApolloService.lockAccessLink(this.project.id, this.crowdSettings.accessLinkId, state).pipe(first()).subscribe();
+    this.crowdSettings.accessLinkLocked = state;
+
+  }
+  prepareAnnotators() {
+    const firstReturn = this.organizationApolloService.getOrganizationUsers("ANNOTATOR").pipe(first());
+    firstReturn.subscribe(users => {
+      this.annotators = users;
+      this.annotatorLookup = {};
+      this.annotators.forEach(annotator => {
+        annotator.text = annotator.mail;
+        this.annotatorLookup[annotator.id] = annotator;
+      });
+    });
+    return firstReturn;
+  }
+  prepareDataSlicesRequest(projectId: string) {
+    let tmp$;
+    [this.dataSlicesQuery$, tmp$] = this.projectApolloService.getDataSlices(projectId, "STATIC_DEFAULT");
+    this.subscriptions$.push(tmp$.subscribe((slices) => {
+      this.dataSlices = slices;
+      this.sliceLookup = {};
+      this.dataSlices.forEach(slice => {
+        this.sliceLookup[slice.id] = slice;
+      });
+    }));
+    return tmp$.pipe(first());
+  }
+
   prepareInformationSource(projectId: string) {
     const informationSourceId = this.activatedRoute.snapshot.paramMap.get('informationSourceId');
     [this.informationSourceQuery$, this.informationSource$] = this.informationSourceApolloService.getInformationSourceBySourceId(projectId, informationSourceId);
     this.subscriptions$.push(this.informationSource$.subscribe((informationSource) => {
-      if (informationSource.lastTask) {
-        const task = informationSource.lastTask
-        this.status = task.state;
-        if (task.createdAt && task.finishedAt) {
-          task.durationText = this.timeDiffCalc(dateAsUTCDate(new Date(task.createdAt)), dateAsUTCDate(new Date(task.finishedAt)));
-        }
-      }
+
       this.informationSource = informationSource;
+      this.fillSettings(informationSource.sourceCode);
       this.description = informationSource.description;
       this.informationSourceName = informationSource.name;
-      this.fillZeroShotSettings(informationSource.sourceCode);
-      this.canRunProject = !informationSource.lastTask || informationSource.lastTask.state != "CREATED";
+      this.fromCreation = false;
     }));
 
   }
+  fillSettings(settingsJson: string) {
+    if (this.fromCreation) return;
+    this.crowdSettings = parseCrowdSettings(settingsJson);
 
-  timeDiffCalc(dateA: any, dateB: any = Date.now()) {
-    return new Date(Math.abs(dateB - dateA)).toISOString().substring(11, 19);
+    this.crowdSettings.taskId = this.informationSource.labelingTaskId;
+    if (this.crowdSettings.accessLinkId) {
+      this.projectApolloService.getAccessLink(this.project.id, this.crowdSettings.accessLinkId).pipe(first()).subscribe((res) => {
+        this.fillLinkData(res)
+      });
+    }
   }
 
-  fillZeroShotSettings(settingsJson: string) {
-    this.zeroShotSettings = parseZeroShotSettings(settingsJson);
-
-    this.zeroShotSettings.taskId = this.informationSource.labelingTaskId;
-    this.zeroShotSettings.attributeSelectDisabled = this.textAttributes.length == 1 || this.labelingTasks.get(this.zeroShotSettings.taskId).taskTarget == 'ON_ATTRIBUTE';
-    if (!this.zeroShotSettings.attributeId) this.zeroShotSettings.attributeId = this.labelingTasks.get(this.zeroShotSettings.taskId).attribute.id;
+  private fillLinkData(linkObj: any) {
+    this.crowdSettings.accessLink = linkObj.link;
+    this.crowdSettings.accessLinkParsed = buildFullLink(linkObj.link);
+    this.crowdSettings.accessLinkLocked = linkObj.isLocked;
   }
 
 
@@ -277,8 +306,8 @@ export class ZeroShotDetailsComponent
       .updateInformationSource(
         this.project.id,
         this.informationSource.id,
-        this.zeroShotSettings.taskId,
-        parseToSettingsJson(this.zeroShotSettings),
+        this.crowdSettings.taskId,
+        parseToSettingsJson(this.crowdSettings),
         this.description,
         this.informationSourceName
       ).pipe(first())
@@ -320,94 +349,10 @@ export class ZeroShotDetailsComponent
     return informationSourceTypeToString(type, false, true);
   }
 
-  runZeroShotTest(text: string) {
-    if (text.length == 0) return;
-    if (this.testerRequestedSomething) return;
-    let labels;
-    if (this.customLabels.nativeElement.value != '') {
-      this.useTaskLabels = false;
-    }
-    if (this.useTaskLabels) {
-      labels = this.labelingTasks.get(this.zeroShotSettings.taskId).labels
-        .filter(l => !this.zeroShotSettings.excludedLabels.includes(l.id))
-        .map(l => l.name);
-    }
-    else labels = this.customLabels.nativeElement.value.split(",").map(l => l.trim());
-    if (!labels?.length) return;
-    this.testerRequestedSomething = true;
-    this.singleLineTesterResult = null;
-    this.informationSourceApolloService.getZeroShotText(this.project.id, this.informationSource.id, this.zeroShotSettings.targetConfig, text, this.zeroShotSettings.runIndividually, JSON.stringify(labels))
-      .pipe(first()).subscribe((r) => {
-        r.labels.forEach(e => {
-          e.labelId = this.getLabelIdFromName(e.labelName);
-          e.confidenceText = (e.confidence * 100).toFixed(2) + "%";
-        });
-        this.singleLineTesterResult = r.labels;
-        this.testerRequestedSomething = false;
-        this.useTaskLabels = true;
-      })
-  }
 
-  runZeroShot10RecordTest() {
-    if (this.testerRequestedSomething) return;
-    this.testerRequestedSomething = true;
-    this.randomRecordTesterResult = null;
-    let labels = null;
-    if (this.customLabels.nativeElement.value != '') {
-      this.useTaskLabels = false;
-    }
-    if (!this.useTaskLabels) labels = JSON.stringify(this.customLabels.nativeElement.value.split(",").map(l => l.trim()));
-    else if (this.useTaskLabels && this.zeroShotSettings.excludedLabels.length) {
-      labels = JSON.stringify(this.labelingTasks.get(this.zeroShotSettings.taskId).labels
-        .filter(l => !this.zeroShotSettings.excludedLabels.includes(l.id))
-        .map(l => l.name));
-    }
-    this.informationSourceApolloService.getZeroShot10RandomRecords(this.project.id, this.informationSource.id, labels)
-      .pipe(first()).subscribe((r) => {
-        if (r) {
-          r.durationText = "~" + Math.round(r.duration * 100) / 100 + " sec";
-          r.records.forEach(record => {
-            record.shortView = true;
-            record.fullRecordData = JSON.parse(record.fullRecordData);
-            record.labels.forEach(e => {
-              e.labelId = this.getLabelIdFromName(e.labelName);
-              e.confidenceText = (e.confidence * 100).toFixed(2) + "%";
-            });
-          });
 
-          this.randomRecordTesterResult = r;
-        }
-        this.testerRequestedSomething = false;
-      })
-  }
-
-  runZeroShotProject() {
-    if (!this.canRunProject) return;
-    this.informationSourceApolloService.runZeroShotProject(this.project.id, this.informationSource.id).pipe(first()).subscribe();
-  }
-
-  getLabelIdFromName(name: string): string {
-    for (const label of this.labelingTasks.get(this.zeroShotSettings.taskId).labels) {
-      if (label.name == name) return label.id;
-    }
-    return null;
-  }
-
-  changeZeroShotSettings(attributeName: string, newValue: any, saveToDb: boolean = true) {
-    if (attributeName == "excludedLabels") {
-      if (this.zeroShotSettings.excludedLabels.includes(newValue)) {
-        this.zeroShotSettings.excludedLabels = this.zeroShotSettings.excludedLabels.filter(id => id != newValue);
-      } else {
-        this.zeroShotSettings.excludedLabels.push(newValue);
-      }
-    } else {
-      if (attributeName == 'minConfidence') newValue /= 100;
-      this.zeroShotSettings[attributeName] = newValue;
-      if (attributeName == 'taskId') {
-        this.zeroShotSettings.attributeSelectDisabled = this.textAttributes.length == 1 || this.labelingTasks.get(this.zeroShotSettings.taskId).taskTarget == 'ON_ATTRIBUTE';
-      }
-    }
-
+  changeSettings(attributeName: string, newValue: any, saveToDb: boolean = true) {
+    this.crowdSettings[attributeName] = newValue;
     if (saveToDb) this.saveInformationSource();
   }
 
@@ -426,30 +371,15 @@ export class ZeroShotDetailsComponent
     } else if ('information_source_updated' == msgParts[1]) {
       if (this.informationSource.id == msgParts[2]) this.informationSourceQuery$.refetch();
 
-    } else if ('zero_shot_download' == msgParts[1]) {
-      if (this.informationSource.id == msgParts[3]) {
-        if ("started" == msgParts[2]) this.isModelDownloading = true;
-        if ("finished" == msgParts[2]) this.isModelDownloading = false;
-      }
-    } else if (msgParts[1] == 'zero-shot') {
-      if (this.informationSource.lastTask) {
-        const task = this.informationSource.lastTask;
-        if (task.id == msgParts[2]) {
-          if (msgParts[3] == 'progress') {
-            task.progress = Number(msgParts[4]);
-          } else if (msgParts[3] == 'state') {
-            if (msgParts[4] == "FINISHED") {
-              this.informationSourceQuery$.refetch();
-            } else task.state = msgParts[4];
-          }
-        }
-      }
     }
   }
 
-  getAttributeName(attId: string) {
-    return this.attributes.find(el => el.id == attId).name;
+  testLink() {
+    const linkData = parseLinkFromText(this.crowdSettings.accessLink);
+    this.router.navigate([linkData.route], { queryParams: linkData.queryParams });
   }
+
+
   getBackground(color) {
     return `bg-${color}-100`
   }
@@ -466,12 +396,8 @@ export class ZeroShotDetailsComponent
     return `hover:bg-${color}-200`
   }
 
-  createModelsDownloadedStateList() {
-    if (this.zeroShotRecommendations !== undefined) {
-      this.zeroShotRecommendations.forEach(rec => {
-        const isDownloaded = this.downloadedModels.find(el => el.name === rec.configString);
-        this.modelsDownloadedState.push(isDownloaded != undefined ? true : false);
-      })
-    }
+  copyToClipboard(textToCopy) {
+    navigator.clipboard.writeText(textToCopy);
   }
+
 }

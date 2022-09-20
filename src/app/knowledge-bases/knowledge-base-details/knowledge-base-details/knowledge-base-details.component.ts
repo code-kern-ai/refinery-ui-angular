@@ -17,6 +17,7 @@ import { RouteService } from 'src/app/base/services/route.service';
 import { DownloadState } from 'src/app/import/services/s3.enums';
 import { timer } from 'rxjs';
 import { UploadComponent } from 'src/app/import/components/upload/upload.component';
+import { UserManager } from 'src/app/util/user-manager';
 
 
 @Component({
@@ -70,6 +71,7 @@ export class KnowledgeBaseDetailsComponent implements OnInit, AfterViewInit, OnD
   }
 
   ngOnInit(): void {
+    UserManager.checkUserAndRedirect(this);
     this.routeService.updateActivatedRoute(this.activatedRoute);
 
 
@@ -318,8 +320,8 @@ export class KnowledgeBaseDetailsComponent implements OnInit, AfterViewInit, OnD
   }
 
   executeOption(value: string, term: any) {
-    switch(value) {
-      case 'Edit term': 
+    switch (value) {
+      case 'Edit term':
         this.openTermEditor(true, term.id, term.value, term.comment);
         break;
       case 'Remove term':

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { UserManager } from 'src/app/util/user-manager';
 
 @Component({
   selector: 'kern-model-download',
@@ -10,6 +11,7 @@ export class ModelDownloadComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
+    UserManager.checkUserAndRedirect(this);
   }
 
 }

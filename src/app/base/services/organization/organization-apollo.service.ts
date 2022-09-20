@@ -55,10 +55,13 @@ export class OrganizationApolloService {
       .pipe(map((result) => result['data']['userInfo']));
   }
 
-  getOrganizationUsers() {
+  getOrganizationUsers(userRole: string = null) {
     return this.apollo
       .query({
         query: queries.GET_ORGANIZATION_USERS,
+        variables: {
+          userRole: userRole
+        }
       })
       .pipe(map((result) => result['data']['allUsers']));
   }

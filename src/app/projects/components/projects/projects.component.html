@@ -290,19 +290,20 @@
 </div>
 
 <ng-template #buttonsProject>
-    <button [routerLink]="['/projects/new']"
-        class="bg-blue-700 text-white text-xs font-semibold px-4 py-2.5 rounded-md mt-6 hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-        New project
-    </button>
-    <button class="ml-6 mt-6 mr-6 xs:mr-0">
-        <label
-            class="bg-blue-700 text-white text-xs font-semibold px-4 py-2.5 rounded-md cursor-pointer hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            for="project-upload-modal">
-            Import snapshot
-        </label>
-    </button>
-    <div class="relative inline-block text-left ml-6 mt-6">
-        <kern-dropdown [dropdownOptions]="{
+    <div *ngIf="user?.role == 'ENGINEER'">
+        <button [routerLink]="['/projects/new']"
+            class="bg-blue-700 text-white text-xs font-semibold px-4 py-2.5 rounded-md mt-6 hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            New project
+        </button>
+        <button class="ml-6 mt-6 mr-6 xs:mr-0">
+            <label
+                class="bg-blue-700 text-white text-xs font-semibold px-4 py-2.5 rounded-md cursor-pointer hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                for="project-upload-modal">
+                Import snapshot
+            </label>
+        </button>
+        <div class="relative inline-block text-left ml-6 mt-6">
+            <kern-dropdown [dropdownOptions]="{
             optionArray:['Clickbait','Initial (only contains the initial data set and labels.)','Conversational AI','Initial (only contains the initial data set and labels.)', 'AG News','Initial (only contains the initial data set and labels.)', 'Further sample projects'],
             optionIcons:['clickbait',null,'conversational-ai',null,'ag-news',null],
             buttonCaption: 'Sample projects',
@@ -313,9 +314,9 @@
             buttonTextColor: 'white',
             hoverColor: 'hover:bg-kernindigo'
         }" (optionClicked)="executeOption($event)" (isInitialProject)="setInitialValue($event)">
-        </kern-dropdown>
+            </kern-dropdown>
+        </div>
     </div>
-
 </ng-template>
 
 <input #inputUpload type="checkbox" id="project-upload-modal" class="modal-toggle">

@@ -27,9 +27,10 @@ import {
   labelSourceToString,
 } from 'src/app/base/enum/graphql-enums';
 import { NotificationApolloService } from 'src/app/base/services/notification/notification-apollo.service';
-import { dateAsUTCDate } from 'src/app/util/helper-functions';
+import { dateAsUTCDate, parseLinkFromText } from 'src/app/util/helper-functions';
 import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
 import { NotificationService } from 'src/app/base/services/notification.service';
+import { assumeUserRole, guessLinkType, labelingHuddle, labelingLinkData, labelingLinkType, parseLabelingLinkData, userRoles } from './helper/labeling-helper';
 
 @Component({
   selector: 'kern-labeling',
@@ -43,8 +44,10 @@ export class LabelingComponent implements OnInit, OnDestroy {
   get LabelingTaskType(): typeof LabelingTask {
     return LabelingTask;
   }
+
+
   static LABEL_SEARCH_TEXT_DEFAULT = "Search label name...";
-  static DUMMY_SESSION_ID = "00000000-0000-0000-0000-000000000000";
+  static DUMMY_HUDDLE_ID = "00000000-0000-0000-0000-000000000000";
   static ALLOWED_KEYS = " 01234567890abcdefghijklmnopqrstuvwxyzöäüß<>|,.;:-_#'\"~+*?\\{}[]()=/&%$§!@^°€";
   GOLD_USER_ID = "GOLD_USER"; //not static to prevent call of getter on every cycle
   firstVisitGold: boolean = true;
@@ -57,7 +60,12 @@ export class LabelingComponent implements OnInit, OnDestroy {
   project: Project;
   project$: any;
 
-  loggedInUser: any;
+  dataSliceQuery$: any;
+  dataSlices$: any;
+
+  // sourceId: string; // if the session is from an annotator heuristic
+
+  user: any;
   displayUserId: any;
   rlaGroupMap: Map<string, any[]> = new Map<string, any[]>();
   userIcons: any[];
@@ -69,13 +77,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
 
   showNLabelButton: Number = 5;
 
-  sessionData: {
-    recordIds: string[],
-    sessionId: string,
-    partial: boolean,
-    projectId: string,
-    currentPos: number
-  };
+  huddleData: labelingHuddle;
   sessionRequested: boolean = false;
   subscriptions$: Subscription[] = [];
   somethingLoading: boolean = true;
@@ -118,6 +120,10 @@ export class LabelingComponent implements OnInit, OnDestroy {
   debounceTimer;
   autoNextRecord: boolean = false;
 
+
+  labelingLinkData: labelingLinkData;
+  roleAssumed: boolean = false;
+
   constructor(
     private router: Router,
     private routeService: RouteService,
@@ -134,19 +140,35 @@ export class LabelingComponent implements OnInit, OnDestroy {
     if (this.recordLabelAssociations$) this.recordLabelAssociations$.unsubscribe();
     this.subscriptions$.forEach(element => element.unsubscribe());
     if (this.project) NotificationService.unsubscribeFromNotification(this, this.project.id)
+    if (this.roleAssumed) localStorage.removeItem("huddleData");
   }
 
+
   ngOnInit(): void {
-    this.routeService.updateActivatedRoute(this.activatedRoute);
+    this.initialSetupNoWait();
 
-    const sessionId = this.activatedRoute.snapshot.paramMap.get("sessionId");
-
-    if (!sessionId) {
-      this.router.navigate([LabelingComponent.DUMMY_SESSION_ID], { relativeTo: this.activatedRoute });
-      return;
+    let initialTasks$ = [];
+    initialTasks$.push(this.prepareUser());
+    if (this.labelingLinkData.linkType == "HEURISTIC") {
+      initialTasks$.push(this.checkLinkAccess());
     }
+    forkJoin(initialTasks$).pipe(first()).subscribe(() => {
 
-    const projectId = this.activatedRoute.parent.snapshot.paramMap.get('projectId');
+      //user is set to null if a redirect is needed
+      if (!this.user || this.labelingLinkData.linkLocked) return;
+      let initialTasks$ = [];
+      initialTasks$.push(this.prepareProject(this.labelingLinkData.projectId));
+      initialTasks$.push(this.prepareLabelingTask(this.labelingLinkData.projectId));
+      initialTasks$.push(this.prepareSortOrder(this.labelingLinkData.projectId));
+      //wait for preparation tasks to finish
+      forkJoin(initialTasks$).pipe(first()).subscribe(() => this.prepareLabelingSession(this.labelingLinkData.projectId, this.labelingLinkData.id, this.labelingLinkData.requestedPos));
+    });
+  }
+
+  private initialSetupNoWait() {
+    this.routeService.updateActivatedRoute(this.activatedRoute);
+    this.labelingLinkData = parseLabelingLinkData(this.activatedRoute);
+    const projectId = this.labelingLinkData.projectId;
 
     NotificationService.subscribeToNotification(this, {
       projectId: projectId,
@@ -154,18 +176,23 @@ export class LabelingComponent implements OnInit, OnDestroy {
       func: this.handleWebsocketNotification
     });
 
-    let initialTasks$ = [];
-    initialTasks$.push(this.prepareUser());
-    initialTasks$.push(this.prepareProject(projectId));
-    initialTasks$.push(this.prepareLabelingTask(projectId));
-    initialTasks$.push(this.prepareSortOrder(projectId));
-
-    //wait for preparation tasks to finish
-    forkJoin(initialTasks$).pipe(first()).subscribe(() => this.verifyAndHandleQueryParams(projectId));
     let tmp = localStorage.getItem("showNLabelButton");
     if (tmp) this.showNLabelButton = Number(tmp);
     let autoNextRecord = localStorage.getItem("autoNextRecord");
     if (autoNextRecord) this.autoNextRecord = autoNextRecord === 'true' ? true : false;
+    this.huddleData = JSON.parse(localStorage.getItem("huddleData"));
+
+  }
+
+  checkLinkAccess() {
+    const pipeFirst = this.projectApolloService.linkLocked(this.labelingLinkData.projectId, this.router.url)
+      .pipe(first());
+
+    pipeFirst.subscribe((isLocked) => {
+      this.labelingLinkData.linkLocked = isLocked;
+      if (isLocked) this.somethingLoading = false;
+    });
+    return pipeFirst;
   }
 
   getWhiteListNotificationService(): string[] {
@@ -173,6 +200,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
     toReturn.push(...['payload_finished', 'weak_supervision_finished']);
     toReturn.push(...['labeling_task_deleted', 'labeling_task_updated', 'labeling_task_created']);
     toReturn.push(...['record_deleted', 'rla_created', 'rla_deleted']);
+    toReturn.push(...['access_link_changed', 'access_link_removed']);
     return toReturn;
   }
 
@@ -191,90 +219,91 @@ export class LabelingComponent implements OnInit, OnDestroy {
     localStorage.setItem("showNLabelButton", "" + this.showNLabelButton);
   }
 
-  prepareLabelingSession(projectId: string, sessionId: string, pos: number) {
+  prepareLabelingSession(projectId: string, huddleId: string, pos: number) {
     if (this.sessionRequested) return;
 
-    this.sessionData = JSON.parse(localStorage.getItem("sessionData"));
-    if (this.sessionData && !this.sessionData.partial
-      && this.sessionData.projectId == projectId
-      && (this.sessionData.sessionId == sessionId || sessionId == LabelingComponent.DUMMY_SESSION_ID)) {
+    if (this.huddleData && !this.huddleData.partial
+      && this.huddleData.linkData.projectId == projectId
+      && (this.huddleData.linkData.id == huddleId || huddleId == LabelingComponent.DUMMY_HUDDLE_ID)) {
       this.notificationApolloService.createNotification(projectId, "Continuation of your previous session.")
         .pipe(first())
         .subscribe();
     }
+
     //default handling
-    if (pos == null && this.sessionData?.currentPos) pos = this.sessionData.currentPos;
+    if (pos == null && this.huddleData?.linkData.requestedPos) pos = this.huddleData.linkData.requestedPos;
     if (pos == null) pos = 0;
-    if (sessionId == LabelingComponent.DUMMY_SESSION_ID && this.sessionData?.sessionId) sessionId = this.sessionData.sessionId;
+    if (huddleId == LabelingComponent.DUMMY_HUDDLE_ID && this.huddleData?.linkData.id) huddleId = this.huddleData.linkData.id;
 
     //request preparation
-    if (!this.sessionData || this.sessionData.sessionId != sessionId || this.sessionData.projectId != projectId) {
+    if (!this.huddleData || this.huddleData.linkData.id != huddleId || this.huddleData.linkData.projectId != projectId) {
       // no/old session data --> refetch
-      this.sessionData = null;
-      localStorage.removeItem("sessionData");
-      this.requestSessionData(projectId, sessionId);
+      this.huddleData = null;
+      localStorage.removeItem("huddleData");
+      this.requestHuddleData(projectId, huddleId);
 
-    } else if (this.sessionData.partial) {
+    } else if (this.huddleData.partial) {
       //collect remaining
-      this.requestSessionData(projectId, sessionId);
+      this.requestHuddleData(projectId, huddleId);
     }
-    if (this.sessionData) this.jumpToPosition(projectId, pos);
+    if (this.huddleData) this.jumpToPosition(projectId, pos);
 
     this.sessionRequested = true;
+
   }
 
-  requestSessionData(projectId: string, sessionId: string) {
-    const requestedPos = Number(this.activatedRoute.snapshot.queryParamMap.get("pos"));
-
-    this.recordApolloService.getSessionBySessionId(projectId, sessionId)
-      .pipe(first()).subscribe((result) => {
-        const noDataCollectedYet = this.sessionData == null;
-        this.sessionData = {
-          recordIds: result.sessionRecordIds as string[],
-          partial: false,
-          sessionId: result.sessionId,
-          currentPos: requestedPos,
-          projectId: projectId,
-        }
-        localStorage.setItem('sessionData', JSON.stringify(this.sessionData));
-
-
-        if (noDataCollectedYet) {
-          this.jumpToPosition(projectId, this.sessionData.currentPos);
-        }
-      });
-  }
-
-  verifyAndHandleQueryParams(projectId: string) {
-    const sessionId = this.activatedRoute.snapshot.paramMap.get("sessionId");
-    const requestedPos = this.activatedRoute.snapshot.queryParamMap.get("pos");
-
-    const isPosNumber = !Number.isNaN(Number(requestedPos));
-    if (!sessionId || requestedPos == null || !isPosNumber) {
-      //fallback
-      this.prepareLabelingSession(projectId, sessionId, requestedPos == null ? null : Number(requestedPos));
-    } else {
-      this.prepareLabelingSession(projectId, sessionId, Number(requestedPos));
+  requestHuddleData(projectId: string, huddleId: string) {
+    if (huddleId != this.labelingLinkData.id) {
+      console.log("something wrong with session/huddle integration");
+      return
     }
+    this.projectApolloService.requestHuddleData(projectId, this.labelingLinkData.id, this.labelingLinkData.linkType).pipe(first()).subscribe((huddleData) => {
+      if (huddleId == LabelingComponent.DUMMY_HUDDLE_ID) this.labelingLinkData.id = huddleData.huddleId;
+      if (!huddleData.huddleId) {
+        //nothing was found (no slice / heuristic available)
+      }
+      this.labelingLinkData.requestedPos = huddleData.startPos;
+      this.huddleData = {
+        recordIds: huddleData.recordIds as string[],
+        partial: false,
+        linkData: this.labelingLinkData,
+        allowedTask: huddleData.allowedTask,
+        canEdit: huddleData.canEdit,
+      }
+
+      localStorage.setItem('huddleData', JSON.stringify(this.huddleData));
+
+      const pos = this.labelingLinkData.requestedPos + 1; //zero based in backend
+      this.jumpToPosition(projectId, pos);
+
+
+    });
+
 
   }
+  getSourceId(): string {
+    if (!this.huddleData) return null;
+    if (this.huddleData.linkData.linkType != labelingLinkType.HEURISTIC) return null;
+    return this.huddleData.linkData.id;
+  }
+
   jumpToPosition(projectId: string, pos: number, setJumpHTMLItem: boolean = false) {
-    if (!this.sessionData || !this.sessionData.recordIds) return;
+    if (!this.huddleData || !this.huddleData.recordIds) return;
     if (pos % 1 != 0) pos = parseInt("" + pos);
     let jumpPos = String(pos).length == 0 ? 1 : pos;
     if (jumpPos <= 0) jumpPos = 1;
-    else if (jumpPos > this.sessionData.recordIds.length) jumpPos = this.sessionData.recordIds.length;
+    else if (jumpPos > this.huddleData.recordIds.length) jumpPos = this.huddleData.recordIds.length;
 
-    this.sessionData.currentPos = jumpPos;
-    localStorage.setItem('sessionData', JSON.stringify(this.sessionData));
+    this.huddleData.linkData.requestedPos = jumpPos;
+    localStorage.setItem('huddleData', JSON.stringify(this.huddleData));
 
     //ensure adress matches request
-    this.router.navigate(["../" + projectId + "/labeling/" + this.sessionData.sessionId],
-      { relativeTo: this.activatedRoute.parent, queryParams: { pos: jumpPos } });
+    this.router.navigate(["../" + projectId + "/labeling/" + this.huddleData.linkData.id],
+      { relativeTo: this.activatedRoute.parent, queryParams: { pos: jumpPos, type: this.huddleData.linkData.linkType } });
 
     this.resetDataToInitialTask();
     if (this.debounceTimer) this.debounceTimer.unsubscribe();
-    this.debounceTimer = timer(200).subscribe(() => this.collectRecordData(projectId, this.sessionData.recordIds[jumpPos - 1]));
+    this.debounceTimer = timer(200).subscribe(() => this.collectRecordData(projectId, this.huddleData.recordIds[jumpPos - 1]));
 
   }
   checkNumberInput($event) {
@@ -286,8 +315,20 @@ export class LabelingComponent implements OnInit, OnDestroy {
       .pipe(first());
 
     pipeFirst.subscribe((user) => {
-      this.loggedInUser = user;
+
+      if (!this.labelingLinkData.id) {
+        this.user = null;
+        const type = guessLinkType(user.role);
+        this.router.navigate([LabelingComponent.DUMMY_HUDDLE_ID], { relativeTo: this.activatedRoute, queryParams: { pos: 0, type: type }, });
+        return;
+      }
+      this.user = { ...user };
+      this.user.role = assumeUserRole(user.role, this.labelingLinkData.linkType);
+      this.roleAssumed = this.user.role != user.role;
       this.displayUserId = user.id;
+
+      //no old data to ensure the view is up to date (lockstate etc.)
+      if (this.roleAssumed) localStorage.removeItem("huddleData");
     });
     return pipeFirst;
   }
@@ -310,34 +351,39 @@ export class LabelingComponent implements OnInit, OnDestroy {
 
   prepareLabelingTask(projectID: string) {
     [this.labelingTasksQuery$, this.labelingTasks$] = this.projectApolloService.getLabelingTasksByProjectId(projectID);
+    [this.dataSliceQuery$, this.dataSlices$] = this.projectApolloService.getDataSlices(projectID);
     this.subscriptions$.push(this.labelingTasks$.subscribe((tasks) => {
-      tasks.sort((a, b) => this.compareOrderLabelingTasks(a, b)) //ensure same position
-
-      this.labelHotkeys.clear();
-      if (this.onlyLabelsChanged(tasks)) {
-        tasks.forEach((task) => {
-          task.labels.sort((a, b) => a.name.localeCompare(b.name));
-          task.labels.forEach(l => {
-            if (l.hotkey) this.labelHotkeys.set(l.hotkey, { taskId: task.id, labelId: l.id });
-          });
-          this.labelingTasksMap.get(task.id).labels = task.labels;
-        });
-      } else {
-        this.labelingTasksMap.clear();
-        this.showTokenDisabled = true;
-        tasks.forEach((task) => {
-          task.labels.sort((a, b) => a.name.localeCompare(b.name));
-          task.labels.forEach(l => {
-            if (l.hotkey) this.labelHotkeys.set(l.hotkey, { taskId: task.id, labelId: l.id });
-          });
-          this.labelingTasksMap.set(task.id, task);
-          if (this.showTokenDisabled && task.taskType == LabelingTask.INFORMATION_EXTRACTION) this.showTokenDisabled = false;
-        });
-      }
-
-      this.labelingTaskWait = false;
+      this.resetTaskData(tasks);
     }));
     return this.labelingTasks$.pipe(first());
+  }
+
+  private resetTaskData(tasks) {
+    tasks.sort((a, b) => this.compareOrderLabelingTasks(a, b)) //ensure same position
+
+    this.labelHotkeys.clear();
+    if (this.onlyLabelsChanged(tasks)) {
+      tasks.forEach((task) => {
+        task.labels.sort((a, b) => a.name.localeCompare(b.name));
+        task.labels.forEach(l => {
+          if (l.hotkey) this.labelHotkeys.set(l.hotkey, { taskId: task.id, labelId: l.id });
+        });
+        this.labelingTasksMap.get(task.id).labels = task.labels;
+      });
+    } else {
+      this.labelingTasksMap.clear();
+      this.showTokenDisabled = true;
+      tasks.forEach((task) => {
+        task.labels.sort((a, b) => a.name.localeCompare(b.name));
+        task.labels.forEach(l => {
+          if (l.hotkey) this.labelHotkeys.set(l.hotkey, { taskId: task.id, labelId: l.id });
+        });
+        this.labelingTasksMap.set(task.id, task);
+        if (this.showTokenDisabled && task.taskType == LabelingTask.INFORMATION_EXTRACTION) this.showTokenDisabled = false;
+      });
+    }
+
+    this.labelingTaskWait = false;
   }
 
   compareOrderLabelingTasks(a, b): number {
@@ -463,7 +509,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
   }
 
   resetDataToInitialTask() {
-    this.displayUserId = this.loggedInUser.id;
+    this.displayUserId = this.user.id;
     this.userTaskGold.clear();
     this.rlaGroupMap = null;
     this.fullRecordData = null;
@@ -471,6 +517,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
     this.tokenOverlayData = {};
     this.userIcons = [];
     this.resetTokenizedRecord();
+    this.labelingLinkData = parseLabelingLinkData(this.activatedRoute);
     for (let [key, value] of this.labelingTasksMap.entries()) {
       if (value.tokenizedAttribute) delete value.tokenizedAttribute;
     }
@@ -504,8 +551,8 @@ export class LabelingComponent implements OnInit, OnDestroy {
     this.recordData$ = this.recordApolloService.getRecordByRecordId(projectId, recordId)
       .pipe(first()).subscribe((recordData) => {
         if (!recordData) {
-          this.sessionData.recordIds[this.sessionData.currentPos - 1] = "deleted"
-          this.jumpToPosition(this.project.id, this.sessionData.currentPos)
+          this.huddleData.recordIds[this.huddleData.linkData.requestedPos - 1] = "deleted"
+          this.jumpToPosition(this.project.id, this.huddleData.linkData.requestedPos);
           return;
         }
         this.recordData = recordData;
@@ -515,20 +562,35 @@ export class LabelingComponent implements OnInit, OnDestroy {
       });
 
 
-
-
     //then rlas (keep open to update when nessecary)
     if (this.recordLabelAssociations$) this.recordLabelAssociations$.unsubscribe();
     [this.recordLabelAssociationsQuery$, this.recordLabelAssociations$] = this.recordApolloService.getRecordLabelAssociations(projectId, recordId);
     this.recordLabelAssociations$ = this.recordLabelAssociations$
       .subscribe((recordLabelAssociations) => {
         if (!recordLabelAssociations) return;
-        this.extendRecordLabelAssociations(recordLabelAssociations);
-        this.parseRlaToGroups(recordLabelAssociations)
+        let rlaData = this.prepareRLADataForRole(recordLabelAssociations);
+        this.extendRecordLabelAssociations(rlaData);
+        this.parseRlaToGroups(rlaData)
         this.prepareFullRecord();
         this.prepareInformationExtractionDisplay();
         this.somethingLoading = false;
+
       });
+  }
+
+  prepareRLADataForRole(rlaData: any[]): any[] {
+    if (this.user.role == "ANNOTATOR") {
+      rlaData.forEach((rla) => {
+        if (rla.sourceId && rla.sourceId == this.getSourceId()) {
+          rla.sourceType = LabelSource.MANUAL;
+          rla.sourceId = null;
+        } else {
+          rla.id = "irrelevant";
+        }
+      });
+      return rlaData.filter(rla => rla.id != "irrelevant");
+    }
+    return rlaData;
   }
 
   getTokenizedRecord(recordId: string, fullRefresh: boolean = false) {
@@ -555,6 +617,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
     this.fullRecordData = this.recordData;
     this.fullRecordData.recordLabelAssociations = this.getRlaForUser(this.displayUserId);
     this.addTaskToRecord();
+    this.ensureTaskAllowed();
     this.findUserGoldTasks();
     this.upateTaskStarPotential();
     this.rebuildOverviewDisplay();
@@ -640,7 +703,33 @@ export class LabelingComponent implements OnInit, OnDestroy {
         toReturn.push(rla);
       }
     }
+
     return toReturn;
+  }
+
+  ensureTaskAllowed() {
+    if (this.user.role != "ANNOTATOR") return;
+    const a = {}
+    for (const key in this.fullRecordData.tasks) {
+      for (const task of this.fullRecordData.tasks[key]) {
+        if (task.taskType != LabelingTask.NOT_SET) {
+          if (task.id != this.huddleData.allowedTask) {
+            task.taskType = LabelingTask.NOT_USEABLE;
+          }
+        }
+      }
+    }
+    const globalTasksKey: string = '_gloabalTasks';
+    if (this.fullRecordData.tasks[globalTasksKey]) {
+      let found = false;
+      for (const task of this.fullRecordData.tasks[globalTasksKey]) {
+        if (task.taskType != LabelingTask.NOT_USEABLE && task.taskType != LabelingTask.NOT_SET) {
+          found = true;
+          break;
+        }
+      }
+      if (!found) delete this.fullRecordData.tasks[globalTasksKey];
+    }
   }
 
   addTaskToRecord() {
@@ -758,7 +847,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
       let att = this.getTokenizedAttribute(task.id, attributeId);
       let key = task.id + '_' + md.tokenStartIdx;
       key = key + (md.sourceType == sourceOverLay ? '_OV' : '_SD');
-      this.extendedDisplay[key] = this.buildExtendetDisplay(
+      this.extendedDisplay[key] = this.buildExtendedDisplay(
         md,
         sourceOverLay,
         key,
@@ -770,6 +859,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
         this.extendedDisplay[key].token.push(token);
         if (md.sourceType == sourceToDisplay) token.extendDisplay = true;
         else {
+          if (this.getSourceId() != null) continue;
           token.overlayDisplay = true;
 
           let overlayData = {
@@ -781,7 +871,8 @@ export class LabelingComponent implements OnInit, OnDestroy {
             labelId: md.labelingTaskLabel.id,
             labelDisplay: this.getLabelForDisplay(
               md.labelingTaskLabel.name,
-              md.confidence
+              md.confidence,
+              sourceOverLay == LabelSource.MANUAL
             ),
             labelColor: md.labelingTaskLabel.color
           };
@@ -806,8 +897,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
       }
     }
 
-    //set overlays know if extention is needed
-
+    //set overlays now if extention is needed
     for (let md of this.fullRecordData.recordLabelAssociations) {
       if (md.sourceType != sourceToDisplay || (!md.tokenStartIdx && md.tokenStartIdx != 0)) continue;
       const attributeId = md.labelingTaskLabel.labelingTask.attribute.id;
@@ -821,7 +911,8 @@ export class LabelingComponent implements OnInit, OnDestroy {
           if (!e.isLast) {
             e.labelAddition = this.getLabelForDisplay(
               md.labelingTaskLabel.name,
-              md.confidence
+              md.confidence,
+              sourceToDisplay == LabelSource.MANUAL
             );
           }
         }
@@ -834,7 +925,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
     }
   }
 
-  buildExtendetDisplay(markedData, sourceOverLay, key, taskId) {
+  buildExtendedDisplay(markedData, sourceOverLay, key, taskId) {
     return {
       isOverlay: markedData.sourceType == sourceOverLay,
       markedEntry: markedData,
@@ -842,12 +933,14 @@ export class LabelingComponent implements OnInit, OnDestroy {
       taskId: taskId,
       labelDisplay: this.getLabelForDisplay(
         markedData.labelingTaskLabel.name,
-        markedData.confidence
+        markedData.confidence,
+        markedData.sourceType != sourceOverLay
       ),
       labelColor: markedData.labelingTaskLabel.color,
       token: [],
     };
   }
+
   resetTokenizedRecord() {
     if (!this.hasTokenData()) return;
     for (let [key, value] of this.labelingTasksMap.entries()) {
@@ -865,9 +958,9 @@ export class LabelingComponent implements OnInit, OnDestroy {
       .pipe(first()).subscribe((r) => {
         if (r['data']['deleteRecord']?.ok) {
           this.recordData = null;
-          this.sessionData.recordIds[this.sessionData.currentPos - 1] = "deleted"
-          let jumpPos = this.sessionData.currentPos + 1;
-          if (jumpPos >= this.sessionData.recordIds.length) jumpPos -= 2;
+          this.huddleData.recordIds[this.huddleData.linkData.requestedPos - 1] = "deleted"
+          let jumpPos = this.huddleData.linkData.requestedPos + 1;
+          if (jumpPos >= this.huddleData.recordIds.length) jumpPos -= 2;
           this.jumpToPosition(this.project.id, jumpPos);
         } else {
           console.log("Something went wrong with deletion of record:" + this.fullRecordData.id);
@@ -876,12 +969,12 @@ export class LabelingComponent implements OnInit, OnDestroy {
   }
 
   nextRecord() {
-    this.sessionData.currentPos++;
-    this.jumpToPosition(this.project.id, this.sessionData.currentPos);
+    this.huddleData.linkData.requestedPos++;
+    this.jumpToPosition(this.project.id, this.huddleData.linkData.requestedPos);
   }
   previousRecord() {
-    this.sessionData.currentPos--;
-    this.jumpToPosition(this.project.id, this.sessionData.currentPos);
+    this.huddleData.linkData.requestedPos--;
+    this.jumpToPosition(this.project.id, this.huddleData.linkData.requestedPos);
   }
 
   dataToClear(): boolean {
@@ -951,7 +1044,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
     if (!(this.isCommentBoxOpen && ((target && target.id == 'commentInput') || !target))) {
       this.isCommentBoxOpen = false;
     }
-    if (!(this.displayUserId == this.GOLD_USER_ID || this.displayUserId == this.loggedInUser.id)) return;
+    if (!(this.displayUserId == this.GOLD_USER_ID || this.displayUserId == this.user.id)) return;
     this.checkLabelBlinker(event);
     //mouseup is fired before selection is updated --> wait 1 ms
     timer(1).subscribe(() => {
@@ -999,7 +1092,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
 
   tokenMouseUp(event: MouseEvent, taskId) {
     if (!(event.target instanceof HTMLElement)) return;
-    if (!(this.displayUserId == this.GOLD_USER_ID || this.displayUserId == this.loggedInUser.id)) return;
+    if (!(this.displayUserId == this.GOLD_USER_ID || this.displayUserId == this.user.id)) return;
     event.stopPropagation();
 
     timer(1).subscribe(() => {
@@ -1213,11 +1306,11 @@ export class LabelingComponent implements OnInit, OnDestroy {
       } else {
         if (!this.rlaGroupMap.has(rla.createdBy)) {
           this.rlaGroupMap.set(rla.createdBy, []);
-          loggedInUserHasRlas = loggedInUserHasRlas || rla.createdBy == this.loggedInUser.id;
+          loggedInUserHasRlas = loggedInUserHasRlas || rla.createdBy == this.user.id;
           const avatarSelector = (rla.createdByShort.charCodeAt(0) + rla.createdByShort.charCodeAt(1)) % 5;
           this.userIcons.push({
             id: rla.createdBy,
-            order: rla.createdBy == this.loggedInUser.id ? 1 : 2,
+            order: rla.createdBy == this.user.id ? 1 : 2,
             initials: rla.createdByShort,
             name: rla.createdByName,
             avatarUri: "assets/avatars/" + avatarSelector + ".png"
@@ -1227,12 +1320,12 @@ export class LabelingComponent implements OnInit, OnDestroy {
       }
     }
     if (!loggedInUserHasRlas) {
-      const avatarSelector = (this.loggedInUser.firstName[0].charCodeAt(0) + this.loggedInUser.lastName[0].charCodeAt(0)) % 5;
+      const avatarSelector = (this.user.firstName[0].charCodeAt(0) + this.user.lastName[0].charCodeAt(0)) % 5;
       this.userIcons.push({
-        id: this.loggedInUser.id,
+        id: this.user.id,
         order: 1,
-        initials: this.loggedInUser.firstName[0] + this.loggedInUser.lastName[0],
-        name: this.loggedInUser.firstName + ' ' + this.loggedInUser.lastName,
+        initials: this.user.firstName[0] + this.user.lastName[0],
+        name: this.user.firstName + ' ' + this.user.lastName,
         avatarUri: "assets/avatars/" + avatarSelector + ".png"
       });
 
@@ -1381,10 +1474,10 @@ export class LabelingComponent implements OnInit, OnDestroy {
         [associationId]
       ).pipe(first())
       .subscribe();
-    if (this.loggedInUser.id != this.displayUserId) {
+    if (this.user.id != this.displayUserId) {
       if (this.fullRecordData.recordLabelAssociations.length == 0 ||
         (this.fullRecordData.recordLabelAssociations.length == 1 && this.fullRecordData.recordLabelAssociations[0].id == associationId)) {
-        this.showUserData(this.loggedInUser.id);
+        this.showUserData(this.user.id);
       }
     }
   }
@@ -1392,6 +1485,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
   addLabelToMarkedText(taskId: string, labelId: string) {
     if (!this.selectionJSON) return;
     if (this.selectionJSON.error) return;
+    if (this.roleAssumed || !this.huddleData.canEdit) return;
 
     //saveData
     this.somethingLoading = true;
@@ -1416,14 +1510,17 @@ export class LabelingComponent implements OnInit, OnDestroy {
         dataEntry.endIdx,
         dataEntry.value,
         labelId,
-        this.displayUserId == this.GOLD_USER_ID ? true : null
+        this.displayUserId == this.GOLD_USER_ID ? true : null,
+        this.getSourceId()
       )
       .pipe(first())
       .subscribe();
-      
+
   }
 
+
   addLabelToTask(labelingTaskId: string, labelId: string) {
+    if (this.roleAssumed || !this.huddleData.canEdit) return;
     let existingLabels = this.fullRecordData.recordLabelAssociations.filter(
       (e) => e.sourceType == LabelSource.MANUAL && e.labelingTaskLabel.labelingTask.id == labelingTaskId
     );
@@ -1437,7 +1534,8 @@ export class LabelingComponent implements OnInit, OnDestroy {
         this.fullRecordData.id,
         labelingTaskId,
         labelId,
-        this.displayUserId == this.GOLD_USER_ID ? true : null
+        this.displayUserId == this.GOLD_USER_ID ? true : null,
+        this.getSourceId(),
       )
       .pipe(first())
       .subscribe();
@@ -1588,13 +1686,11 @@ export class LabelingComponent implements OnInit, OnDestroy {
     return style;
   }
 
-  getLabelForDisplay(labelName: string, confidence: number) {
-    return (
-      labelName +
-      (confidence || confidence == 0
-        ? ' - ' + Math.round((confidence + Number.EPSILON) * 10000) / 100 + '%'
-        : '')
-    );
+  getLabelForDisplay(labelName: string, confidence: number, isManual: boolean) {
+    if (isManual) {
+      return labelName;
+    }
+    return labelName + " - " + Math.round((confidence + Number.EPSILON) * 10000) / 100 + '%';
   }
 
   displayEntryAsJSON(dataEntry, like = '') {
@@ -1638,11 +1734,23 @@ export class LabelingComponent implements OnInit, OnDestroy {
     }
     else if (msgParts[1] == 'record_deleted') {
       if (msgParts[2] == this.recordData?.id) {
-        this.sessionData.recordIds[this.sessionData.currentPos - 1] = "deleted"
-        this.jumpToPosition(this.project.id, this.sessionData.currentPos);
+        this.huddleData.recordIds[this.huddleData.linkData.requestedPos - 1] = "deleted"
+        this.jumpToPosition(this.project.id, this.huddleData.linkData.requestedPos);
       }
     } else if (msgParts[1] == 'attributes_updated') {
       this.attributesQuery$.refetch();
+    } else if (['access_link_changed', 'access_link_removed'].includes(msgParts[1])) {
+      if (this.router.url.indexOf(msgParts[3]) > -1 && this.labelingLinkData) {
+        // this.checkLinkAccess();
+        console.log(msgParts[4], !msgParts[4], msgParts[4] === 'true')
+        this.labelingLinkData.linkLocked = !msgParts[4] || msgParts[4] === 'true';
+        // location.reload();
+      }
+
+    } else if (msgParts[1] == 'information_source_updated') {
+      if (this.router.url.indexOf(msgParts[2]) > -1 && this.labelingLinkData) {
+        location.reload();
+      }
     }
   }
 
@@ -1659,11 +1767,13 @@ export class LabelingComponent implements OnInit, OnDestroy {
   }
 
   goToRecordIde() {
-    const sessionId = this.activatedRoute.snapshot.paramMap.get("sessionId");
-    const recordIdeUrlFull = this.activatedRoute.snapshot['_routerState'].url;
-    const posIndex = /\?pos/.exec(recordIdeUrlFull).index;
-    const position = parseInt(recordIdeUrlFull.substring(posIndex + 5)); // get rid of "?pos=" (5 chars)
-    this.router.navigate(["projects", this.project.id, "record-ide", sessionId], { queryParams: { pos: position } });
+    const sessionId = this.labelingLinkData.id;
+    const pos = this.labelingLinkData.requestedPos;
+    // const recordIdeUrlFull = this.activatedRoute.snapshot['_routerState'].url;
+    // const posIndex = /\?pos/.exec(recordIdeUrlFull).index;
+    // const position = parseInt(recordIdeUrlFull.substring(posIndex + 5)); // get rid of "?pos=" (5 chars)
+
+    this.router.navigate(["projects", this.project.id, "record-ide", sessionId], { queryParams: { pos: pos } });
   }
 
   getBackground(color) {

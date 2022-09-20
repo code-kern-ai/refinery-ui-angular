@@ -8,6 +8,7 @@ import { ProjectApolloService } from 'src/app/base/services/project/project-apol
 import { RouteService } from 'src/app/base/services/route.service';
 import { WeakSourceApolloService } from 'src/app/base/services/weak-source/weak-source-apollo.service';
 import { dateAsUTCDate } from 'src/app/util/helper-functions';
+import { UserManager } from 'src/app/util/user-manager';
 
 @Component({
   selector: 'model-callbacks',
@@ -53,10 +54,12 @@ export class ModelCallbackComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subscriptions$.forEach((subscription) => subscription.unsubscribe());
-    NotificationService.unsubscribeFromNotification(this, this.project.sid);
+    const projectId = this.project?.id ? this.project.id : this.activatedRoute.parent.snapshot.paramMap.get('projectId');
+    NotificationService.unsubscribeFromNotification(this, projectId);
   }
 
   ngOnInit(): void {
+    UserManager.checkUserAndRedirect(this);
     this.routeService.updateActivatedRoute(this.activatedRoute);
     const projectId = this.activatedRoute.parent.snapshot.paramMap.get('projectId');
     this.projectApolloService.getProjectById(projectId).pipe(first()).subscribe(project => this.project = project);

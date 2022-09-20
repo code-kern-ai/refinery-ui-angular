@@ -302,8 +302,8 @@ export const queries = {
   }
   `,
   DATA_SLICES: gql`
-  query($projectId:ID!){
-    dataSlices(projectId:$projectId){
+  query($projectId:ID!,$sliceType:String){
+    dataSlices(projectId:$projectId, sliceType:$sliceType){
       id
       name
       filterRaw
@@ -363,5 +363,33 @@ export const queries = {
       finishedAt
     }
   }  
-  `
+  `,
+  GET_ACCESS_LINK: gql`
+  query ($projectId: ID!, $linkId: ID!) {
+    accessLink(projectId: $projectId, linkId: $linkId) {
+      id
+      link
+      isLocked
+    }
+  }
+`,
+  REQUEST_HUDDLE_DATA: gql`
+  query ($projectId: ID!, $huddleId: ID!, $huddleType: String!) {
+    requestHuddleData(projectId: $projectId, huddleId: $huddleId, huddleType: $huddleType) {
+      huddleId
+      recordIds
+      huddleType
+      startPos
+      allowedTask
+      canEdit
+    }
+  }
+  
+`,
+  LINK_LOCKED: gql`
+  query ($projectId: ID!, $linkRoute: String!) {
+    linkLocked(projectId: $projectId, linkRoute: $linkRoute)
+  }`
+  ,
+
 };

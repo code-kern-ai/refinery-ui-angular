@@ -1,4 +1,4 @@
-<div class="h-screen flex bg-gray-50 overflow-visible">
+<div *ngIf="user$ | async as user" class="h-screen flex bg-gray-50 overflow-visible">
     <div #sideBar class="hidden lg:flex lg:flex-shrink-0 overflow-visible">
         <div class="flex flex-col w-20 overflow-visible">
             <div class="flex-1 flex flex-col min-h-0 overflow-y-auto bg-kernindigo overflow-initial">
@@ -28,200 +28,266 @@
                                     </linearGradient>
                                 </defs>
                             </svg>
-
                         </a>
                     </div>
-
-                    <div *ngIf="project$ | async as project">
-                        <div *ngIf="project.id !== null">
-                            <div class="flex items-center justify-center overflow-visible 2xl:mt-12">
-                                <div data-tip="Overview" class="tooltip tooltip-right relative z-50"
-                                    [ngClass]="project.numDataScaleUploaded == 0 ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer'">
-                                    <a [routerLink]="['./overview']" rel="noopener noreferrer" class="circle text-white"
-                                        [ngClass]="matchRouteAndMenu((activatedRoute$ | async), 'overview') ? 'text-kerngreen': 'text-white'">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
-                                            fill="currentColor">
-                                            <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z" />
-                                            <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z" />
-                                        </svg>
-                                    </a>
+                    <div>
+                        <div *ngIf="project$ | async as project">
+                            <div *ngIf="project.id !== null"
+                                [ngClass]="user?.role == 'ENGINEER' ? 'visible' : 'invisible' ">
+                                <div class="flex items-center justify-center overflow-visible mt-10 2xl:mt-12">
+                                    <div data-tip="Overview" class="tooltip tooltip-right relative z-50"
+                                        [ngClass]="project.numDataScaleUploaded == 0 ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer'">
+                                        <a [routerLink]="['./overview']" rel="noopener noreferrer"
+                                            class="circle text-white"
+                                            [ngClass]="matchRouteAndMenu((activatedRoute$ | async), 'overview') ? 'text-kerngreen': 'text-white'">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
+                                                fill="currentColor">
+                                                <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z" />
+                                                <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z" />
+                                            </svg>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-center overflow-visible mt-10 2xl:mt-12">
+                                    <div data-tip="Data Browser" class="tooltip tooltip-right relative z-50"
+                                        [ngClass]="project.numDataScaleUploaded == 0 ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer'">
+                                        <a [routerLink]="['./data']" rel="noopener noreferrer" class="circle text-white"
+                                            [ngClass]="matchRouteAndMenu((activatedRoute$ | async), 'data') ? 'text-kerngreen': 'text-white'">
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="icon icon-tabler icon-tabler-icons" width="24" height="24"
+                                                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                                stroke-linecap="round" stroke-linejoin="round">
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                                <circle cx="6.5" cy="6.5" r="3.5"></circle>
+                                                <path d="M2.5 21h8l-4 -7z"></path>
+                                                <path d="M14 3l7 7"></path>
+                                                <path d="M14 10l7 -7"></path>
+                                                <path d="M14 14h7v7h-7z"></path>
+                                            </svg>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-center overflow-visible mt-10 2xl:mt-12">
+                                    <div data-tip="Labeling" class="tooltip tooltip-right relative z-50"
+                                        [ngClass]="project.numDataScaleUploaded == 0 ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer'">
+                                        <a [routerLink]="['./labeling']" rel="noopener noreferrer"
+                                            class="circle text-white"
+                                            [ngClass]="matchRouteAndMenu((activatedRoute$ | async), 'labeling') ? 'text-kerngreen': 'text-white'">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
+                                                fill="currentColor">
+                                                <path fill-rule="evenodd"
+                                                    d="M17.707 9.293a1 1 0 010 1.414l-7 7a1 1 0 01-1.414 0l-7-7A.997.997 0 012 10V5a3 3 0 013-3h5c.256 0 .512.098.707.293l7 7zM5 6a1 1 0 100-2 1 1 0 000 2z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-center overflow-visible mt-10 2xl:mt-12">
+                                    <div data-tip="Heuristics" class="tooltip tooltip-right relative z-50"
+                                        [ngClass]="project.numDataScaleUploaded == 0 ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer'">
+                                        <a [routerLink]="['./heuristics']" rel="noopener noreferrer"
+                                            class="circle text-white"
+                                            [ngClass]="matchRouteAndMenu((activatedRoute$ | async), 'heuristics') ? 'text-kerngreen': 'text-white'">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
+                                                fill="currentColor">
+                                                <path
+                                                    d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM5 10a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zM8 16v-1h4v1a2 2 0 11-4 0zM12 14c.015-.34.208-.646.477-.859a4 4 0 10-4.954 0c.27.213.462.519.476.859h4.002z" />
+                                            </svg>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-center overflow-visible mt-10 2xl:mt-12">
+                                    <div data-tip="Settings" class="tooltip tooltip-right relative z-50">
+                                        <a [routerLink]="['./settings']" rel="noopener noreferrer"
+                                            class="circle text-white"
+                                            [ngClass]="matchRouteAndMenu((activatedRoute$ | async), 'settings') ? 'text-kerngreen': 'text-white'">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
+                                                fill="currentColor">
+                                                <path fill-rule="evenodd"
+                                                    d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-center overflow-visible mt-6 text-white">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="20px" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"
+                                        preserveAspectRatio="none">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M20 12H4" />
+                                    </svg>
                                 </div>
                             </div>
-                            <div class="flex items-center justify-center overflow-visible mt-10 2xl:mt-12">
-                                <div data-tip="Data Browser" class="tooltip tooltip-right relative z-50"
-                                    [ngClass]="project.numDataScaleUploaded == 0 ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer'">
-                                    <a [routerLink]="['./data']" rel="noopener noreferrer" class="circle text-white"
-                                        [ngClass]="matchRouteAndMenu((activatedRoute$ | async), 'data') ? 'text-kerngreen': 'text-white'">
-                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                            class="icon icon-tabler icon-tabler-icons" width="24" height="24"
-                                            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                                            stroke-linecap="round" stroke-linejoin="round">
-                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                            <circle cx="6.5" cy="6.5" r="3.5"></circle>
-                                            <path d="M2.5 21h8l-4 -7z"></path>
-                                            <path d="M14 3l7 7"></path>
-                                            <path d="M14 10l7 -7"></path>
-                                            <path d="M14 14h7v7h-7z"></path>
-                                        </svg>
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="flex items-center justify-center overflow-visible mt-10 2xl:mt-12">
-                                <div data-tip="Labeling" class="tooltip tooltip-right relative z-50"
-                                    [ngClass]="project.numDataScaleUploaded == 0 ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer'">
-                                    <a [routerLink]="['./labeling']" rel="noopener noreferrer" class="circle text-white"
-                                        [ngClass]="matchRouteAndMenu((activatedRoute$ | async), 'labeling') ? 'text-kerngreen': 'text-white'">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
-                                            fill="currentColor">
-                                            <path fill-rule="evenodd"
-                                                d="M17.707 9.293a1 1 0 010 1.414l-7 7a1 1 0 01-1.414 0l-7-7A.997.997 0 012 10V5a3 3 0 013-3h5c.256 0 .512.098.707.293l7 7zM5 6a1 1 0 100-2 1 1 0 000 2z"
-                                                clip-rule="evenodd" />
-                                        </svg>
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="flex items-center justify-center overflow-visible mt-10 2xl:mt-12">
-                                <div data-tip="Heuristics" class="tooltip tooltip-right relative z-50"
-                                    [ngClass]="project.numDataScaleUploaded == 0 ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer'">
-                                    <a [routerLink]="['./heuristics']" rel="noopener noreferrer"
-                                        class="circle text-white"
-                                        [ngClass]="matchRouteAndMenu((activatedRoute$ | async), 'heuristics') ? 'text-kerngreen': 'text-white'">
+                        </div>
+                        <div [ngClass]="user?.role == 'ENGINEER' ? 'visible' : 'invisible' ">
+                            <div class="flex items-center justify-center overflow-visible mt-6">
+                                <div data-tip="Documentation" class="tooltip tooltip-right relative z-50">
+                                    <a href="https://docs.kern.ai/" target="_blank" rel="noopener noreferrer"
+                                        class="circle text-white">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
                                             fill="currentColor">
                                             <path
-                                                d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM5 10a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zM8 16v-1h4v1a2 2 0 11-4 0zM12 14c.015-.34.208-.646.477-.859a4 4 0 10-4.954 0c.27.213.462.519.476.859h4.002z" />
+                                                d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" />
                                         </svg>
                                     </a>
                                 </div>
                             </div>
                             <div class="flex items-center justify-center overflow-visible mt-10 2xl:mt-12">
-                                <div data-tip="Settings" class="tooltip tooltip-right relative z-50">
-                                    <a [routerLink]="['./settings']" rel="noopener noreferrer" class="circle text-white"
-                                        [ngClass]="matchRouteAndMenu((activatedRoute$ | async), 'settings') ? 'text-kerngreen': 'text-white'">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
-                                            fill="currentColor">
-                                            <path fill-rule="evenodd"
-                                                d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"
-                                                clip-rule="evenodd" />
+                                <div data-tip="API" class="tooltip tooltip-right relative z-50">
+                                    <a href="https://github.com/code-kern-ai/kern-python" target="_blank"
+                                        rel="noopener noreferrer" class="circle text-white">
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                            class="text-white icon icon-tabler icon-tabler-api" width="24" height="24"
+                                            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                            <path d="M4 13h5"></path>
+                                            <path d="M12 16v-8h3a2 2 0 0 1 2 2v1a2 2 0 0 1 -2 2h-3"></path>
+                                            <path d="M20 8v8"></path>
+                                            <path d="M9 16v-5.5a2.5 2.5 0 0 0 -5 0v5.5"></path>
                                         </svg>
                                     </a>
                                 </div>
                             </div>
-                            <div class="flex items-center justify-center overflow-visible mt-6 mb-6 text-white">
+                            <<<<<<< HEAD <div
+                                class="flex items-center justify-center overflow-visible mt-6 mb-6 text-white">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="20px" fill="none"
                                     viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"
                                     preserveAspectRatio="none">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M20 12H4" />
                                 </svg>
-                            </div>
                         </div>
                     </div>
+                </div>
 
-                    <div class="flex items-center justify-center overflow-visible">
-                        <div data-tip="Documentation" class="tooltip tooltip-right relative z-50">
-                            <a href="https://docs.kern.ai/" target="_blank" rel="noopener noreferrer"
-                                class="circle text-white">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
-                                    fill="currentColor">
-                                    <path
-                                        d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" />
-                                </svg>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="flex items-center justify-center overflow-visible mt-10 2xl:mt-12">
-                        <div data-tip="API" class="tooltip tooltip-right relative z-50">
-                            <a href="https://github.com/code-kern-ai/kern-python" target="_blank"
-                                rel="noopener noreferrer" class="circle text-white">
-                                <svg xmlns="http://www.w3.org/2000/svg"
-                                    class="text-white icon icon-tabler icon-tabler-api" width="24" height="24"
-                                    viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                                    stroke-linecap="round" stroke-linejoin="round">
-                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                    <path d="M4 13h5"></path>
-                                    <path d="M12 16v-8h3a2 2 0 0 1 2 2v1a2 2 0 0 1 -2 2h-3"></path>
-                                    <path d="M20 8v8"></path>
-                                    <path d="M9 16v-5.5a2.5 2.5 0 0 0 -5 0v5.5"></path>
-                                </svg>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="flex items-center justify-center overflow-visible mt-10 2xl:mt-12">
-                        <div data-tip="Join our community" class="tooltip tooltip-right relative z-50">
-                            <a href="https://discord.com/invite/qf4rGCEphW" target="_blank" rel="noopener noreferrer"
-                                class="circle text-white">
-                                <svg xmlns="http://www.w3.org/2000/svg"
-                                    class="icon icon-tabler icon-tabler-brand-discord" width="24" height="24"
-                                    viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                                    stroke-linecap="round" stroke-linejoin="round">
-                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                    <circle cx="9" cy="12" r="1"></circle>
-                                    <circle cx="15" cy="12" r="1"></circle>
-                                    <path d="M7.5 7.5c3.5 -1 5.5 -1 9 0"></path>
-                                    <path d="M7 16.5c3.5 1 6.5 1 10 0"></path>
-                                    <path
-                                        d="M15.5 17c0 1 1.5 3 2 3c1.5 0 2.833 -1.667 3.5 -3c.667 -1.667 .5 -5.833 -1.5 -11.5c-1.457 -1.015 -3 -1.34 -4.5 -1.5l-1 2.5">
-                                    </path>
-                                    <path
-                                        d="M8.5 17c0 1 -1.356 3 -1.832 3c-1.429 0 -2.698 -1.667 -3.333 -3c-.635 -1.667 -.476 -5.833 1.428 -11.5c1.388 -1.015 2.782 -1.34 4.237 -1.5l1 2.5">
-                                    </path>
-                                </svg>
-                            </a>
-                        </div>
+                <div class="flex items-center justify-center overflow-visible">
+                    <div data-tip="Documentation" class="tooltip tooltip-right relative z-50">
+                        <a href="https://docs.kern.ai/" target="_blank" rel="noopener noreferrer"
+                            class="circle text-white">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
+                                fill="currentColor">
+                                <path
+                                    d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" />
+                            </svg>
+                        </a>
                     </div>
                 </div>
-                <div *ngIf="!isFullscreen" class="flex items-center justify-center mt-10 2xl:mt-12">
-                    <button data-tip="Maximize screen" (click)="openFullscreen()"
-                        class="z-50 tooltip tooltip-right cursor-pointer">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="text-white icon icon-tabler icon-tabler-maximize"
-                            width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
-                            fill="none" stroke-linecap="round" stroke-linejoin="round">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                            <path d="M4 8v-2a2 2 0 0 1 2 -2h2"></path>
-                            <path d="M4 16v2a2 2 0 0 0 2 2h2"></path>
-                            <path d="M16 4h2a2 2 0 0 1 2 2v2"></path>
-                            <path d="M16 20h2a2 2 0 0 0 2 -2v-2"></path>
-                        </svg>
-                    </button>
+                <div class="flex items-center justify-center overflow-visible mt-10 2xl:mt-12">
+                    <div data-tip="API" class="tooltip tooltip-right relative z-50">
+                        <a href="https://github.com/code-kern-ai/kern-python" target="_blank" rel="noopener noreferrer"
+                            class="circle text-white">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="text-white icon icon-tabler icon-tabler-api"
+                                width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+                                fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <path d="M4 13h5"></path>
+                                <path d="M12 16v-8h3a2 2 0 0 1 2 2v1a2 2 0 0 1 -2 2h-3"></path>
+                                <path d="M20 8v8"></path>
+                                <path d="M9 16v-5.5a2.5 2.5 0 0 0 -5 0v5.5"></path>
+                            </svg>
+                        </a>
+                    </div>
                 </div>
-                <div *ngIf="isFullscreen" class="flex items-center justify-center mt-10 2xl:mt-12">
-                    <button data-tip="Minimize screen" (click)="closeFullscreen()"
-                        class="z-50 tooltip tooltip-right cursor-pointer">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="text-white icon icon-tabler icon-tabler-minimize"
-                            width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
-                            fill="none" stroke-linecap="round" stroke-linejoin="round">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                            <path d="M15 19v-2a2 2 0 0 1 2 -2h2"></path>
-                            <path d="M15 5v2a2 2 0 0 0 2 2h2"></path>
-                            <path d="M5 15h2a2 2 0 0 1 2 2v2"></path>
-                            <path d="M5 9h2a2 2 0 0 0 2 -2v-2"></path>
-                        </svg>
-                    </button>
+                <div class="flex items-center justify-center overflow-visible mt-10 2xl:mt-12">
+                    <div data-tip="Join our community" class="tooltip tooltip-right relative z-50">
+                        <a href="https://discord.com/invite/qf4rGCEphW" target="_blank" rel="noopener noreferrer"
+                            class="circle text-white">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-discord"
+                                width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+                                fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <circle cx="9" cy="12" r="1"></circle>
+                                <circle cx="15" cy="12" r="1"></circle>
+                                <path d="M7.5 7.5c3.5 -1 5.5 -1 9 0"></path>
+                                <path d="M7 16.5c3.5 1 6.5 1 10 0"></path>
+                                <path
+                                    d="M15.5 17c0 1 1.5 3 2 3c1.5 0 2.833 -1.667 3.5 -3c.667 -1.667 .5 -5.833 -1.5 -11.5c-1.457 -1.015 -3 -1.34 -4.5 -1.5l-1 2.5">
+                                </path>
+                                <path
+                                    d="M8.5 17c0 1 -1.356 3 -1.832 3c-1.429 0 -2.698 -1.667 -3.333 -3c-.635 -1.667 -.476 -5.833 1.428 -11.5c1.388 -1.015 2.782 -1.34 4.237 -1.5l1 2.5">
+                                </path>
+                            </svg>
+                        </a>
+                    </div>
                 </div>
-                <div class="flex-shrink-0 flex py-6 justify-center">
-                    <label data-tip="Version overview" for="version-overview" (click)="requestVersionOverview()"
-                        class="z-50 tooltip tooltip-right cursor-pointer select-none text-white flex items-center">v1.2.0
-                        <svg *ngIf="hasUpdates" xmlns="http://www.w3.org/2000/svg" data-tip="Newer version available"
-                            class="icon icon-tabler icon-tabler-alert-circle inline-block text-yellow-700 tooltip tooltip-right align-top ml-1 mt-px"
-                            width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
-                            fill="none" stroke-linecap="round" stroke-linejoin="round">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                            <circle cx="12" cy="12" r="9"></circle>
-                            <line x1="12" y1="8" x2="12" y2="12"></line>
-                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                        </svg>
-                    </label>
+                =======
+                <div class="flex items-center justify-center overflow-visible mt-10 2xl:mt-12">
+                    <div data-tip="Join our community" class="tooltip tooltip-right relative z-50">
+                        <a href="https://discord.com/invite/qf4rGCEphW" target="_blank" rel="noopener noreferrer"
+                            class="circle text-white">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-discord"
+                                width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+                                fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <circle cx="9" cy="12" r="1"></circle>
+                                <circle cx="15" cy="12" r="1"></circle>
+                                <path d="M7.5 7.5c3.5 -1 5.5 -1 9 0"></path>
+                                <path d="M7 16.5c3.5 1 6.5 1 10 0"></path>
+                                <path
+                                    d="M15.5 17c0 1 1.5 3 2 3c1.5 0 2.833 -1.667 3.5 -3c.667 -1.667 .5 -5.833 -1.5 -11.5c-1.457 -1.015 -3 -1.34 -4.5 -1.5l-1 2.5">
+                                </path>
+                                <path
+                                    d="M8.5 17c0 1 -1.356 3 -1.832 3c-1.429 0 -2.698 -1.667 -3.333 -3c-.635 -1.667 -.476 -5.833 1.428 -11.5c1.388 -1.015 2.782 -1.34 4.237 -1.5l1 2.5">
+                                </path>
+                            </svg>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
+        >>>>>>> origin/admin-dashboard-extention
     </div>
-    <div #svgMenu class="flex lg:hidden m-4 cursor-pointer" (isMenuOpen)="toggleVisible($event, sideBar, svgMenu)"
-        appDropdown>
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-            stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
+    <div *ngIf="!isFullscreen" class="flex items-center justify-center mt-10 2xl:mt-12">
+        <button data-tip="Maximize screen" (click)="openFullscreen()" class="z-50 tooltip tooltip-right cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" class="text-white icon icon-tabler icon-tabler-maximize" width="24"
+                height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                <path d="M4 8v-2a2 2 0 0 1 2 -2h2"></path>
+                <path d="M4 16v2a2 2 0 0 0 2 2h2"></path>
+                <path d="M16 4h2a2 2 0 0 1 2 2v2"></path>
+                <path d="M16 20h2a2 2 0 0 0 2 -2v-2"></path>
+            </svg>
+        </button>
     </div>
+    <div *ngIf="isFullscreen" class="flex items-center justify-center mt-10 2xl:mt-12">
+        <button data-tip="Minimize screen" (click)="closeFullscreen()"
+            class="z-50 tooltip tooltip-right cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" class="text-white icon icon-tabler icon-tabler-minimize" width="24"
+                height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                <path d="M15 19v-2a2 2 0 0 1 2 -2h2"></path>
+                <path d="M15 5v2a2 2 0 0 0 2 2h2"></path>
+                <path d="M5 15h2a2 2 0 0 1 2 2v2"></path>
+                <path d="M5 9h2a2 2 0 0 0 2 -2v-2"></path>
+            </svg>
+        </button>
+    </div>
+    <div class="flex-shrink-0 flex py-6 justify-center">
+        <label data-tip="Version overview" for="version-overview" (click)="requestVersionOverview()"
+            class="z-50 tooltip tooltip-right cursor-pointer select-none text-white flex items-center">v1.2.0
+            <svg *ngIf="hasUpdates" xmlns="http://www.w3.org/2000/svg" data-tip="Newer version available"
+                class="icon icon-tabler icon-tabler-alert-circle inline-block text-yellow-700 tooltip tooltip-right align-top ml-1 mt-px"
+                width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                <circle cx="12" cy="12" r="9"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+        </label>
+    </div>
+</div>
+</div>
+</div>
+<div #svgMenu class="flex lg:hidden m-4 cursor-pointer" (isMenuOpen)="toggleVisible($event, sideBar, svgMenu)"
+    appDropdown>
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+        stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+    </svg>
+</div>
 </div>
 
 <input #versionOverviewModal type="checkbox" id="version-overview" class="modal-toggle">
