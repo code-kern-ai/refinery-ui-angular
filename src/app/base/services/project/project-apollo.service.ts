@@ -436,10 +436,10 @@ export class ProjectApolloService {
   updateAttribute(
     projectId: string,
     attributeId: string,
-    dataType: string,
-    isPrimaryKey: boolean,
-    name: string,
-    sourceCode: string
+    dataType?: string,
+    isPrimaryKey?: boolean,
+    name?: string,
+    sourceCode?: string
   ) {
     return this.apollo.mutate({
       mutation: mutations.UPDATE_ATTRIBUTE,

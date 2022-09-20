@@ -33,7 +33,7 @@ export class CreateNewAttributeComponent implements OnInit {
   nameOpen: boolean = false;
   attributeName: string;
   codeFormCtrl = new FormControl('');
-  editorOptions = { theme: 'vs-light', language: 'python' };
+  editorOptions = { theme: 'vs-light', language: 'python', readOnly: false };
   attributeLogs: any;
   testerRequestedSomething: boolean = false;
   canRunProject: boolean = false;
@@ -135,6 +135,10 @@ export class CreateNewAttributeComponent implements OnInit {
      
       this.attributeLogs = attribute.logs;
       this.canRunProject = this.attribute.sourceCode !== '';
+      console.log(this.attribute.state)
+      if(this.attribute.state == 'FAILED') {
+        this.editorOptions = { ...this.editorOptions, readOnly: false };
+      }
       timer(250).subscribe(() => this.updatedThroughWebsocket = false);
     }));
   }
@@ -225,7 +229,7 @@ export class CreateNewAttributeComponent implements OnInit {
       .calculateUserAttributeSampleRecords(this.project.id, this.attribute.id).pipe(first()).subscribe((sampleRecords) => {
         this.sampleRecords = sampleRecords;
         this.testerRequestedSomething = false;
-        this.attributeQuery$.refetch();
+        this.prepareAttribute(this.project.id, this.attribute.id);
       }, (error) => {
         this.testerRequestedSomething = false;
         this.attributeQuery$.refetch()
@@ -233,6 +237,7 @@ export class CreateNewAttributeComponent implements OnInit {
   }
 
   calculateUserAttributeAllRecords() {
+    this.editorOptions = { ...this.editorOptions, readOnly: true };
     this.projectApolloService
     .calculateUserAttributeAllRecords(this.project.id, this.attribute.id)
     .pipe(first())
