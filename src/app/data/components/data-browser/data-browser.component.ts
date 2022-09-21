@@ -234,7 +234,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   }
 
   getWhiteListNotificationService(): string[] {
-    let toReturn = ['label_created', 'label_deleted', 'attributes_updated'];
+    let toReturn = ['label_created', 'label_deleted', 'attributes_updated','calculate_attribute'];
     toReturn.push(...['labeling_task_deleted', 'labeling_task_updated', 'labeling_task_created']);
     toReturn.push(...['information_source_created', 'information_source_updated', 'information_source_deleted']);
     toReturn.push(...['data_slice_created', 'data_slice_updated', 'data_slice_deleted']);
@@ -1901,6 +1901,10 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       this.refreshAndDo(this.attributesQuery$, this.attributeWait, () => this.websocketFilterRefresh(currentFilterData));
       this.alterUser(msgParts[1])
     }
+    else if(msgParts[1] == 'calculate_attribute' && msgParts[2]=='finished') {
+      window.location.reload();
+      this.alterUser(msgParts[1], true);
+    }
     else if (['data_slice_created', 'data_slice_updated', 'data_slice_deleted'].includes(msgParts[1])) {
       this.dataSlicesQuery$.refetch();
     } else if (['label_created', 'label_deleted', 'labeling_task_deleted', 'labeling_task_updated', 'labeling_task_created', 'information_source_created', 'information_source_updated', 'information_source_deleted'].includes(msgParts[1])) {
@@ -1910,9 +1914,9 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     this.similarSearchHelper.handleWebsocketNotification(msgParts);
   }
 
-  alterUser(msgId) {
+  alterUser(msgId: string, forReload: boolean = false) {
     if (this.alertLastVisible && Date.now() - this.alertLastVisible < 1000) return;
-    alert("Settings were changed (msgId: " + msgId + ")\nFilter will be reloaded.");
+    alert("Settings were changed (msgId: " + msgId + ")\n"+ (forReload ? 'Page' : 'Filter')+ " will be reloaded.");
     this.alertLastVisible = Date.now();
   }
 
