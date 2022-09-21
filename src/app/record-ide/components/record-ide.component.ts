@@ -39,6 +39,7 @@ export class RecordIDEComponent implements OnInit {
 
   snakeActive: boolean = false;
   vertical: boolean = true;
+  position: number;
 
 
   constructor(
@@ -48,6 +49,15 @@ export class RecordIDEComponent implements OnInit {
     private projectApolloService: ProjectApolloService,
     private router: Router,
   ) {
+
+    this.router.events.subscribe((event: Event) => {
+      if (event instanceof NavigationEnd) {
+        const labelingUrlFull = this.activatedRoute.snapshot['_routerState'].url;
+        const posIndex = /\?pos/.exec(labelingUrlFull).index;
+        this.position = parseInt(labelingUrlFull.substring(posIndex + 5)); // get rid of "?pos=" (5 chars)
+      }
+    });
+
   }
 
   ngOnInit(): void {
