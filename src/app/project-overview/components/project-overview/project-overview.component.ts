@@ -34,6 +34,8 @@ export class ProjectOverviewComponent implements OnInit, OnDestroy {
   description: string = '';
   descriptionOpen: boolean = false;
 
+  lineChartData: any;
+
   newLabel = new FormControl('');
   colors = schemeCategory24;
   downloadMessage: DownloadState = DownloadState.NONE;
@@ -113,6 +115,7 @@ export class ProjectOverviewComponent implements OnInit, OnDestroy {
       this.labels = this.labelingTasksMap.get(labelingTaskId).labels;
       this.setDisplayNERConfusion(currentProjectID, labelingTaskId);
       this.getLabelDistributions(currentProjectID, labelingTaskId);
+      this.getConfidenceDistributions(currentProjectID, labelingTaskId);
       this.getConfusionMatrix(currentProjectID, labelingTaskId);
       this.getInterAnnotatorMatrix(currentProjectID, labelingTaskId);
       this.refreshProjectStats(currentProjectID);
@@ -121,6 +124,7 @@ export class ProjectOverviewComponent implements OnInit, OnDestroy {
 
     this.dataSliceForm.valueChanges.pipe(debounceTime(50)).subscribe((sliceId) => {
       this.getLabelDistributions(currentProjectID, this.labelingTasksForm.value);
+      this.getConfidenceDistributions(currentProjectID, this.labelingTasksForm.value);
       this.getConfusionMatrix(currentProjectID, this.labelingTasksForm.value);
       this.getInterAnnotatorMatrix(currentProjectID, this.labelingTasksForm.value);
       this.refreshProjectStats(currentProjectID);
@@ -310,6 +314,18 @@ export class ProjectOverviewComponent implements OnInit, OnDestroy {
     ).pipe(first()).subscribe((labelDist) => {
       this.labelDistribution = this.matchAndMergeLabelDistributionData(labelDist);
       this.graphsHaveValues = labelDist.length > 0;
+    });
+  }
+
+  getConfidenceDistributions(projectId: string, labelingTaskId: string): void {
+    const dataSliceId = this.dataSliceForm.value == "@@NO_SLICE@@" ? null : this.dataSliceForm.value;
+    this.labelDistribution = null;
+    this.projectApolloService.getConfidenceDistributions(
+      projectId,
+      labelingTaskId,
+      dataSliceId
+    ).pipe(first()).subscribe((confidenceDist) => {
+      this.lineChartData = confidenceDist;
     });
   }
 

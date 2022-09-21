@@ -199,6 +199,24 @@ export class ProjectApolloService {
       );
   }
 
+  getConfidenceDistributions(projectId: string, labelingTaskId: string = null, sliceId: string = null) {
+    return this.apollo
+      .query({
+        query: queries.GET_CONFIDENCE_DISTRIBUTION,
+        variables: {
+          projectId: projectId,
+          labelingTaskId: labelingTaskId,
+          sliceId: sliceId,
+        },
+        fetchPolicy: 'no-cache',
+      })
+      .pipe(
+        map((result) => {
+          return JSON.parse(result['data']['confidenceDistribution']);
+        })
+      );
+  }
+
   getProjectByIdQuery(
     projectId: string
   ) {

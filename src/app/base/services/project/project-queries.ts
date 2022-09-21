@@ -119,6 +119,12 @@ export const queries = {
   }
 `,
 
+  GET_CONFIDENCE_DISTRIBUTION: gql`
+  query ($projectId: ID!, $labelingTaskId: ID, $sliceId: ID) {
+    confidenceDistribution(projectId: $projectId, labelingTaskId: $labelingTaskId, sliceId: $sliceId)
+  }  
+  `,
+
   GET_ATTRIBUTES_BY_PROJECT_ID: gql`
   query($projectId: ID!, $stateFilter: [String!]) {
     attributesByProjectId(projectId: $projectId, stateFilter: $stateFilter) {
