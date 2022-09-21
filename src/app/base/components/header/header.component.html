@@ -47,18 +47,33 @@
                     </div>
                 </ng-template>
                 <ng-template [ngSwitchCase]="'notifications'">
-                    <div *ngIf="user" class="flex items-center">
+                    <div *ngIf="!organizationInactive && user" class="flex items-center">
                         <div class="ml-6 text-gray-500 text-sm font-normal">
                             Welcome, <span class="font-bold text-gray-900">{{user?.firstName}}</span>! See
                             your activities at <span class="font-bold text-gray-900">{{organizationName}}</span>.
                         </div>
                     </div>
+                    <div *ngIf="organizationInactive">
+                        <div class="ml-6 text-gray-500 text-sm font-normal">
+                            Welcome, <span class="font-bold text-gray-900">{{user?.firstName}}</span>!
+                            {{showConfigSettings ?'Switch to your main account to continue labeling...':
+                            'You are currently on the waitlist.'}}
+                        </div>
+                    </div>
                 </ng-template>
                 <ng-template [ngSwitchCase]="'config'">
-                    <div *ngIf="user" class="flex items-center">
+                    <div *ngIf="!organizationInactive && user" class="flex items-center">
                         <div class="ml-6 text-gray-500 text-sm font-normal">
                             Welcome, <span class="font-bold text-gray-900">{{user?.firstName}}</span>! Change your app
                             configuration <span class="font-bold text-gray-900">here</span>.
+                        </div>
+                    </div>
+                    <!--Currently, managed version users don't have a config page - but once we have one, they also need to be told that they're on the waitlist-->
+                    <div *ngIf="organizationInactive">
+                        <div class="ml-6 text-gray-500 text-sm font-normal">
+                            Welcome, <span class="font-bold text-gray-900">{{user?.firstName}}</span>!
+                            {{showConfigSettings ?'Switch to your main account to continue labeling...':
+                            'You are currently on the waitlist.'}}
                         </div>
                     </div>
                 </ng-template>
