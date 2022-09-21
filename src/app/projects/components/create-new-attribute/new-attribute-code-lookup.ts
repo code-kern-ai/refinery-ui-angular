@@ -11,7 +11,7 @@ export class AttributeCodeLookup {
                 return {
                     code: `def ac(record):
 # e.g.
-return record["headline"].text.lower()
+    return record["headline"].text.lower()
                 `}
         }
     }
