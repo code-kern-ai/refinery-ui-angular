@@ -683,7 +683,7 @@
                             <span class="mr-2"> Available Tasks:</span>
                             <kern-dropdown [dropdownOptions]="{
                                 optionArray:availableLinks ? availableLinks: ['No links available'],
-                                buttonCaption:selectedLink?selectedLink.name:'Select link',
+                                buttonCaption:selectedLink?selectedLink.name:'Select slice',
                                 valuePropertyPath:'id',
                                 isDisabled:availableLinks?.length == 0
                             }" (optionClicked)="dropdownSelectLink($event)">

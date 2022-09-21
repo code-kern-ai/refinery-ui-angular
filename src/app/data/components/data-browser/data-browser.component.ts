@@ -1574,6 +1574,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     }
     if (slice.sliceType == this.SliceTypes.STATIC_DEFAULT) {
       sliceInfo["Link"] = "/projects/" + this.projectId + "/labeling/" + sliceId;
+      sliceInfo["Link"] = this.buildFullLink("/projects/" + this.projectId + "/labeling/" + sliceId);
     }
     this.sliceInfo = sliceInfo;
   }
@@ -1981,6 +1982,10 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
         intervallTimer.unsubscribe();
       }
     })
+  }
+
+  buildFullLink(route: string) {
+    return window.location.protocol + '//' + window.location.host + "/app" + route;
   }
 
   requestFileExport(projectId: string): void {
