@@ -40,6 +40,7 @@ export class CreateNewAttributeComponent implements OnInit {
   sampleRecords: any;
   code: string = '';
   @ViewChild('calculateAttribite', { read: ElementRef }) calculateAttribite: ElementRef;
+  @ViewChild('deleteAttribute', { read: ElementRef }) deleteAttribute: ElementRef;
   updatedThroughWebsocket: boolean = false;
   checkIfNewAttribute: string;
   attributesQuery$: any;
@@ -50,6 +51,7 @@ export class CreateNewAttributeComponent implements OnInit {
   checkIfAtLeastRunning: boolean = false;
   attributesUsableUploaded: any;
   tokenizationProgress: Number = 0;
+  isDeleting: boolean = false;
 
   constructor( 
     private activatedRoute: ActivatedRoute,
@@ -223,10 +225,13 @@ export class CreateNewAttributeComponent implements OnInit {
   }
 
   deleteUserAttribute(projectId, attributeId) {
+    this.isDeleting = true;
     this.projectApolloService
       .deleteUserAttribute(projectId, attributeId)
       .pipe(first())
       .subscribe(() => {
+        this.isDeleting = false;
+        this.deleteAttribute.nativeElement.checked = false;
         this.router.navigate(["../../settings"], { relativeTo: this.activatedRoute });
       });
   }
