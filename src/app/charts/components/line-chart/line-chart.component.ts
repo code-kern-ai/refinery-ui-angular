@@ -88,17 +88,32 @@ export class LineChartComponent implements OnInit, OnChanges {
       .attr("transform", "rotate(-90)")
       .text("Confidence score (%)");
 
-    svg.append("g")
-      .attr("transform", "translate(0," + height + ")")
-      .style("font-size", 14)
-      .style('font-family', '"DM Sans", sans-serif')
-      .call(d3.axisBottom(x))
-      .append("text")
-      .attr("y", -5)
-      .attr("dx", width)
-      .attr("fill", "#000")
-      .attr("text-anchor", "end")
-      .text("Percentile (%)");
+    if (data.length >= 100) {
+      svg.append("g")
+        .attr("transform", "translate(0," + height + ")")
+        .style("font-size", 14)
+        .style('font-family', '"DM Sans", sans-serif')
+        .call(d3.axisBottom(x))
+        .append("text")
+        .attr("y", -5)
+        .attr("dx", width)
+        .attr("fill", "#000")
+        .attr("text-anchor", "end")
+        .text("Percentile (%)");
+    } else {
+      svg.append("g")
+        .attr("transform", "translate(0," + height + ")")
+        .style("font-size", 14)
+        .style('font-family', '"DM Sans", sans-serif')
+        .call(d3.axisBottom(x))
+        .append("text")
+        .attr("y", -5)
+        .attr("dx", width)
+        .attr("fill", "#000")
+        .attr("text-anchor", "end")
+        .text("Record");
+    }
+
   };
 
 }
