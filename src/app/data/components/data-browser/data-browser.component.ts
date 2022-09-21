@@ -1988,6 +1988,10 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     return window.location.protocol + '//' + window.location.host + "/app" + route;
   }
 
+  testLink(link) {
+    window.location.href = link;
+  }
+
   requestFileExport(projectId: string): void {
     this.downloadMessage = DownloadState.PREPARATION;
 
