@@ -47,6 +47,9 @@ export class CreateNewAttributeComponent implements OnInit {
   recordData: any;
   currentRecordId: string;
   currentRecordIdx: number = -1;
+  checkIfAtLeastRunning: boolean = false;
+  attributesUsableUploaded: any;
+  tokenizationProgress: Number = 0;
 
   constructor( 
     private activatedRoute: ActivatedRoute,
@@ -65,6 +68,8 @@ export class CreateNewAttributeComponent implements OnInit {
     let tasks$ = [];
     tasks$.push(this.prepareAttributes(projectId));
     tasks$.push(project$.pipe(first()));
+
+    this.checkProjectTokenization(projectId);
 
     this.subscriptions$.push(project$.subscribe((project) => this.project = project));
     combineLatest(tasks$).subscribe(() => this.prepareAttribute(projectId,attributeId));
@@ -98,7 +103,7 @@ export class CreateNewAttributeComponent implements OnInit {
   }
 
   getWhiteListNotificationService(): string[] {
-    let toReturn = ['attributes_updated','calculate_attribute'];
+    let toReturn = ['attributes_updated','calculate_attribute','tokenization',];
     return toReturn;
   }
 
@@ -142,6 +147,10 @@ export class CreateNewAttributeComponent implements OnInit {
       }
       if(this.attribute.state == 'RUNNING' || this.attribute.state == 'USABLE') {
         this.editorOptions = { ...this.editorOptions, readOnly: true };
+      }
+      const runningAtt = this.attributes.find(att => att.state == 'RUNNING');
+      if(runningAtt != undefined) {
+        this.checkIfAtLeastRunning = true;
       }
       timer(250).subscribe(() => this.updatedThroughWebsocket = false);
     }));
@@ -252,6 +261,16 @@ export class CreateNewAttributeComponent implements OnInit {
       this.attributeQuery$.refetch();
     } else if(msgParts[1]=='calculate_attribute') {
       this.attributeQuery$.refetch();
+    } else if (msgParts[1] == 'tokenization' && msgParts[2] == 'docbin') {
+      if (msgParts[3] == 'progress') {
+        this.tokenizationProgress = Number(msgParts[4]);
+      } else if (msgParts[3] == 'state') {
+        if (msgParts[4] == 'IN_PROGRESS') this.tokenizationProgress = 0;
+        else if (msgParts[4] == 'FINISHED') {
+          timer(5000).subscribe(() => this.checkProjectTokenization(this.project.id));
+        }
+      }
+
     }
   }
 
@@ -293,10 +312,11 @@ export class CreateNewAttributeComponent implements OnInit {
 
   prepareAttributes(projectId: string) {
     let attributes$;
-    [this.attributesQuery$, attributes$] = this.projectApolloService.getAttributesByProjectId(projectId);
+    [this.attributesQuery$, attributes$] = this.projectApolloService.getAttributesByProjectId(projectId, []);
     this.subscriptions$.push(attributes$.subscribe((attributes) => {
       attributes.sort((a, b) => a.relativePosition - b.relativePosition);
       this.attributes = attributes;
+      this.attributesUsableUploaded = this.attributes.filter((attribute) => attribute.state == 'UPLOADED' || attribute.state == 'USABLE');
     }));
     return attributes$;
   }
@@ -310,5 +330,11 @@ export class CreateNewAttributeComponent implements OnInit {
       .subscribe((record) => {
         this.recordData = record.data;
       });
+  }
+
+  checkProjectTokenization(projectId: string) {
+    this.projectApolloService.getProjectTokenization(projectId).pipe(first()).subscribe((v) => {
+      this.tokenizationProgress = v?.progress;
+    })
   }
 }
