@@ -100,6 +100,15 @@ export const mutations = {
   
   `,
 
+  SET_ALL_MODEL_CALLBACKS: gql`
+  mutation ($projectId: ID!, $value: Boolean!) {
+    setAllModelCallbacksSelected(projectId: $projectId, value: $value) {
+      ok
+    }
+  }
+  
+  `,
+
   MODEL_PROVIDER_DELETE_MODEL: gql`
     mutation($modelName: String!) {
       modelProviderDeleteModel(modelName: $modelName) {

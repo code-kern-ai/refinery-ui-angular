@@ -588,7 +588,8 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     for (let i = 0; i < this.attributesSortOrder.length; i++) {
       array.push(this.getOrderByGroup(this.attributes.get(this.attributesSortOrder[i].key).name, true, -1)) //1, //-1 desc, 1 asc     
     }
-    array.push(this.getOrderByGroup(StaticOrderByKeys.CONFIDENCE, false, -1));
+    array.push(this.getOrderByGroup(StaticOrderByKeys.WEAK_SUPERVISION_CONFIDENCE, false, -1));
+    array.push(this.getOrderByGroup(StaticOrderByKeys.MODEL_CALLBACK_CONFIDENCE, false, -1));
     array.push(this.getOrderByGroup(StaticOrderByKeys.RANDOM, false, -1));
 
     return array;
@@ -661,7 +662,8 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   private _getOrderByDisplayName(orderByKey: string) {
     switch (orderByKey) {
       case StaticOrderByKeys.RANDOM: return "Random";
-      case StaticOrderByKeys.CONFIDENCE: return "Weak Supervision Confidence";
+      case StaticOrderByKeys.WEAK_SUPERVISION_CONFIDENCE: return "Weak Supervision Confidence";
+      case StaticOrderByKeys.MODEL_CALLBACK_CONFIDENCE: return "Model Callback Confidence";
       default: return orderByKey; //attributes
     }
   }
@@ -738,8 +740,11 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       active: true,
       manualLabels: this._labelingTaskLabelFormArray(task),
       weakSupervisionLabels: this._labelingTaskLabelFormArray(task),
-      sortByConfidence: this.getOrderByGroup(StaticOrderByKeys.CONFIDENCE, false, -1), //1, //-1 desc, 1 asc
-      confidence: this.getConfidenceFilterGroup(),
+      modelCallbackLabels: this._labelingTaskLabelFormArray(task),
+      sortByWeakSupervisionConfidence: this.getOrderByGroup(StaticOrderByKeys.WEAK_SUPERVISION_CONFIDENCE, false, -1), //1, //-1 desc, 1 asc
+      sortByModelCallbackConfidence: this.getOrderByGroup(StaticOrderByKeys.MODEL_CALLBACK_CONFIDENCE, false, -1), //1, //-1 desc, 1 asc
+      weakSupervisionConfidence: this.getConfidenceFilterGroup(),
+      modelCallbackConfidence: this.getConfidenceFilterGroup(),
       informationSources: this._labelingTaskInformationSourceFormArray(task),
       isWithDifferentResults: this.isWithDifferentResultsGroup(task)
     });
@@ -796,12 +801,20 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       if (values.weakSupervisionLabels[i].active != previousValues.weakSupervisionLabels[i].active ||
         values.weakSupervisionLabels[i].negate != previousValues.weakSupervisionLabels[i].negate) return false;
     }
+    for (var i = 0; i < values.modelCallbackLabels.length; i++) {
+      if (values.modelCallbackLabels[i].active != previousValues.modelCallbackLabels[i].active ||
+        values.modelCallbackLabels[i].negate != previousValues.modelCallbackLabels[i].negate) return false;
+    }
     for (var i = 0; i < values.informationSources.length; i++) {
       if (values.informationSources[i].active != previousValues.informationSources[i].active ||
         values.informationSources[i].negate != previousValues.informationSources[i].negate) return false;
     }
-    if (values.confidence.active != previousValues.confidence.active ||
-      values.confidence.negate != previousValues.confidence.negate) return false
+    if (values.weakSupervisionConfidence.active != previousValues.weakSupervisionConfidence.active ||
+      values.weakSupervisionConfidence.negate != previousValues.weakSupervisionConfidence.negate) return false
+
+    if (values.modelCallbackConfidence.active != previousValues.modelCallbackConfidence.active ||
+      values.modelCallbackConfidence.negate != previousValues.modelCallbackConfidence.negate) return false
+
     if (values.isWithDifferentResults.active != previousValues.isWithDifferentResults.active) return false
 
     return true;
@@ -814,10 +827,14 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     for (let c of values.weakSupervisionLabels) {
       if (c.active) return true;
     }
+    for (let c of values.modelCallbackLabels) {
+      if (c.active) return true;
+    }
     for (let c of values.informationSources) {
       if (c.active) return true;
     }
-    if (values.confidence.active) return true;
+    if (values.weakSupervisionConfidence.active) return true;
+    if (values.modelCallbackConfidence.active) return true;
     if (values.isWithDifferentResults.active) return true;
     return false;
   }
@@ -838,6 +855,12 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     if (tmp) text += (text ? '\nAND ' : '') + ' (' + tmp + ')';
 
     tmp = this._labelingTaskBuildSearchParamTextPart(
+      values.modelCallbackLabels,
+      'MC-label'
+    );
+    if (tmp) text += (text ? '\nAND ' : '') + ' (' + tmp + ')';
+
+    tmp = this._labelingTaskBuildSearchParamTextPart(
       values.informationSources,
       'IS'
     );
@@ -847,10 +870,15 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       text += (text ? '\nAND ' : '') + ' (mixed IS results)';
     }
 
-    if (values.confidence.active) {
+    if (values.weakSupervisionConfidence.active) {
       text += (text ? '\nAND ' : '') + 'WS-Confidence '
-      if (values.confidence.negate) text += "NOT "
-      text += "BETWEEN " + values.confidence.lower + "% AND " + values.confidence.upper + "%";
+      if (values.weakSupervisionConfidence.negate) text += "NOT "
+      text += "BETWEEN " + values.weakSupervisionConfidence.lower + "% AND " + values.weakSupervisionConfidence.upper + "%";
+    }
+    if (values.modelCallbackConfidence.active) {
+      text += (text ? '\nAND ' : '') + 'MC-Confidence '
+      if (values.modelCallbackConfidence.negate) text += "NOT "
+      text += "BETWEEN " + values.modelCallbackConfidence.lower + "% AND " + values.modelCallbackConfidence.upper + "%";
     }
     if (values.negate) text = '\nNOT (' + text + ')';
     else text = '\n' + text;
@@ -1154,7 +1182,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
             };
           }
           element.rla_aggregation[rlaAggParts.key].amount++;
-          if (rlaLine.confidence != null && rlaLine.source_type == LabelSource.WEAK_SUPERVISION) {
+          if (rlaLine.confidence != null && (rlaLine.source_type == LabelSource.WEAK_SUPERVISION || rlaLine.source_type == LabelSource.MODEL_CALLBACK)) {
             element.rla_aggregation[rlaAggParts.key].confidence.push(rlaLine.confidence);
           }
         }

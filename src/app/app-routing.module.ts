@@ -18,6 +18,7 @@ import { RecordIDEComponent } from './record-ide/components/record-ide.component
 import { ConfigComponent } from './config/components/config.component';
 import { ModelDownloadComponent } from './model-download/pages/model-download/model-download.component';
 import { CreateNewAttributeComponent } from './projects/components/create-new-attribute/create-new-attribute.component';
+import { ModelCallbackComponent } from './model-callbacks/components/model-callbacks.component';
 
 const routes: Routes = [
   {
@@ -29,7 +30,7 @@ const routes: Routes = [
   { path: 'notification-center', component: NotificationCenterComponent, data: { name: 'NotificationCenterComponent' } },
   { path: 'projects/new', component: ProjectNewComponent, data: { name: 'ProjectNewComponent' } },
   { path: 'config', component: ConfigComponent, data: { name: 'ConfigComponent' } },
-  
+
   {
     path: 'projects/:projectId',
     component: ProjectComponent,
@@ -57,6 +58,7 @@ const routes: Routes = [
         path: 'knowledge-base/:knowledgeBaseId',
         component: KnowledgeBaseDetailsComponent, data: { name: 'KnowledgeBaseDetailsComponent' }
       },
+      { path: 'model-callbacks', component: ModelCallbackComponent, data: { name: 'ModelCallbackComponent' } },
       { path: 'model-download', component: ModelDownloadComponent, data: { name: 'ModelDownloadComponent' } },
       { path: 'attributes/:attributeId', component: CreateNewAttributeComponent, data: { name: 'CreateNewAttributeComponent' } },
       { path: '**', component: ProjectOverviewComponent, data: { name: 'ProjectOverviewComponent' } },

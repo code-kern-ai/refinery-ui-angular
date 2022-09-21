@@ -181,6 +181,30 @@ export class WeakSourceApolloService {
     return [query, vc];
   }
 
+  getModelCallbacksOverviewData(projectId: string) {
+    const query = this.apollo
+      .watchQuery({
+        query: queries.GET_MODEL_CALLBACKS_OVERVIEW_DATA,
+        variables: {
+          projectId: projectId,
+        },
+        fetchPolicy: 'cache-and-network'
+      });
+    const vc = query.valueChanges.pipe(
+      map((result) => {
+        let tmp = result['data']['modelCallbacksOverviewData'];
+        if (!tmp) return [];
+        return JSON.parse(tmp).map((source) => {
+          source.labelSource = LabelSource.INFORMATION_SOURCE;
+          source.stats = this.mapInformationSourceStatsGlobal(source.stat_data);
+          return source;
+        });
+      })
+
+    );
+    return [query, vc];
+  }
+
   private mapInformationSourceStatsGlobal(data) {
     if (data?.length) {
       return data.map((wrapper) => {
@@ -421,6 +445,16 @@ export class WeakSourceApolloService {
   setAllInformationSources(projectId: string, value: boolean) {
     return this.apollo.mutate({
       mutation: mutations.SET_ALL_INFORMATION_SOURCES,
+      variables: {
+        projectId: projectId,
+        value: value
+      },
+    });
+  }
+
+  setAllModelCallbacks(projectId: string, value: boolean) {
+    return this.apollo.mutate({
+      mutation: mutations.SET_ALL_MODEL_CALLBACKS,
       variables: {
         projectId: projectId,
         value: value
