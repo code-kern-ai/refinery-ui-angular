@@ -5,6 +5,7 @@ export enum DisplayGraphs {
     CONFUSION_MATRIX,
     INTER_ANNOTATOR,
     LABEL_DISTRIBUTION,
+    CONFIDENCE_DISTRIBUTION,
 }
 
 export function displayGraphsTypeToString(source: DisplayGraphs) {
@@ -13,6 +14,7 @@ export function displayGraphsTypeToString(source: DisplayGraphs) {
         case DisplayGraphs.CONFUSION_MATRIX: return "Confusion Matrix";
         case DisplayGraphs.INTER_ANNOTATOR: return "Inter Annotator";
         case DisplayGraphs.LABEL_DISTRIBUTION: return "Label Distribution";
+        case DisplayGraphs.CONFIDENCE_DISTRIBUTION: return "Confidence Distribution";
         default: return "";
     }
 }
