@@ -129,9 +129,9 @@ export class CreateNewAttributeComponent implements OnInit {
     [this.attributeQuery$, this.attribute$] = this.projectApolloService.getAttributeByAttributeId(projectId, attributeId);
     this.subscriptions$.push(this.attribute$.subscribe((attribute) => {
       this.attribute = attribute;
-      this.attributeName = this.attribute.name;
-      this.code = this.attribute.sourceCode;
-      if(this.attribute.sourceCode == null) { 
+      this.attributeName = this.attribute?.name;
+      this.code = this.attribute?.sourceCode;
+      if(this.attribute?.sourceCode == null) { 
         this.code = AttributeCodeLookup.getAttributeCalculationTemplate(AttributeCalculationExamples.AC_EMPTY_TEMPLATE).code;
       } else {
         this.code = this.code.replace(
@@ -139,16 +139,16 @@ export class CreateNewAttributeComponent implements OnInit {
           'def ' + this.attribute.name + '(record):'
         );
       }
-     
-      this.attributeLogs = attribute.logs;
-      this.canRunProject = this.attribute.sourceCode !== '';
-      if(this.attribute.state == 'FAILED') {
+      
+      this.attributeLogs = attribute?.logs;
+      this.canRunProject = this.attribute?.sourceCode !== '';
+      if(this.attribute?.state == 'FAILED') {
         this.editorOptions = { ...this.editorOptions, readOnly: false };
       }
-      if(this.attribute.state == 'RUNNING' || this.attribute.state == 'USABLE') {
+      if(this.attribute?.state == 'RUNNING' || this.attribute?.state == 'USABLE') {
         this.editorOptions = { ...this.editorOptions, readOnly: true };
       }
-      const runningAtt = this.attributes.find(att => att.state == 'RUNNING');
+      const runningAtt = this.attributes?.find(att => att?.state == 'RUNNING');
       if(runningAtt != undefined) {
         this.checkIfAtLeastRunning = true;
       }
@@ -241,7 +241,7 @@ export class CreateNewAttributeComponent implements OnInit {
         this.attributeQuery$.refetch();
       }, (error) => {
         this.testerRequestedSomething = false;
-        this.attributeQuery$.refetch()
+        this.attributeQuery$.refetch();
       });
   }
 

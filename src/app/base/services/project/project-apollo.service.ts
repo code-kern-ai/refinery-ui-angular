@@ -963,8 +963,9 @@ export class ProjectApolloService {
     .valueChanges.pipe(
       map((result) => {
         let task = result['data']['attributeByAttributeId'];
+        if(task == null)  return null;
         let neededIDLength = task['logs']
-          ? String(task['logs'].length).length
+          ? String(task['logs'].length)?.length
           : 0;
         return {
           id: task['id'],

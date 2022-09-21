@@ -72,7 +72,7 @@
             <div class="flex flex-row items-center mt-2">
                 <div class="text-sm leading-5 font-medium text-gray-700 inline-block mr-2">Editor</div>
                 <div class="ml-auto">
-                    <a href="https://github.com/code-kern-ai/refinery-ac-exec-env/blob/initial-implementation/requirements.txt" target="_blank"
+                    <a href="https://github.com/code-kern-ai/refinery-ac-exec-env/blob/release/requirements.txt" target="_blank"
                         data-tip="See available libraries for this attribute calculation"
                         class="ml-2 tooltip tooltip-left bg-white text-gray-700 text-xs font-semibold  px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                         See installed libraries
@@ -117,7 +117,8 @@
                                 Run on 10
                             </button>
                         </div>
-                        <div data-tip="Execute the attribute on all records" class="tooltip tooltip-left" [ngClass]="hasUnsavedChanges() || attribute.state=='USABLE' || attribute.state=='RUNNING' || testerRequestedSomething || checkIfAtLeastRunning || tokenizationProgress < 1 ? 'cursor-not-allowed' : ''">
+                        <div [attr.data-tip]="hasUnsavedChanges() ? 'Unsaved changes': attribute.state=='USABLE' || attribute.state=='RUNNING' ? 'Attribute is already in use' : testerRequestedSomething ? 'Test is running' : checkIfAtLeastRunning? 'At least one attribute is running' : tokenizationProgress < 1 ? 'Tokenization is in progress' : 'Execute the attribute on all records' "
+                            class="tooltip tooltip-left" [ngClass]="hasUnsavedChanges() || attribute.state=='USABLE' || attribute.state=='RUNNING' || testerRequestedSomething || checkIfAtLeastRunning || tokenizationProgress < 1 ? 'cursor-not-allowed' : ''">
                             <label [for]="'attribute-calculation'"
                                 [ngClass]="hasUnsavedChanges() || attribute.state=='USABLE' || attribute.state=='RUNNING' || testerRequestedSomething || checkIfAtLeastRunning || tokenizationProgress < 1 ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer'"
                                 class="bg-indigo-700 text-white text-xs leading-4 font-semibold px-4 py-2 rounded-md cursor-pointer ml-3 hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
