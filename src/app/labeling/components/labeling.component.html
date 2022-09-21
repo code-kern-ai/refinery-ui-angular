@@ -571,7 +571,7 @@
                 <div>
                     <ng-template #usersTop>
                         <div *ngIf="user?.role != 'ENGINEER'" class="flex justify-center overflow-visible">
-                            <div data-tip="Find information about your task"
+                            <!-- <div data-tip="Find information about your task"
                                 class="tooltip tooltip-right normal-case font-normal">
                                 <label [for]="'my-modal-information'"
                                     class="cursor-pointer bg-white text-gray-700 text-xs font-semibold px-2 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
@@ -586,7 +586,7 @@
                                     </svg>
                                     Information
                                 </label>
-                            </div>
+                            </div> 
                             <input type="checkbox" [id]="'my-modal-information'" class="modal-toggle">
                             <div class="modal text-center items-center">
                                 <div class="modal-box"
@@ -676,6 +676,18 @@
                                     </div>
                                 </div>
                             </div>
+-->
+                        </div>
+                        <div *ngIf="user?.role != 'ENGINEER'"
+                            class=" flex justify-center items-center overflow-visible">
+                            <span class="mr-2"> Available Tasks:</span>
+                            <kern-dropdown [dropdownOptions]="{
+                                optionArray:availableLinks ? availableLinks: ['No links available'],
+                                buttonCaption:selectedLink?selectedLink.name:'Select link',
+                                valuePropertyPath:'id',
+                                isDisabled:availableLinks?.length == 0
+                            }" (optionClicked)="dropdownSelectLink($event)">
+                            </kern-dropdown>
                         </div>
 
                         <div *ngIf="user?.role == 'ENGINEER'" class="flex justify-center overflow-visible">

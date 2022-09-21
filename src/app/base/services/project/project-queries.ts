@@ -388,15 +388,27 @@ export const queries = {
   
 `,
   LINK_LOCKED: gql`
-query ($projectId: ID!, $linkRoute: String!) {
-  linkLocked(projectId: $projectId, linkRoute: $linkRoute)
-}`
+  query ($projectId: ID!, $linkRoute: String!) {
+    linkLocked(projectId: $projectId, linkRoute: $linkRoute)
+  }`
   ,
   LINK_DATA_OUTDATED: gql`
-query ($projectId: ID!, $linkRoute: String!, $lastRequestedAt: DateTime!) {
-  linkDataOutdated(projectId: $projectId, linkRoute: $linkRoute, lastRequestedAt: $lastRequestedAt)
-}`
+  query ($projectId: ID!, $linkRoute: String!, $lastRequestedAt: DateTime!) {
+    linkDataOutdated(projectId: $projectId, linkRoute: $linkRoute, lastRequestedAt: $lastRequestedAt)
+  }`
   ,
+  AVAILABLE_LABELING_LINKS: gql`
+  query ($projectId: ID!, $assumedRole: String, $assumedHeuristicId: ID) {
+    availableLinks(projectId: $projectId, assumedRole: $assumedRole, assumedHeuristicId: $assumedHeuristicId) {
+      id
+      linkType
+      link
+      name
+      isLocked
+    }
+  }`
+  ,
+
 
 
 

@@ -11,6 +11,7 @@ import { ConfigManager } from './base/services/config-service';
 import { first } from 'rxjs/operators';
 import { ConfigApolloService } from './base/services/config/config-apollo.service';
 import { UserManager } from './util/user-manager';
+import { CommentDataManager } from './base/components/comment/comment-helper';
 
 @Component({
   selector: 'app-root',
@@ -50,6 +51,7 @@ export class AppComponent implements OnDestroy, OnInit {
   }
 
   initalRequests() {
+    CommentDataManager.initManager(this.organizationService);
     this.organizationService.getUserInfo().pipe(first()).subscribe((v) => UserManager.initUserManager(this.router, this.organizationService, v));
     this.configService.isManaged().pipe(first()).subscribe((v) => ConfigManager.initConfigManager(this.http, this.configService, v));
     this.configService.isDemo().pipe(first()).subscribe((v) => ConfigManager.setIsDemo(v));

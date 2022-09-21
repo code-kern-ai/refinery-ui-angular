@@ -1020,4 +1020,20 @@ export class ProjectApolloService {
       .pipe(map((result) => result['data']['linkDataOutdated']));
 
   }
+
+  availableLabelingLinks(projectId: string, assumedRole: string = null, assumedHeuristicId: string = null) {
+    return this.apollo
+      .query({
+        query: queries.AVAILABLE_LABELING_LINKS,
+        variables: {
+          projectId: projectId,
+          assumedRole: assumedRole,
+          assumedHeuristicId: assumedHeuristicId
+        },
+        fetchPolicy: 'no-cache',
+      })
+      .pipe(map((result) => result['data']['availableLinks']));
+
+  }
+
 }

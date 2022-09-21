@@ -1193,8 +1193,26 @@
                     <div class="flex flex-grow justify-center mb-4 font-bold">Slice Information</div>
                     <div *ngFor="let item of sliceInfo | keyvalue : orderOriginal"
                         class="flex flex-grow justify-between">
-                        <p>{{item.key}}</p>
-                        <p>{{item.value}}</p>
+                        <ng-template [ngIf]="item.key == 'Link'" [ngIfElse]="normalDisplay">
+
+                            <p>Link</p>
+                            <div data-tip="Test Link" [routerLink]="[item.value]"
+                                [queryParams]="{pos: 1,type:'DATA_SLICE'}" class="tooltip cursor-pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link"
+                                    width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+                                    fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path>
+                                    <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path>
+                                </svg>
+                            </div>
+
+                        </ng-template>
+                        <ng-template #normalDisplay>
+                            <p>{{item.key}}</p>
+                            <p>{{item.value}}</p>
+
+                        </ng-template>
                     </div>
                     <div class="modal-action">
                         <label for="slice-information"

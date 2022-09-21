@@ -31,6 +31,7 @@ import { dateAsUTCDate, parseLinkFromText } from 'src/app/util/helper-functions'
 import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
 import { NotificationService } from 'src/app/base/services/notification.service';
 import { assumeUserRole, guessLinkType, labelingHuddle, labelingLinkData, labelingLinkType, parseLabelingLinkData, userRoles } from './helper/labeling-helper';
+import { CommentDataManager } from 'src/app/base/components/comment/comment-helper';
 
 @Component({
   selector: 'kern-labeling',
@@ -124,6 +125,9 @@ export class LabelingComponent implements OnInit, OnDestroy {
 
   labelingLinkData: labelingLinkData;
   roleAssumed: boolean = false;
+  availableLinks: any[];
+  availableLinksLookup: {};
+  selectedLink: any;
 
   constructor(
     private router: Router,
@@ -142,6 +146,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
     this.subscriptions$.forEach(element => element.unsubscribe());
     if (this.project) NotificationService.unsubscribeFromNotification(this, this.project.id)
     if (this.roleAssumed) localStorage.removeItem("huddleData");
+    // CommentDataManager.unregisterAllCommentRequests(this);
   }
 
 
@@ -157,9 +162,12 @@ export class LabelingComponent implements OnInit, OnDestroy {
       initialTasks$.push(this.checkLinkAccess());
     }
     forkJoin(initialTasks$).pipe(first()).subscribe(() => {
-
       //user is set to null if a redirect is needed
-      if (!this.user || this.labelingLinkData.linkLocked) return;
+      if (!this.user) return;
+      //user role need to be avaialbe but a locked link shouldn't bar us from the dropdown is the current one cant be accessed
+      this.collectAvailableLinks();
+
+      if (this.labelingLinkData.linkLocked) return;
       let initialTasks$ = [];
       initialTasks$.push(this.prepareProject(this.labelingLinkData.projectId));
       initialTasks$.push(this.prepareLabelingTask(this.labelingLinkData.projectId));
@@ -174,6 +182,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
     this.labelingLinkData = parseLabelingLinkData(this.activatedRoute);
     const projectId = this.labelingLinkData.projectId;
 
+    // CommentDataManager.registerCommentRequests(this, [{ commentType: "LABELING_TASK", projectId: projectId }]);
     NotificationService.subscribeToNotification(this, {
       projectId: projectId,
       whitelist: this.getWhiteListNotificationService(),
@@ -185,7 +194,6 @@ export class LabelingComponent implements OnInit, OnDestroy {
     let autoNextRecord = localStorage.getItem("autoNextRecord");
     if (autoNextRecord) this.autoNextRecord = autoNextRecord === 'true' ? true : false;
     this.getHuddleDataFromLocal();
-
     if (this.huddleOutdated()) {
       localStorage.removeItem("huddleData");
       this.huddleData = null;
@@ -265,6 +273,28 @@ export class LabelingComponent implements OnInit, OnDestroy {
     return this.project$.pipe(first());
   }
 
+  collectAvailableLinks() {
+    if (this.user.role == 'ENGINEER') return;
+    const heuristicId = this.labelingLinkData.linkType == "HEURISTIC" ? this.labelingLinkData.id : null;
+    const assumedRole = this.roleAssumed ? this.user.role : null
+    this.projectApolloService.availableLabelingLinks(this.labelingLinkData.projectId, assumedRole, heuristicId)
+      .pipe(first()).subscribe((availableLinks) => {
+        this.availableLinks = availableLinks;
+        this.availableLinksLookup = {};
+        this.availableLinks.forEach(link => this.availableLinksLookup[link.id] = link);
+        const linkRoute = this.router.url.split("?")[0];
+        this.selectedLink = this.availableLinks.find(link => link.link.split("?")[0] == linkRoute);
+      });
+  }
+  dropdownSelectLink(linkId: string) {
+    if (linkId == this.selectedLink?.id) return;
+    this.selectedLink = this.availableLinksLookup[linkId];
+    if (!this.selectedLink) return;
+    const linkData = parseLinkFromText(this.selectedLink.link);
+    this.router.navigate([linkData.route], { queryParams: linkData.queryParams });
+    timer(200).subscribe(() => location.reload());
+  }
+
   setShowNLabelButton(n: Number) {
     if (n < 0) n = 0;
     this.showNLabelButton = n;
@@ -316,7 +346,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
       }
       if (huddleData.startPos != -1) this.labelingLinkData.requestedPos = huddleData.startPos;
       this.huddleData = {
-        recordIds: huddleData.recordIds as string[],
+        recordIds: huddleData.recordIds ? huddleData.recordIds as string[] : [],
         partial: false,
         linkData: this.labelingLinkData,
         allowedTask: huddleData.allowedTask,
@@ -325,11 +355,9 @@ export class LabelingComponent implements OnInit, OnDestroy {
       }
 
       localStorage.setItem('huddleData', JSON.stringify(this.huddleData));
-      console.log("huddleData", this.huddleData);
-      const pos = this.labelingLinkData.requestedPos + 1; //zero based in backend
+      let pos = this.labelingLinkData.requestedPos;
+      if (huddleData.startPos != -1) pos++; //zero based in backend
       this.jumpToPosition(projectId, pos);
-
-
     });
   }
   private parseCheckedAt(checkedAt: string) {

@@ -1572,8 +1572,13 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     for (let key in info) {
       sliceInfo[key] = info[key];
     }
+    if (slice.sliceType == this.SliceTypes.STATIC_DEFAULT) {
+      sliceInfo["Link"] = "/projects/" + this.projectId + "/labeling/" + sliceId;
+    }
     this.sliceInfo = sliceInfo;
   }
+
+
 
   orderOriginal(a: KeyValue<number, string>, b: KeyValue<number, string>): number {
     return 0

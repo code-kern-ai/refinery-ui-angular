@@ -55,5 +55,14 @@ export const queries = {
   query{
     canCreateLocalOrg
   } 
+  `,
+
+  REQUEST_COMMENTS: gql`
+  query ($requested: JSONString!) {
+    getAllComments(requested: $requested)
+  }
   `
+
+
+
 };

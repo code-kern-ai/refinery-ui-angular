@@ -114,4 +114,15 @@ export class OrganizationApolloService {
       .pipe(map((result) => result['data']['canCreateLocalOrg']));
   }
 
+  requestComments(requestJson: string) {
+    return this.apollo
+      .query({
+        query: queries.REQUEST_COMMENTS,
+        variables: {
+          requested: requestJson
+        }
+      })
+      .pipe(map((result) => JSON.parse(result['data']['getAllComments'])));
+  }
+
 }
