@@ -18,11 +18,16 @@ export class HeuristicStatusesComponent implements OnChanges {
   constructor() { }
 
   ngOnChanges(): void {
-    switch(this.status) {
+    switch (this.status) {
       case 'CREATED':
       case 'RUNNING':
         this.dataTip = this.page === 'heuristics' ? 'Heuristic is currently being executed.' : 'Attribute is being calculated.';
         this.statusName = 'Running';
+        this.color = 'yellow';
+        break;
+      case 'STARTED':
+        this.dataTip = 'Annotator has started labeling.';
+        this.statusName = 'Started';
         this.color = 'yellow';
         break;
       case 'FINISHED':

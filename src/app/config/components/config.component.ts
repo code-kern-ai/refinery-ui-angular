@@ -7,6 +7,7 @@ import { timer } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
+import { UserManager } from 'src/app/util/user-manager';
 
 @Component({
   selector: 'kern-config',
@@ -32,6 +33,7 @@ export class ConfigComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    UserManager.checkUserAndRedirect(this);
     this.routeService.updateActivatedRoute(this.activatedRoute);
     this.initComponent();
     this.organizationApolloService.getUserInfo().pipe(first())

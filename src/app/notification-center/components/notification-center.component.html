@@ -2,12 +2,8 @@
     <kern-sidebar-pm>
     </kern-sidebar-pm>
     <div class="h-full w-full flex-1 flex flex-col overflow-hidden">
-        <kern-header 
-            [organizationName]="organizationName"
-            [user]="loggedInUser"
-            [avatarUri]="avatarUri"
-            page="notifications"
-        ></kern-header>
+        <kern-header [user]="loggedInUser" [organizationName]="organizationName"
+            [organizationInactive]="organizationInactive" [avatarUri]="avatarUri" page="notifications"></kern-header>
         <div class="overflow-y-scroll h-full flex flex-col p-2">
             <div *ngFor="let notificationTypeList of notifications">
 
@@ -127,4 +123,3 @@
             </div>
         </div>
     </ng-template>
-    

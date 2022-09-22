@@ -5,6 +5,7 @@ import { RouteService } from 'src/app/base/services/route.service';
 import { first, switchMap } from 'rxjs/operators';
 import { NotificationService } from 'src/app/base/services/notification.service';
 import { Subscription } from 'rxjs';
+import { UserManager } from 'src/app/util/user-manager';
 
 @Component({
   selector: 'kern-knowledge-bases',
@@ -35,6 +36,7 @@ export class KnowledgeBasesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    UserManager.checkUserAndRedirect(this);
     this.routeService.updateActivatedRoute(this.activatedRoute);
 
     this.projectId = this.activatedRoute.parent.snapshot.paramMap.get('projectId');
@@ -98,8 +100,8 @@ export class KnowledgeBasesComponent implements OnInit, OnDestroy {
   }
 
   executeOption(value: string) {
-    switch(value) {
-      case 'Select all': 
+    switch (value) {
+      case 'Select all':
         this.setAllLookupLists(true);
         break;
       case 'Deselect all':
@@ -107,18 +109,18 @@ export class KnowledgeBasesComponent implements OnInit, OnDestroy {
         break;
       case 'Delete selected':
         this.prepareSelectionList();
-        break; 
+        break;
     }
   }
 
   setAllLookupLists(value) {
     this.checkboxes.forEach((element) => {
       element.nativeElement.checked = value;
-      
+
     });
     this.lists.forEach(list => {
-      if(value) {
-        if(this.selectedLookupLists.includes(list)) return;
+      if (value) {
+        if (this.selectedLookupLists.includes(list)) return;
         else this.selectedLookupLists.push(list);
       }
       else this.selectedLookupLists = [];

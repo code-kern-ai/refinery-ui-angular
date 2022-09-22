@@ -135,19 +135,6 @@ export class SidebarPmComponent implements OnInit {
     return route.url.value.toString().includes(menuItem);
   }
 
-  toggleVisible(isVisible: boolean, menuButton: HTMLDivElement, svgIcon: HTMLDivElement): void {
-    if (isVisible) {
-      menuButton.classList.remove('hidden');
-      menuButton.classList.add('flex');
-      svgIcon.classList.remove('flex');
-      svgIcon.classList.add('hidden');
-    } else {
-      menuButton.classList.remove('flex');
-      menuButton.classList.add('hidden');
-      svgIcon.classList.remove('hidden');
-      svgIcon.classList.add('flex');
-    }
-  }
 
   openFullscreen() {
     this.isFullscreen = true;

@@ -312,8 +312,8 @@ export const queries = {
   }
   `,
   DATA_SLICES: gql`
-  query($projectId:ID!){
-    dataSlices(projectId:$projectId){
+  query($projectId:ID!,$sliceType:String){
+    dataSlices(projectId:$projectId, sliceType:$sliceType){
       id
       name
       filterRaw
@@ -397,4 +397,52 @@ export const queries = {
     }
   }
   `,
+  GET_ACCESS_LINK: gql`
+  query ($projectId: ID!, $linkId: ID!) {
+    accessLink(projectId: $projectId, linkId: $linkId) {
+      id
+      link
+      isLocked
+    }
+  }
+`,
+  REQUEST_HUDDLE_DATA: gql`
+  query ($projectId: ID!, $huddleId: ID!, $huddleType: String!) {
+    requestHuddleData(projectId: $projectId, huddleId: $huddleId, huddleType: $huddleType) {
+      huddleId
+      recordIds
+      huddleType
+      startPos
+      allowedTask
+      canEdit
+      checkedAt
+    }
+  }
+  
+`,
+  LINK_LOCKED: gql`
+  query ($projectId: ID!, $linkRoute: String!) {
+    linkLocked(projectId: $projectId, linkRoute: $linkRoute)
+  }`
+  ,
+  LINK_DATA_OUTDATED: gql`
+  query ($projectId: ID!, $linkRoute: String!, $lastRequestedAt: DateTime!) {
+    linkDataOutdated(projectId: $projectId, linkRoute: $linkRoute, lastRequestedAt: $lastRequestedAt)
+  }`
+  ,
+  AVAILABLE_LABELING_LINKS: gql`
+  query ($projectId: ID!, $assumedRole: String, $assumedHeuristicId: ID) {
+    availableLinks(projectId: $projectId, assumedRole: $assumedRole, assumedHeuristicId: $assumedHeuristicId) {
+      id
+      linkType
+      link
+      name
+      isLocked
+    }
+  }`
+  ,
+
+
+
+
 };

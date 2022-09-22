@@ -12,6 +12,7 @@ import { HttpClient } from '@angular/common/http';
 import { S3Service } from 'src/app/import/services/s3.service';
 import { WeakSourceApolloService } from 'src/app/base/services/weak-source/weak-source-apollo.service';
 import { ConfigManager } from 'src/app/base/services/config-service';
+import { UserManager } from 'src/app/util/user-manager';
 
 @Component({
   selector: 'kern-project-settings',
@@ -146,6 +147,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     }
   }
   ngOnInit(): void {
+    UserManager.checkUserAndRedirect(this);
     this.routeService.updateActivatedRoute(this.activatedRoute);
 
     const projectId = this.activatedRoute.parent.snapshot.paramMap.get('projectId');
@@ -532,7 +534,8 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
 
   ngOnDestroy(): void {
     this.subscriptions$.forEach((subscription) => subscription.unsubscribe());
-    NotificationService.unsubscribeFromNotification(this, this.project.id)
+    const projectId = this.project?.id ? this.project.id : this.activatedRoute.parent.snapshot.paramMap.get('projectId');
+    NotificationService.unsubscribeFromNotification(this, projectId)
   }
 
   updateProjectNameAndDescription(projectId: string, newName: string, newDescription: string) {
@@ -549,6 +552,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
   labelingTasksDropdownValues() {
     if (this.labelingTasksDropdownArray.length == 0) {
       for (let t of Object.values(LabelingTask)) {
+        if (t == LabelingTask.NOT_USEABLE) continue;
         this.labelingTasksDropdownArray.push({
           name: labelingTaskToString(t),
           value: t,
