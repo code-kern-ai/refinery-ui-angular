@@ -543,6 +543,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
   labelingTasksDropdownValues() {
     if (this.labelingTasksDropdownArray.length == 0) {
       for (let t of Object.values(LabelingTask)) {
+        if (t == LabelingTask.NOT_USEABLE) continue;
         this.labelingTasksDropdownArray.push({
           name: labelingTaskToString(t),
           value: t,
