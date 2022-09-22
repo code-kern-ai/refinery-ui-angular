@@ -1,14 +1,26 @@
-<div class="h-full grid gap-0 bg-white" style="grid-template-rows: 65px minmax(auto,92%) 65px; "
+<div *ngIf="user" class="h-full grid gap-0 bg-white" style="grid-template-rows: 65px minmax(auto,92%) 65px; "
     [ngClass]="somethingLoading?'wait':null">
+    <div *ngIf="huddleData && (roleAssumed || !huddleData.canEdit) && !labelingLinkData?.linkLocked"
+        class="absolute left-0 right-0 flex items-center justify-center pointer-events-none"
+        style="top:17px;z-index:100">
+        <span class="inline-flex items-center px-2 py-0.5 rounded font-medium bg-red-100 text-red-800">
+            You are viewing this page as {{user.role}} you are not able to edit </span>
+    </div>
+    <div *ngIf="labelingLinkData?.linkLocked"
+        class="absolute left-0 right-0 flex items-center justify-center pointer-events-none"
+        style="top:17px;z-index:101">
+        <span class="inline-flex items-center px-2 py-0.5 rounded font-medium bg-red-100 text-red-800">
+            This link is locked, contact your supervisor to request access</span>
+    </div>
     <ng-container [ngTemplateOutlet]="navigationBar" [ngTemplateOutletContext]="{isBottom:false}">
     </ng-container>
     <ng-template #dummyDiv>
         <div class="h-full flex flex-grow items-center justify-center">
-            <kern-loading size="btn-lg"></kern-loading>
+            <kern-loading size="btn-lg" *ngIf="!labelingLinkData?.linkLocked"></kern-loading>
         </div>
     </ng-template>
-    <div #baseDomElement *ngIf="project;else dummyDiv" class="flex justify-center relative overflow-y-auto -mt-1.5">
-
+    <div #baseDomElement *ngIf="project && !labelingLinkData?.linkLocked;else dummyDiv"
+        class="flex justify-center relative overflow-y-auto -mt-1.5">
         <div #setLabelBox class="flex flex-col rounded-lg bg-white shadow absolute z-10 top-0 left-0"
             style="transition: max-height 0.25s ease-in-out;"
             [ngClass]="isLabelBoxOpen ? 'max-h-80 overflow-y-auto border border-gray-300' : 'max-h-0 overflow-hidden'"
@@ -28,7 +40,7 @@
                                 name...</label>
                             <div #labelSearchBlinker class="my-0.5 py-2 w-px"></div>
                         </div>
-                        <div data-tip="Create label" class="tooltip  tooltip-left">
+                        <div *ngIf="user?.role == 'ENGINEER'" data-tip="Create label" class="tooltip  tooltip-left">
                             <button class="ml-2 relative top-1" (mouseup)="createLabelFromSearchBox($event)"
                                 [disabled]="disableLabelAddButton()?true: null"
                                 [ngClass]="disableLabelAddButton() ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'">
@@ -51,7 +63,7 @@
                                 [ngStyle]="{'display':isThisTheLabelImLookingFor(label.name,i,activeTask.taskType)?null:'none'}"
                                 [ngClass]="[getBackground(label.color), getText(label.color), getBorder(label.color), getHover(label.color)]">
                                 <div class="truncate" style="max-width: 260px;">{{label.name}}
-                                    <kbd *ngIf="label.hotkey && (displayUserId == GOLD_USER_ID || displayUserId == loggedInUser.id)"
+                                    <kbd *ngIf="label.hotkey && (displayUserId == GOLD_USER_ID || displayUserId == user.id)"
                                         class="ml-1 uppercase inline-flex items-center border bg-white border-gray-200 rounded px-2 text-sm font-sans font-medium text-gray-400">{{label.hotkey}}</kbd>
                                 </div>
                             </button>
@@ -198,7 +210,8 @@
                                                                         </ng-template>
 
                                                                         <!--normal display-->
-                                                                        <ng-template [ngIf]="token.type"
+                                                                        <ng-template
+                                                                            [ngIf]="token.type && user.role !='ANNOTATOR'"
                                                                             [ngIfElse]="tokenValue">
                                                                             <div [attr.data-tip]="'type: ' + token.type"
                                                                                 class="tooltip self-start">
@@ -236,7 +249,7 @@
 
                                                             <div class="flex flex-grow items-center">
                                                                 <!--first N options as buttons-->
-                                                                <div *ngIf="(displayUserId == GOLD_USER_ID || displayUserId == loggedInUser.id) && this.labelingTasksMap.get(task.id)"
+                                                                <div *ngIf="(displayUserId == GOLD_USER_ID || displayUserId == user.id) && this.labelingTasksMap.get(task.id)"
                                                                     class="flex flex-row"
                                                                     [ngClass]="[this.labelingTasksMap.get(task.id).labels.length && showNLabelButton?'':'hidden']">
                                                                     <button
@@ -246,7 +259,7 @@
                                                                         [ngClass]="[getBackground(label.color), getText(label.color), getBorder(label.color), getHover(label.color)]">
                                                                         <label
                                                                             class="leading-5 truncate max-w-xs cursor-pointer">{{label.name}}
-                                                                            <kbd *ngIf="label.hotkey && (displayUserId == GOLD_USER_ID || displayUserId == loggedInUser.id)"
+                                                                            <kbd *ngIf="label.hotkey && (displayUserId == GOLD_USER_ID || displayUserId == user.id)"
                                                                                 class="ml-1 uppercase inline-flex items-center border bg-white border-gray-200 rounded px-2 text-sm font-sans font-medium text-gray-400">{{label.hotkey}}</kbd>
                                                                         </label>
                                                                     </button>
@@ -254,7 +267,7 @@
                                                                 <!--Button with all posibilities and search-->
 
                                                                 <button data-tip="Choose from your labels"
-                                                                    *ngIf="(displayUserId == GOLD_USER_ID || displayUserId == loggedInUser.id)"
+                                                                    *ngIf="(displayUserId == GOLD_USER_ID || displayUserId == user.id)"
                                                                     (mouseup)="openLabelBoxForTask($event,task.id)"
                                                                     class="tooltip tooltip-top flex flex-row flex-nowrap bg-white text-gray-700 text-sm font-medium mr-3 px-2 py-0.5 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none">
                                                                     <span>other</span>
@@ -262,22 +275,21 @@
                                                                         class="max-w-xxs truncate mx-1">{{task.name}}</span>
                                                                     <span>options</span>
                                                                 </button>
-
                                                             </div>
                                                             <div>
-
                                                                 <ng-template ngFor let-rla [ngForOf]="taskLabels">
                                                                     <div *ngIf="rla.sourceType != LabelSourceType.INFORMATION_SOURCE || (rla.sourceType == LabelSourceType.INFORMATION_SOURCE && showInformationSourcesFlag)"
                                                                         [attr.data-tip]="rla.dataTip"
                                                                         class="tooltip table"
-                                                                        [ngClass]="(displayUserId == GOLD_USER_ID || displayUserId == loggedInUser.id)?'mt-3':null">
+                                                                        [ngClass]="(displayUserId == GOLD_USER_ID || displayUserId == user.id)?'mt-3':null">
                                                                         <ng-template
                                                                             [ngIf]="rla.sourceType != LabelSourceType.MANUAL"
                                                                             [ngIfElse]="displayNormalLabel">
                                                                             <ng-template
                                                                                 [ngIf]="rla.sourceType == LabelSourceType.WEAK_SUPERVISION"
                                                                                 [ngIfElse]="displayCallback">
-                                                                                <div class="cursor-pointer text-sm font-medium mr-3 px-2 py-0.5 rounded-md border border-dotted mr-2 pr-0.5 cursor-default"
+                                                                                <div *ngIf="user?.role == 'ENGINEER'"
+                                                                                    class="cursor-pointer text-sm font-medium mr-3 px-2 py-0.5 rounded-md border border-dotted mr-2 pr-0.5 cursor-default"
                                                                                     (click)="addLabelToTask(task.id, rla.labelingTaskLabel.id)"
                                                                                     [ngClass]="[getBackground(rla.labelingTaskLabel.color), getText(rla.labelingTaskLabel.color), getBorder(rla.labelingTaskLabel.color)]">
                                                                                     <svg xmlns="http://www.w3.org/2000/svg"
@@ -302,10 +314,9 @@
                                                                                     {{getLabelForDisplay(rla.labelingTaskLabel.name,rla.confidence)}}
                                                                                 </div>
                                                                             </ng-template>
-
-
                                                                             <ng-template #displayCallback>
-                                                                                <div class="inline-flex items-center text-sm font-medium mr-3 px-2 py-0.5 rounded-md border border-dashed mr-2 pr-2 cursor-default"
+                                                                                <div *ngIf="user?.role == 'ENGINEER'"
+                                                                                    class="inline-flex items-center text-sm font-medium mr-3 px-2 py-0.5 rounded-md border border-dashed mr-2 pr-2 cursor-default"
                                                                                     [ngClass]="[getBackground(rla.labelingTaskLabel.color), getText(rla.labelingTaskLabel.color), getBorder(rla.labelingTaskLabel.color)]">
                                                                                     <svg xmlns="http://www.w3.org/2000/svg"
                                                                                         class="inline-block icon icon-tabler icon-tabler-bolt"
@@ -334,7 +345,7 @@
                                                                                     {{rla.labelingTaskLabel.name}}
                                                                                 </div>
                                                                                 <label
-                                                                                    *ngIf="(displayUserId == GOLD_USER_ID || displayUserId == loggedInUser.id)"
+                                                                                    *ngIf="(displayUserId == GOLD_USER_ID || displayUserId == user.id)"
                                                                                     class="pl-1 cursor-pointer"
                                                                                     (click)="deleteRecordLabelAssociation($event,rla.id)">
                                                                                     <svg xmlns="http://www.w3.org/2000/svg"
@@ -366,7 +377,8 @@
             </div>
 
             <!-- Information Source Div  -->
-            <ng-template [ngIf]="this.fullRecordData?.id && fullRecordData?.id != 'deleted'">
+            <ng-template
+                [ngIf]="this.fullRecordData?.id && fullRecordData?.id != 'deleted' && user?.role == 'ENGINEER'">
                 <!-- Entities Table -->
                 <ng-template [ngIf]="overviewDisplay.length > 0" [ngIfElse]="nothingToShow">
                     <div class="flex flex-col p-4">
@@ -441,7 +453,7 @@
 
 </div>
 <ng-template #setAsGoldStar let-task="task">
-    <div class="tooltip tooltip-top self-center"
+    <div *ngIf="user.role=='ENGINEER'" class="tooltip tooltip-top self-center"
         [attr.data-tip]="userTaskGold.get(displayUserId).get(task.id).isGold?'Remove as gold label':'Set as gold label'">
         <div class="cursor-pointer mt-0.5"
             (click)="toggleGoldStar(task.id,userTaskGold.get(displayUserId).get(task.id))">
@@ -468,7 +480,8 @@
             <div class="flex flex-row flex-nowrap items-center">
                 <ng-template [ngIf]="isBottom" [ngIfElse]="usersTop">
                     <div class="flex justify-center overflow-visible">
-                        <div data-tip="Delete current record" class="tooltip tooltip-top normal-case font-normal"
+                        <div *ngIf="user?.role == 'ENGINEER'" data-tip="Delete current record"
+                            class="tooltip tooltip-top normal-case font-normal"
                             [ngClass]="!(this.fullRecordData?.id && this.fullRecordData.id != 'deleted') ? 'cursor-not-allowed': ''">
                             <label [for]="'my-modal-recordDel'"
                                 [ngClass]="!(this.fullRecordData?.id && this.fullRecordData.id != 'deleted') ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer'"
@@ -499,7 +512,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="ml-20 flex justify-center overflow-visible items-center cursor-pointer"
+                    <div *ngIf="user?.role == 'ENGINEER'"
+                        class="ml-20 flex justify-center overflow-visible items-center cursor-pointer"
                         (click)="toggleInformationSourceSwitch()">
                         <ng-template [ngIf]="isBottom && fullRecordData?.id != 'deleted'">
                             <label
@@ -519,8 +533,8 @@
                         </ng-template>
                     </div>
 
-                    <div class="ml-8 flex justify-center overflow-visible items-center cursor-pointer"
-                        (click)="toggleAutoJumpNextRecord()">
+                    <div class="flex justify-center overflow-visible items-center cursor-pointer"
+                        [ngClass]="user?.role == 'ENGINEER'?'ml-8':null" (click)="toggleAutoJumpNextRecord()">
                         <ng-template [ngIf]="isBottom && fullRecordData?.id != 'deleted'">
                             <label
                                 class="flex-shrink-0 group relative inline-flex items-center justify-center  cursor-pointer focus:outline-none"
@@ -555,122 +569,249 @@
                     </div>
 
                 </ng-template>
-                <ng-template #usersTop>
-                    <div class="flex justify-center overflow-visible">
-                        <div data-tip="Go to the browser" class="tooltip tooltip-bottom relative">
-                            <button [routerLink]="['../../data']"
-                                class="bg-white text-gray-700 text-xs font-semibold mr-3 px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                Data browser
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="flex justify-center overflow-visible">
-                        <div data-tip="See the programmatic view for your current record"
-                            class="tooltip tooltip-right relative">
-                            <button (click)="goToRecordIde()"
-                                class="bg-white text-gray-700 text-xs font-semibold mr-3 px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                Record IDE
-                            </button>
-                        </div>
-                    </div>
-
-                    <div *ngIf="userIcons">
-                        <ng-template [ngIf]="userIcons.length <=5" [ngIfElse]="userDropdown">
-                            <div class="flex justify-center overflow-visible">
-                                <div *ngFor="let userIcon of userIcons" [attr.data-tip]="userIcon.name"
-                                    class="tooltip mr-3" [ngClass]="isBottom?'tooltip-top':'tooltip-bottom'">
-                                    <ng-template [ngIf]="userIcon.id != GOLD_USER_ID" [ngIfElse]="goldStar">
-                                        <div class="w-8 h-8 flex cursor-pointer rounded-full justify-center items-center"
-                                            (click)="showUserData(userIcon.id)"
-                                            [ngClass]="userIcon.id == displayUserId ? 'opacity-100' : 'opacity-50'">
-                                            <img class="h-8 w-8" [src]="userIcon.avatarUri">
+                <div>
+                    <ng-template #usersTop>
+                        <div *ngIf="user?.role != 'ENGINEER'" class="flex justify-center overflow-visible">
+                            <!-- <div data-tip="Find information about your task"
+                                class="tooltip tooltip-right normal-case font-normal">
+                                <label [for]="'my-modal-information'"
+                                    class="cursor-pointer bg-white text-gray-700 text-xs font-semibold px-2 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                        class="inline-block icon icon-tabler icon-tabler-info-square" width="24"
+                                        height="24" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                                        fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                                        <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+                                        <polyline points="11 12 12 12 12 16 13 16"></polyline>
+                                    </svg>
+                                    Information
+                                </label>
+                            </div> 
+                            <input type="checkbox" [id]="'my-modal-information'" class="modal-toggle">
+                            <div class="modal text-center items-center">
+                                <div class="modal-box"
+                                    style="max-width: 60%; width:fit-content; height:fit-content; max-height: 80%;">
+                                    <div class="relative mx-auto max-w-lg divide-y-1 divide-gray-200 lg:max-w-7xl">
+                                        <div>
+                                            <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+                                                About project "{{project?.name}}"</h2>
+                                            <p class="mt-3 text-xl text-gray-500 sm:mt-4">
+                                                {{project?.description}}
+                                            </p>
                                         </div>
-                                    </ng-template>
-                                    <ng-template #goldStar>
-                                        <div (click)="showUserData(userIcon.id)"
-                                            class="w-8 h-8 flex cursor-pointer justify-center items-center">
-                                            <ng-template [ngIf]="displayUserId == GOLD_USER_ID"
-                                                [ngIfElse]="noFillGoldStar">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
-                                                    viewBox="0 0 20 20" fill="#6DD87F">
-                                                    <path
-                                                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                </svg>
-                                            </ng-template>
-                                            <ng-template #noFillGoldStar>
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 noFillStar"
-                                                    fill="none" viewBox="0 0 24 24" stroke="#6DD87F" stroke-width="2">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-                                                </svg>
-                                            </ng-template>
+                                        <div class="mt-8 grid gap-16 pt-4 lg:grid-cols-2 lg:gap-x-5 lg:gap-y-12">
+                                            <div *ngIf="labelingTasks$ | async as labelingTasks">
+                                                <div
+                                                    class="float-left inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800">
+                                                    Labeling tasks
+                                                </div>
+                                                <div *ngFor="let task of labelingTasks">
+                                                    <div
+                                                        class="mt-3 w-full text-left float-left text-gray-900 font-semibold">
+                                                        {{task.name}}
+                                                    </div>
+                                                    <div
+                                                        class="mt-2 mb-3 w-full text-left float-left text-base text-gray-500">
+                                                        # TODO: Add description
+                                                    </div>
+                                                    <div *ngFor="let label of this.labelingTasksMap.get(task.id).labels; let i=index"
+                                                        class="mt-2 flex items-center text-left w-full cursor-text">
+                                                        <button class="text-sm font-medium mr-3 px-2
+                                                            py-0.5 rounded-md border cursor-text"
+                                                            [ngClass]="[getBackground(label.color), getText(label.color), getBorder(label.color)]">
+                                                            <label
+                                                                class="leading-5 truncate max-w-xs cursor-text">{{label.name}}
+                                                            </label>
+                                                        </button>
+                                                        <div class="py-0.5 text-sm">
+                                                            test
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div *ngIf="dataSlices$ | async as dataSlices">
+                                                <div>
+                                                    <div
+                                                        class="float-left inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                                                        Tips
+                                                    </div>
+                                                    <div
+                                                        class="mt-3 w-full text-left float-left text-gray-900 font-semibold">
+                                                        How to help your engineer
+                                                    </div>
+                                                    <div
+                                                        class="mt-2 w-full text-left float-left text-base text-gray-500">
+                                                        Building an AI is no easy job. The engineer working on this
+                                                        needs to teach an algorithm using high-quality
+                                                        training data. To make sure this is met, please label the data
+                                                        as extensively and accurate as possible.
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <div
+                                                        class="mt-4 float-left inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-pink-100 text-pink-800">
+                                                        Data
+                                                        slices
+                                                    </div>
+                                                    <div *ngFor="let slice of dataSlices">
+                                                        <div
+                                                            class="mt-3 w-full text-left float-left text-gray-900 font-semibold">
+                                                            {{slice.name}}
+                                                        </div>
+                                                        <div
+                                                            class="mt-2 w-full text-left float-left text-base text-gray-500">
+                                                            # TODO: Add description
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
                                         </div>
-                                    </ng-template>
+                                    </div>
+
+                                    <div class="modal-action text-center">
+                                        <label [for]="'my-modal-information'"
+                                            class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
+                                    </div>
                                 </div>
                             </div>
-                        </ng-template>
-                        <ng-template #userDropdown>
-                            <div class="flex flex-row justify-center overflow-visible">
-                                <div *ngFor="let userIcon of userIcons | slice:0:2" [attr.data-tip]="userIcon.name"
-                                    class="tooltip mr-3" [ngClass]="isBottom?'tooltip-top':'tooltip-bottom'">
-                                    <ng-template [ngIf]="userIcon.id != GOLD_USER_ID" [ngIfElse]="goldStar">
-                                        <div class="w-8 h-8 flex cursor-pointer rounded-full justify-center items-center"
-                                            (click)="showUserData(userIcon.id)"
-                                            [ngClass]="userIcon.id == displayUserId ? 'bg-kernindigo' : 'bg-white'">
-                                            <img class="h-8 w-8" [src]="userIcon.avatarUri">
-                                        </div>
-                                    </ng-template>
-                                    <ng-template #goldStar>
-                                        <div (click)="showUserData(userIcon.id)"
-                                            class="w-8 h-8 flex cursor-pointer justify-center items-center">
-                                            <ng-template [ngIf]="displayUserId == GOLD_USER_ID"
-                                                [ngIfElse]="noFillGoldStar">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
-                                                    viewBox="0 0 20 20" fill="#6DD87F">
-                                                    <path
-                                                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                </svg>
-                                            </ng-template>
-                                            <ng-template #noFillGoldStar>
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 noFillStar"
-                                                    fill="none" viewBox="0 0 24 24" stroke="#6DD87F" stroke-width="2">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-                                                </svg>
-                                            </ng-template>
-                                        </div>
-                                    </ng-template>
-                                </div>
-                                <select #userDropdownSelect *ngIf="userIcons.length>2"
-                                    class="select select-bordered select-sm w-40"
-                                    [ngClass]="userDropdownSelect.value == displayUserId ? 'bg-kernindigo text-white' : 'bg-white' "
-                                    (change)="showUserData($event.target.value)" value="-1">
-                                    <option value="-1" selected disabled hidden>More Users</option>
-                                    <option *ngFor="let userIcon of userIcons | slice:2" [value]="userIcon.id"
-                                        class="bg-white">
-                                        {{userIcon.name}}</option>
-                                </select>
+-->
+                        </div>
+                        <div *ngIf="user?.role != 'ENGINEER'"
+                            class=" flex justify-center items-center overflow-visible">
+                            <span class="mr-2"> Available Tasks:</span>
+                            <kern-dropdown [dropdownOptions]="{
+                                optionArray:availableLinks ? availableLinks: ['No links available'],
+                                buttonCaption:selectedLink?selectedLink.name:'Select slice',
+                                valuePropertyPath:'id',
+                                isDisabled:availableLinks?.length == 0
+                            }" (optionClicked)="dropdownSelectLink($event)">
+                            </kern-dropdown>
+                        </div>
+
+                        <div *ngIf="user?.role == 'ENGINEER'" class="flex justify-center overflow-visible">
+                            <div data-tip="Go to the browser" class="tooltip tooltip-bottom relative">
+                                <button [routerLink]="['../../data']"
+                                    class="bg-white text-gray-700 text-xs font-semibold mr-3 px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                    Data browser
+                                </button>
                             </div>
-                        </ng-template>
-                    </div>
-                </ng-template>
+                        </div>
+
+                        <div *ngIf="user?.role == 'ENGINEER'" class="flex justify-center overflow-visible">
+                            <div data-tip="See the programmatic view for your current record"
+                                class="tooltip tooltip-right relative">
+                                <button (click)="goToRecordIde()"
+                                    class="bg-white text-gray-700 text-xs font-semibold mr-3 px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                    Record IDE
+                                </button>
+                            </div>
+                        </div>
+
+                        <div *ngIf="userIcons && user?.role == 'ENGINEER'">
+                            <ng-template [ngIf]="userIcons.length <=5" [ngIfElse]="userDropdown">
+                                <div class="flex justify-center overflow-visible">
+                                    <div *ngFor="let userIcon of userIcons" [attr.data-tip]="userIcon.name"
+                                        class="tooltip mr-3" [ngClass]="isBottom?'tooltip-top':'tooltip-bottom'">
+                                        <ng-template [ngIf]="userIcon.id != GOLD_USER_ID" [ngIfElse]="goldStar">
+                                            <div class="w-8 h-8 flex cursor-pointer rounded-full justify-center items-center"
+                                                (click)="showUserData(userIcon.id)"
+                                                [ngClass]="userIcon.id == displayUserId ? 'opacity-100' : 'opacity-50'">
+                                                <img class="h-8 w-8" [src]="userIcon.avatarUri">
+                                            </div>
+                                        </ng-template>
+                                        <ng-template #goldStar>
+                                            <div (click)="showUserData(userIcon.id)"
+                                                class="w-8 h-8 flex cursor-pointer justify-center items-center">
+                                                <ng-template [ngIf]="displayUserId == GOLD_USER_ID"
+                                                    [ngIfElse]="noFillGoldStar">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                                                        viewBox="0 0 20 20" fill="#6DD87F">
+                                                        <path
+                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                    </svg>
+                                                </ng-template>
+                                                <ng-template #noFillGoldStar>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 noFillStar"
+                                                        fill="none" viewBox="0 0 24 24" stroke="#6DD87F"
+                                                        stroke-width="2">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                                                    </svg>
+                                                </ng-template>
+                                            </div>
+                                        </ng-template>
+                                    </div>
+                                </div>
+                            </ng-template>
+                            <ng-template #userDropdown>
+                                <div class="flex flex-row justify-center overflow-visible">
+                                    <div *ngFor="let userIcon of userIcons | slice:0:2" [attr.data-tip]="userIcon.name"
+                                        class="tooltip mr-3" [ngClass]="isBottom?'tooltip-top':'tooltip-bottom'">
+                                        <ng-template [ngIf]="userIcon.id != GOLD_USER_ID" [ngIfElse]="goldStar">
+                                            <div class="w-8 h-8 flex cursor-pointer rounded-full justify-center items-center"
+                                                (click)="showUserData(userIcon.id)"
+                                                [ngClass]="userIcon.id == displayUserId ? 'bg-kernindigo' : 'bg-white'">
+                                                <img class="h-8 w-8" [src]="userIcon.avatarUri">
+                                            </div>
+                                        </ng-template>
+                                        <ng-template #goldStar>
+                                            <div (click)="showUserData(userIcon.id)"
+                                                class="w-8 h-8 flex cursor-pointer justify-center items-center">
+                                                <ng-template [ngIf]="displayUserId == GOLD_USER_ID"
+                                                    [ngIfElse]="noFillGoldStar">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                                                        viewBox="0 0 20 20" fill="#6DD87F">
+                                                        <path
+                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                    </svg>
+                                                </ng-template>
+                                                <ng-template #noFillGoldStar>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 noFillStar"
+                                                        fill="none" viewBox="0 0 24 24" stroke="#6DD87F"
+                                                        stroke-width="2">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                                                    </svg>
+                                                </ng-template>
+                                            </div>
+                                        </ng-template>
+                                    </div>
+
+                                    <select #userDropdownSelect *ngIf="userIcons.length>2"
+                                        class="select select-bordered select-sm w-40"
+                                        [ngClass]="userDropdownSelect.value == displayUserId ? 'bg-kernindigo text-white' : 'bg-white'"
+                                        (change)="showUserData($event.target.value)" value="-1">
+                                        <option value="-1" selected disabled hidden>More Users</option>
+                                        <option *ngFor="let userIcon of userIcons | slice:2" [value]="userIcon.id"
+                                            class="bg-white">
+                                            {{userIcon.name}}</option>
+                                    </select>
+                                </div>
+                            </ng-template>
+                        </div>
+                    </ng-template>
+                </div>
             </div>
 
             <div class="flex flex-row flex-nowrap items-center">
                 <div *ngIf="!isBottom" class="flex justify-center overflow-visible items-center">
                     <div class="text-sm leading-5 text-gray-500 flex-shrink-0 mr-3 my-3">
-                        <div data-tip="If you reached the end, you can select new filters in the browser"
+                        <div [attr.data-tip]="user.role=='ENGINEER'?'If you reached the end, you can select new filters in the browser':'Slices can be changed by the engineer in your team'"
                             class="tooltip tooltip-bottom relative">
-                            {{sessionData?.currentPos}} / {{sessionData?.recordIds.length}} records in <span
+                            {{huddleData?.linkData.requestedPos}} / {{huddleData?.recordIds.length}} records in <span
                                 class="cursor-help underline"
-                                style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">current
-                                session</span>
+                                style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">
+                                {{user.role=='ENGINEER' ? 'current session':'current slice'}}
+
+                            </span>
                         </div>
                     </div>
                     <div class="tooltip tooltip-left" data-tip="Arrow left">
                         <button #previsousButton tabindex="0"
-                            [disabled]="!sessionData || sessionData.currentPos == 1 ?true:null"
+                            [disabled]="!huddleData || huddleData.linkData.requestedPos == 1 ?true:null"
                             [ngClass]="previsousButton.disabled ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
                             (click)="previousRecord()"
                             class="bg-white text-gray-700 text-xs font-semibold mr-3 px-4 py-1.5 rounded-md border border-gray-300 whitespace-nowrap inline-flex items-center hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Back
@@ -687,7 +828,7 @@
                     </div>
                     <div class="tooltip tooltip-left" data-tip="Arrow right">
                         <button #nextButton tabindex="0"
-                            [disabled]="!sessionData || !sessionData.recordIds || sessionData.currentPos >= sessionData.recordIds.length ?true:null"
+                            [disabled]="!huddleData || !huddleData.recordIds || huddleData.linkData.requestedPos >= huddleData.recordIds.length ?true:null"
                             [ngClass]="nextButton.disabled ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
                             (click)="nextRecord()"
                             class="bg-indigo-700 text-white text-xs font-semibold px-4 py-1.5 rounded-md cursor-pointer whitespace-nowrap inline-flex items-center hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Next
@@ -746,7 +887,7 @@
                     class="rounded-lg text-white pl-2 normal-case self-start border rounded-l-none text-sm leading-5 font-bold pr-1"
                     [ngClass]="[getBackground(exData.labelColor), getText(exData.labelColor), getBorder(exData.labelColor)]">
                     {{exData.labelDisplay}}
-                    <label *ngIf="(displayUserId == GOLD_USER_ID || displayUserId == loggedInUser.id)"
+                    <label *ngIf="(displayUserId == GOLD_USER_ID || displayUserId == user.id)"
                         class="p-1 pl-0 cursor-pointer"
                         (click)="deleteRecordLabelAssociation($event,exData.markedEntry.id)">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block stroke-current relative"

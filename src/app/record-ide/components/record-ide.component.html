@@ -78,7 +78,7 @@
                 </ngx-monaco-editor>
             </div>
         </div>
-        <div class="h-full border-l border-gray-300">
+        <div class="h-full border-gray-300" [ngClass]="vertical?'border-l': 'border-t'">
             <div class="flex flex-row m-3 items-center">
                 <span class="mr-4">Shell</span>
                 <button (click)="runRecordIde()" data-tip="Press Shift + Enter in the editor&#10;to run the code"
@@ -111,7 +111,8 @@
                     class="hover:bg-gray-50 bg-white text-gray-700 font-semibold text-xs mr-2 px-4 py-2 rounded-md border border-gray-300">
                     See function templates
                 </a>
-                <a href="https://github.com/code-kern-ai/refinery-record-ide-env/blob/dev/requirements.txt" target="_blank"
+                <a href="https://github.com/code-kern-ai/refinery-record-ide-env/blob/dev/requirements.txt"
+                    target="_blank"
                     class="hover:bg-gray-50 bg-white text-gray-700 font-semibold text-xs mr-2 px-4 py-2 rounded-md border border-gray-300">
                     See installed libraries
                 </a>

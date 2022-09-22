@@ -25,6 +25,7 @@ import { dateAsUTCDate } from 'src/app/util/helper-functions';
 import { NotificationService } from 'src/app/base/services/notification.service';
 import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
 import { schemeCategory24 } from 'src/app/util/colors';
+import { UserManager } from 'src/app/util/user-manager';
 
 @Component({
   selector: 'kern-weak-source-details',
@@ -98,6 +99,7 @@ export class WeakSourceDetailsComponent
   }
 
   ngOnInit(): void {
+    UserManager.checkUserAndRedirect(this);
     this.routeService.updateActivatedRoute(this.activatedRoute);
     this.organizationService.getUserInfo().pipe(first()).subscribe((user) => this.loggedInUser = user);
     const projectId = this.activatedRoute.parent.snapshot.paramMap.get('projectId');
@@ -134,7 +136,8 @@ export class WeakSourceDetailsComponent
     for (const e of this.stickyHeader) {
       this.stickyObserver.unobserve(e.nativeElement);
     }
-    NotificationService.unsubscribeFromNotification(this, this.project.id);
+    const projectId = this.project?.id ? this.project.id : this.activatedRoute.parent.snapshot.paramMap.get('projectId');
+    NotificationService.unsubscribeFromNotification(this, projectId);
   }
 
   ngAfterViewInit() {

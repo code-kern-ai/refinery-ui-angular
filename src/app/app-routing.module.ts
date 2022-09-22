@@ -18,6 +18,8 @@ import { RecordIDEComponent } from './record-ide/components/record-ide.component
 import { ConfigComponent } from './config/components/config.component';
 import { ModelDownloadComponent } from './model-download/pages/model-download/model-download.component';
 import { ModelCallbackComponent } from './model-callbacks/components/model-callbacks.component';
+import { UsersComponent } from './users/components/users.component';
+import { CrowdLabelerDetailsComponent } from './weak-supervision/components/crowd-labeler-details/component/crowd-labeler-details.component';
 
 const routes: Routes = [
   {
@@ -26,6 +28,7 @@ const routes: Routes = [
     pathMatch: 'full',
   },
   { path: 'projects', component: ProjectsComponent, data: { name: 'ProjectsComponent' } },
+  { path: 'users', component: UsersComponent, data: { name: 'UsersComponent' } },
   { path: 'notification-center', component: NotificationCenterComponent, data: { name: 'NotificationCenterComponent' } },
   { path: 'projects/new', component: ProjectNewComponent, data: { name: 'ProjectNewComponent' } },
   { path: 'config', component: ConfigComponent, data: { name: 'ConfigComponent' } },
@@ -46,12 +49,15 @@ const routes: Routes = [
       {
         path: 'zero-shot/:informationSourceId',
         component: ZeroShotDetailsComponent, data: { name: 'ZeroShotDetailsComponent' }
+      }, {
+        path: 'crowd-labeler/:informationSourceId',
+        component: CrowdLabelerDetailsComponent, data: { name: 'CrowdLabelerDetailsComponent' }
       },
       { path: 'data', component: DataBrowserComponent, data: { name: 'DataBrowserComponent' } },
       { path: 'settings', component: ProjectSettingsComponent, data: { name: 'ProjectSettingsComponent' } },
       { path: 'labeling', component: LabelingComponent, data: { name: 'LabelingComponent' } },
-      { path: 'labeling/:sessionId', component: LabelingComponent, data: { name: 'LabelingComponent' } },
-      { path: 'record-ide/:sessionId', component: RecordIDEComponent, data: { name: 'RecordIDEComponent' } },
+      { path: 'labeling/:id', component: LabelingComponent, data: { name: 'LabelingComponent' } },
+      { path: 'record-ide/:id', component: RecordIDEComponent, data: { name: 'RecordIDEComponent' } },
       { path: 'knowledge-base', component: KnowledgeBasesComponent, data: { name: 'KnowledgeBasesComponent' } },
       {
         path: 'knowledge-base/:knowledgeBaseId',

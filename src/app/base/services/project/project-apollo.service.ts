@@ -894,12 +894,13 @@ export class ProjectApolloService {
     });
   }
 
-  getDataSlices(projectId: string) {
+  getDataSlices(projectId: string, sliceType: string = null) {
     const query = this.apollo
       .watchQuery({
         query: queries.DATA_SLICES,
         variables: {
           projectId: projectId,
+          sliceType: sliceType
         },
         fetchPolicy: 'network-only',
       });
@@ -946,6 +947,111 @@ export class ProjectApolloService {
         },
       ],
     });
+  }
+  requestHuddleData(projectId: string, huddleId: string, huddleType: string) {
+    return this.apollo
+      .query({
+        query: queries.REQUEST_HUDDLE_DATA,
+        variables: {
+          projectId: projectId,
+          huddleId: huddleId,
+          huddleType: huddleType
+        },
+        fetchPolicy: 'no-cache',
+      })
+      .pipe(map((result) => result['data']['requestHuddleData']));
+  }
+
+  getAccessLink(projectId: string, linkId: string) {
+    return this.apollo
+      .query({
+        query: queries.GET_ACCESS_LINK,
+        variables: {
+          projectId: projectId,
+          linkId: linkId
+        },
+        fetchPolicy: 'cache-first', //this shouldnt change often (also default value)
+      })
+      .pipe(map((result) => result['data']['accessLink']));
+  }
+
+  lockAccessLink(projectId: string, linkId: string, lockState: boolean = true) {
+    return this.apollo.mutate({
+      mutation: mutations.LOCK_ACCESS_LINK,
+      variables: {
+        projectId: projectId,
+        linkId: linkId,
+        lockState: lockState,
+      },
+    });
+  }
+
+  createAccessLink(
+    projectId: string,
+    type: string,
+    id: string): Observable<any> {
+    return this.apollo.mutate({
+      mutation: mutations.CREATE_ACCESS_LINK,
+      variables: {
+        projectId: projectId,
+        type: type,
+        id: id,
+      },
+    });
+  }
+  removeAccessLink(
+    projectId: string,
+    linkId: string): Observable<any> {
+    return this.apollo.mutate({
+      mutation: mutations.REMOVE_ACCESS_LINK,
+      variables: {
+        projectId: projectId,
+        linkId: linkId
+      },
+    });
+  }
+
+  linkLocked(projectId: string, linkRoute: string) {
+    return this.apollo
+      .query({
+        query: queries.LINK_LOCKED,
+        variables: {
+          projectId: projectId,
+          linkRoute: linkRoute
+        },
+        fetchPolicy: 'no-cache',
+      })
+      .pipe(map((result) => result['data']['linkLocked']));
+
+  }
+  linkDataOutdated(projectId: string, linkRoute: string, lastRequestedAt: Date) {
+    return this.apollo
+      .query({
+        query: queries.LINK_DATA_OUTDATED,
+        variables: {
+          projectId: projectId,
+          linkRoute: linkRoute,
+          lastRequestedAt: lastRequestedAt
+        },
+        fetchPolicy: 'no-cache',
+      })
+      .pipe(map((result) => result['data']['linkDataOutdated']));
+
+  }
+
+  availableLabelingLinks(projectId: string, assumedRole: string = null, assumedHeuristicId: string = null) {
+    return this.apollo
+      .query({
+        query: queries.AVAILABLE_LABELING_LINKS,
+        variables: {
+          projectId: projectId,
+          assumedRole: assumedRole,
+          assumedHeuristicId: assumedHeuristicId
+        },
+        fetchPolicy: 'no-cache',
+      })
+      .pipe(map((result) => result['data']['availableLinks']));
+
   }
 
 }

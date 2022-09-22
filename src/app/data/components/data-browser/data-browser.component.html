@@ -1120,7 +1120,8 @@
                         <div class="float-right">
                             <label class="text-green-700 hover:text-green-500 text-sm font-medium cursor-pointer"
                                 (click)="storePreliminaryRecordIds(i+1)"
-                                [routerLink]="['../labeling/' + extendedRecords.sessionId]" [queryParams]="{pos: i+1}">
+                                [routerLink]="['../labeling/' + extendedRecords.sessionId]"
+                                [queryParams]="{pos: i+1,type:'SESSION'}">
                                 <span class="leading-5">Continue with this record
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block" fill="none"
                                         viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -1188,12 +1189,34 @@
             </div>
             <input type="checkbox" id="slice-information" class="modal-toggle">
             <div class="modal">
-                <div class="modal-box text-black bg-white justify-center">
+                <div class="modal-box text-black bg-white justify-center"
+                    style="max-width: 70%; width:fit-content; height:fit-content; max-height: 80%;">
                     <div class="flex flex-grow justify-center mb-4 font-bold">Slice Information</div>
-                    <div *ngFor="let item of sliceInfo | keyvalue : orderOriginal"
-                        class="flex flex-grow justify-between">
-                        <p>{{item.key}}</p>
-                        <p>{{item.value}}</p>
+                    <div *ngFor="let item of sliceInfo | keyvalue : orderOriginal">
+                        <ng-template [ngIf]="item.key == 'Link'" [ngIfElse]="normalDisplay">
+                            <div class="mt-3 flex rounded-md">
+                                <span
+                                    class="inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-50 px-3 text-gray-500 sm:text-sm">{{item.value.startsWith("https")?
+                                    'https://':'http://'}}</span>
+                                <span data-tip="Copy to clipboard"
+                                    (click)="copyToClipboard(item.value + '?pos=1&type=DATA_SLICE')" type="text"
+                                    class="cursor-pointer tooltip border rounded-none rounded-r-md border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                    {{item.value.substring(item.value.startsWith("https")?8:7)}}</span>
+
+                            </div>
+                            <div>
+                                <button (click)="testLink(item.value + '?pos=1&type=DATA_SLICE')"
+                                    class="mt-3 opacity-100 cursor-pointer w-40 bg-indigo-700 text-white text-xs leading-4 font-semibold px-4 py-2 rounded-md cursor-pointer hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                    View as expert
+                                </button>
+                            </div>
+                        </ng-template>
+                        <ng-template #normalDisplay>
+                            <div class="flex flex-grow justify-between">
+                                <p>{{item.key}}</p>
+                                <p>{{item.value}}</p>
+                            </div>
+                        </ng-template>
                     </div>
                     <div class="modal-action">
                         <label for="slice-information"

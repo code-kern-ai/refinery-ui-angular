@@ -9,12 +9,14 @@ import { Subscription, timer } from 'rxjs';
 import { first, tap, distinctUntilChanged, debounceTime } from 'rxjs/operators';
 import { Project } from 'src/app/base/entities/project';
 import { LabelingTaskTarget } from 'src/app/base/enum/graphql-enums';
+import { ConfigManager } from 'src/app/base/services/config-service';
 import { NotificationService } from 'src/app/base/services/notification.service';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { RouteService } from 'src/app/base/services/route.service';
 import { Slice } from 'src/app/data/components/data-browser/helper-classes/search-parameters';
 import { DownloadState } from 'src/app/import/services/s3.enums';
 import { schemeCategory24 } from 'src/app/util/colors';
+import { UserManager } from 'src/app/util/user-manager';
 import { DisplayGraphs, getDisplayGraphValueArray, getEmptyProjectStats, ProjectStats } from './project-overview.helper';
 
 @Component({
@@ -68,6 +70,7 @@ export class ProjectOverviewComponent implements OnInit, OnDestroy {
   projectStats: ProjectStats = getEmptyProjectStats();
   subscriptions$: Subscription[] = [];
 
+  isManaged: boolean;
 
   constructor(
     private routeService: RouteService,
@@ -79,14 +82,19 @@ export class ProjectOverviewComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     if (this.labelingTasks$) this.labelingTasks$.unsubscribe();
     this.subscriptions$.forEach((subscription) => subscription.unsubscribe());
-    NotificationService.unsubscribeFromNotification(this, this.project.id)
+    const projectId = this.project?.id ? this.project.id : this.activatedRoute.parent.snapshot.paramMap.get('projectId');
+    NotificationService.unsubscribeFromNotification(this, projectId)
     this.saveSettingsToLocalStorage();
   }
 
 
   ngOnInit(): void {
+    UserManager.checkUserAndRedirect(this);
 
     this.routeService.updateActivatedRoute(this.activatedRoute);
+
+    this.checkIfManagedVersion();
+
 
     const currentProjectID =
       this.activatedRoute.parent.snapshot.paramMap.get('projectId');
@@ -131,6 +139,14 @@ export class ProjectOverviewComponent implements OnInit, OnDestroy {
       this.saveSettingsToLocalStorage();
     });
     this.displayGraphsForm.valueChanges.subscribe(() => this.saveSettingsToLocalStorage())
+  }
+
+  checkIfManagedVersion() {
+    if (!ConfigManager.isInit()) {
+      timer(250).subscribe(() => this.checkIfManagedVersion());
+      return;
+    }
+    this.isManaged = ConfigManager.getIsManaged();
   }
 
   setDisplayNERConfusion(projectId: string, labelingTaskId: string) {
@@ -183,6 +199,7 @@ export class ProjectOverviewComponent implements OnInit, OnDestroy {
   }
 
   saveSettingsToLocalStorage() {
+    if (!this.project) return;
     let currentData = JSON.parse(localStorage.getItem("projectOverviewData"));
     if (!currentData) currentData = {};
 

@@ -1,0 +1,25 @@
+.max-height-modal {
+    max-height: calc(100vh - 230px);
+}
+
+.tooltip::before {
+    z-index: 50;
+}
+
+.text-left {
+    text-align: left;
+}
+
+.tooltip-text-smaller::before {
+    margin-top: 10px;
+    text-transform: none;
+}
+
+.tooltip-text-bigger::before {
+    margin-top: 20px;
+    text-transform: none;
+}
+
+.tooltip-text-no-margin::before {
+    text-transform: none;
+}
