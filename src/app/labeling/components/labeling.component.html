@@ -289,7 +289,8 @@
                                                                                 [ngIf]="rla.sourceType == LabelSourceType.WEAK_SUPERVISION"
                                                                                 [ngIfElse]="displayCallback">
                                                                                 <div *ngIf="user?.role == 'ENGINEER'"
-                                                                                    class="text-sm font-medium mr-3 px-2 py-0.5 rounded-md border border-dotted mr-2 pr-0.5 cursor-default"
+                                                                                    class="cursor-pointer text-sm font-medium mr-3 px-2 py-0.5 rounded-md border border-dotted mr-2 pr-0.5 cursor-default"
+                                                                                    (click)="addLabelToTask(task.id, rla.labelingTaskLabel.id)"
                                                                                     [ngClass]="[getBackground(rla.labelingTaskLabel.color), getText(rla.labelingTaskLabel.color), getBorder(rla.labelingTaskLabel.color)]">
                                                                                     <svg xmlns="http://www.w3.org/2000/svg"
                                                                                         class="inline-block icon icon-tabler icon-tabler-assembly"
@@ -948,11 +949,13 @@
     <div *ngIf="overlayData && overlayData.isFirst" class="w-0 h-14 relative">
         <div class="absolute bottom-3">
             <div hover-group-class="hover_child_hover" [hover-group]="overlayData.group"
-                class="absolute w-0 hover_child " style="bottom: 0;left:3px">
+                class="absolute w-0 hover_child " style="bottom: 0;left:3px"
+                (click)="addLabelToMarkedTextFromSuggestion(overlayData)">
+
                 <div class="relative" style="z-index:2">
                     <label
                         [ngClass]="[getBackground(overlayData.labelColor), getText(overlayData.labelColor), getBorder(overlayData.labelColor), getHover(overlayData.labelColor)]"
-                        class="rounded-lg font-medium px-1 normal-case whitespace-nowrap">{{overlayData.labelDisplay}}</label>
+                        class="cursor-pointer rounded-lg font-medium px-1 normal-case whitespace-nowrap">{{overlayData.labelDisplay}}</label>
                 </div>
             </div>
         </div>
