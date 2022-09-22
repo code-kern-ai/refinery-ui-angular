@@ -10,7 +10,7 @@ export class AttributeCodeLookup {
             case AttributeCalculationExamples.AC_EMPTY_TEMPLATE:
                 return {
                     code: `def ac(record):
-# e.g.
+    # e.g.
     return record["headline"].text.lower()
                 `}
         }
