@@ -24,6 +24,7 @@
                         <kern-dropdown class="mr-3" [dropdownOptions]="{
                             optionArray: ['Labeling function', 'Active learning', 'Zero-shot','Crowd labeling'],
                             optionIcons: ['labeling-function','active-learning','zero-shot','crowd-labeling'],
+                            isOptionDisabled: [false, false, !(labelingTasksClassification && labelingTasksClassification.length > 0), false],
                             buttonCaption: 'New heuristic',
                             buttonTooltip: 'Heuristics are noisy label signals'
                         }" (optionClicked)="executeOption($event)">

@@ -147,6 +147,19 @@ export class LabelingComponent implements OnInit, OnDestroy {
     if (this.project) NotificationService.unsubscribeFromNotification(this, this.project.id)
     if (this.roleAssumed) localStorage.removeItem("huddleData");
     // CommentDataManager.unregisterAllCommentRequests(this);
+    let removed = false;
+    if (this.project) {
+      removed = true;
+      NotificationService.unsubscribeFromNotification(this, this.project.id);
+    }
+    if(!removed && this.labelingLinkData?.projectId) {
+      NotificationService.unsubscribeFromNotification(this, this.labelingLinkData.projectId);
+      removed = true;
+    }
+    if(!removed) {
+      console.log("Couldn't unsubscribe from NotificationService -- labeling page");
+    }
+
   }
 
 

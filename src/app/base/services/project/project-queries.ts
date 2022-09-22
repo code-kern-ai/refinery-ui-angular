@@ -126,13 +126,17 @@ export const queries = {
   `,
 
   GET_ATTRIBUTES_BY_PROJECT_ID: gql`
-  query($projectId: ID!){
-    attributesByProjectId(projectId: $projectId) {
+  query($projectId: ID!, $stateFilter: [String!]) {
+    attributesByProjectId(projectId: $projectId, stateFilter: $stateFilter) {
       id
       name
       dataType
       isPrimaryKey
       relativePosition    
+      userCreated
+      sourceCode
+      state
+      logs
     }
   }  
   `,
@@ -369,6 +373,29 @@ export const queries = {
       finishedAt
     }
   }  
+  `,
+  GET_ATTRIBUTE_BY_ATTRIBUTE_ID: gql`
+  query($projectId: ID!, $attributeId: ID!){
+    attributeByAttributeId(projectId: $projectId, attributeId: $attributeId) {
+      id
+      name
+      dataType
+      isPrimaryKey
+      relativePosition    
+      userCreated
+      sourceCode
+      state
+      logs
+    }
+  }
+  `,
+  CALCULATE_USER_ATTRIBUTE_SAMPLE_RECORDS: gql`
+  query($projectId: ID!, $attributeId: ID!){
+    calculateUserAttributeSampleRecords(projectId: $projectId, attributeId: $attributeId) {
+      recordIds
+      calculatedAttributes 
+    }
+  }
   `,
   GET_ACCESS_LINK: gql`
   query ($projectId: ID!, $linkId: ID!) {

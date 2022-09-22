@@ -235,12 +235,13 @@ export class ProjectApolloService {
     return [query, vc];
   }
 
-  getAttributesByProjectId(projectId: string) {
+  getAttributesByProjectId(projectId: string, stateFilter: string[] = null) {
     const query = this.apollo
       .watchQuery({
         query: queries.GET_ATTRIBUTES_BY_PROJECT_ID,
         variables: {
           projectId: projectId,
+          stateFilter: stateFilter
         },
         fetchPolicy: 'network-only',
       });
@@ -253,6 +254,10 @@ export class ProjectApolloService {
             dataType: data.dataType,
             isPrimaryKey: data.isPrimaryKey,
             relativePosition: data.relativePosition,
+            userCreated: data.userCreated,
+            sourceCode: data.sourceCode,
+            state: data.state,
+            logs: data.logs
           };
         });
       })
@@ -449,8 +454,10 @@ export class ProjectApolloService {
   updateAttribute(
     projectId: string,
     attributeId: string,
-    dataType: string,
-    isPrimaryKey: boolean
+    dataType?: string,
+    isPrimaryKey?: boolean,
+    name?: string,
+    sourceCode?: string
   ) {
     return this.apollo.mutate({
       mutation: mutations.UPDATE_ATTRIBUTE,
@@ -459,12 +466,15 @@ export class ProjectApolloService {
         attributeId: attributeId,
         dataType: dataType,
         isPrimaryKey: isPrimaryKey,
+        name: name,
+        sourceCode: sourceCode
       },
       refetchQueries: [
         {
-          query: queries.GET_ATTRIBUTES_BY_PROJECT_ID,
+          query: queries.GET_ATTRIBUTE_BY_ATTRIBUTE_ID,
           variables: {
             projectId: projectId,
+            attributeId: attributeId
           },
         },
       ],
@@ -1052,6 +1062,110 @@ export class ProjectApolloService {
       })
       .pipe(map((result) => result['data']['availableLinks']));
 
+  }
+
+  createUserAttribute(projectId: string): Observable<any> {
+    return this.apollo.mutate({
+      mutation: mutations.CREATE_USER_ATTRIBUTE,
+      variables: {
+        projectId: projectId
+      },
+    });
+  }
+
+  getAttributeByAttributeId(projectId: string, attributeId: string) {
+    const query = this.apollo
+      .watchQuery({
+        query: queries.GET_ATTRIBUTE_BY_ATTRIBUTE_ID,
+        variables: {
+          projectId: projectId,
+          attributeId: attributeId,
+        },
+        fetchPolicy: 'network-only',
+      });
+    const vc = query
+    .valueChanges.pipe(
+      map((result) => {
+        let task = result['data']['attributeByAttributeId'];
+        if(task == null)  return null;
+        let neededIDLength = task['logs']
+          ? String(task['logs'].length)?.length
+          : 0;
+        return {
+          id: task['id'],
+          name: task['name'],
+          dataType: task['dataType'],
+          isPrimaryKey: task['isPrimaryKey'],
+          relativePosition: task['relativePosition'],
+          userCreated: task['userCreated'],
+          sourceCode: task['sourceCode'],
+          state: task['state'],
+          logs: !task['logs']
+            ? null
+            : task['logs'].map((wrapper, index) => {
+              let d: Date = new Date(
+                wrapper.substr(0, wrapper.indexOf(' '))
+              );
+              return (
+                String(index + 1).padStart(neededIDLength, '0') +
+                ': ' +
+                d.toLocaleString() +
+                ' - ' +
+                wrapper.substr(wrapper.indexOf(' ') + 1)
+              );
+            }),
+        };
+      })
+    );
+    return [query, vc];
+  }
+
+  deleteUserAttribute(projectId: string, attributeId: string) {
+    return this.apollo.mutate({
+      mutation: mutations.DELETE_USER_ATTRIBUTE,
+      variables: {
+        projectId: projectId,
+        attributeId: attributeId
+      }, refetchQueries: [
+        {
+          query: queries.GET_ATTRIBUTES_BY_PROJECT_ID,
+          variables: {
+            projectId: projectId,
+          },
+        },
+      ],
+    });
+  }
+
+  calculateUserAttributeSampleRecords(projectId: string, attributeId: string) {
+    return this.apollo
+      .query({
+        query: queries.CALCULATE_USER_ATTRIBUTE_SAMPLE_RECORDS,
+        variables: {
+          projectId: projectId,
+          attributeId: attributeId,
+        },
+        fetchPolicy: 'no-cache'
+      }).pipe(
+        map((result) => result['data']['calculateUserAttributeSampleRecords']));
+  }
+
+  calculateUserAttributeAllRecords(projectId: string, attributeId: string) {
+    return this.apollo.mutate({
+      mutation: mutations.CALCULATE_USER_ATTRIBUTE_ALL_RECORDS,
+      variables: {
+        projectId: projectId,
+        attributeId: attributeId
+      },refetchQueries: [
+        {
+          query: queries.GET_ATTRIBUTE_BY_ATTRIBUTE_ID,
+          variables: {
+            projectId: projectId,
+            attributeId: attributeId
+          },
+        },
+      ],
+    });
   }
 
 }

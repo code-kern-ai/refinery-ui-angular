@@ -7,7 +7,6 @@ import { LabelingTask, LabelingTaskTarget, labelingTaskToString } from 'src/app/
 import { NotificationService } from 'src/app/base/services/notification.service';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { RouteService } from 'src/app/base/services/route.service';
-import { schemeCategory24 } from 'src/app/util/colors';
 import { DownloadState } from 'src/app/import/services/s3.enums';
 import { HttpClient } from '@angular/common/http';
 import { S3Service } from 'src/app/import/services/s3.service';
@@ -106,7 +105,8 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     return this.attributesSchema.get('attributes') as FormArray;
   }
 
-  attributesArrayText: { id: string, name: string }[] = [];
+  attributesArrayTextUsableUploaded: { id: string, name: string }[] = [];
+  attributesArrayUsableUploaded: { id: string, name: string }[] = [];
   attributes;
   pKeyCheckTimer;
   pKeyValid: boolean = null;
@@ -156,7 +156,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
 
     NotificationService.subscribeToNotification(this, {
       projectId: projectId,
-      whitelist: ['tokenization', 'embedding', 'embedding_deleted', 'label_created', 'label_deleted', 'attributes_updated', 'labeling_task_deleted', 'labeling_task_updated', 'labeling_task_created', 'project_update', 'project_export'],
+      whitelist: ['tokenization', 'embedding', 'embedding_deleted', 'label_created', 'label_deleted', 'attributes_updated', 'labeling_task_deleted', 'labeling_task_updated', 'labeling_task_created', 'project_update', 'project_export', 'calculate_attribute'],
       func: this.handleWebsocketNotification
     });
 
@@ -292,17 +292,21 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
 
   prepareAttributesRequest(projectId: string): Observable<any> {
     let attributes$;
-    [this.attributesQuery$, attributes$] = this.projectApolloService.getAttributesByProjectId(projectId);;
+    [this.attributesQuery$, attributes$] = this.projectApolloService.getAttributesByProjectId(projectId, []);
     this.subscriptions$.push(attributes$.subscribe((attributes) => {
       this.attributes = attributes;
-      this.attributesArrayText = [];
+      this.attributesArrayTextUsableUploaded = [];
+      this.attributesArrayUsableUploaded = [];
       this.attributesArray.clear();
       attributes.forEach((att) => {
         let group = this.formBuilder.group({
           id: att.id,
           name: att.name,
           dataType: att.dataType,
-          isPrimaryKey: att.isPrimaryKey
+          isPrimaryKey: att.isPrimaryKey,
+          userCreated: att.userCreated,
+          sourceCode: att.sourceCode,
+          state: att.state
         });
         group.valueChanges.pipe(distinctUntilChanged()).subscribe(() => {
           let values = group.getRawValue(); //to ensure disabled will be returned as well          
@@ -312,8 +316,13 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
             updateAttribute(this.project.id, values.id, values.dataType, values.isPrimaryKey).pipe(first()).subscribe();
         });
         this.attributesArray.push(group);
-        if (att.dataType == 'TEXT') {
-          this.attributesArrayText.push({ id: att.id, name: att.name });
+        if (att.state == 'UPLOADED' || att.state == 'USABLE') {
+          if(att.dataType == 'TEXT') {
+            this.attributesArrayTextUsableUploaded.push({ id: att.id, name: att.name });
+            this.attributesArrayUsableUploaded.push({ id: att.id, name: att.name });
+          } else {
+            this.attributesArrayUsableUploaded.push({ id: att.id, name: att.name });
+          }
         }
       });
       const onlyTextAttributes = attributes.filter(a => a.dataType == 'TEXT');
@@ -763,6 +772,8 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     } else if (msgParts[1] == 'project_export') {
       this.downloadPrepareMessage = DownloadState.NONE;
       this.requestProjectExportCredentials();
+    } else if (msgParts[1] == 'calculate_attribute') {
+      this.attributesQuery$.refetch();
     }
   }
 
@@ -1002,5 +1013,21 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
   checkIfModelIsDownloaded(modelName: string) {
     const findModel = this.downloadedModels && this.downloadedModels.find(el => el.name === modelName);
     return findModel !== undefined ? true : false;
+  }
+
+  createUserAttribute() {
+    this.projectApolloService
+      .createUserAttribute(this.project.id)
+      .pipe(first())
+      .subscribe((res) => {
+        const id = res?.data?.createUserAttribute.attributeId;
+          if (id) {
+            localStorage.setItem("isNewAttribute", "true");
+            this.router.navigate(['../attributes/' + id],
+            {
+              relativeTo: this.activatedRoute
+            });
+          }
+      });
   }
 }

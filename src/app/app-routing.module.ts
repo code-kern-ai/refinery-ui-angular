@@ -17,6 +17,7 @@ import { ProjectAddComponent } from './projects/components/project-add/project-a
 import { RecordIDEComponent } from './record-ide/components/record-ide.component';
 import { ConfigComponent } from './config/components/config.component';
 import { ModelDownloadComponent } from './model-download/pages/model-download/model-download.component';
+import { CreateNewAttributeComponent } from './projects/components/create-new-attribute/create-new-attribute.component';
 import { ModelCallbackComponent } from './model-callbacks/components/model-callbacks.component';
 import { UsersComponent } from './users/components/users.component';
 import { CrowdLabelerDetailsComponent } from './weak-supervision/components/crowd-labeler-details/component/crowd-labeler-details.component';
@@ -65,6 +66,7 @@ const routes: Routes = [
       },
       { path: 'model-callbacks', component: ModelCallbackComponent, data: { name: 'ModelCallbackComponent' } },
       { path: 'model-download', component: ModelDownloadComponent, data: { name: 'ModelDownloadComponent' } },
+      { path: 'attributes/:attributeId', component: CreateNewAttributeComponent, data: { name: 'CreateNewAttributeComponent' } },
       { path: '**', component: ProjectOverviewComponent, data: { name: 'ProjectOverviewComponent' } },
       //TODO: redirecting to projects overview page and errors
     ],
