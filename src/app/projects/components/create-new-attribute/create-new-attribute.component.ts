@@ -190,7 +190,7 @@ export class CreateNewAttributeComponent implements OnInit {
     this.projectApolloService
       .updateAttribute(projectId, this.attribute.id, this.attribute.dataType, this.attribute.isPrimaryKey, this.attributeName, getCodeToSave)
       .pipe(first())
-      .subscribe();
+      .subscribe(() => this.duplicateNameExists = false);
   }
 
   changeAttributeName(event) {
@@ -214,8 +214,19 @@ export class CreateNewAttributeComponent implements OnInit {
       )
       .subscribe(() => {
         if (this.hasUnsavedChanges()) {
-          this.saveAttribute(projectId);
-        }
+          const regMatch: any = this.getPythonFunctionRegExMatch(this.code);
+          const findDuplicate = this.attributes.find(att => att.name == regMatch[2]);
+          this.duplicateNameExists = findDuplicate !=undefined ? true : false;
+      
+          if(this.duplicateNameExists) {
+            this.code = this.code.replace(
+              'def ' + regMatch[2] + '(record):',
+              'def ' + this.attribute.name + '(record):'
+            );
+            return;
+          }
+            this.saveAttribute(projectId);
+          }
       });
   }
 
