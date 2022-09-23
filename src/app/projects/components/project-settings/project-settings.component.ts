@@ -308,6 +308,9 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
           sourceCode: att.sourceCode,
           state: att.state
         });
+        if(att.state == 'INITIAL') {
+          group.get('isPrimaryKey').disable();
+        }
         group.valueChanges.pipe(distinctUntilChanged()).subscribe(() => {
           let values = group.getRawValue(); //to ensure disabled will be returned as well          
           if (this.pKeyChanged()) this.requestPKeyCheck(this.project.id);
