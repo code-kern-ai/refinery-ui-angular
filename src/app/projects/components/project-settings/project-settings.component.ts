@@ -292,7 +292,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
 
   prepareAttributesRequest(projectId: string): Observable<any> {
     let attributes$;
-    [this.attributesQuery$, attributes$] = this.projectApolloService.getAttributesByProjectId(projectId, []);
+    [this.attributesQuery$, attributes$] = this.projectApolloService.getAttributesByProjectId(projectId, ['ALL']);
     this.subscriptions$.push(attributes$.subscribe((attributes) => {
       this.attributes = attributes;
       this.attributesArrayTextUsableUploaded = [];
