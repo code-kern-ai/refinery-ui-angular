@@ -338,7 +338,7 @@ export class CreateNewAttributeComponent implements OnInit {
 
   prepareAttributes(projectId: string) {
     let attributes$;
-    [this.attributesQuery$, attributes$] = this.projectApolloService.getAttributesByProjectId(projectId, []);
+    [this.attributesQuery$, attributes$] = this.projectApolloService.getAttributesByProjectId(projectId, ['ALL']);
     this.subscriptions$.push(attributes$.subscribe((attributes) => {
       attributes.sort((a, b) => a.relativePosition - b.relativePosition);
       this.attributes = attributes;
