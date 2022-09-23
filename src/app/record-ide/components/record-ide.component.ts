@@ -159,7 +159,6 @@ export class RecordIDEComponent implements OnInit {
     this.linkData.requestedPos = Math.max(this.linkData.requestedPos - 1, 1);
     this.router.navigate(["projects", this.project.id, "record-ide", this.linkData.id], { queryParams: { pos: this.linkData.requestedPos, type: 'SESSION' } });
 
-    this.linkData = parseLabelingLinkData(this.activatedRoute);
     setTimeout(() => this.runRecordIde(), 200);
   }
 
