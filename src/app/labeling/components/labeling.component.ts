@@ -1344,7 +1344,10 @@ export class LabelingComponent implements OnInit, OnDestroy {
           informationSourceTypeToString(entry.informationSource.type, true) +
           ': ' +
           entry.informationSource.name;
-      } else {
+      } else if (entry.sourceType == LabelSource.WEAK_SUPERVISION) {
+        entry.dataTip = 'Result from Weak Supervision, click to use it as a manual label';
+      }
+      else {
         entry.dataTip = labelSourceToString(entry.sourceType);
       }
     });
