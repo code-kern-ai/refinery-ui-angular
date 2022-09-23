@@ -54,7 +54,7 @@ export class CreateNewAttributeComponent implements OnInit {
   isDeleting: boolean = false;
   duplicateNameExists: boolean = false;
 
-  constructor( 
+  constructor(
     private activatedRoute: ActivatedRoute,
     private projectApolloService: ProjectApolloService,
     private recordApolloService: RecordApolloService,
@@ -75,7 +75,7 @@ export class CreateNewAttributeComponent implements OnInit {
     this.checkProjectTokenization(projectId);
 
     this.subscriptions$.push(project$.subscribe((project) => this.project = project));
-    combineLatest(tasks$).subscribe(() => this.prepareAttribute(projectId,attributeId));
+    combineLatest(tasks$).subscribe(() => this.prepareAttribute(projectId, attributeId));
 
     NotificationService.subscribeToNotification(this, {
       projectId: projectId,
@@ -96,7 +96,7 @@ export class CreateNewAttributeComponent implements OnInit {
       }
     });
   }
-  
+
   ngOnDestroy() {
     this.subscriptions$.forEach((subscription) => subscription.unsubscribe());
     for (const e of this.stickyHeader) {
@@ -106,7 +106,7 @@ export class CreateNewAttributeComponent implements OnInit {
   }
 
   getWhiteListNotificationService(): string[] {
-    let toReturn = ['attributes_updated','calculate_attribute','tokenization',];
+    let toReturn = ['attributes_updated', 'calculate_attribute', 'tokenization',];
     return toReturn;
   }
 
@@ -134,7 +134,7 @@ export class CreateNewAttributeComponent implements OnInit {
       this.attribute = attribute;
       this.attributeName = this.attribute?.name;
       this.code = this.attribute?.sourceCode;
-      if(this.attribute?.sourceCode == null) { 
+      if (this.attribute?.sourceCode == null) {
         this.code = AttributeCodeLookup.getAttributeCalculationTemplate(AttributeCalculationExamples.AC_EMPTY_TEMPLATE).code;
       } else {
         this.code = this.code.replace(
@@ -142,17 +142,17 @@ export class CreateNewAttributeComponent implements OnInit {
           'def ' + this.attribute.name + '(record):'
         );
       }
-      
+
       this.attributeLogs = attribute?.logs;
       this.canRunProject = this.attribute?.sourceCode !== '';
-      if(this.attribute?.state == 'FAILED') {
+      if (this.attribute?.state == 'FAILED') {
         this.editorOptions = { ...this.editorOptions, readOnly: false };
       }
-      if(this.attribute?.state == 'RUNNING' || this.attribute?.state == 'USABLE') {
+      if (this.attribute?.state == 'RUNNING' || this.attribute?.state == 'USABLE') {
         this.editorOptions = { ...this.editorOptions, readOnly: true };
       }
       const runningAtt = this.attributes?.find(att => att?.state == 'RUNNING');
-      if(runningAtt != undefined) {
+      if (runningAtt != undefined) {
         this.checkIfAtLeastRunning = true;
       }
       timer(250).subscribe(() => this.updatedThroughWebsocket = false);
@@ -164,18 +164,18 @@ export class CreateNewAttributeComponent implements OnInit {
     this.duplicateNameExists = false;
     if (!open && this.attributeName != this.attribute.name) {
       const findDuplicate = this.attributes.find(att => att.name == this.attributeName);
-      this.duplicateNameExists = findDuplicate !=undefined ? true : false;
-      if(this.duplicateNameExists) {
+      this.duplicateNameExists = findDuplicate != undefined ? true : false;
+      if (this.duplicateNameExists) {
         this.attributeName = this.attribute.name;
         return;
       };
 
       var regMatch: any = this.getPythonFunctionRegExMatch(this.code);
-        if (!regMatch) return;
-        this.code = this.code.replace(
-          regMatch[0],
-          'def ' + this.attributeName + '(record)'
-        );
+      if (!regMatch) return;
+      this.code = this.code.replace(
+        regMatch[0],
+        'def ' + this.attributeName + '(record)'
+      );
       this.saveAttribute(projectId);
     }
   }
@@ -255,7 +255,7 @@ export class CreateNewAttributeComponent implements OnInit {
         this.router.navigate(["../../settings"], { relativeTo: this.activatedRoute });
       });
   }
-  
+
   calculateUserAttributeSampleRecords() {
     if (this.testerRequestedSomething) return;
     this.testerRequestedSomething = true;
@@ -273,18 +273,18 @@ export class CreateNewAttributeComponent implements OnInit {
   calculateUserAttributeAllRecords() {
     this.editorOptions = { ...this.editorOptions, readOnly: true };
     this.projectApolloService
-    .calculateUserAttributeAllRecords(this.project.id, this.attribute.id)
-    .pipe(first())
-    .subscribe(() => {
-      this.calculateAttribite.nativeElement.checked = false;
-    });
+      .calculateUserAttributeAllRecords(this.project.id, this.attribute.id)
+      .pipe(first())
+      .subscribe(() => {
+        this.calculateAttribite.nativeElement.checked = false;
+      });
   }
 
   handleWebsocketNotification(msgParts) {
-    if(msgParts[1]=='attributes_updated') {
+    if (msgParts[1] == 'attributes_updated') {
       this.updatedThroughWebsocket = true;
       this.attributeQuery$.refetch();
-    } else if(msgParts[1]=='calculate_attribute') {
+    } else if (msgParts[1] == 'calculate_attribute') {
       this.attributeQuery$.refetch();
     } else if (msgParts[1] == 'tokenization' && msgParts[2] == 'docbin') {
       if (msgParts[3] == 'progress') {
@@ -321,7 +321,7 @@ export class CreateNewAttributeComponent implements OnInit {
     var regMatch: any = this.getPythonFunctionRegExMatch(codeToSave);
     if (!regMatch) return codeToSave;
 
-    if(!this.checkIfNewAttribute || this.checkIfNewAttribute == null) {
+    if (!this.checkIfNewAttribute || this.checkIfNewAttribute == null) {
       this.attributeName = regMatch[2];
     } else {
       localStorage.removeItem("isNewAttribute");
@@ -341,7 +341,7 @@ export class CreateNewAttributeComponent implements OnInit {
     this.subscriptions$.push(attributes$.subscribe((attributes) => {
       attributes.sort((a, b) => a.relativePosition - b.relativePosition);
       this.attributes = attributes;
-      this.attributesUsableUploaded = this.attributes.filter((attribute) => attribute.state == 'UPLOADED' || attribute.state == 'USABLE');
+      this.attributesUsableUploaded = this.attributes.filter((attribute) => attribute.state == 'UPLOADED' || attribute.state == 'USABLE' || attribute.state == 'AUTOMATICALLY_CREATED');
     }));
     return attributes$;
   }

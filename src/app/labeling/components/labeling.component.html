@@ -683,7 +683,7 @@
                             class=" flex justify-center items-center overflow-visible">
                             <span class="mr-2"> Available Tasks:</span>
                             <kern-dropdown [dropdownOptions]="{
-                                optionArray:availableLinks ? availableLinks: ['No links available'],
+                                optionArray:availableLinks?.length>0 ? availableLinks: ['No links available'],
                                 buttonCaption:selectedLink?selectedLink.name:'Select slice',
                                 valuePropertyPath:'id',
                                 isDisabled:availableLinks?.length == 0

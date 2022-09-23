@@ -316,8 +316,8 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
             updateAttribute(this.project.id, values.id, values.dataType, values.isPrimaryKey).pipe(first()).subscribe();
         });
         this.attributesArray.push(group);
-        if (att.state == 'UPLOADED' || att.state == 'USABLE') {
-          if(att.dataType == 'TEXT') {
+        if (att.state == 'UPLOADED' || att.state == 'USABLE' || att.state == 'AUTOMATICALLY_CREATED') {
+          if (att.dataType == 'TEXT') {
             this.attributesArrayTextUsableUploaded.push({ id: att.id, name: att.name });
             this.attributesArrayUsableUploaded.push({ id: att.id, name: att.name });
           } else {
@@ -1021,13 +1021,13 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
       .pipe(first())
       .subscribe((res) => {
         const id = res?.data?.createUserAttribute.attributeId;
-          if (id) {
-            localStorage.setItem("isNewAttribute", "true");
-            this.router.navigate(['../attributes/' + id],
+        if (id) {
+          localStorage.setItem("isNewAttribute", "true");
+          this.router.navigate(['../attributes/' + id],
             {
               relativeTo: this.activatedRoute
             });
-          }
+        }
       });
   }
 }
