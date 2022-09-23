@@ -52,6 +52,7 @@ export class CreateNewAttributeComponent implements OnInit {
   attributesUsableUploaded: any;
   tokenizationProgress: Number = 0;
   isDeleting: boolean = false;
+  duplicateNameExists: boolean = false;
 
   constructor( 
     private activatedRoute: ActivatedRoute,
@@ -160,7 +161,15 @@ export class CreateNewAttributeComponent implements OnInit {
 
   openName(open: boolean, projectId) {
     this.nameOpen = open;
+    this.duplicateNameExists = false;
     if (!open && this.attributeName != this.attribute.name) {
+      const findDuplicate = this.attributes.find(att => att.name == this.attributeName);
+      this.duplicateNameExists = findDuplicate !=undefined ? true : false;
+      if(this.duplicateNameExists) {
+        this.attributeName = this.attribute.name;
+        return;
+      };
+
       var regMatch: any = this.getPythonFunctionRegExMatch(this.code);
         if (!regMatch) return;
         this.code = this.code.replace(

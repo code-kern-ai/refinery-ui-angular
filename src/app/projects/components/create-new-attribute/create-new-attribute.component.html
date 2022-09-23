@@ -25,7 +25,7 @@
         <div class="overflow-x-hidden overflow-y-hidden">
             <div class="grid gap-4" [ngClass]="isHeaderNormal ? 'grid-cols-2' : 'grid-cols-1'">
                 <div class="flex items-center mt-2" *ngIf="isHeaderNormal">
-                    <div class="tooltip tooltip-right" data-tip="Edit your attribute's name">
+                    <div class="tooltip tooltip-right" [attr.data-tip]="attribute.state == 'USABLE' || attribute.state == 'RUNNING' ? 'Cannot edit attribute\'s name, attribute is in use' : 'Edit your attribute\'s name'">
                         <button [disabled]="attribute.state == 'USABLE' || attribute.state == 'RUNNING'"
                             [ngClass]="attribute.state == 'USABLE' || attribute.state == 'RUNNING' ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
                             (click)="openName(true)"
@@ -47,6 +47,9 @@
                         </ng-template>
                     </div>
                 </div>
+            </div>
+            <div class="text-red-700 text-xs mt-2" *ngIf="duplicateNameExists">
+                Attribute name exists
             </div>
 
             <div class="w-full mt-8">
