@@ -125,7 +125,7 @@
                             </div>
                         </div>
                         <div *ngIf="user?.role == 'ENGINEER'">
-                            <div class="flex items-center justify-center overflow-visible mt-6">
+                            <div class="flex items-center justify-center overflow-visible" [ngClass]="project?.id !== null ? 'mt-6' : ''">
                                 <div data-tip="Documentation" class="tooltip tooltip-right relative z-50">
                                     <a href="https://docs.kern.ai/" target="_blank" rel="noopener noreferrer"
                                         class="circle text-white">
