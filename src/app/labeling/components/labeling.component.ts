@@ -152,11 +152,11 @@ export class LabelingComponent implements OnInit, OnDestroy {
       removed = true;
       NotificationService.unsubscribeFromNotification(this, this.project.id);
     }
-    if(!removed && this.labelingLinkData?.projectId) {
+    if (!removed && this.labelingLinkData?.projectId) {
       NotificationService.unsubscribeFromNotification(this, this.labelingLinkData.projectId);
       removed = true;
     }
-    if(!removed) {
+    if (!removed) {
       console.log("Couldn't unsubscribe from NotificationService -- labeling page");
     }
 
@@ -353,7 +353,10 @@ export class LabelingComponent implements OnInit, OnDestroy {
       return
     }
     this.projectApolloService.requestHuddleData(projectId, this.labelingLinkData.id, this.labelingLinkData.linkType).pipe(first()).subscribe((huddleData) => {
-      if (huddleId == LabelingComponent.DUMMY_HUDDLE_ID) this.labelingLinkData.id = huddleData.huddleId;
+      if (huddleId == LabelingComponent.DUMMY_HUDDLE_ID) {
+        this.labelingLinkData.id = huddleData.huddleId;
+        this.collectAvailableLinks();
+      }
       if (!huddleData.huddleId) {
         //nothing was found (no slice / heuristic available)
       }
