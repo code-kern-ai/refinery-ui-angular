@@ -191,7 +191,6 @@ export class CrowdLabelerDetailsComponent
         this.removeAccessLink();
         this.fillLinkData(res.data.generateAccessLink.link);
         this.crowdSettings.accessLinkId = res.data.generateAccessLink.link.id;
-        this.crowdSettings.isHTTPS = window.location.protocol == 'https:';
         this.crowdSettings.accessLinkLocked = res.data.generateAccessLink.link.isLocked;
         this.saveInformationSource();
       }
@@ -265,6 +264,7 @@ export class CrowdLabelerDetailsComponent
     this.crowdSettings.accessLink = linkObj.link;
     this.crowdSettings.accessLinkParsed = buildFullLink(linkObj.link);
     this.crowdSettings.accessLinkLocked = linkObj.isLocked;
+    this.crowdSettings.isHTTPS = window.location.protocol == 'https:';
   }
 
 
