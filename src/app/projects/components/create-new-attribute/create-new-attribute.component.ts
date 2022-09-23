@@ -277,6 +277,7 @@ export class CreateNewAttributeComponent implements OnInit {
       .pipe(first())
       .subscribe(() => {
         this.calculateAttribite.nativeElement.checked = false;
+        this.duplicateNameExists = false;
       });
   }
 
