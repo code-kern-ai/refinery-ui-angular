@@ -41,16 +41,21 @@ export class HeuristicStatusesComponent implements OnChanges {
         this.color = 'red';
         break;
       case 'USABLE':
-          this.dataTip = 'Attribute can be used.';
-          this.statusName = 'Usable';
-          this.color = 'green';
-          break;
+        this.dataTip = 'Attribute can be used.';
+        this.statusName = 'Usable';
+        this.color = 'green';
+        break;
       case 'UPLOADED':
-          this.dataTip = 'Attribute was uploaded.';
-          this.statusName = 'Uploaded';
-          this.color = 'indigo';
-          break;
-      default: 
+        this.dataTip = 'Attribute was uploaded.';
+        this.statusName = 'Uploaded';
+        this.color = 'indigo';
+        break;
+      case 'AUTOMATICALLY_CREATED':
+        this.dataTip = 'Created during the upload process.';
+        this.statusName = 'Auto. created';
+        this.color = 'indigo';
+        break;
+      default:
         this.dataTip = (this.page === 'heuristics' ? 'Heuristic' : 'Attribute') + ' was successfully registered.';
         this.statusName = 'Initial';
         this.color = 'gray';
