@@ -358,7 +358,10 @@ export class LabelingComponent implements OnInit, OnDestroy {
         this.collectAvailableLinks();
       }
       if (!huddleData.huddleId) {
-        //nothing was found (no slice / heuristic available)
+        //nothing was found (no slice / heuristic available)        
+        this.somethingLoading = false;
+        if (this.labelingLinkData) this.labelingLinkData.linkLocked = true;
+        return;
       }
       if (huddleData.startPos != -1) this.labelingLinkData.requestedPos = huddleData.startPos;
       this.huddleData = {

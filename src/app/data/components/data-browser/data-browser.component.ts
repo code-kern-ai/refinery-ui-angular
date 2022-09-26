@@ -11,7 +11,7 @@ import {
 import { ActivatedRoute, Router } from '@angular/router';
 import { KeyValue } from '@angular/common';
 import { combineLatest, forkJoin, interval, Observable, Subscription, timer } from 'rxjs';
-import { dateAsUTCDate } from 'src/app/util/helper-functions';
+import { dateAsUTCDate, parseLinkFromText } from 'src/app/util/helper-functions';
 import {
   debounceTime,
   distinctUntilChanged,
@@ -191,6 +191,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   }
 
   constructor(
+    private router: Router,
     private routeService: RouteService,
     private activatedRoute: ActivatedRoute,
     private projectApolloService: ProjectApolloService,
@@ -1996,6 +1997,9 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   }
 
   testLink(link) {
+
+    const linkData = parseLinkFromText(link);
+    this.router.navigate([linkData.route], { queryParams: linkData.queryParams });
     window.location.href = link;
   }
 

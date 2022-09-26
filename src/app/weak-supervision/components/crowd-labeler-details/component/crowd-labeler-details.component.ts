@@ -57,8 +57,6 @@ export class CrowdLabelerDetailsComponent
   informationSourceQuery$: any;
   informationSource: any;
   subscriptions$: Subscription[] = [];
-  lastTask$: any;
-  lastTaskQuery$: any;
   labelingTasksQuery$: any;
   labelingTasks: Map<string, any> = new Map<string, any>();
   labelColor: Map<string, Map<string, string>> = new Map<string, Map<string, string>>();
@@ -301,6 +299,7 @@ export class CrowdLabelerDetailsComponent
       .subscribe();
   }
 
+
   saveInformationSource() {
     this.informationSourceApolloService
       .updateInformationSource(
@@ -353,7 +352,9 @@ export class CrowdLabelerDetailsComponent
 
   changeSettings(attributeName: string, newValue: any, saveToDb: boolean = true) {
     this.crowdSettings[attributeName] = newValue;
-    if (saveToDb) this.saveInformationSource();
+    if (saveToDb) {
+      this.saveInformationSource();
+    }
   }
 
   handleWebsocketNotification(msgParts) {

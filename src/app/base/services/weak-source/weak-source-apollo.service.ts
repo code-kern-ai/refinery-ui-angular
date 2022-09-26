@@ -41,6 +41,7 @@ export class WeakSourceApolloService {
     });
   }
 
+
   createInformationSource(
     projectId: string,
     labelingTaskId: string,
