@@ -383,7 +383,10 @@ export class ZeroShotDetailsComponent
 
   runZeroShotProject() {
     if (!this.canRunProject) return;
-    this.informationSourceApolloService.runZeroShotProject(this.project.id, this.informationSource.id).pipe(first()).subscribe();
+    this.canRunProject = false;
+    this.informationSourceApolloService.runZeroShotProject(this.project.id, this.informationSource.id).pipe(first()).subscribe(
+      () => this.informationSourceQuery$.refetch()
+    );
   }
 
   getLabelIdFromName(name: string): string {

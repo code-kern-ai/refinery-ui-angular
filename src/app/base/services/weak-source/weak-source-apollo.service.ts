@@ -145,15 +145,7 @@ export class WeakSourceApolloService {
       variables: {
         projectId: projectId,
         informationSourceId: informationSourceId,
-      }, refetchQueries: [
-        {
-          query: queries.GET_INFORMATION_SOURCE_BY_SOURCE_ID,
-          variables: {
-            projectId: projectId,
-            informationSourceId: informationSourceId,
-          },
-        },
-      ],
+      }
     });
   }
 
