@@ -252,7 +252,6 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     let vc$;
     [this.dataSlicesQuery$, vc$] = this.projectApolloService.getDataSlices(this.projectId);
     this.subscriptions$.push(vc$.subscribe((items: DataSlice[]) => {
-      console.log(items)
       this.sliceNames = new Set();
       this.slicesById = new Map();
       this.filterAvailableSlices();
