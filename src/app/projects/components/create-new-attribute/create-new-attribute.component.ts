@@ -25,11 +25,11 @@ export class CreateNewAttributeComponent implements OnInit {
   attribute$: any;
   isHeaderNormal: boolean = true;
   stickyObserver: IntersectionObserver;
-  attributeQuery$: any;
+  currentAttributeQuery$: any;
   @ViewChildren('stickyHeader', { read: ElementRef }) stickyHeader: QueryList<ElementRef>;
   @ViewChildren('nameArea') nameArea: QueryList<ElementRef>;
   subscriptions$: Subscription[] = [];
-  attribute: any;
+  currentAttribute: any;
   nameOpen: boolean = false;
   attributeName: string;
   codeFormCtrl = new FormControl('');
@@ -129,44 +129,49 @@ export class CreateNewAttributeComponent implements OnInit {
   }
 
   prepareCurrentAttribute(projectId: string, attributeId: string) {
-    [this.attributeQuery$, this.attribute$] = this.projectApolloService.getAttributeByAttributeId(projectId, attributeId);
+    [this.currentAttributeQuery$, this.attribute$] = this.projectApolloService.getAttributeByAttributeId(projectId, attributeId);
     this.subscriptions$.push(this.attribute$.subscribe((attribute) => {
-      this.attribute = attribute;
-      this.attributeName = this.attribute?.name;
-      this.code = this.attribute?.sourceCode;
-      if (this.attribute?.sourceCode == null) {
+      this.currentAttribute = attribute;
+      this.attributeName = this.currentAttribute?.name;
+      this.code = this.currentAttribute?.sourceCode;
+      if (this.currentAttribute?.sourceCode == null) {
         this.code = AttributeCodeLookup.getAttributeCalculationTemplate(AttributeCalculationExamples.AC_EMPTY_TEMPLATE).code;
       } else {
         this.code = this.code.replace(
           'def ac(record):',
-          'def ' + this.attribute.name + '(record):'
+          'def ' + this.currentAttribute.name + '(record):'
         );
       }
 
       this.attributeLogs = attribute?.logs;
-      this.canRunProject = this.attribute?.sourceCode !== '';
-      if (this.attribute?.state == 'FAILED') {
+      this.canRunProject = this.currentAttribute?.sourceCode !== '';
+      if (this.currentAttribute?.state == 'FAILED') {
         this.editorOptions = { ...this.editorOptions, readOnly: false };
       }
-      if (this.attribute?.state == 'RUNNING' || this.attribute?.state == 'USABLE') {
+      if (this.currentAttribute?.state == 'RUNNING' || this.currentAttribute?.state == 'USABLE') {
         this.editorOptions = { ...this.editorOptions, readOnly: true };
       }
-      const runningAtt = this.attributes?.find(att => att?.state == 'RUNNING');
-      if (runningAtt != undefined) {
-        this.checkIfAtLeastRunning = true;
-      }
+      this.checkIfAtLeastRunning = this.checkIfSomethingRunning();
       timer(250).subscribe(() => this.updatedThroughWebsocket = false);
     }));
+  }
+
+  checkIfSomethingRunning(): boolean {
+    if (!this.attributes) return true;
+    if (!this.currentAttribute) return true;
+    const runningAtt = this.attributes?.find(att => att?.state == 'RUNNING');
+    if (runningAtt != undefined) return true;
+    return false;
   }
 
   openName(open: boolean, projectId) {
     this.nameOpen = open;
     this.duplicateNameExists = false;
-    if (!open && this.attributeName != this.attribute.name) {
-      const findDuplicate = this.attributes.find(att => att.name == this.attributeName && att.id != this.attribute.id);
+    if (!open && this.attributeName != this.currentAttribute.name) {
+      const findDuplicate = this.attributes.find(att => att.name == this.attributeName && att.id != this.currentAttribute.id);
       this.duplicateNameExists = findDuplicate != undefined ? true : false;
       if (this.duplicateNameExists) {
-        this.attributeName = this.attribute.name;
+        this.attributeName = this.currentAttribute.name;
         return;
       };
 
@@ -188,7 +193,7 @@ export class CreateNewAttributeComponent implements OnInit {
     if (this.updatedThroughWebsocket) return;
     const getCodeToSave = this.getPythonFunctionToSave(this.code);
     this.projectApolloService
-      .updateAttribute(projectId, this.attribute.id, this.attribute.dataType, this.attribute.isPrimaryKey, this.attributeName, getCodeToSave)
+      .updateAttribute(projectId, this.currentAttribute.id, this.currentAttribute.dataType, this.currentAttribute.isPrimaryKey, this.attributeName, getCodeToSave)
       .pipe(first())
       .subscribe(() => this.duplicateNameExists = false);
   }
@@ -215,13 +220,13 @@ export class CreateNewAttributeComponent implements OnInit {
       .subscribe(() => {
         if (this.hasUnsavedChanges()) {
           const regMatch: any = this.getPythonFunctionRegExMatch(this.code);
-          const findDuplicate = this.attributes.find(att => att.name == regMatch[2] && att.id != this.attribute.id);
+          const findDuplicate = this.attributes.find(att => att.name == regMatch[2] && att.id != this.currentAttribute.id);
           this.duplicateNameExists = findDuplicate != undefined ? true : false;
 
           if (this.duplicateNameExists) {
             this.code = this.code.replace(
               'def ' + regMatch[2] + '(record):',
-              'def ' + this.attribute.name + '(record):'
+              'def ' + this.currentAttribute.name + '(record):'
             );
             return;
           }
@@ -231,15 +236,15 @@ export class CreateNewAttributeComponent implements OnInit {
   }
 
   hasUnsavedChanges(): boolean {
-    if (!this.attribute) return false;
+    if (!this.currentAttribute) return false;
     if (this.updatedThroughWebsocket) return false;
-    if (this.attributeName != this.attribute.name) return true;
-    if (this.attribute.sourceCode == null) return true;
+    if (this.attributeName != this.currentAttribute.name) return true;
+    if (this.currentAttribute.sourceCode == null) return true;
     if (
       this.code !=
-      this.attribute.sourceCode.replace(
+      this.currentAttribute.sourceCode.replace(
         'def ac(record):',
-        'def ' + this.attribute.name + '(record):'
+        'def ' + this.currentAttribute.name + '(record):'
       )) return true;
     return false;
   }
@@ -260,20 +265,20 @@ export class CreateNewAttributeComponent implements OnInit {
     if (this.testerRequestedSomething) return;
     this.testerRequestedSomething = true;
     this.projectApolloService
-      .calculateUserAttributeSampleRecords(this.project.id, this.attribute.id).pipe(first()).subscribe((sampleRecords) => {
+      .calculateUserAttributeSampleRecords(this.project.id, this.currentAttribute.id).pipe(first()).subscribe((sampleRecords) => {
         this.sampleRecords = sampleRecords;
         this.testerRequestedSomething = false;
-        this.attributeQuery$.refetch();
+        this.currentAttributeQuery$.refetch();
       }, (error) => {
         this.testerRequestedSomething = false;
-        this.attributeQuery$.refetch();
+        this.currentAttributeQuery$.refetch();
       });
   }
 
   calculateUserAttributeAllRecords() {
     this.editorOptions = { ...this.editorOptions, readOnly: true };
     this.projectApolloService
-      .calculateUserAttributeAllRecords(this.project.id, this.attribute.id)
+      .calculateUserAttributeAllRecords(this.project.id, this.currentAttribute.id)
       .pipe(first())
       .subscribe(() => {
         this.calculateAttribite.nativeElement.checked = false;
@@ -284,9 +289,10 @@ export class CreateNewAttributeComponent implements OnInit {
   handleWebsocketNotification(msgParts) {
     if (msgParts[1] == 'attributes_updated') {
       this.updatedThroughWebsocket = true;
-      this.attributeQuery$.refetch();
+      this.currentAttributeQuery$.refetch();
     } else if (msgParts[1] == 'calculate_attribute') {
-      this.attributeQuery$.refetch();
+      this.attributesQuery$.refetch();
+      this.currentAttributeQuery$.refetch();
     } else if (msgParts[1] == 'tokenization' && msgParts[2] == 'docbin') {
       if (msgParts[3] == 'progress') {
         this.tokenizationProgress = Number(msgParts[4]);
@@ -343,6 +349,7 @@ export class CreateNewAttributeComponent implements OnInit {
       attributes.sort((a, b) => a.relativePosition - b.relativePosition);
       this.attributes = attributes;
       this.attributesUsableUploaded = this.attributes.filter((attribute) => attribute.state == 'UPLOADED' || attribute.state == 'USABLE' || attribute.state == 'AUTOMATICALLY_CREATED');
+      this.checkIfAtLeastRunning = this.checkIfSomethingRunning();
     }));
     return attributes$.pipe(first());
   }
