@@ -60,6 +60,7 @@ export class WeakSourceDetailsComponent
   informationSource: any;
   subscriptions$: Subscription[] = [];
   lastTask$: any;
+  lastTaskLogs: string[];
   lastTaskQuery$: any;
   labelingTasksQuery$: any;
   labelingTasks: Map<string, any> = new Map<string, any>();
@@ -283,6 +284,7 @@ export class WeakSourceDetailsComponent
         projectId,
         informationSource.lastTask.id
       );
+      this.subscriptions$.push(this.lastTask$.subscribe((task) => this.lastTaskLogs = task.logs));
     } else {
       this.lastTask$ = null;
     }

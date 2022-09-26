@@ -1,9 +1,10 @@
-<div *ngIf="project" class="bg-white p-4">
+<div *ngIf="project" class="bg-white p-4" style="width:calc(100vw - 75px);">
     <div *ngIf="informationSource$ | async as informationSource">
 
         <div #stickyHeader class="pt-2 sticky -top-2 z-40 h-12">
             <div class="bg-white flex-grow " [ngClass]="isHeaderNormal?'':'shadow'">
-                <div class="flex-row justify-start items-center inline-block" style="transition: all .25s ease-in-out;" [ngClass]="isHeaderNormal?'p-0':'flex py-2'">
+                <div class="flex-row justify-start items-center inline-block" style="transition: all .25s ease-in-out;"
+                    [ngClass]="isHeaderNormal?'p-0':'flex py-2'">
 
                     <button [routerLink]="['../../heuristics']" class="text-green-800 text-sm font-medium">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block" fill="none"
@@ -106,12 +107,13 @@
                     <div class="flex flex-row flex-nowrap items-center">
                         <div class="flex items-center justify-center"
                             *ngIf="informationSource.informationSourceType == 'LABELING_FUNCTION'">
-                            <a href="https://github.com/code-kern-ai/template-functions" target="_blank" data-tip="Go to GitHub repository"
+                            <a href="https://github.com/code-kern-ai/template-functions" target="_blank"
+                                data-tip="Go to GitHub repository"
                                 class="tooltip tooltip-left bg-white text-gray-700 text-xs font-semibold  px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                                 See function templates
                             </a>
-                            <a href="https://github.com/code-kern-ai/refinery-lf-exec-env/blob/dev/requirements.txt" target="_blank"
-                                data-tip="See available libraries for this labeling function"
+                            <a href="https://github.com/code-kern-ai/refinery-lf-exec-env/blob/dev/requirements.txt"
+                                target="_blank" data-tip="See available libraries for this labeling function"
                                 class="ml-2 tooltip tooltip-left bg-white text-gray-700 text-xs font-semibold  px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                                 See installed libraries
                             </a>
@@ -196,7 +198,8 @@
             <div class="mt-16 text-sm leading-5">
                 <div class="font-medium text-gray-700 inline-block">Container Logs</div>
                 <div class="inline-block">
-                    <button *ngIf="lastTask$ | async as task; else disabledIcon" [ngClass]="task ? 'tooltip tooltip-top' : ''" [attr.data-tip]="task? 'Click to copy' : ''"
+                    <button *ngIf="lastTask$ | async as task; else disabledIcon"
+                        [ngClass]="task ? 'tooltip tooltip-top' : ''" [attr.data-tip]="task? 'Click to copy' : ''"
                         (click)="copyToClipboard(task.logs.join('\n'),0)">
                         <svg xmlns="http://www.w3.org/2000/svg"
                             class="transition-all duration-500 ease-in-out  h-6 w-6 text-gray-600 cursor-pointer inline-block"
@@ -228,8 +231,8 @@
                     with your heuristic</div>
             </div>
 
-            <kern-logs [lastTask]="lastTask$"></kern-logs>
-       
+            <kern-logs [logs]="lastTaskLogs"></kern-logs>
+
             <div class="mt-8">
                 <div class="text-sm leading-5 font-medium text-gray-700 inline-block">Statistics</div>
                 <div class="mt-1 flex flex-col">
