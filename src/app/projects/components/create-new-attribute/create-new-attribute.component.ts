@@ -44,7 +44,7 @@ export class CreateNewAttributeComponent implements OnInit {
   updatedThroughWebsocket: boolean = false;
   checkIfNewAttribute: string;
   attributesQuery$: any;
-  attributes: any;
+  attributes: any[];
   recordData: any;
   currentRecordId: string;
   currentRecordIdx: number = -1;
@@ -163,7 +163,7 @@ export class CreateNewAttributeComponent implements OnInit {
     this.nameOpen = open;
     this.duplicateNameExists = false;
     if (!open && this.attributeName != this.attribute.name) {
-      const findDuplicate = this.attributes.find(att => att.name == this.attributeName);
+      const findDuplicate = this.attributes.find(att => att.name == this.attributeName && att.id != this.attribute.id);
       this.duplicateNameExists = findDuplicate != undefined ? true : false;
       if (this.duplicateNameExists) {
         this.attributeName = this.attribute.name;
@@ -215,18 +215,18 @@ export class CreateNewAttributeComponent implements OnInit {
       .subscribe(() => {
         if (this.hasUnsavedChanges()) {
           const regMatch: any = this.getPythonFunctionRegExMatch(this.code);
-          const findDuplicate = this.attributes.find(att => att.name == regMatch[2]);
-          this.duplicateNameExists = findDuplicate !=undefined ? true : false;
-      
-          if(this.duplicateNameExists) {
+          const findDuplicate = this.attributes.find(att => att.name == regMatch[2] && att.id != this.attribute.id);
+          this.duplicateNameExists = findDuplicate != undefined ? true : false;
+
+          if (this.duplicateNameExists) {
             this.code = this.code.replace(
               'def ' + regMatch[2] + '(record):',
               'def ' + this.attribute.name + '(record):'
             );
             return;
           }
-            this.saveAttribute(projectId);
-          }
+          this.saveAttribute(projectId);
+        }
       });
   }
 

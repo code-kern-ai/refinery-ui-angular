@@ -1,9 +1,10 @@
-<div *ngIf="project" class="bg-white p-4">
+<div *ngIf="project" class="bg-white p-4" style="width:95%">
     <div *ngIf="attribute">
 
         <div #stickyHeader class="pt-2 sticky -top-2 z-40 h-12">
             <div class="bg-white flex-grow " [ngClass]="isHeaderNormal?'':'shadow'">
-                <div class="flex-row justify-start items-center inline-block" style="transition: all .25s ease-in-out;" [ngClass]="isHeaderNormal?'p-0':'flex py-2'">
+                <div class="flex-row justify-start items-center inline-block" style="transition: all .25s ease-in-out;"
+                    [ngClass]="isHeaderNormal?'p-0':'flex py-2'">
 
                     <button [routerLink]="['../../settings']" class="text-green-800 text-sm font-medium">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block" fill="none"
@@ -25,7 +26,8 @@
         <div class="overflow-x-hidden overflow-y-hidden">
             <div class="grid gap-4" [ngClass]="isHeaderNormal ? 'grid-cols-2' : 'grid-cols-1'">
                 <div class="flex items-center mt-2" *ngIf="isHeaderNormal">
-                    <div class="tooltip tooltip-right" [attr.data-tip]="attribute.state == 'USABLE' || attribute.state == 'RUNNING' ? 'Cannot edit attribute\'s name, attribute is in use' : 'Edit your attribute\'s name'">
+                    <div class="tooltip tooltip-right"
+                        [attr.data-tip]="attribute.state == 'USABLE' || attribute.state == 'RUNNING' ? 'Cannot edit attribute\'s name, attribute is in use' : 'Edit your attribute\'s name'">
                         <button [disabled]="attribute.state == 'USABLE' || attribute.state == 'RUNNING'"
                             [ngClass]="attribute.state == 'USABLE' || attribute.state == 'RUNNING' ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
                             (click)="openName(true)"
@@ -33,9 +35,10 @@
                             Edit name
                         </button>
                     </div>
-                    
+
                     <div class="inline-block" (dblclick)="openName(true)">
-                        <ng-template [ngIf]="isNameOpen() && attribute.state!='USABLE'" && attribute.state !="'RUNNING"  [ngIfElse]="displayName">
+                        <ng-template [ngIf]="isNameOpen() && attribute.state!='USABLE'" && attribute.state !="'RUNNING"
+                            [ngIfElse]="displayName">
                             <input #nameArea type="text" class="p-2 flex-grow input input-sm"
                                 (input)="changeAttributeName($event)" (blur)="openName(false,project.id)"
                                 (keydown.enter)="openName(false,project.id)" [(ngModel)]="attributeName">
@@ -56,8 +59,8 @@
                 <div class="flex flex-row items-center">
                     <div class="text-sm leading-5 font-medium text-gray-700 inline-block mr-2">Attributes</div>
                     <ng-template [ngIf]="attributesUsableUploaded.length > 0" [ngIfElse]="noAttributes">
-                        <span *ngFor="let attribute of attributesUsableUploaded" (click)="copyToClipboard(attribute.name)"
-                            data-tip="Click to copy" class="tooltip">
+                        <span *ngFor="let attribute of attributesUsableUploaded"
+                            (click)="copyToClipboard(attribute.name)" data-tip="Click to copy" class="tooltip">
                             <div
                                 class="cursor-pointer border items-center px-2 py-0.5 rounded text-xs font-medium text-center m-2 bg-gray-100 text-gray-700 border-gray-400 hover:bg-gray-200">
                                 {{attribute.name}}
@@ -67,16 +70,16 @@
                     <ng-template #noAttributes>
                         <div class="text-sm font-normal text-gray-500">No usable attributes.</div>
                     </ng-template>
-                    
+
                 </div>
             </div>
-           
+
 
             <div class="flex flex-row items-center mt-2">
                 <div class="text-sm leading-5 font-medium text-gray-700 inline-block mr-2">Editor</div>
                 <div class="ml-auto">
-                    <a href="https://github.com/code-kern-ai/refinery-ac-exec-env/blob/release/requirements.txt" target="_blank"
-                        data-tip="See available libraries for this attribute calculation"
+                    <a href="https://github.com/code-kern-ai/refinery-ac-exec-env/blob/release/requirements.txt"
+                        target="_blank" data-tip="See available libraries for this attribute calculation"
                         class="ml-2 tooltip tooltip-left bg-white text-gray-700 text-xs font-semibold  px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                         See installed libraries
                     </a>
@@ -113,7 +116,8 @@
                             <kern-loading color="indigo"></kern-loading>
                         </div>
                         <div data-tip="Execute the attribute on 10 records" class="tooltip tooltip-left">
-                            <button [disabled]="hasUnsavedChanges() || attribute.state=='USABLE' || attribute.state=='RUNNING' || testerRequestedSomething"
+                            <button
+                                [disabled]="hasUnsavedChanges() || attribute.state=='USABLE' || attribute.state=='RUNNING' || testerRequestedSomething"
                                 [ngClass]="hasUnsavedChanges() || attribute.state=='USABLE' || attribute.state=='RUNNING' || testerRequestedSomething ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
                                 (click)="calculateUserAttributeSampleRecords()"
                                 class="bg-white text-gray-700 text-xs font-semibold px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
@@ -121,7 +125,8 @@
                             </button>
                         </div>
                         <div [attr.data-tip]="hasUnsavedChanges() ? 'Unsaved changes': attribute.state=='USABLE' || attribute.state=='RUNNING' ? 'Attribute is already in use' : testerRequestedSomething ? 'Test is running' : checkIfAtLeastRunning? 'At least one attribute is running' : tokenizationProgress < 1 ? 'Tokenization is in progress' : 'Execute the attribute on all records' "
-                            class="tooltip tooltip-left" [ngClass]="hasUnsavedChanges() || attribute.state=='USABLE' || attribute.state=='RUNNING' || testerRequestedSomething || checkIfAtLeastRunning || tokenizationProgress < 1 ? 'cursor-not-allowed' : ''">
+                            class="tooltip tooltip-left"
+                            [ngClass]="hasUnsavedChanges() || attribute.state=='USABLE' || attribute.state=='RUNNING' || testerRequestedSomething || checkIfAtLeastRunning || tokenizationProgress < 1 ? 'cursor-not-allowed' : ''">
                             <label [for]="'attribute-calculation'"
                                 [ngClass]="hasUnsavedChanges() || attribute.state=='USABLE' || attribute.state=='RUNNING' || testerRequestedSomething || checkIfAtLeastRunning || tokenizationProgress < 1 ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer'"
                                 class="bg-indigo-700 text-white text-xs leading-4 font-semibold px-4 py-2 rounded-md cursor-pointer ml-3 hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
@@ -133,11 +138,15 @@
                             <div class="modal-box">
                                 <h1 class="text-lg text-gray-900 mb-2">Attribute calculation</h1>
                                 <div class="text-sm text-gray-500 my-2">
-                                    Running this action computes the attribute, but also makes it immutable. To change the logic, you need to compute a new attribute. If you run into errors, you will see a detailed log in the attribute function.
+                                    Running this action computes the attribute, but also makes it immutable. To change
+                                    the logic, you need to compute a new attribute. If you run into errors, you will see
+                                    a detailed log in the attribute function.
                                 </div>
 
                                 <div class="modal-action text-center mt-0">
-                                    <button [disabled]="!canRunProject || hasUnsavedChanges() || testerRequestedSomething" data-tip="Execute the attribute on all records"
+                                    <button
+                                        [disabled]="!canRunProject || hasUnsavedChanges() || testerRequestedSomething"
+                                        data-tip="Execute the attribute on all records"
                                         [ngClass]="!canRunProject || hasUnsavedChanges() || testerRequestedSomething ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
                                         class="bg-green-100 text-green-700 border border-green-400 text-xs font-semibold mr-2 px-4 py-2 rounded flex cursor-pointer inline-block hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
                                         (click)="calculateUserAttributeAllRecords()">Execute</button>
@@ -157,8 +166,10 @@
                             <table class="min-w-full border divide-y divide-gray-300">
                                 <div class="divide-y divide-gray-200 bg-white"
                                     *ngFor="let record of sampleRecords.calculatedAttributes; let i = index">
-                                    <div class="flex-shrink-0 border-b border-gray-200 shadow-sm flex justify-between items-center">
-                                        <div class="flex items-center text-xs leading-5 text-gray-500 font-normal text-center ml-4 my-3 text-left">
+                                    <div
+                                        class="flex-shrink-0 border-b border-gray-200 shadow-sm flex justify-between items-center">
+                                        <div
+                                            class="flex items-center text-xs leading-5 text-gray-500 font-normal text-center ml-4 my-3 text-left">
                                             {{record}}
                                         </div>
                                         <div class="flex items-center justify-center mr-5 ml-auto">
@@ -171,27 +182,30 @@
                                     </div>
                                 </div>
                                 <input type="checkbox" [id]="'attribute-details-'+currentRecordId" class="modal-toggle">
-                                    <div class="modal text-center items-center">
-                                        <div class="modal-box" style="max-width: 48rem;">
-                                            <h1 class="text-lg text-gray-900 mb-2">View details</h1>
-                                            <div class="text-sm text-gray-500 my-2" class="overflow-y-auto max-height-modal scrollable-size">
-                                                <div *ngFor="let att of recordData | keyvalue"
-                                                    class="text-sm leading-5 text-left my-3">
-                                                    <div class="text-gray-900 font-medium">{{att.key}}</div>
-                                                    <div class="text-gray-500 font-normal">
-                                                        {{att.value}}
-                                                    </div>
+                                <div class="modal text-center items-center">
+                                    <div class="modal-box" style="max-width: 48rem;">
+                                        <h1 class="text-lg text-gray-900 mb-2">View details</h1>
+                                        <div class="text-sm text-gray-500 my-2"
+                                            class="overflow-y-auto max-height-modal scrollable-size">
+                                            <div *ngFor="let att of recordData | keyvalue"
+                                                class="text-sm leading-5 text-left my-3">
+                                                <div class="text-gray-900 font-medium">{{att.key}}</div>
+                                                <div class="text-gray-500 font-normal">
+                                                    {{att.value}}
                                                 </div>
-                                                <div class="text-sm leading-5 text-left text-gray-900 font-medium">Calculated value</div>
-                                                <div class="text-sm leading-5 text-left text-gray-500 font-normal">{{sampleRecords.calculatedAttributes[currentRecordIdx]}}</div>
                                             </div>
+                                            <div class="text-sm leading-5 text-left text-gray-900 font-medium">
+                                                Calculated value</div>
+                                            <div class="text-sm leading-5 text-left text-gray-500 font-normal">
+                                                {{sampleRecords.calculatedAttributes[currentRecordIdx]}}</div>
+                                        </div>
 
-                                            <div class="modal-action text-center">
-                                                <label [for]="'attribute-details-'+currentRecordId"
-                                                    class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
-                                            </div>
+                                        <div class="modal-action text-center">
+                                            <label [for]="'attribute-details-'+currentRecordId"
+                                                class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
                                         </div>
                                     </div>
+                                </div>
                             </table>
                         </div>
                     </div>
@@ -201,7 +215,9 @@
             <div class="mt-8 text-sm leading-5">
                 <div class="font-medium text-gray-700 inline-block">Container Logs</div>
                 <div class="inline-block">
-                    <button *ngIf="attributeLogs; else disabledIcon" [ngClass]="attributeLogs ? 'tooltip tooltip-top' : ''" [attr.data-tip]="attributeLogs? 'Click to copy' : ''"
+                    <button *ngIf="attributeLogs; else disabledIcon"
+                        [ngClass]="attributeLogs ? 'tooltip tooltip-top' : ''"
+                        [attr.data-tip]="attributeLogs? 'Click to copy' : ''"
                         (click)="copyToClipboard(attributeLogs.join('\n'),0)">
                         <svg xmlns="http://www.w3.org/2000/svg"
                             class="transition-all duration-500 ease-in-out  h-6 w-6 text-gray-600 cursor-pointer inline-block"
