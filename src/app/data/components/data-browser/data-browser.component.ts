@@ -145,7 +145,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   isStaticDataSlice: boolean = false;
   staticSliceOrderActive: string;
   staticDataSliceCurrentCount: number;
-  dataSlices$: Observable<DataSlice[]>;
+  dataSlices: any;
   dataSlicesQuery$: any;
   labelingTasksQuery$: any;
   slicesById: Map<string, DataSlice> = new Map();
@@ -249,24 +249,24 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   }
 
   prepareDataSlicesRequest() {
-    let tmp$;
-    [this.dataSlicesQuery$, tmp$] = this.projectApolloService.getDataSlices(this.projectId);
-    this.dataSlices$ = tmp$.pipe(
-      map((items: DataSlice[]) => {
-        this.sliceNames = new Set();
-        this.slicesById = new Map();
-        this.filterAvailableSlices();
-        items.forEach(item => {
-          this.slicesById.set(item.id, item);
-          this.sliceNames.add(item.name);
-        });
-        if (this.lastActiveSliceId != "") {
-          this.activeSlice = this.slicesById.get(this.lastActiveSliceId);
-          if (this.activeSlice && this.activeSlice.static) this.refreshStaticSliceCount(this.activeSlice.id)
-          this.lastActiveSliceId = "";
-        }
-        return items;
-      })
+    let vc$;
+    [this.dataSlicesQuery$, vc$] = this.projectApolloService.getDataSlices(this.projectId);
+    this.subscriptions$.push(vc$.subscribe((items: DataSlice[]) => {
+      console.log(items)
+      this.sliceNames = new Set();
+      this.slicesById = new Map();
+      this.filterAvailableSlices();
+      items.forEach(item => {
+        this.slicesById.set(item.id, item);
+        this.sliceNames.add(item.name);
+      });
+      if (this.lastActiveSliceId != "") {
+        this.activeSlice = this.slicesById.get(this.lastActiveSliceId);
+        if (this.activeSlice && this.activeSlice.static) this.refreshStaticSliceCount(this.activeSlice.id)
+        this.lastActiveSliceId = "";
+      }
+      this.dataSlices = items;
+    })
     );
   }
 
@@ -1208,7 +1208,6 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
           element.rla_aggregation[key].confidenceAvg = Math.round((sum / element.rla_aggregation[key].confidence.length) * 10000) / 100 + "%";
         }
         const len = Object.keys(element.rla_aggregation).length;
-        console.log("record", element, countWsRelated, len)
         if (len && len != countWsRelated) element.wsHint = (len - countWsRelated) + " elements aren't visible because of your config settings";
         else element.wsHint = "";
       }
