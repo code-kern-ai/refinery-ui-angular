@@ -912,7 +912,7 @@ export class ProjectApolloService {
           projectId: projectId,
           sliceType: sliceType
         },
-        fetchPolicy: 'network-only',
+        fetchPolicy: 'no-cache',
       });
     const vc = query.valueChanges.pipe(
       map((result) => {
@@ -948,14 +948,6 @@ export class ProjectApolloService {
         projectId: projectId,
         embeddingId: embeddingId,
       },
-      refetchQueries: [
-        {
-          query: queries.DATA_SLICES,
-          variables: {
-            projectId: projectId,
-          },
-        },
-      ],
     });
   }
   requestHuddleData(projectId: string, huddleId: string, huddleType: string) {
@@ -1084,39 +1076,39 @@ export class ProjectApolloService {
         fetchPolicy: 'network-only',
       });
     const vc = query
-    .valueChanges.pipe(
-      map((result) => {
-        let task = result['data']['attributeByAttributeId'];
-        if(task == null)  return null;
-        let neededIDLength = task['logs']
-          ? String(task['logs'].length)?.length
-          : 0;
-        return {
-          id: task['id'],
-          name: task['name'],
-          dataType: task['dataType'],
-          isPrimaryKey: task['isPrimaryKey'],
-          relativePosition: task['relativePosition'],
-          userCreated: task['userCreated'],
-          sourceCode: task['sourceCode'],
-          state: task['state'],
-          logs: !task['logs']
-            ? null
-            : task['logs'].map((wrapper, index) => {
-              let d: Date = new Date(
-                wrapper.substr(0, wrapper.indexOf(' '))
-              );
-              return (
-                String(index + 1).padStart(neededIDLength, '0') +
-                ': ' +
-                d.toLocaleString() +
-                ' - ' +
-                wrapper.substr(wrapper.indexOf(' ') + 1)
-              );
-            }),
-        };
-      })
-    );
+      .valueChanges.pipe(
+        map((result) => {
+          let task = result['data']['attributeByAttributeId'];
+          if (task == null) return null;
+          let neededIDLength = task['logs']
+            ? String(task['logs'].length)?.length
+            : 0;
+          return {
+            id: task['id'],
+            name: task['name'],
+            dataType: task['dataType'],
+            isPrimaryKey: task['isPrimaryKey'],
+            relativePosition: task['relativePosition'],
+            userCreated: task['userCreated'],
+            sourceCode: task['sourceCode'],
+            state: task['state'],
+            logs: !task['logs']
+              ? null
+              : task['logs'].map((wrapper, index) => {
+                let d: Date = new Date(
+                  wrapper.substr(0, wrapper.indexOf(' '))
+                );
+                return (
+                  String(index + 1).padStart(neededIDLength, '0') +
+                  ': ' +
+                  d.toLocaleString() +
+                  ' - ' +
+                  wrapper.substr(wrapper.indexOf(' ') + 1)
+                );
+              }),
+          };
+        })
+      );
     return [query, vc];
   }
 
@@ -1156,7 +1148,7 @@ export class ProjectApolloService {
       variables: {
         projectId: projectId,
         attributeId: attributeId
-      },refetchQueries: [
+      }, refetchQueries: [
         {
           query: queries.GET_ATTRIBUTE_BY_ATTRIBUTE_ID,
           variables: {
