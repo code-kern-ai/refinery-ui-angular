@@ -164,7 +164,7 @@ export class WeakSourceApolloService {
         variables: {
           projectId: projectId,
         },
-        fetchPolicy: 'cache-and-network'
+        fetchPolicy: 'no-cache'
       });
     const vc = query.valueChanges.pipe(
       map((result) => {
