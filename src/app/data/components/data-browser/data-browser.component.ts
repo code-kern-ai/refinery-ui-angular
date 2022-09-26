@@ -240,7 +240,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
 
 
   getWhiteListNotificationService(): string[] {
-    let toReturn = ['label_created', 'label_deleted', 'attributes_updated','calculate_attribute'];
+    let toReturn = ['label_created', 'label_deleted', 'attributes_updated', 'calculate_attribute'];
     toReturn.push(...['labeling_task_deleted', 'labeling_task_updated', 'labeling_task_created']);
     toReturn.push(...['information_source_created', 'information_source_updated', 'information_source_deleted']);
     toReturn.push(...['data_slice_created', 'data_slice_updated', 'data_slice_deleted']);
@@ -1199,13 +1199,18 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
             element.rla_aggregation[rlaAggParts.key].confidence.push(rlaLine.confidence);
           }
         }
+        let countWsRelated = 0;
         for (const key in element.rla_aggregation) {
+          if (element.rla_aggregation[key].isWSRelated) countWsRelated++;
           if (element.rla_aggregation[key].confidence.length == 0) continue;
           let sum = 0;
           for (const confidence of element.rla_aggregation[key].confidence) sum += confidence;
           element.rla_aggregation[key].confidenceAvg = Math.round((sum / element.rla_aggregation[key].confidence.length) * 10000) / 100 + "%";
-
         }
+        const len = Object.keys(element.rla_aggregation).length;
+        console.log("record", element, countWsRelated, len)
+        if (len && len != countWsRelated) element.wsHint = (len - countWsRelated) + " elements aren't visible because of your config settings";
+        else element.wsHint = "";
       }
     }
   }
@@ -1948,7 +1953,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       this.refreshAndDo(this.attributesQuery$, this.attributeWait, () => this.websocketFilterRefresh(currentFilterData));
       this.alterUser(msgParts[1])
     }
-    else if(msgParts[1] == 'calculate_attribute' && msgParts[2]=='finished') {
+    else if (msgParts[1] == 'calculate_attribute' && msgParts[2] == 'finished') {
       window.location.reload();
       this.alterUser(msgParts[1], true);
     }
@@ -1963,7 +1968,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
 
   alterUser(msgId: string, forReload: boolean = false) {
     if (this.alertLastVisible && Date.now() - this.alertLastVisible < 1000) return;
-    alert("Settings were changed (msgId: " + msgId + ")\n"+ (forReload ? 'Page' : 'Filter')+ " will be reloaded.");
+    alert("Settings were changed (msgId: " + msgId + ")\n" + (forReload ? 'Page' : 'Filter') + " will be reloaded.");
     this.alertLastVisible = Date.now();
   }
 

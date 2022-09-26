@@ -848,11 +848,9 @@
                 </div>
 
                 <div data-tip="Change the data browser configurations"
-                    class="tooltip tooltip-left relative flex items-center"
-                    [ngClass]="similarSearchHelper.recordsInDisplay || activeSlice ? 'cursor-not-allowed' : '' ">
+                    class="tooltip tooltip-left relative flex items-center">
                     <label for="config-modal"
-                        class="mr-1 inline-flex items-center px-2.5 py-1.5 border border-gray-200 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer"
-                        [ngClass]="similarSearchHelper.recordsInDisplay || activeSlice ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer'">
+                        class=" opacity-100 cursor-pointer mr-1 inline-flex items-center px-2.5 py-1.5 border border-gray-200 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer">
                         <svg xmlns="http://www.w3.org/2000/svg"
                             class="mr-2 icon icon-tabler icon-tabler-adjustments inline-block" width="20" height="20"
                             viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
@@ -1009,6 +1007,8 @@
                         <!--rla aggregation-->
                         <ng-template [ngIf]="record.rla_aggregation">
                             <div class="mt-2 flex flex-col">
+                                <div *ngIf="weakSupervisionRelated && record.wsHint" class="text-gray-800 text-sm">
+                                    {{record.wsHint}}</div>
                                 <div class="overflow-x-auto">
                                     <div class="inline-block min-w-full align-middle">
                                         <div
