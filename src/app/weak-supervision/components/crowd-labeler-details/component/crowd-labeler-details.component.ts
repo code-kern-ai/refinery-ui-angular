@@ -18,7 +18,7 @@ import {
   startWith,
   distinctUntilChanged,
 } from 'rxjs/operators';
-import { combineLatest, Subscription, timer } from 'rxjs';
+import { combineLatest, forkJoin, Subscription, timer } from 'rxjs';
 import { InformationSourceType, informationSourceTypeToString, LabelingTask, LabelSource } from 'src/app/base/enum/graphql-enums';
 import { dateAsUTCDate, parseLinkFromText } from 'src/app/util/helper-functions';
 import { NotificationService } from 'src/app/base/services/notification.service';
@@ -118,7 +118,7 @@ export class CrowdLabelerDetailsComponent
 
 
     this.subscriptions$.push(project$.subscribe((project) => this.project = project));
-    combineLatest(tasks$).subscribe(() => this.prepareInformationSource(projectId));
+    forkJoin(tasks$).subscribe(() => this.prepareInformationSource(projectId));
 
     this.checkIfManagedVersion();
 
@@ -292,7 +292,7 @@ export class CrowdLabelerDetailsComponent
       this.colors.domain(labelIds);
     });
 
-    return vc;
+    return vc.pipe(first());
   }
 
   deleteInformationSource(projectId: string, informationSourceId: string) {

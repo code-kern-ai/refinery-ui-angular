@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { RouteService } from 'src/app/base/services/route.service';
 import { first } from 'rxjs/operators';
-import { combineLatest, Subscription, timer } from 'rxjs';
+import { combineLatest, forkJoin, Subscription, timer } from 'rxjs';
 import { FormControl } from '@angular/forms';
 import {
   debounceTime,
@@ -75,7 +75,7 @@ export class CreateNewAttributeComponent implements OnInit {
     this.checkProjectTokenization(projectId);
 
     this.subscriptions$.push(project$.subscribe((project) => this.project = project));
-    combineLatest(tasks$).subscribe(() => this.prepareAttribute(projectId, attributeId));
+    forkJoin(tasks$).subscribe(() => this.prepareCurrentAttribute(projectId, attributeId));
 
     NotificationService.subscribeToNotification(this, {
       projectId: projectId,
@@ -128,7 +128,7 @@ export class CreateNewAttributeComponent implements OnInit {
     this.stickyObserver.observe(toObserve)
   }
 
-  prepareAttribute(projectId: string, attributeId: string) {
+  prepareCurrentAttribute(projectId: string, attributeId: string) {
     [this.attributeQuery$, this.attribute$] = this.projectApolloService.getAttributeByAttributeId(projectId, attributeId);
     this.subscriptions$.push(this.attribute$.subscribe((attribute) => {
       this.attribute = attribute;
@@ -344,7 +344,7 @@ export class CreateNewAttributeComponent implements OnInit {
       this.attributes = attributes;
       this.attributesUsableUploaded = this.attributes.filter((attribute) => attribute.state == 'UPLOADED' || attribute.state == 'USABLE' || attribute.state == 'AUTOMATICALLY_CREATED');
     }));
-    return attributes$;
+    return attributes$.pipe(first());
   }
 
   getRecordByRecordId(recordId: string, index: number) {

@@ -18,7 +18,7 @@ import {
   startWith,
   distinctUntilChanged,
 } from 'rxjs/operators';
-import { combineLatest, Subscription, timer } from 'rxjs';
+import { combineLatest, forkJoin, Subscription, timer } from 'rxjs';
 import { InformationSourceType, informationSourceTypeToString, LabelingTask, LabelSource } from 'src/app/base/enum/graphql-enums';
 import { InformationSourceCodeLookup, InformationSourceExamples } from '../information-sources-code-lookup';
 import { dateAsUTCDate } from 'src/app/util/helper-functions';
@@ -114,7 +114,7 @@ export class WeakSourceDetailsComponent
     tasks$.push(project$.pipe(first()));
 
     this.subscriptions$.push(project$.subscribe((project) => this.project = project));
-    combineLatest(tasks$).subscribe(() => this.prepareInformationSource(projectId));
+    forkJoin(tasks$).subscribe(() => this.prepareInformationSource(projectId));
 
     NotificationService.subscribeToNotification(this, {
       projectId: projectId,
@@ -263,7 +263,7 @@ export class WeakSourceDetailsComponent
       }
       this.filterEmbeddingsForCurrentTask();
     });
-    return vc;
+    return vc.pipe(first());
   }
 
   prepareSourceCode(projectId: string, informationSource) {
@@ -298,7 +298,7 @@ export class WeakSourceDetailsComponent
       this.filterEmbeddingsForCurrentTask();
     }
     ));
-    return vc;
+    return vc.pipe(first());
   }
   filterEmbeddingsForCurrentTask() {
     if (!this.embeddings || !this.labelingTasks.size || !this.labelingTaskControl.value) return;
@@ -604,7 +604,7 @@ export class WeakSourceDetailsComponent
       attributes.sort((a, b) => a.relativePosition - b.relativePosition);
       this.attributes = attributes;
     }));
-    return attributes$;
+    return attributes$.pipe(first());
   }
 
 }

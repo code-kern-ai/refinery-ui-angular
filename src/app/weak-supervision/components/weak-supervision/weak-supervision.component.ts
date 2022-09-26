@@ -300,7 +300,7 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
         InformationSourceType.CROWD_LABELER
       )
       .subscribe((re) => {
-        const id = re['data']['createInformationSource']['informationSource']['id'];
+        const id = re['data']?.['createInformationSource']?.['informationSource']?.['id'];
         if (id) {
           this.router.navigate(["../crowd-labeler/" + id], {
             relativeTo: this.activatedRoute,
