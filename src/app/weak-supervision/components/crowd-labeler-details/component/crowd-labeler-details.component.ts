@@ -60,7 +60,7 @@ export class CrowdLabelerDetailsComponent
   labelingTasksQuery$: any;
   labelingTasks: Map<string, any> = new Map<string, any>();
   labelColor: Map<string, Map<string, string>> = new Map<string, Map<string, string>>();
-  labelingTasksClassification: any[];
+  labelingTasksUseable: any[];
   labelingTasksSortOrder = [];
   useTaskLabels: boolean = true;
   zeroShotRecommendations: any;
@@ -272,7 +272,7 @@ export class CrowdLabelerDetailsComponent
 
     vc.subscribe((tasks) => {
       tasks.sort((a, b) => a.relativePosition - b.relativePosition)
-      this.labelingTasksClassification = tasks.filter(t => t.taskType == LabelingTask.MULTICLASS_CLASSIFICATION)
+      this.labelingTasksUseable = tasks.filter(t => t.taskType != LabelingTask.NOT_SET)
       this.labelingTasks.clear();
       this.labelColor.clear();
       this.labelingTasksSortOrder = [];
