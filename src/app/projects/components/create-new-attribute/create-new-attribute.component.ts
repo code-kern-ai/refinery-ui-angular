@@ -348,9 +348,7 @@ export class CreateNewAttributeComponent implements OnInit {
     this.subscriptions$.push(attributes$.subscribe((attributes) => {
       attributes.sort((a, b) => a.relativePosition - b.relativePosition);
       this.attributes = attributes;
-      console.log(this.attributes)
       this.attributesUsableUploaded = this.attributes.filter((attribute) => attribute.state == 'UPLOADED' || attribute.state == 'USABLE' || attribute.state == 'AUTOMATICALLY_CREATED');
-      console.log(this.attributesUsableUploaded)
       this.checkIfAtLeastRunning = this.checkIfSomethingRunning();
     }));
     return attributes$.pipe(first());
