@@ -122,6 +122,15 @@ export class ZeroShotDetailsComponent
 
     this.checkIfManagedVersion();
 
+    [this.downloadedModelsQuery$, this.downloadedModelsList$] = this.informationSourceApolloService.getModelProviderInfo();
+    this.subscriptions$.push(
+      this.downloadedModelsList$.subscribe((downloadedModels) => {
+        this.downloadedModels = downloadedModels;
+        this.createModelsDownloadedStateList();
+      }));
+
+    this.checkIfManagedVersion();
+
     NotificationService.subscribeToNotification(this, {
       projectId: projectId,
       whitelist: this.getWhiteListNotificationService(),
