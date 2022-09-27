@@ -55,10 +55,13 @@ export class OrganizationApolloService {
       .pipe(map((result) => result['data']['userInfo']));
   }
 
-  getOrganizationUsers() {
+  getOrganizationUsers(userRole: string = null) {
     return this.apollo
       .query({
         query: queries.GET_ORGANIZATION_USERS,
+        variables: {
+          userRole: userRole
+        }
       })
       .pipe(map((result) => result['data']['allUsers']));
   }
@@ -109,6 +112,17 @@ export class OrganizationApolloService {
         query: queries.GET_CAN_CREATE_LOCAL_ORG,
       })
       .pipe(map((result) => result['data']['canCreateLocalOrg']));
+  }
+
+  requestComments(requestJson: string) {
+    return this.apollo
+      .query({
+        query: queries.REQUEST_COMMENTS,
+        variables: {
+          requested: requestJson
+        }
+      })
+      .pipe(map((result) => JSON.parse(result['data']['getAllComments'])));
   }
 
 }

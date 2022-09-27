@@ -1,0 +1,171 @@
+<div *ngIf="project" class="p-4 bg-gray-100 h-full flex-1 flex flex-col">
+    <ng-container *ngIf="informationSources$ | async as informationSources">
+        <div class="w-full h-full">
+
+            <div class="flex-shrink-0 block xl:flex justify-between items-center">
+                <div class="flex width-line border-b-2 border-b-gray-200 max-w-full overflow-x-auto">
+                    <div class="cursor-pointer text-sm leading-5 font-medium mr-10 py-5" (click)="toggleTabs(-1,null)"
+                        [ngClass]="openTab == -1 ? 'text-indigo-700 border-bottom' : 'text-gray-500'">All</div>
+                    <div *ngFor="let labelingTask of labelingTasks;let i=index" (click)="toggleTabs(i, labelingTask)"
+                        [ngClass]="openTab == i ? 'text-indigo-700 border-bottom' : 'text-gray-500' "
+                        class="text-sm leading-5 font-medium mr-10 cursor-pointer py-5">
+                        {{labelingTask.name}}
+                    </div>
+                    <div data-tip="Add new labeling task" class="tooltip tooltip-right">
+                        <button (click)="navigateToSettings()"><svg xmlns="http://www.w3.org/2000/svg"
+                                class="h-5 w-5 text-gray-500 my-5 cursor-pointer" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                            </svg></button>
+                    </div>
+                </div>
+                <div
+                    class="grid grid-cols-2 sm:grid-cols-3 gap-4 md:flex md:gap-0 flex-row flex-nowrap items-center mt-4 xl:mt-0 ">
+
+
+                    <ng-template [ngIf]="informationSources.length > 0" [ngIfElse]="noHeuristics">
+                        <kern-dropdown class="mr-3" [dropdownOptions]="{
+                            optionArray:['Select all','Deselect all', 'Delete selected'],
+                            optionIcons:['select-all','deselect-all', 'delete-selected'],
+                            buttonTooltip:'Multi-callback action',
+                            buttonCaption: 'Actions',
+                            isOptionDisabled: [false, false, this.selectedInformationSources.length == 0]
+                        }" (optionClicked)="executeOption($event)">
+                        </kern-dropdown>
+                    </ng-template>
+                    <ng-template #noHeuristics>
+                        <div data-tip="At least one callback is needed to enable actions"
+                            class="tooltip tooltip-bottom mr-3">
+                            <button type="button"
+                                class="inline-flex items-center justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-1.5 bg-white text-xs font-medium text-gray-700 opacity-50 cursor-not-allowed focus:ring-offset-2 focus:ring-offset-gray-400"
+                                id="menu-button" aria-expanded="true" aria-haspopup="true">
+                                Actions
+                                <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                    fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd"
+                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+                    </ng-template>
+
+                    <div class="flex justify-center overflow-visible">
+                        <button [routerLink]="['../heuristics']" data-tip="Go to heuristics"
+                            class="tooltip tooltip-bottom bg-white text-gray-700 text-xs font-medium mr-3 px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            Heuristics
+                        </button>
+                    </div>
+                    <div class="flex justify-center overflow-visible">
+                        <button [routerLink]="['../knowledge-base']" data-tip="Go to the lookup lists"
+                            class="tooltip tooltip-bottom bg-white text-gray-700 text-xs font-medium mr-3 px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            Lookup lists
+                        </button>
+                    </div>
+
+                    <input #deleteSelectedHeuristics type="checkbox" [id]="'delete-modal-selected'"
+                        class="modal-toggle">
+                    <div class="modal text-center items-center">
+                        <div class="modal-box">
+                            <h1 class="text-lg text-gray-900 mb-2">Delete {{ selectedInformationSources.length == 1 ?
+                                'callback' : 'callbacks' }}</h1>
+                            <div class="text-sm text-gray-500 my-2 flex flex-col">
+                                <span>Are you sure you want to delete selected {{ selectedInformationSources.length == 1
+                                    ? 'callback' : 'callbacks' }}?</span>
+                                <span>Currently selected {{ selectedInformationSources.length == 1 ? 'is' : 'are'
+                                    }}:</span>
+                                <span class="whitespace-pre-line font-bold">{{selectionList}}</span>
+                            </div>
+
+                            <div class="modal-action text-center">
+                                <label [for]="'delete-modal-selected'"
+                                    class="bg-red-100 text-red-700 border border-red-400 text-xs font-semibold mr-2 px-4 py-2 rounded flex cursor-pointer hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 inline-block"
+                                    (click)="deleteSelectedInformationSources(project.id)">Delete</label>
+                                <label [for]="'delete-modal-selected'"
+                                    class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div *ngIf="informationSources.length == 0; else informationSourcesList">
+                <div class="text-gray-500 font-normal mt-8">
+                    <p class="text-xl leading-7">Seems like your project has no callbacks yet.</p>
+                    <p class="text-base mt-3 leading-6">You can create one from the <a
+                            href="https://github.com/code-kern-ai/refinery-python-sdk" target="_blank"><span
+                                class="underline cursor-pointer">Python SDK</span></a>, if you want
+                        to dive deeper.</p>
+                </div>
+
+            </div>
+            <ng-template #informationSourcesList>
+                <div class="overflow-y-auto" style="max-height: 93%;">
+                    <div class="mt-8 grid gap-6 grid-cols-3">
+                        <ng-template [ngIf]="filteredSourcesList.length == 0">
+                            <span class="text-gray-500 text-base leading-6 font-normal mt-4">No callbacks for this
+                                labeling task</span>
+                        </ng-template>
+                        <div *ngFor="let source of filteredSourcesList; let i = index">
+                            <div class="relative flex space-x-3 items-center rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm hover:border-gray-400"
+                                [ngStyle]="{'height': getHeightInPx(source.stats)}"
+                                [ngClass]="filteredSourcesList.length > 2 ? 'item' : ''">
+                                <div class="h-full">
+                                    <label (click)="toggleInformationSource(project.id, source.id)"
+                                        class="cursor-pointer">
+                                        <input type="checkbox" [checked]='source.selected'>
+                                    </label>
+                                </div>
+                                <div class="flex-1 min-w-0 text-sm leading-5">
+                                    <div class="flow-root font-medium">
+                                        <div class="text-gray-900 float-left">
+                                            {{source.name}}
+                                        </div>
+                                    </div>
+                                    <div class="flow-root font-normal">
+                                        <div class="text-gray-500 float-left max-w-xs-1">
+                                            {{source.description}}
+                                        </div>
+                                        <div class="float-right">
+                                            <kern-heuristic-statuses status="FINISHED" tooltipPosition="tooltip-left">
+                                            </kern-heuristic-statuses>
+                                        </div>
+                                    </div>
+                                    <ng-template [ngIf]="!(source.stats.length == 1 && source.stats[0].label == '-' )">
+                                        <div class="flex items-center" *ngFor="let stat of source.stats">
+                                            <div class="py-2">
+                                                <span
+                                                    [ngClass]="[getBackground(stat.color), getText(stat.color), getBorder(stat.color), getHover(stat.color)]"
+                                                    class="inline-flex items-center px-2 py-0.5 rounded text-sm font-medium border">
+                                                    {{stat.label}}
+                                                </span>
+                                            </div>
+                                            <div class="py-4 ml-auto text-sm leading-5 font-medium text-gray-900">
+                                                <div class="flex flex-row">
+                                                    <div class="mr-4">
+                                                        <div>Est. Precision</div>
+                                                        <div class="font-normal text-gray-500">{{stat.values.Precision |
+                                                            percentRound : '2'}}</div>
+                                                    </div>
+                                                    <div>
+                                                        <div>Coverage</div>
+                                                        <div class="font-normal text-gray-500">{{stat.values.Coverage}}
+                                                            {{
+                                                            stat.values.Coverage == 1 ? 'record' : 'records' }}
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </ng-template>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+        </div>
+    </ng-container>
+</div>

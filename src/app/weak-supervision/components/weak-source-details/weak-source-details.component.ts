@@ -18,13 +18,14 @@ import {
   startWith,
   distinctUntilChanged,
 } from 'rxjs/operators';
-import { combineLatest, Subscription, timer } from 'rxjs';
+import { combineLatest, forkJoin, Subscription, timer } from 'rxjs';
 import { InformationSourceType, informationSourceTypeToString, LabelingTask, LabelSource } from 'src/app/base/enum/graphql-enums';
 import { InformationSourceCodeLookup, InformationSourceExamples } from '../information-sources-code-lookup';
 import { dateAsUTCDate } from 'src/app/util/helper-functions';
 import { NotificationService } from 'src/app/base/services/notification.service';
 import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
 import { schemeCategory24 } from 'src/app/util/colors';
+import { UserManager } from 'src/app/util/user-manager';
 
 @Component({
   selector: 'kern-weak-source-details',
@@ -59,6 +60,7 @@ export class WeakSourceDetailsComponent
   informationSource: any;
   subscriptions$: Subscription[] = [];
   lastTask$: any;
+  lastTaskLogs: string[];
   lastTaskQuery$: any;
   labelingTasksQuery$: any;
   labelingTasks: Map<string, any> = new Map<string, any>();
@@ -98,6 +100,7 @@ export class WeakSourceDetailsComponent
   }
 
   ngOnInit(): void {
+    UserManager.checkUserAndRedirect(this);
     this.routeService.updateActivatedRoute(this.activatedRoute);
     this.organizationService.getUserInfo().pipe(first()).subscribe((user) => this.loggedInUser = user);
     const projectId = this.activatedRoute.parent.snapshot.paramMap.get('projectId');
@@ -111,7 +114,7 @@ export class WeakSourceDetailsComponent
     tasks$.push(project$.pipe(first()));
 
     this.subscriptions$.push(project$.subscribe((project) => this.project = project));
-    combineLatest(tasks$).subscribe(() => this.prepareInformationSource(projectId));
+    forkJoin(tasks$).subscribe(() => this.prepareInformationSource(projectId));
 
     NotificationService.subscribeToNotification(this, {
       projectId: projectId,
@@ -134,7 +137,8 @@ export class WeakSourceDetailsComponent
     for (const e of this.stickyHeader) {
       this.stickyObserver.unobserve(e.nativeElement);
     }
-    NotificationService.unsubscribeFromNotification(this, this.project.id);
+    const projectId = this.project?.id ? this.project.id : this.activatedRoute.parent.snapshot.paramMap.get('projectId');
+    NotificationService.unsubscribeFromNotification(this, projectId);
   }
 
   ngAfterViewInit() {
@@ -259,7 +263,7 @@ export class WeakSourceDetailsComponent
       }
       this.filterEmbeddingsForCurrentTask();
     });
-    return vc;
+    return vc.pipe(first());
   }
 
   prepareSourceCode(projectId: string, informationSource) {
@@ -280,6 +284,7 @@ export class WeakSourceDetailsComponent
         projectId,
         informationSource.lastTask.id
       );
+      this.subscriptions$.push(this.lastTask$.subscribe((task) => this.lastTaskLogs = task.logs));
     } else {
       this.lastTask$ = null;
     }
@@ -293,7 +298,7 @@ export class WeakSourceDetailsComponent
       this.filterEmbeddingsForCurrentTask();
     }
     ));
-    return vc;
+    return vc.pipe(first());
   }
   filterEmbeddingsForCurrentTask() {
     if (!this.embeddings || !this.labelingTasks.size || !this.labelingTaskControl.value) return;
@@ -599,7 +604,7 @@ export class WeakSourceDetailsComponent
       attributes.sort((a, b) => a.relativePosition - b.relativePosition);
       this.attributes = attributes;
     }));
-    return attributes$;
+    return attributes$.pipe(first());
   }
 
 }

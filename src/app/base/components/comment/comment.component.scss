@@ -1,0 +1,15 @@
+.tooltip::before {
+    z-index: 50;
+}
+
+.width-icon-menues {
+    width: 128px;
+}
+
+.width-sample-projects {
+    width: 384px !important;
+}
+
+.rotate_transform svg {
+    transform: rotate(180deg);
+}

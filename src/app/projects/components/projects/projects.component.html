@@ -43,7 +43,9 @@
                                 <div>
                                     <div class="text-sm text-gray-900 font-medium">Records</div>
                                     <div class="text-sm text-gray-500 font-normal">
-                                        {{projectStatisticsById.get(project.id)?.numDataScaleUploaded ? (projectStatisticsById.get(project.id)?.numDataScaleUploaded | number) : '0'}} records
+                                        {{projectStatisticsById.get(project.id)?.numDataScaleUploaded ?
+                                        (projectStatisticsById.get(project.id)?.numDataScaleUploaded | number) : '0'}}
+                                        records
                                     </div>
                                 </div>
                                 <div>
@@ -71,7 +73,8 @@
                                     </div>
                                 </div>
                                 <div>
-                                    <button (click)="manageProject(project.id, project.numDataScaleUploaded)" *ngIf="project.status !== 'INIT_SAMPLE_PROJECT'"
+                                    <button (click)="manageProject(project.id, project.numDataScaleUploaded)"
+                                        *ngIf="project.status !== 'INIT_SAMPLE_PROJECT'"
                                         class="text-green-800 text-sm font-medium">
                                         <span class="leading-5">Continue project</span>
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block" fill="none"
@@ -79,7 +82,7 @@
                                             <path stroke-linecap="round" stroke-linejoin="round"
                                                 d="M13 7l5 5m0 0l-5 5m5-5H6" />
                                         </svg>
-                                    </button> 
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -167,17 +170,21 @@
                     <main class="mt-16 mx-auto max-w-7xl px-4 sm:mt-24 sm:px-6 lg:mt-32">
                         <div class="lg:grid lg:grid-cols-12 lg:gap-8">
                             <div class="sm:text-center md:max-w-2xl md:mx-auto lg:col-span-6 lg:text-left">
-                                <div class="text-gray-500 font-semibold text-base uppercase">We’re setting up your
-                                    organization
+                                <div class="text-gray-500 font-semibold text-base uppercase">You're now on the waitlist!
                                 </div>
                                 <div class="font-extrabold text-gray-900 text-5xl mt-1">
-                                    A team member is <span class="text-green-800">preparing your account</span>
+                                    You don't want to <span class="text-green-800">wait?</span>
                                 </div>
                                 <div class="font-normal text-xl text-gray-500 mt-5">
+                                    In a 15 minute onboarding call, we can directly assign you access. Reach out to us
+                                    <a href="https://www.kern.ai/waitlist" target="_blank"><span
+                                            class="underline cursor-pointer">here</span></a>.
+                                </div>
+                                <div class="text-gray-500 mt-5">
                                     In the meantime, feel free to take a look at a product demo or check out our
                                     <a href="https://docs.kern.ai/" target="_blank"><span
                                             class="underline cursor-pointer">documentation</span></a>. If you have any
-                                    questions, you can reach out to us.
+                                    questions, contact us any time.
                                 </div>
                             </div>
                             <div style="width:560px;height:315px" class="overflow-hidden relative">
@@ -229,17 +236,11 @@
                     <main class="mt-16 mx-auto max-w-7xl px-4 sm:mt-24 sm:px-6 lg:mt-32">
                         <div class="lg:grid lg:grid-cols-12 lg:gap-8">
                             <div class="sm:text-center md:max-w-2xl md:mx-auto lg:col-span-6 lg:text-left">
-                                <div class="text-gray-500 font-semibold text-base uppercase">
-                                    {{ canCreateOrg ? 'Preparing your account' : 'Maximum number of users reached' }}
+                                <div *ngIf="canCreateOrg" class="text-gray-500 font-semibold text-base uppercase">
+                                    Preparing your account. Please reload the page.
                                 </div>
-                                <div class="font-extrabold text-gray-900 text-5xl mt-1">
-                                    <ng-template [ngIf]="canCreateOrg" [ngIfElse]="cannotCreateOrg">
-                                        Currently <span class="text-green-800">preparing your account</span>
-                                    </ng-template>
-                                    <ng-template #cannotCreateOrg>
-                                        <span class="text-green-800">Only one user </span>is allowed
-                                    </ng-template>
-                                </div>
+                                <div *ngIf="!canCreateOrg" class="text-gray-500 font-semibold text-base uppercase">
+                                    Maximum number of users reached. Please look into our managed version.</div>
                                 <div class="font-normal text-xl text-gray-500 mt-5">
                                     <ng-template [ngIf]="canCreateOrg" [ngIfElse]="premiumVersion">
                                         In the meantime, feel free to take a look at a product demo or check out our
@@ -250,8 +251,7 @@
                                     </ng-template>
                                     <ng-template #premiumVersion>
                                         If you are interested in working with multiple users take a look at our <a
-                                            href="https://kern.ai/pricing" target="_blank"><span
-                                                class="underline cursor-pointer">managed version</span></a>.
+                                            href="./users"><span class="underline cursor-pointer">options</span></a>.
                                     </ng-template>
 
                                 </div>
@@ -290,19 +290,20 @@
 </div>
 
 <ng-template #buttonsProject>
-    <button [routerLink]="['/projects/new']"
-        class="bg-blue-700 text-white text-xs font-semibold px-4 py-2.5 rounded-md mt-6 hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-        New project
-    </button>
-    <button class="ml-6 mt-6 mr-6 xs:mr-0">
-        <label
-            class="bg-blue-700 text-white text-xs font-semibold px-4 py-2.5 rounded-md cursor-pointer hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            for="project-upload-modal">
-            Import snapshot
-        </label>
-    </button>
-    <div class="relative inline-block text-left ml-6 mt-6">
-        <kern-dropdown [dropdownOptions]="{
+    <div *ngIf="user?.role == 'ENGINEER'">
+        <button [routerLink]="['/projects/new']"
+            class="bg-blue-700 text-white text-xs font-semibold px-4 py-2.5 rounded-md mt-6 hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            New project
+        </button>
+        <button class="ml-6 mt-6 mr-6 xs:mr-0">
+            <label
+                class="bg-blue-700 text-white text-xs font-semibold px-4 py-2.5 rounded-md cursor-pointer hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                for="project-upload-modal">
+                Import snapshot
+            </label>
+        </button>
+        <div class="relative inline-block text-left ml-6 mt-6">
+            <kern-dropdown [dropdownOptions]="{
             optionArray:['Clickbait','Initial (only contains the initial data set and labels.)','Conversational AI','Initial (only contains the initial data set and labels.)', 'AG News','Initial (only contains the initial data set and labels.)', 'Further sample projects'],
             optionIcons:['clickbait',null,'conversational-ai',null,'ag-news',null],
             buttonCaption: 'Sample projects',
@@ -312,11 +313,10 @@
             buttonBgColor: 'blue',
             buttonTextColor: 'white',
             hoverColor: 'hover:bg-kernindigo'
-        }" (optionClicked)="executeOption($event)"
-        (isInitialProject)="setInitialValue($event)">
-        </kern-dropdown>
+        }" (optionClicked)="executeOption($event)" (isInitialProject)="setInitialValue($event)">
+            </kern-dropdown>
+        </div>
     </div>
-
 </ng-template>
 
 <input #inputUpload type="checkbox" id="project-upload-modal" class="modal-toggle">

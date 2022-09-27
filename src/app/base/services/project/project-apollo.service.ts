@@ -199,6 +199,24 @@ export class ProjectApolloService {
       );
   }
 
+  getConfidenceDistributions(projectId: string, labelingTaskId: string = null, sliceId: string = null) {
+    return this.apollo
+      .query({
+        query: queries.GET_CONFIDENCE_DISTRIBUTION,
+        variables: {
+          projectId: projectId,
+          labelingTaskId: labelingTaskId,
+          sliceId: sliceId,
+        },
+        fetchPolicy: 'no-cache',
+      })
+      .pipe(
+        map((result) => {
+          return JSON.parse(result['data']['confidenceDistribution']);
+        })
+      );
+  }
+
   getProjectByIdQuery(
     projectId: string
   ) {
@@ -217,12 +235,13 @@ export class ProjectApolloService {
     return [query, vc];
   }
 
-  getAttributesByProjectId(projectId: string) {
+  getAttributesByProjectId(projectId: string, stateFilter: string[] = null) {
     const query = this.apollo
       .watchQuery({
         query: queries.GET_ATTRIBUTES_BY_PROJECT_ID,
         variables: {
           projectId: projectId,
+          stateFilter: stateFilter
         },
         fetchPolicy: 'network-only',
       });
@@ -235,6 +254,10 @@ export class ProjectApolloService {
             dataType: data.dataType,
             isPrimaryKey: data.isPrimaryKey,
             relativePosition: data.relativePosition,
+            userCreated: data.userCreated,
+            sourceCode: data.sourceCode,
+            state: data.state,
+            logs: data.logs
           };
         });
       })
@@ -431,8 +454,10 @@ export class ProjectApolloService {
   updateAttribute(
     projectId: string,
     attributeId: string,
-    dataType: string,
-    isPrimaryKey: boolean
+    dataType?: string,
+    isPrimaryKey?: boolean,
+    name?: string,
+    sourceCode?: string
   ) {
     return this.apollo.mutate({
       mutation: mutations.UPDATE_ATTRIBUTE,
@@ -441,12 +466,15 @@ export class ProjectApolloService {
         attributeId: attributeId,
         dataType: dataType,
         isPrimaryKey: isPrimaryKey,
+        name: name,
+        sourceCode: sourceCode
       },
       refetchQueries: [
         {
-          query: queries.GET_ATTRIBUTES_BY_PROJECT_ID,
+          query: queries.GET_ATTRIBUTE_BY_ATTRIBUTE_ID,
           variables: {
             projectId: projectId,
+            attributeId: attributeId
           },
         },
       ],
@@ -876,14 +904,15 @@ export class ProjectApolloService {
     });
   }
 
-  getDataSlices(projectId: string) {
+  getDataSlices(projectId: string, sliceType: string = null) {
     const query = this.apollo
       .watchQuery({
         query: queries.DATA_SLICES,
         variables: {
           projectId: projectId,
+          sliceType: sliceType
         },
-        fetchPolicy: 'network-only',
+        fetchPolicy: 'no-cache',
       });
     const vc = query.valueChanges.pipe(
       map((result) => {
@@ -919,11 +948,212 @@ export class ProjectApolloService {
         projectId: projectId,
         embeddingId: embeddingId,
       },
-      refetchQueries: [
+    });
+  }
+  requestHuddleData(projectId: string, huddleId: string, huddleType: string) {
+    return this.apollo
+      .query({
+        query: queries.REQUEST_HUDDLE_DATA,
+        variables: {
+          projectId: projectId,
+          huddleId: huddleId,
+          huddleType: huddleType
+        },
+        fetchPolicy: 'no-cache',
+      })
+      .pipe(map((result) => result['data']['requestHuddleData']));
+  }
+
+  getAccessLink(projectId: string, linkId: string) {
+    return this.apollo
+      .query({
+        query: queries.GET_ACCESS_LINK,
+        variables: {
+          projectId: projectId,
+          linkId: linkId
+        },
+        fetchPolicy: 'cache-first', //this shouldnt change often (also default value)
+      })
+      .pipe(map((result) => result['data']['accessLink']));
+  }
+
+  lockAccessLink(projectId: string, linkId: string, lockState: boolean = true) {
+    return this.apollo.mutate({
+      mutation: mutations.LOCK_ACCESS_LINK,
+      variables: {
+        projectId: projectId,
+        linkId: linkId,
+        lockState: lockState,
+      },
+    });
+  }
+
+  createAccessLink(
+    projectId: string,
+    type: string,
+    id: string): Observable<any> {
+    return this.apollo.mutate({
+      mutation: mutations.CREATE_ACCESS_LINK,
+      variables: {
+        projectId: projectId,
+        type: type,
+        id: id,
+      },
+    });
+  }
+  removeAccessLink(
+    projectId: string,
+    linkId: string): Observable<any> {
+    return this.apollo.mutate({
+      mutation: mutations.REMOVE_ACCESS_LINK,
+      variables: {
+        projectId: projectId,
+        linkId: linkId
+      },
+    });
+  }
+
+  linkLocked(projectId: string, linkRoute: string) {
+    return this.apollo
+      .query({
+        query: queries.LINK_LOCKED,
+        variables: {
+          projectId: projectId,
+          linkRoute: linkRoute
+        },
+        fetchPolicy: 'no-cache',
+      })
+      .pipe(map((result) => result['data']['linkLocked']));
+
+  }
+  linkDataOutdated(projectId: string, linkRoute: string, lastRequestedAt: Date) {
+    return this.apollo
+      .query({
+        query: queries.LINK_DATA_OUTDATED,
+        variables: {
+          projectId: projectId,
+          linkRoute: linkRoute,
+          lastRequestedAt: lastRequestedAt
+        },
+        fetchPolicy: 'no-cache',
+      })
+      .pipe(map((result) => result['data']['linkDataOutdated']));
+
+  }
+
+  availableLabelingLinks(projectId: string, assumedRole: string = null, assumedHeuristicId: string = null) {
+    return this.apollo
+      .query({
+        query: queries.AVAILABLE_LABELING_LINKS,
+        variables: {
+          projectId: projectId,
+          assumedRole: assumedRole,
+          assumedHeuristicId: assumedHeuristicId
+        },
+        fetchPolicy: 'no-cache',
+      })
+      .pipe(map((result) => result['data']['availableLinks']));
+
+  }
+
+  createUserAttribute(projectId: string): Observable<any> {
+    return this.apollo.mutate({
+      mutation: mutations.CREATE_USER_ATTRIBUTE,
+      variables: {
+        projectId: projectId
+      },
+    });
+  }
+
+  getAttributeByAttributeId(projectId: string, attributeId: string) {
+    const query = this.apollo
+      .watchQuery({
+        query: queries.GET_ATTRIBUTE_BY_ATTRIBUTE_ID,
+        variables: {
+          projectId: projectId,
+          attributeId: attributeId,
+        },
+        fetchPolicy: 'network-only',
+      });
+    const vc = query
+      .valueChanges.pipe(
+        map((result) => {
+          let task = result['data']['attributeByAttributeId'];
+          if (task == null) return null;
+          let neededIDLength = task['logs']
+            ? String(task['logs'].length)?.length
+            : 0;
+          return {
+            id: task['id'],
+            name: task['name'],
+            dataType: task['dataType'],
+            isPrimaryKey: task['isPrimaryKey'],
+            relativePosition: task['relativePosition'],
+            userCreated: task['userCreated'],
+            sourceCode: task['sourceCode'],
+            state: task['state'],
+            logs: !task['logs']
+              ? null
+              : task['logs'].map((wrapper, index) => {
+                let d: Date = new Date(
+                  wrapper.substr(0, wrapper.indexOf(' '))
+                );
+                return (
+                  String(index + 1).padStart(neededIDLength, '0') +
+                  ': ' +
+                  d.toLocaleString() +
+                  ' - ' +
+                  wrapper.substr(wrapper.indexOf(' ') + 1)
+                );
+              }),
+          };
+        })
+      );
+    return [query, vc];
+  }
+
+  deleteUserAttribute(projectId: string, attributeId: string) {
+    return this.apollo.mutate({
+      mutation: mutations.DELETE_USER_ATTRIBUTE,
+      variables: {
+        projectId: projectId,
+        attributeId: attributeId
+      }, refetchQueries: [
         {
-          query: queries.DATA_SLICES,
+          query: queries.GET_ATTRIBUTES_BY_PROJECT_ID,
           variables: {
             projectId: projectId,
+          },
+        },
+      ],
+    });
+  }
+
+  calculateUserAttributeSampleRecords(projectId: string, attributeId: string) {
+    return this.apollo
+      .query({
+        query: queries.CALCULATE_USER_ATTRIBUTE_SAMPLE_RECORDS,
+        variables: {
+          projectId: projectId,
+          attributeId: attributeId,
+        },
+        fetchPolicy: 'no-cache'
+      }).pipe(
+        map((result) => result['data']['calculateUserAttributeSampleRecords']));
+  }
+
+  calculateUserAttributeAllRecords(projectId: string, attributeId: string) {
+    return this.apollo.mutate({
+      mutation: mutations.CALCULATE_USER_ATTRIBUTE_ALL_RECORDS,
+      variables: {
+        projectId: projectId,
+        attributeId: attributeId
+      }, refetchQueries: [
+        {
+          query: queries.GET_ATTRIBUTE_BY_ATTRIBUTE_ID,
+          variables: {
+            projectId: projectId,
+            attributeId: attributeId
           },
         },
       ],

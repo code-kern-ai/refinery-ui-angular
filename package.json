@@ -37,6 +37,7 @@
     "d3v4": "^4.2.2",
     "daisyui": "^1.14.2",
     "graphql": "^15.0.0",
+    "i": "^0.3.7",
     "monaco-editor": "^0.24.0",
     "ng-intercom": "^8.0.2",
     "ngx-filesize": "^2.0.16",

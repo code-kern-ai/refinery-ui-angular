@@ -53,8 +53,9 @@
                             <label class="block font-bold mt-2">Dynamic:</label>
                             Stores the current filter critera and is reapplied whenever the slice is
                             selected.<br><br>
-                            <label class="block font-bold mt-2 ">Static (can be used for filters in the
-                                visualizations):</label>
+                            <label class="block font-bold mt-2 ">Static:</label>
+                            Used for visualization filters and scope of
+                            work for annotators & domain experts.
                             Stores the current records provided by your filter.
                             These are limited to 10,000 records and can be refreshed if nessecary.
                         </p>
@@ -111,7 +112,7 @@
                     </div>
                 </div>
 
-                <div class="mt-2 mb-4" *ngIf="dataSlices$ | async as dataSlices">
+                <div class="mt-2 mb-4" *ngIf="dataSlices">
                     <div *ngIf="dataSlices.length > 0">
                         <button (click)="toggleSlice(dataSlice);"
                             class="cursor-pointer mr-1 mb-1 inline-flex items-center justify-between px-2.5 py-1.5 border border-gray-200 shadow-sm text-sm font-medium rounded text-gray-700 bg-white slice-width hover:bg-gray-50 focus:outline-none"
@@ -347,44 +348,86 @@
                                                                         </ng-template>
                                                                     </div>
                                                                 </div>
-                                                                <div class="mt-2">Weakly supervised</div>
-                                                                <div class="flex-grow min-w-0">
-                                                                    <div class="dropdown">
-                                                                        <ng-template
-                                                                            [ngIf]="groupItem.get('weakSupervisionLabels').controls.length == 0"
-                                                                            formArrayName="manualLabels"
-                                                                            [ngIfElse]="dropDownWS">
-                                                                            <ng-container
-                                                                                [ngTemplateOutlet]="buttonLabelsDisabled">
-                                                                            </ng-container>
-                                                                        </ng-template>
-                                                                        <ng-template #dropDownWS>
-                                                                            <kern-dropdown [dropdownOptions]="{
+                                                                <div>
+                                                                    <div class="mt-2">Weakly supervised</div>
+                                                                    <div class="flex-grow min-w-0">
+                                                                        <div class="dropdown">
+                                                                            <ng-template
+                                                                                [ngIf]="groupItem.get('weakSupervisionLabels').controls.length == 0"
+                                                                                formArrayName="manualLabels"
+                                                                                [ngIfElse]="dropDownWS">
+                                                                                <ng-container
+                                                                                    [ngTemplateOutlet]="buttonLabelsDisabled">
+                                                                                </ng-container>
+                                                                            </ng-template>
+                                                                            <ng-template #dropDownWS>
+                                                                                <kern-dropdown [dropdownOptions]="{
                                                                                 optionArray:groupItem.get('weakSupervisionLabels').controls,
                                                                                 hasCheckboxes:true,
                                                                                 keepDropdownOpen:true
-                                                                            }"
-                                                                                (optionClicked)="setActiveNegateGroup($event)">
-                                                                            </kern-dropdown>
-                                                                        </ng-template>
+                                                                            }" (optionClicked)="setActiveNegateGroup($event)">
+                                                                                </kern-dropdown>
+                                                                            </ng-template>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="flex-grow min-w-0 mt-1">
+                                                                        <div class="flex flex-row items-center"
+                                                                            [formGroup]="groupItem.get('weakSupervisionConfidence')">
+                                                                            <span
+                                                                                class="label-text mr-1 font-dmMono">CONFIDENCE
+                                                                                BETWEEN</span><input
+                                                                                formControlName="lower" type="number"
+                                                                                class="w-12 px-2 input input-sm input-bordered"
+                                                                                (blur)="ensureValidConfidence(groupItem.get('weakSupervisionConfidence'))">
+                                                                            <span class="label-text mx-1 font-dmMono">%
+                                                                                AND</span>
+                                                                            <input formControlName="upper" type="number"
+                                                                                class="w-12 input input-sm input-bordered px-2"
+                                                                                (blur)="ensureValidConfidence(groupItem.get('weakSupervisionConfidence'))">
+                                                                            <span
+                                                                                class="label-text mx-1 font-dmMono">%</span>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
-                                                                <div class="flex-grow min-w-0 mt-1">
-                                                                    <div class="flex flex-row items-center"
-                                                                        [formGroup]="groupItem.get('confidence')">
-                                                                        <span
-                                                                            class="label-text mr-1 font-dmMono">CONFIDENCE
-                                                                            BETWEEN</span><input formControlName="lower"
-                                                                            type="number"
-                                                                            class="w-12 px-2 input input-sm input-bordered"
-                                                                            (blur)="ensureValidConfidence(groupItem.get('confidence'))">
-                                                                        <span class="label-text mx-1 font-dmMono">%
-                                                                            AND</span>
-                                                                        <input formControlName="upper" type="number"
-                                                                            class="w-12 input input-sm input-bordered px-2"
-                                                                            (blur)="ensureValidConfidence(groupItem.get('confidence'))">
-                                                                        <span
-                                                                            class="label-text mx-1 font-dmMono">%</span>
+                                                                <div>
+                                                                    <div class="mt-2">Model callback</div>
+                                                                    <div class="flex-grow min-w-0">
+                                                                        <div class="dropdown">
+                                                                            <ng-template
+                                                                                [ngIf]="groupItem.get('modelCallbackLabels').controls.length == 0"
+                                                                                formArrayName="manualLabels"
+                                                                                [ngIfElse]="dropDownMC">
+                                                                                <ng-container
+                                                                                    [ngTemplateOutlet]="buttonLabelsDisabled">
+                                                                                </ng-container>
+                                                                            </ng-template>
+                                                                            <ng-template #dropDownMC>
+                                                                                <kern-dropdown [dropdownOptions]="{
+                                                                                optionArray:groupItem.get('modelCallbackLabels').controls,
+                                                                                hasCheckboxes:true,
+                                                                                keepDropdownOpen:true
+                                                                            }" (optionClicked)="setActiveNegateGroup($event)">
+                                                                                </kern-dropdown>
+                                                                            </ng-template>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="flex-grow min-w-0 mt-1">
+                                                                        <div class="flex flex-row items-center"
+                                                                            [formGroup]="groupItem.get('modelCallbackConfidence')">
+                                                                            <span
+                                                                                class="label-text mr-1 font-dmMono">CONFIDENCE
+                                                                                BETWEEN</span><input
+                                                                                formControlName="lower" type="number"
+                                                                                class="w-12 px-2 input input-sm input-bordered"
+                                                                                (blur)="ensureValidConfidence(groupItem.get('modelCallbackConfidence'))">
+                                                                            <span class="label-text mx-1 font-dmMono">%
+                                                                                AND</span>
+                                                                            <input formControlName="upper" type="number"
+                                                                                class="w-12 input input-sm input-bordered px-2"
+                                                                                (blur)="ensureValidConfidence(groupItem.get('modelCallbackConfidence'))">
+                                                                            <span
+                                                                                class="label-text mx-1 font-dmMono">%</span>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                                 <div class="mt-2 font-bold">Heuristics
@@ -806,11 +849,9 @@
                 </div>
 
                 <div data-tip="Change the data browser configurations"
-                    class="tooltip tooltip-left relative flex items-center"
-                    [ngClass]="similarSearchHelper.recordsInDisplay || activeSlice ? 'cursor-not-allowed' : '' ">
+                    class="tooltip tooltip-left relative flex items-center">
                     <label for="config-modal"
-                        class="mr-1 inline-flex items-center px-2.5 py-1.5 border border-gray-200 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer"
-                        [ngClass]="similarSearchHelper.recordsInDisplay || activeSlice ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer'">
+                        class=" opacity-100 cursor-pointer mr-1 inline-flex items-center px-2.5 py-1.5 border border-gray-200 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer">
                         <svg xmlns="http://www.w3.org/2000/svg"
                             class="mr-2 icon icon-tabler icon-tabler-adjustments inline-block" width="20" height="20"
                             viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
@@ -879,8 +920,8 @@
                     class="tooltip tooltip-left relative flex items-center"
                     [ngClass]="extendedRecords?.sessionId ? '' : 'cursor-not-allowed'">
                     <button (click)="requestFileExport(project.id)" [disabled]="extendedRecords?.sessionId ? null:true"
-                        [ngClass]="extendedRecords?.sessionId ?  'opacity-100 cursor-pointer':'opacity-50 cursor-not-allowed pointer-events-none'"
-                        class="mr-1 inline-flex items-center px-2.5 py-1.5 border border-gray-200 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer">
+                        [ngClass]="[extendedRecords?.sessionId ?  'opacity-100 cursor-pointer':'opacity-50 cursor-not-allowed pointer-events-none', downloadMessage == DownloadStateType.PREPARATION || downloadMessage == DownloadStateType.DOWNLOAD ? 'py-1' : 'py-2']"
+                        class="mr-1 inline-flex items-center px-2.5 border border-gray-200 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer">
                         <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 h-5 w-5" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round"
@@ -967,6 +1008,8 @@
                         <!--rla aggregation-->
                         <ng-template [ngIf]="record.rla_aggregation">
                             <div class="mt-2 flex flex-col">
+                                <div *ngIf="weakSupervisionRelated && record.wsHint" class="text-gray-800 text-sm">
+                                    {{record.wsHint}}</div>
                                 <div class="overflow-x-auto">
                                     <div class="inline-block min-w-full align-middle">
                                         <div
@@ -1078,7 +1121,8 @@
                         <div class="float-right">
                             <label class="text-green-700 hover:text-green-500 text-sm font-medium cursor-pointer"
                                 (click)="storePreliminaryRecordIds(i+1)"
-                                [routerLink]="['../labeling/' + extendedRecords.sessionId]" [queryParams]="{pos: i+1}">
+                                [routerLink]="['../labeling/' + extendedRecords.sessionId]"
+                                [queryParams]="{pos: i+1,type:'SESSION'}">
                                 <span class="leading-5">Continue with this record
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block" fill="none"
                                         viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -1146,12 +1190,34 @@
             </div>
             <input type="checkbox" id="slice-information" class="modal-toggle">
             <div class="modal">
-                <div class="modal-box text-black bg-white justify-center">
+                <div class="modal-box text-black bg-white justify-center"
+                    style="max-width: 70%; width:fit-content; height:fit-content; max-height: 80%;">
                     <div class="flex flex-grow justify-center mb-4 font-bold">Slice Information</div>
-                    <div *ngFor="let item of sliceInfo | keyvalue : orderOriginal"
-                        class="flex flex-grow justify-between">
-                        <p>{{item.key}}</p>
-                        <p>{{item.value}}</p>
+                    <div *ngFor="let item of sliceInfo | keyvalue : orderOriginal">
+                        <ng-template [ngIf]="item.key == 'Link'" [ngIfElse]="normalDisplay">
+                            <div class="mt-3 flex rounded-md">
+                                <span
+                                    class="inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-50 px-3 text-gray-500 sm:text-sm">{{item.value.startsWith("https")?
+                                    'https://':'http://'}}</span>
+                                <span data-tip="Copy to clipboard"
+                                    (click)="copyToClipboard(item.value + '?pos=1&type=DATA_SLICE')" type="text"
+                                    class="cursor-pointer tooltip border rounded-none rounded-r-md border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                    {{item.value.substring(item.value.startsWith("https")?8:7)}}</span>
+
+                            </div>
+                            <div>
+                                <button (click)="testLink(item.value + '?pos=1&type=DATA_SLICE')"
+                                    class="mt-3 opacity-100 cursor-pointer w-40 bg-indigo-700 text-white text-xs leading-4 font-semibold px-4 py-2 rounded-md cursor-pointer hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                    View as expert
+                                </button>
+                            </div>
+                        </ng-template>
+                        <ng-template #normalDisplay>
+                            <div class="flex flex-grow justify-between">
+                                <p>{{item.key}}</p>
+                                <p>{{item.value}}</p>
+                            </div>
+                        </ng-template>
                     </div>
                     <div class="modal-action">
                         <label for="slice-information"

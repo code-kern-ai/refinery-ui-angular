@@ -9,6 +9,7 @@ export class HeuristicStatusesComponent implements OnChanges {
 
   @Input() status: string;
   @Input() tooltipPosition: string = 'tooltip-bottom';
+  @Input() page: string = 'heuristics';
 
   dataTip: string;
   statusName: string;
@@ -17,10 +18,16 @@ export class HeuristicStatusesComponent implements OnChanges {
   constructor() { }
 
   ngOnChanges(): void {
-    switch(this.status) {
+    switch (this.status) {
       case 'CREATED':
-        this.dataTip = 'Heuristic is currently being executed.';
+      case 'RUNNING':
+        this.dataTip = this.page === 'heuristics' ? 'Heuristic is currently being executed.' : 'Attribute is being calculated.';
         this.statusName = 'Running';
+        this.color = 'yellow';
+        break;
+      case 'STARTED':
+        this.dataTip = 'Annotator has started labeling.';
+        this.statusName = 'Started';
         this.color = 'yellow';
         break;
       case 'FINISHED':
@@ -29,12 +36,27 @@ export class HeuristicStatusesComponent implements OnChanges {
         this.color = 'green';
         break;
       case 'FAILED':
-        this.dataTip = 'Heuristic ran into errors.';
+        this.dataTip = (this.page === 'heuristics' ? 'Heuristic' : 'Attribute') + ' ran into errors.';
         this.statusName = 'Error';
         this.color = 'red';
         break;
-      default: 
-        this.dataTip = 'Heuristic was successfully registered.';
+      case 'USABLE':
+        this.dataTip = 'Attribute can be used.';
+        this.statusName = 'Usable';
+        this.color = 'green';
+        break;
+      case 'UPLOADED':
+        this.dataTip = 'Attribute was uploaded.';
+        this.statusName = 'Uploaded';
+        this.color = 'indigo';
+        break;
+      case 'AUTOMATICALLY_CREATED':
+        this.dataTip = 'Created during the upload process.';
+        this.statusName = 'Auto. created';
+        this.color = 'indigo';
+        break;
+      default:
+        this.dataTip = (this.page === 'heuristics' ? 'Heuristic' : 'Attribute') + ' was successfully registered.';
         this.statusName = 'Initial';
         this.color = 'gray';
     }

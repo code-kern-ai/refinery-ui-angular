@@ -39,7 +39,6 @@ export class ProjectComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    // Store project in ProjectService
     this.projectId = this.activatedRoute.snapshot.paramMap.get('projectId');
     [this.projectQuery$, this.project$] = this.projectApolloService.getProjectByIdQuery(this.projectId);
     this.activatedRoute$ = this.routeService.getActivatedRoute();
@@ -93,5 +92,5 @@ export class ProjectComponent implements OnInit, OnDestroy {
 
   getFirstName(userName) {
     this.user$ = userName;
-  }  
+  }
 }

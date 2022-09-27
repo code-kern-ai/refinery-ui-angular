@@ -8,10 +8,10 @@ import {
   FormControl,
   FormGroup,
 } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { KeyValue } from '@angular/common';
 import { combineLatest, forkJoin, interval, Observable, Subscription, timer } from 'rxjs';
-import { dateAsUTCDate } from 'src/app/util/helper-functions';
+import { dateAsUTCDate, parseLinkFromText } from 'src/app/util/helper-functions';
 import {
   debounceTime,
   distinctUntilChanged,
@@ -52,6 +52,8 @@ import {
 import { SimilarSearch } from './helper-classes/search-similar';
 import { UserFilter } from './helper-classes/user-filter';
 import { DownloadState } from 'src/app/import/services/s3.enums';
+import { UserManager } from 'src/app/util/user-manager';
+import { labelingLinkType } from 'src/app/labeling/components/helper/labeling-helper';
 
 
 type DataSlice = {
@@ -143,7 +145,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   isStaticDataSlice: boolean = false;
   staticSliceOrderActive: string;
   staticDataSliceCurrentCount: number;
-  dataSlices$: Observable<DataSlice[]>;
+  dataSlices: any;
   dataSlicesQuery$: any;
   labelingTasksQuery$: any;
   slicesById: Map<string, DataSlice> = new Map();
@@ -189,12 +191,13 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   }
 
   constructor(
+    private router: Router,
     private routeService: RouteService,
     private activatedRoute: ActivatedRoute,
     private projectApolloService: ProjectApolloService,
     private recordApolloService: RecordApolloService,
     private organizationApolloService: OrganizationApolloService,
-    public formBuilder: FormBuilder
+    public formBuilder: FormBuilder,
   ) { }
 
   ngOnDestroy(): void {
@@ -203,6 +206,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    UserManager.checkUserAndRedirect(this);
     this.routeService.updateActivatedRoute(this.activatedRoute);
 
     this.projectId = this.activatedRoute.parent.snapshot.paramMap.get('projectId');
@@ -231,10 +235,13 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       whitelist: this.getWhiteListNotificationService(),
       func: this.handleWebsocketNotification
     });
+
   }
 
+
+
   getWhiteListNotificationService(): string[] {
-    let toReturn = ['label_created', 'label_deleted', 'attributes_updated'];
+    let toReturn = ['label_created', 'label_deleted', 'attributes_updated', 'calculate_attribute'];
     toReturn.push(...['labeling_task_deleted', 'labeling_task_updated', 'labeling_task_created']);
     toReturn.push(...['information_source_created', 'information_source_updated', 'information_source_deleted']);
     toReturn.push(...['data_slice_created', 'data_slice_updated', 'data_slice_deleted']);
@@ -243,24 +250,23 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   }
 
   prepareDataSlicesRequest() {
-    let tmp$;
-    [this.dataSlicesQuery$, tmp$] = this.projectApolloService.getDataSlices(this.projectId);
-    this.dataSlices$ = tmp$.pipe(
-      map((items: DataSlice[]) => {
-        this.sliceNames = new Set();
-        this.slicesById = new Map();
-        this.filterAvailableSlices();
-        items.forEach(item => {
-          this.slicesById.set(item.id, item);
-          this.sliceNames.add(item.name);
-        });
-        if (this.lastActiveSliceId != "") {
-          this.activeSlice = this.slicesById.get(this.lastActiveSliceId);
-          if (this.activeSlice && this.activeSlice.static) this.refreshStaticSliceCount(this.activeSlice.id)
-          this.lastActiveSliceId = "";
-        }
-        return items;
-      })
+    let vc$;
+    [this.dataSlicesQuery$, vc$] = this.projectApolloService.getDataSlices(this.projectId);
+    this.subscriptions$.push(vc$.subscribe((items: DataSlice[]) => {
+      this.sliceNames = new Set();
+      this.slicesById = new Map();
+      this.filterAvailableSlices();
+      items.forEach(item => {
+        this.slicesById.set(item.id, item);
+        this.sliceNames.add(item.name);
+      });
+      if (this.lastActiveSliceId != "") {
+        this.activeSlice = this.slicesById.get(this.lastActiveSliceId);
+        if (this.activeSlice && this.activeSlice.static) this.refreshStaticSliceCount(this.activeSlice.id)
+        this.lastActiveSliceId = "";
+      }
+      this.dataSlices = items;
+    })
     );
   }
 
@@ -588,7 +594,8 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     for (let i = 0; i < this.attributesSortOrder.length; i++) {
       array.push(this.getOrderByGroup(this.attributes.get(this.attributesSortOrder[i].key).name, true, -1)) //1, //-1 desc, 1 asc     
     }
-    array.push(this.getOrderByGroup(StaticOrderByKeys.CONFIDENCE, false, -1));
+    array.push(this.getOrderByGroup(StaticOrderByKeys.WEAK_SUPERVISION_CONFIDENCE, false, -1));
+    array.push(this.getOrderByGroup(StaticOrderByKeys.MODEL_CALLBACK_CONFIDENCE, false, -1));
     array.push(this.getOrderByGroup(StaticOrderByKeys.RANDOM, false, -1));
 
     return array;
@@ -624,7 +631,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     let array = this.formBuilder.array([]);
     for (let l of task.informationSources) {
       if (l.type == InformationSourceType.LABELING_FUNCTION || l.type == InformationSourceType.ACTIVE_LEARNING
-        || l.type == InformationSourceType.ZERO_SHOT || l.type === undefined) {
+        || l.type == InformationSourceType.ZERO_SHOT || l.type == InformationSourceType.CROWD_LABELER || l.type === undefined) {
         array.push(
           this.formBuilder.group({
             id: l.id,
@@ -661,7 +668,8 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   private _getOrderByDisplayName(orderByKey: string) {
     switch (orderByKey) {
       case StaticOrderByKeys.RANDOM: return "Random";
-      case StaticOrderByKeys.CONFIDENCE: return "Weak Supervision Confidence";
+      case StaticOrderByKeys.WEAK_SUPERVISION_CONFIDENCE: return "Weak Supervision Confidence";
+      case StaticOrderByKeys.MODEL_CALLBACK_CONFIDENCE: return "Model Callback Confidence";
       default: return orderByKey; //attributes
     }
   }
@@ -738,8 +746,11 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       active: true,
       manualLabels: this._labelingTaskLabelFormArray(task),
       weakSupervisionLabels: this._labelingTaskLabelFormArray(task),
-      sortByConfidence: this.getOrderByGroup(StaticOrderByKeys.CONFIDENCE, false, -1), //1, //-1 desc, 1 asc
-      confidence: this.getConfidenceFilterGroup(),
+      modelCallbackLabels: this._labelingTaskLabelFormArray(task),
+      sortByWeakSupervisionConfidence: this.getOrderByGroup(StaticOrderByKeys.WEAK_SUPERVISION_CONFIDENCE, false, -1), //1, //-1 desc, 1 asc
+      sortByModelCallbackConfidence: this.getOrderByGroup(StaticOrderByKeys.MODEL_CALLBACK_CONFIDENCE, false, -1), //1, //-1 desc, 1 asc
+      weakSupervisionConfidence: this.getConfidenceFilterGroup(),
+      modelCallbackConfidence: this.getConfidenceFilterGroup(),
       informationSources: this._labelingTaskInformationSourceFormArray(task),
       isWithDifferentResults: this.isWithDifferentResultsGroup(task)
     });
@@ -796,12 +807,20 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       if (values.weakSupervisionLabels[i].active != previousValues.weakSupervisionLabels[i].active ||
         values.weakSupervisionLabels[i].negate != previousValues.weakSupervisionLabels[i].negate) return false;
     }
+    for (var i = 0; i < values.modelCallbackLabels.length; i++) {
+      if (values.modelCallbackLabels[i].active != previousValues.modelCallbackLabels[i].active ||
+        values.modelCallbackLabels[i].negate != previousValues.modelCallbackLabels[i].negate) return false;
+    }
     for (var i = 0; i < values.informationSources.length; i++) {
       if (values.informationSources[i].active != previousValues.informationSources[i].active ||
         values.informationSources[i].negate != previousValues.informationSources[i].negate) return false;
     }
-    if (values.confidence.active != previousValues.confidence.active ||
-      values.confidence.negate != previousValues.confidence.negate) return false
+    if (values.weakSupervisionConfidence.active != previousValues.weakSupervisionConfidence.active ||
+      values.weakSupervisionConfidence.negate != previousValues.weakSupervisionConfidence.negate) return false
+
+    if (values.modelCallbackConfidence.active != previousValues.modelCallbackConfidence.active ||
+      values.modelCallbackConfidence.negate != previousValues.modelCallbackConfidence.negate) return false
+
     if (values.isWithDifferentResults.active != previousValues.isWithDifferentResults.active) return false
 
     return true;
@@ -814,10 +833,14 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     for (let c of values.weakSupervisionLabels) {
       if (c.active) return true;
     }
+    for (let c of values.modelCallbackLabels) {
+      if (c.active) return true;
+    }
     for (let c of values.informationSources) {
       if (c.active) return true;
     }
-    if (values.confidence.active) return true;
+    if (values.weakSupervisionConfidence.active) return true;
+    if (values.modelCallbackConfidence.active) return true;
     if (values.isWithDifferentResults.active) return true;
     return false;
   }
@@ -838,6 +861,12 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     if (tmp) text += (text ? '\nAND ' : '') + ' (' + tmp + ')';
 
     tmp = this._labelingTaskBuildSearchParamTextPart(
+      values.modelCallbackLabels,
+      'MC-label'
+    );
+    if (tmp) text += (text ? '\nAND ' : '') + ' (' + tmp + ')';
+
+    tmp = this._labelingTaskBuildSearchParamTextPart(
       values.informationSources,
       'IS'
     );
@@ -847,10 +876,15 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       text += (text ? '\nAND ' : '') + ' (mixed IS results)';
     }
 
-    if (values.confidence.active) {
+    if (values.weakSupervisionConfidence.active) {
       text += (text ? '\nAND ' : '') + 'WS-Confidence '
-      if (values.confidence.negate) text += "NOT "
-      text += "BETWEEN " + values.confidence.lower + "% AND " + values.confidence.upper + "%";
+      if (values.weakSupervisionConfidence.negate) text += "NOT "
+      text += "BETWEEN " + values.weakSupervisionConfidence.lower + "% AND " + values.weakSupervisionConfidence.upper + "%";
+    }
+    if (values.modelCallbackConfidence.active) {
+      text += (text ? '\nAND ' : '') + 'MC-Confidence '
+      if (values.modelCallbackConfidence.negate) text += "NOT "
+      text += "BETWEEN " + values.modelCallbackConfidence.lower + "% AND " + values.modelCallbackConfidence.upper + "%";
     }
     if (values.negate) text = '\nNOT (' + text + ')';
     else text = '\n' + text;
@@ -1102,14 +1136,21 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   }
 
   storePreliminaryRecordIds(pos: number) {
-    const sessionData = {
+    const huddleData = {
       recordIds: this.extendedRecords.recordList.map((record) => record.id),
-      sessionId: this.extendedRecords.sessionId,
       partial: true,
-      currentPos: pos,
-      projectId: this.projectId
+      linkData: {
+        projectId: this.projectId,
+        id: this.extendedRecords.sessionId,
+        requestedPos: pos,
+        linkType: labelingLinkType.SESSION
+      },
+      allowedTask: null,
+      canEdit: true,
+      checkedAt: { db: null, local: new Date() }
+
     }
-    localStorage.setItem('sessionData', JSON.stringify(sessionData));
+    localStorage.setItem('huddleData', JSON.stringify(huddleData));
   }
 
   setExtendedData(queryResults, extend: boolean) {
@@ -1154,17 +1195,21 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
             };
           }
           element.rla_aggregation[rlaAggParts.key].amount++;
-          if (rlaLine.confidence != null && rlaLine.source_type == LabelSource.WEAK_SUPERVISION) {
+          if (rlaLine.confidence != null && (rlaLine.source_type == LabelSource.WEAK_SUPERVISION || rlaLine.source_type == LabelSource.MODEL_CALLBACK)) {
             element.rla_aggregation[rlaAggParts.key].confidence.push(rlaLine.confidence);
           }
         }
+        let countWsRelated = 0;
         for (const key in element.rla_aggregation) {
+          if (element.rla_aggregation[key].isWSRelated) countWsRelated++;
           if (element.rla_aggregation[key].confidence.length == 0) continue;
           let sum = 0;
           for (const confidence of element.rla_aggregation[key].confidence) sum += confidence;
           element.rla_aggregation[key].confidenceAvg = Math.round((sum / element.rla_aggregation[key].confidence.length) * 10000) / 100 + "%";
-
         }
+        const len = Object.keys(element.rla_aggregation).length;
+        if (len && len != countWsRelated) element.wsHint = (len - countWsRelated) + " elements aren't visible because of your config settings";
+        else element.wsHint = "";
       }
     }
   }
@@ -1531,8 +1576,14 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     for (let key in info) {
       sliceInfo[key] = info[key];
     }
+    if (slice.sliceType == this.SliceTypes.STATIC_DEFAULT) {
+      sliceInfo["Link"] = "/projects/" + this.projectId + "/labeling/" + sliceId;
+      sliceInfo["Link"] = this.buildFullLink("/projects/" + this.projectId + "/labeling/" + sliceId);
+    }
     this.sliceInfo = sliceInfo;
   }
+
+
 
   orderOriginal(a: KeyValue<number, string>, b: KeyValue<number, string>): number {
     return 0
@@ -1901,6 +1952,10 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       this.refreshAndDo(this.attributesQuery$, this.attributeWait, () => this.websocketFilterRefresh(currentFilterData));
       this.alterUser(msgParts[1])
     }
+    else if (msgParts[1] == 'calculate_attribute' && msgParts[2] == 'finished') {
+      window.location.reload();
+      this.alterUser(msgParts[1], true);
+    }
     else if (['data_slice_created', 'data_slice_updated', 'data_slice_deleted'].includes(msgParts[1])) {
       this.dataSlicesQuery$.refetch();
     } else if (['label_created', 'label_deleted', 'labeling_task_deleted', 'labeling_task_updated', 'labeling_task_created', 'information_source_created', 'information_source_updated', 'information_source_deleted'].includes(msgParts[1])) {
@@ -1910,9 +1965,9 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     this.similarSearchHelper.handleWebsocketNotification(msgParts);
   }
 
-  alterUser(msgId) {
+  alterUser(msgId: string, forReload: boolean = false) {
     if (this.alertLastVisible && Date.now() - this.alertLastVisible < 1000) return;
-    alert("Settings were changed (msgId: " + msgId + ")\nFilter will be reloaded.");
+    alert("Settings were changed (msgId: " + msgId + ")\n" + (forReload ? 'Page' : 'Filter') + " will be reloaded.");
     this.alertLastVisible = Date.now();
   }
 
@@ -1935,6 +1990,17 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
         intervallTimer.unsubscribe();
       }
     })
+  }
+
+  buildFullLink(route: string) {
+    return window.location.protocol + '//' + window.location.host + "/app" + route;
+  }
+
+  testLink(link) {
+
+    const linkData = parseLinkFromText(link);
+    this.router.navigate([linkData.route], { queryParams: linkData.queryParams });
+    window.location.href = link;
   }
 
   requestFileExport(projectId: string): void {

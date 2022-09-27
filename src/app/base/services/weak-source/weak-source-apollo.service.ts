@@ -41,6 +41,7 @@ export class WeakSourceApolloService {
     });
   }
 
+
   createInformationSource(
     projectId: string,
     labelingTaskId: string,
@@ -145,15 +146,7 @@ export class WeakSourceApolloService {
       variables: {
         projectId: projectId,
         informationSourceId: informationSourceId,
-      }, refetchQueries: [
-        {
-          query: queries.GET_INFORMATION_SOURCE_BY_SOURCE_ID,
-          variables: {
-            projectId: projectId,
-            informationSourceId: informationSourceId,
-          },
-        },
-      ],
+      }
     });
   }
 
@@ -164,11 +157,35 @@ export class WeakSourceApolloService {
         variables: {
           projectId: projectId,
         },
-        fetchPolicy: 'cache-and-network'
+        fetchPolicy: 'no-cache'
       });
     const vc = query.valueChanges.pipe(
       map((result) => {
         let tmp = result['data']['informationSourcesOverviewData'];
+        if (!tmp) return [];
+        return JSON.parse(tmp).map((source) => {
+          source.labelSource = LabelSource.INFORMATION_SOURCE;
+          source.stats = this.mapInformationSourceStatsGlobal(source.stat_data);
+          return source;
+        });
+      })
+
+    );
+    return [query, vc];
+  }
+
+  getModelCallbacksOverviewData(projectId: string) {
+    const query = this.apollo
+      .watchQuery({
+        query: queries.GET_MODEL_CALLBACKS_OVERVIEW_DATA,
+        variables: {
+          projectId: projectId,
+        },
+        fetchPolicy: 'cache-and-network'
+      });
+    const vc = query.valueChanges.pipe(
+      map((result) => {
+        let tmp = result['data']['modelCallbacksOverviewData'];
         if (!tmp) return [];
         return JSON.parse(tmp).map((source) => {
           source.labelSource = LabelSource.INFORMATION_SOURCE;
@@ -421,6 +438,16 @@ export class WeakSourceApolloService {
   setAllInformationSources(projectId: string, value: boolean) {
     return this.apollo.mutate({
       mutation: mutations.SET_ALL_INFORMATION_SOURCES,
+      variables: {
+        projectId: projectId,
+        value: value
+      },
+    });
+  }
+
+  setAllModelCallbacks(projectId: string, value: boolean) {
+    return this.apollo.mutate({
+      mutation: mutations.SET_ALL_MODEL_CALLBACKS,
       variables: {
         projectId: projectId,
         value: value

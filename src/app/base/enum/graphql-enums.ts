@@ -1,13 +1,15 @@
 export enum LabelSource {
     MANUAL = "MANUAL",
     WEAK_SUPERVISION = "WEAK_SUPERVISION",
-    INFORMATION_SOURCE = "INFORMATION_SOURCE"
+    INFORMATION_SOURCE = "INFORMATION_SOURCE",
+    MODEL_CALLBACK = "MODEL_CALLBACK",
 }
 export function labelSourceToString(source: LabelSource, forDisplay: boolean = true) {
     if (forDisplay) {
         switch (source) {
             case LabelSource.MANUAL: return "Manual";
             case LabelSource.WEAK_SUPERVISION: return "Weak Supervision";
+            case LabelSource.MODEL_CALLBACK: return "Model Callback";
             case LabelSource.INFORMATION_SOURCE: return "Information Source";
             default: return source;
         }
@@ -19,7 +21,8 @@ export enum InformationSourceType {
     LABELING_FUNCTION = "LABELING_FUNCTION",
     ACTIVE_LEARNING = "ACTIVE_LEARNING",
     PRE_COMPUTED = "PRE_COMPUTED",
-    ZERO_SHOT = "ZERO_SHOT"
+    ZERO_SHOT = "ZERO_SHOT",
+    CROWD_LABELER = "CROWD_LABELER"
 }
 
 export function informationSourceTypeToString(source: InformationSourceType, short: boolean, forDisplay: boolean = true) {
@@ -29,6 +32,7 @@ export function informationSourceTypeToString(source: InformationSourceType, sho
             case InformationSourceType.ACTIVE_LEARNING: return short ? "AL" : "Active Learning module";
             case InformationSourceType.PRE_COMPUTED: return short ? "PC" : "Pre Computed module";
             case InformationSourceType.ZERO_SHOT: return short ? "ZS" : "Zero Shot module";
+            case InformationSourceType.CROWD_LABELER: return short ? "CL" : "Crowd labeler";
             default: return source;
         }
     }
@@ -39,6 +43,7 @@ export enum LabelingTask {
     //BINARY_CLASSIFICATION = "BINARY_CLASSIFICATION", // Currently diabled
     MULTICLASS_CLASSIFICATION = "MULTICLASS_CLASSIFICATION",
     INFORMATION_EXTRACTION = "INFORMATION_EXTRACTION",
+    NOT_USEABLE = "NOT_USEABLE", //e.g. for annotators who can only use one task
     NOT_SET = "NOT_SET"
 }
 

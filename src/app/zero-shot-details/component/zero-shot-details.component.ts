@@ -9,23 +9,19 @@ import {
   QueryList,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FormControl } from '@angular/forms';
-import { first, refCount } from 'rxjs/operators';
+import { first } from 'rxjs/operators';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { RouteService } from 'src/app/base/services/route.service';
 import { WeakSourceApolloService } from 'src/app/base/services/weak-source/weak-source-apollo.service';
-import {
-  debounceTime,
-  startWith,
-  distinctUntilChanged,
-} from 'rxjs/operators';
-import { combineLatest, Subscription, timer } from 'rxjs';
+
+import { combineLatest, forkJoin, Subscription, timer } from 'rxjs';
 import { InformationSourceType, informationSourceTypeToString, LabelingTask, LabelSource } from 'src/app/base/enum/graphql-enums';
 import { dateAsUTCDate } from 'src/app/util/helper-functions';
 import { NotificationService } from 'src/app/base/services/notification.service';
 import { schemeCategory24 } from 'src/app/util/colors';
 import { parseToSettingsJson, parseZeroShotSettings, ZeroShotSettings } from './zero-shot-settings';
 import { ConfigManager } from 'src/app/base/services/config-service';
+import { UserManager } from 'src/app/util/user-manager';
 
 @Component({
   selector: 'kern-zero-shot-details',
@@ -104,6 +100,7 @@ export class ZeroShotDetailsComponent
   ) { }
 
   ngOnInit(): void {
+    UserManager.checkUserAndRedirect(this);
     this.routeService.updateActivatedRoute(this.activatedRoute);
     const projectId = this.activatedRoute.parent.snapshot.paramMap.get('projectId');
     this.status = this.activatedRoute.parent.snapshot.queryParams.status;
@@ -111,10 +108,19 @@ export class ZeroShotDetailsComponent
     let tasks$ = [];
     tasks$.push(this.prepareLabelingTaskRequest(projectId));
     tasks$.push(project$.pipe(first()));
-    tasks$.push(this.prepareAttributes(projectId).pipe(first()));
+    tasks$.push(this.prepareAttributes(projectId));
     this.prepareZeroShotRecommendations(projectId);
     this.subscriptions$.push(project$.subscribe((project) => this.project = project));
-    combineLatest(tasks$).subscribe(() => this.prepareInformationSource(projectId));
+    forkJoin(tasks$).subscribe(() => this.prepareInformationSource(projectId));
+
+    [this.downloadedModelsQuery$, this.downloadedModelsList$] = this.informationSourceApolloService.getModelProviderInfo();
+    this.subscriptions$.push(
+      this.downloadedModelsList$.subscribe((downloadedModels) => {
+        this.downloadedModels = downloadedModels;
+        this.createModelsDownloadedStateList();
+      }));
+
+    this.checkIfManagedVersion();
 
     [this.downloadedModelsQuery$, this.downloadedModelsList$] = this.informationSourceApolloService.getModelProviderInfo();
     this.subscriptions$.push(
@@ -155,7 +161,8 @@ export class ZeroShotDetailsComponent
     for (const e of this.stickyHeader) {
       this.stickyObserver.unobserve(e.nativeElement);
     }
-    NotificationService.unsubscribeFromNotification(this, this.project.id);
+    const projectId = this.project?.id ? this.project.id : this.activatedRoute.parent.snapshot.paramMap.get('projectId');
+    NotificationService.unsubscribeFromNotification(this, projectId);
   }
 
   ngAfterViewInit() {
@@ -192,7 +199,7 @@ export class ZeroShotDetailsComponent
       this.attributes = attributes;
       this.textAttributes = attributes.filter(a => a.dataType == 'TEXT');
     }));
-    return attributes$;
+    return attributes$.pipe(first());
   }
 
 
@@ -265,7 +272,7 @@ export class ZeroShotDetailsComponent
       this.colors.domain(labelIds);
     });
 
-    return vc;
+    return vc.pipe(first());
   }
 
   deleteInformationSource(projectId: string, informationSourceId: string) {
@@ -385,7 +392,10 @@ export class ZeroShotDetailsComponent
 
   runZeroShotProject() {
     if (!this.canRunProject) return;
-    this.informationSourceApolloService.runZeroShotProject(this.project.id, this.informationSource.id).pipe(first()).subscribe();
+    this.canRunProject = false;
+    this.informationSourceApolloService.runZeroShotProject(this.project.id, this.informationSource.id).pipe(first()).subscribe(
+      () => this.informationSourceQuery$.refetch()
+    );
   }
 
   getLabelIdFromName(name: string): string {
@@ -469,10 +479,10 @@ export class ZeroShotDetailsComponent
   }
 
   createModelsDownloadedStateList() {
-    if(this.zeroShotRecommendations !== undefined) {
+    if (this.zeroShotRecommendations !== undefined) {
       this.zeroShotRecommendations.forEach(rec => {
         const isDownloaded = this.downloadedModels.find(el => el.name === rec.configString);
-        this.modelsDownloadedState.push(isDownloaded!=undefined ? true : false);
+        this.modelsDownloadedState.push(isDownloaded != undefined ? true : false);
       })
     }
   }

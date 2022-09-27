@@ -33,12 +33,14 @@ export const mutations = {
   `,
 
   UPDATE_ATTRIBUTE: gql`
-  mutation($projectId: ID!, $attributeId: ID!, $dataType: String!, $isPrimaryKey: Boolean!) {
+  mutation($projectId: ID!, $attributeId: ID!, $dataType: String, $isPrimaryKey: Boolean, $name: String, $sourceCode: String) {
     updateAttribute(
       projectId: $projectId, 
       attributeId: $attributeId, 
       dataType: $dataType,
-      isPrimaryKey:$isPrimaryKey
+      isPrimaryKey:$isPrimaryKey,
+      name: $name,
+      sourceCode: $sourceCode
     ) {
       ok
     }
@@ -109,9 +111,9 @@ export const mutations = {
     }
   `,
 
-  DELETE_ATTRIBUTE: gql`
+  DELETE_USER_ATTRIBUTE: gql`
     mutation($projectId:ID!,$attributeId:ID!){
-      deleteAttribute(projectId:$projectId,attributeId:$attributeId){
+      deleteUserAttribute(projectId:$projectId,attributeId:$attributeId){
         ok
       }
     }
@@ -190,5 +192,47 @@ export const mutations = {
     } 
   }
   `,
+  CREATE_USER_ATTRIBUTE: gql`
+  mutation($projectId: ID!){
+    createUserAttribute(projectId: $projectId) {
+      ok
+      attributeId
+    } 
+  }
+  `,
+  CALCULATE_USER_ATTRIBUTE_ALL_RECORDS: gql`
+  mutation($projectId: ID!, $attributeId: ID!){
+    calculateUserAttributeAllRecords(projectId: $projectId, attributeId: $attributeId) {
+      ok
+    } 
+  }
+  `,
+
+  CREATE_ACCESS_LINK: gql`
+  mutation ($projectId: ID!, $id: ID!, $type: String!) {
+    generateAccessLink(projectId: $projectId, id: $id, type: $type) {
+      link {
+        id
+        link
+        isLocked
+      }
+    }
+  }
+`,
+
+  REMOVE_ACCESS_LINK: gql`
+mutation ($projectId: ID!, $linkId: ID!) {
+  removeAccessLink(projectId: $projectId, linkId: $linkId) {
+    ok
+  }
+}
+`,
+  LOCK_ACCESS_LINK: gql`
+mutation ($projectId: ID!, $linkId: ID!, $lockState: Boolean) {
+  lockAccessLink(projectId: $projectId, linkId: $linkId, lockState: $lockState) {
+    ok
+  }
+}
+`
 
 };

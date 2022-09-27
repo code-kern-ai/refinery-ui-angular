@@ -78,6 +78,8 @@ export class SimilarSearch {
       return;
     }
     if (!embeddingId) embeddingId = this.embeddings[0].id
-    this.projectApolloService.createOutlierSlice(this.dataBrowser.projectId, embeddingId).pipe(first()).subscribe();
+    this.projectApolloService.createOutlierSlice(this.dataBrowser.projectId, embeddingId).pipe(first()).subscribe(() => {
+      this.dataBrowser.dataSlicesQuery$.refetch();
+    });
   }
 }

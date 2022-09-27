@@ -8,6 +8,7 @@ import { first } from 'rxjs/operators';
 import { NotificationService } from 'src/app/base/services/notification.service';
 import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
 import { AuthApiService } from 'src/app/base/services/auth-api.service';
+import { UserManager } from 'src/app/util/user-manager';
 
 @Component({
   selector: 'kern-notification-center',
@@ -44,6 +45,7 @@ export class NotificationCenterComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    UserManager.checkUserAndRedirect(this);
     this.organizationService
       .getUserOrganization()
       .pipe(first()).subscribe((org) => {
@@ -170,7 +172,7 @@ export class NotificationCenterComponent implements OnInit, OnDestroy {
     }
     else if (msgParts[1] == 'notification_created') {
       //once not only the user filter is active this condition can be changed
-      if (msgParts[2] == this.loggedInUser.id) this.notificationsQuery$.refetch();
+      if (msgParts[2] == this.loggedInUser?.id) this.notificationsQuery$.refetch();
     }
   }
 }

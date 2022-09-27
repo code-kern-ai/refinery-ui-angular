@@ -15,6 +15,7 @@ import { GraphQLModule } from './graphql.module';
 import { ProjectOverviewModule } from './project-overview/project-overview.module';
 import { WeakSupervisionModule } from './weak-supervision/weak-supervision.module';
 import { ZeroShotModule } from './zero-shot-details/zero-shot-details.module';
+import { CrowdLabelerModule } from './weak-supervision/components/crowd-labeler-details/crowd-labeler-details.module';
 import { MonacoEditorModule } from 'ngx-monaco-editor';
 import { LabelingModule } from './labeling/labeling.module';
 import { KnowledgeBasesModule } from './knowledge-bases/knowledge-bases.module';
@@ -23,6 +24,8 @@ import { IntercomModule } from 'ng-intercom';
 import { NotificationCenterModule } from './notification-center/notification-center.module';
 import { RecordIDEModule } from './record-ide/record-ide.module';
 import { ModelDownloadModule } from './model-download/model-download.module';
+import { ModelCallbackModule } from './model-callbacks/model-callbacks.module';
+import { UsersModule } from './users/users.module';
 
 @NgModule({
   declarations: [AppComponent],
@@ -32,15 +35,18 @@ import { ModelDownloadModule } from './model-download/model-download.module';
     BaseModule,
     DataModule,
     ProjectsModule,
+    UsersModule,
     ImportModule,
     MonitorModule,
     GraphQLModule,
     HttpClientModule,
     ProjectOverviewModule,
     WeakSupervisionModule,
+    CrowdLabelerModule,
     ZeroShotModule,
     LabelingModule,
     RecordIDEModule,
+    ModelCallbackModule,
     ModelDownloadModule,
     NotificationCenterModule,
     MonacoEditorModule.forRoot(),

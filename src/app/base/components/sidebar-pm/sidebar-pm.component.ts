@@ -101,8 +101,8 @@ export class SidebarPmComponent implements OnInit {
         })
       )
       .subscribe());
-    
-    if(!SidebarPmComponent.initialConfigRequest) {
+
+    if (!SidebarPmComponent.initialConfigRequest) {
       this.requestVersionOverview();
       SidebarPmComponent.initialConfigRequest = true;
     }
@@ -110,21 +110,21 @@ export class SidebarPmComponent implements OnInit {
   }
 
   requestVersionOverview() {
-    this.versionOverview = null; 
+    this.versionOverview = null;
     this.configService
-    .getVersionOverview()
-    .pipe(first())
-    .subscribe((versionOverview) => {
-      this.versionOverview = versionOverview;
-      this.versionOverview.forEach((version)=> {
-        version.parseDate = this.parseUTC(version.lastChecked);
+      .getVersionOverview()
+      .pipe(first())
+      .subscribe((versionOverview) => {
+        this.versionOverview = versionOverview;
+        this.versionOverview.forEach((version) => {
+          version.parseDate = this.parseUTC(version.lastChecked);
+        });
+        this.versionOverview.sort((a, b) => a.service.localeCompare(b.service));
+        this.configService
+          .hasUpdates()
+          .pipe(first())
+          .subscribe((hasUpdates) => this.hasUpdates = hasUpdates);
       });
-      this.versionOverview.sort((a, b) => a.service.localeCompare(b.service));
-      this.configService
-        .hasUpdates()
-        .pipe(first())
-        .subscribe((hasUpdates) => this.hasUpdates = hasUpdates);
-    });
   }
 
   onDestroy() {
@@ -135,19 +135,6 @@ export class SidebarPmComponent implements OnInit {
     return route.url.value.toString().includes(menuItem);
   }
 
-  toggleVisible(isVisible: boolean, menuButton: HTMLDivElement, svgIcon: HTMLDivElement): void {
-    if (isVisible) {
-      menuButton.classList.remove('hidden');
-      menuButton.classList.add('flex');
-      svgIcon.classList.remove('flex');
-      svgIcon.classList.add('hidden');
-    } else {
-      menuButton.classList.remove('flex');
-      menuButton.classList.add('hidden');
-      svgIcon.classList.remove('hidden');
-      svgIcon.classList.add('flex');
-    }
-  }
 
   openFullscreen() {
     this.isFullscreen = true;
@@ -187,11 +174,11 @@ export class SidebarPmComponent implements OnInit {
   @HostListener('document:mozfullscreenchange', ['$event'])
   @HostListener('document:MSFullscreenChange', ['$event'])
   onEscapeClick() {
-    if(this.toggleClass == 'ft-minimize'){
+    if (this.toggleClass == 'ft-minimize') {
       this.toggleClass = 'ft-maximize';
       this.isFullscreen = false;
     }
-    else{
+    else {
       this.toggleClass = 'ft-minimize';
       this.isFullscreen = true;
 

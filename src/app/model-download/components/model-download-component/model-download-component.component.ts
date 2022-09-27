@@ -59,7 +59,7 @@ export class ModelDownloadComponentComponent implements OnInit {
           model.parseDate = this.parseUTC(model.date);
         })
       }));
-
+    
     this.checkIfManagedVersion();
 
     NotificationService.subscribeToNotification(this, {
@@ -109,7 +109,7 @@ export class ModelDownloadComponentComponent implements OnInit {
         el.configString != 'bag-of-characters' && el.configString != 'bag-of-words' && el.configString != 'tf-idf');
       models[1].forEach(model => model.isZeroShot = true);
       models[1].sort((a, b) => a.prio - b.prio);
-      this.indexSeparator = this.models.length - 1;
+      this.indexSeparator = this.models.length-1;
       this.models.push(...models[1]);
     });
 
@@ -171,7 +171,7 @@ export class ModelDownloadComponentComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(["../" + this.lastPage], { relativeTo: this.activatedRoute });
+    this.router.navigate(["../"+this.lastPage], { relativeTo: this.activatedRoute });
   }
 
   checkIfManagedVersion() {
