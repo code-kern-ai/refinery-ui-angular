@@ -3,7 +3,7 @@ import {
   HostListener,
   OnInit,
 } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Subscription, timer } from 'rxjs';
 import { debounceTime, distinctUntilChanged, first } from 'rxjs/operators';
 import { RouteService } from 'src/app/base/services/route.service';
 import { ActivatedRoute, Router, Event, NavigationEnd } from '@angular/router';
@@ -40,7 +40,7 @@ export class RecordIDEComponent implements OnInit {
   snakeActive: boolean = false;
   vertical: boolean = true;
   position: number;
-
+  debounceTimer;
 
   constructor(
     private routeService: RouteService,
@@ -107,9 +107,13 @@ export class RecordIDEComponent implements OnInit {
     } else {
       this.loading = true;
       const recordId = this.huddleData.recordIds[this.linkData.requestedPos - 1]
-      this.recordApolloService.runRecordIDE(this.project.id, recordId, this.code).subscribe(({ data, loading }) => {
-        this.output = data["runRecordIde"];
-        this.loading = false;
+
+      if (this.debounceTimer) this.debounceTimer.unsubscribe();
+      this.debounceTimer = timer(400).subscribe(() => {
+        this.recordApolloService.runRecordIDE(this.project.id, recordId, this.code).subscribe(({ data, loading }) => {
+          this.output = data["runRecordIde"];
+          this.loading = false;
+        });
       });
     }
   }
@@ -151,7 +155,7 @@ export class RecordIDEComponent implements OnInit {
     this.router.navigate(["projects", this.project.id, "record-ide", this.linkData.id],
       { queryParams: { pos: Math.min(this.linkData.requestedPos, this.huddleData.recordIds.length) } });
 
-    setTimeout(() => this.runRecordIde(), 200);
+    this.runRecordIde();
   }
 
   prevRecord() {
@@ -159,8 +163,7 @@ export class RecordIDEComponent implements OnInit {
     this.linkData.requestedPos = Math.max(this.linkData.requestedPos - 1, 1);
     this.router.navigate(["projects", this.project.id, "record-ide", this.linkData.id], { queryParams: { pos: this.linkData.requestedPos, type: 'SESSION' } });
 
-    this.linkData = parseLabelingLinkData(this.activatedRoute);
-    setTimeout(() => this.runRecordIde(), 200);
+    this.runRecordIde();    
   }
 
 }

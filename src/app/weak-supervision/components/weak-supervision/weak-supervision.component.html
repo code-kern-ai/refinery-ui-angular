@@ -144,7 +144,7 @@
                         <div data-tip="Last weak supervision run information"
                             class="tooltip tooltip-left flex justify-center overflow-visible">
                             <label for="weak-supervision-info"
-                                class="bg-white text-gray-700 text-xs font-medium mx-3 px-4 py-1.5 rounded-md border border-gray-300 cursor-pointer inline-block">
+                                class="bg-white text-gray-700 text-xs font-medium mx-3 px-4 py-1.5 rounded-md border border-gray-300 cursor-pointer inline-block hover:bg-gray-50">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-wave-sine"
                                     width="24" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
                                     fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -281,7 +281,7 @@
                                 <div tabindex="1" class="flex flex-row select select-bordered select-sm pl-0 pr-8">
                                     <input #inputConfig type="text" placeholder="Type to search..."
                                         class="w-full font-bold input input-sm"
-                                        style="outline:none; box-shadow:none;height:1.9rem;"
+                                        style="outline:none; box-shadow:none;height:1.8rem;"
                                         (focus)="$event.target.select()"
                                         (keydown.enter)="selectFirstUnhiddenRecommendation(inputConfig)"
                                         (input)="checkRecommendation($event.target)">
@@ -311,7 +311,7 @@
                                 <div class="flex flex-row select select-bordered select-sm pl-0 pr-8">
                                     <input #inputConfig type="text" placeholder="Enter config string..."
                                         class="w-full font-bold input input-sm"
-                                        style="outline:none; box-shadow:none;height:1.9rem;"
+                                        style="outline:none; box-shadow:none;height:1.8rem;"
                                         (focus)="$event.target.select()" (input)="checkRecommendation($event.target)">
                                 </div>
                             </ng-template>

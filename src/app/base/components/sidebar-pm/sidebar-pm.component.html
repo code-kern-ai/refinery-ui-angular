@@ -125,7 +125,7 @@
                             </div>
                         </div>
                         <div *ngIf="user?.role == 'ENGINEER'">
-                            <div class="flex items-center justify-center overflow-visible mt-6">
+                            <div class="flex items-center justify-center overflow-visible" [ngClass]="project?.id !== null ? 'mt-6' : ''">
                                 <div data-tip="Documentation" class="tooltip tooltip-right relative z-50">
                                     <a href="https://docs.kern.ai/" target="_blank" rel="noopener noreferrer"
                                         class="circle text-white">
@@ -214,7 +214,7 @@
                 </div>
                 <div class="flex-shrink-0 flex py-6 justify-center">
                     <label data-tip="Version overview" for="version-overview" (click)="requestVersionOverview()"
-                        class="z-50 tooltip tooltip-right cursor-pointer select-none text-white flex items-center">v1.2.0
+                        class="z-50 tooltip tooltip-right cursor-pointer select-none text-white flex items-center">v1.3.0
                         <svg *ngIf="hasUpdates" xmlns="http://www.w3.org/2000/svg" data-tip="Newer version available"
                             class="icon icon-tabler icon-tabler-alert-circle inline-block text-yellow-700 tooltip tooltip-right align-top ml-1 mt-px"
                             width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
@@ -270,7 +270,8 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200">
-                        <tr *ngFor="let service of versionOverview; let i = index" [ngClass]="i%2!=0 ? 'bg-gray-50':'bg-white'">
+                        <tr *ngFor="let service of versionOverview; let i = index"
+                            [ngClass]="i%2!=0 ? 'bg-gray-50':'bg-white'">
                             <td class="text-left px-3 py-2 text-sm text-gray-500">
                                 {{service.service}}
                             </td>

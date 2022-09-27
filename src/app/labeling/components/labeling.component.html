@@ -683,7 +683,7 @@
                             class=" flex justify-center items-center overflow-visible">
                             <span class="mr-2"> Available Tasks:</span>
                             <kern-dropdown [dropdownOptions]="{
-                                optionArray:availableLinks ? availableLinks: ['No links available'],
+                                optionArray:availableLinks?.length>0 ? availableLinks: ['No links available'],
                                 buttonCaption:selectedLink?selectedLink.name:'Select slice',
                                 valuePropertyPath:'id',
                                 isDisabled:availableLinks?.length == 0
@@ -949,7 +949,8 @@
     <div *ngIf="overlayData && overlayData.isFirst" class="w-0 h-14 relative">
         <div class="absolute bottom-3">
             <div hover-group-class="hover_child_hover" [hover-group]="overlayData.group"
-                class="absolute w-0 hover_child " style="bottom: 0;left:3px"
+                class="absolute w-0 hover_child tooltip tooltip-bottom" style="bottom: 0;left:3px"
+                data-tip="Result from Weak Supervision, click to use it as a manual label"
                 (click)="addLabelToMarkedTextFromSuggestion(overlayData)">
 
                 <div class="relative" style="z-index:2">

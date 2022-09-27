@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { RouteService } from 'src/app/base/services/route.service';
 import { first } from 'rxjs/operators';
-import { combineLatest, Subscription, timer } from 'rxjs';
+import { combineLatest, forkJoin, Subscription, timer } from 'rxjs';
 import { FormControl } from '@angular/forms';
 import {
   debounceTime,
@@ -25,11 +25,11 @@ export class CreateNewAttributeComponent implements OnInit {
   attribute$: any;
   isHeaderNormal: boolean = true;
   stickyObserver: IntersectionObserver;
-  attributeQuery$: any;
+  currentAttributeQuery$: any;
   @ViewChildren('stickyHeader', { read: ElementRef }) stickyHeader: QueryList<ElementRef>;
   @ViewChildren('nameArea') nameArea: QueryList<ElementRef>;
   subscriptions$: Subscription[] = [];
-  attribute: any;
+  currentAttribute: any;
   nameOpen: boolean = false;
   attributeName: string;
   codeFormCtrl = new FormControl('');
@@ -44,7 +44,7 @@ export class CreateNewAttributeComponent implements OnInit {
   updatedThroughWebsocket: boolean = false;
   checkIfNewAttribute: string;
   attributesQuery$: any;
-  attributes: any;
+  attributes: any[];
   recordData: any;
   currentRecordId: string;
   currentRecordIdx: number = -1;
@@ -52,8 +52,9 @@ export class CreateNewAttributeComponent implements OnInit {
   attributesUsableUploaded: any;
   tokenizationProgress: Number = 0;
   isDeleting: boolean = false;
+  duplicateNameExists: boolean = false;
 
-  constructor( 
+  constructor(
     private activatedRoute: ActivatedRoute,
     private projectApolloService: ProjectApolloService,
     private recordApolloService: RecordApolloService,
@@ -74,7 +75,7 @@ export class CreateNewAttributeComponent implements OnInit {
     this.checkProjectTokenization(projectId);
 
     this.subscriptions$.push(project$.subscribe((project) => this.project = project));
-    combineLatest(tasks$).subscribe(() => this.prepareAttribute(projectId,attributeId));
+    forkJoin(tasks$).subscribe(() => this.prepareCurrentAttribute(projectId, attributeId));
 
     NotificationService.subscribeToNotification(this, {
       projectId: projectId,
@@ -95,7 +96,7 @@ export class CreateNewAttributeComponent implements OnInit {
       }
     });
   }
-  
+
   ngOnDestroy() {
     this.subscriptions$.forEach((subscription) => subscription.unsubscribe());
     for (const e of this.stickyHeader) {
@@ -105,7 +106,7 @@ export class CreateNewAttributeComponent implements OnInit {
   }
 
   getWhiteListNotificationService(): string[] {
-    let toReturn = ['attributes_updated','calculate_attribute','tokenization',];
+    let toReturn = ['attributes_updated', 'calculate_attribute', 'tokenization',];
     return toReturn;
   }
 
@@ -127,46 +128,59 @@ export class CreateNewAttributeComponent implements OnInit {
     this.stickyObserver.observe(toObserve)
   }
 
-  prepareAttribute(projectId: string, attributeId: string) {
-    [this.attributeQuery$, this.attribute$] = this.projectApolloService.getAttributeByAttributeId(projectId, attributeId);
+  prepareCurrentAttribute(projectId: string, attributeId: string) {
+    [this.currentAttributeQuery$, this.attribute$] = this.projectApolloService.getAttributeByAttributeId(projectId, attributeId);
     this.subscriptions$.push(this.attribute$.subscribe((attribute) => {
-      this.attribute = attribute;
-      this.attributeName = this.attribute?.name;
-      this.code = this.attribute?.sourceCode;
-      if(this.attribute?.sourceCode == null) { 
+      this.currentAttribute = attribute;
+      this.attributeName = this.currentAttribute?.name;
+      this.code = this.currentAttribute?.sourceCode;
+      if (this.currentAttribute?.sourceCode == null) {
         this.code = AttributeCodeLookup.getAttributeCalculationTemplate(AttributeCalculationExamples.AC_EMPTY_TEMPLATE).code;
       } else {
         this.code = this.code.replace(
           'def ac(record):',
-          'def ' + this.attribute.name + '(record):'
+          'def ' + this.currentAttribute.name + '(record):'
         );
       }
-      
+
       this.attributeLogs = attribute?.logs;
-      this.canRunProject = this.attribute?.sourceCode !== '';
-      if(this.attribute?.state == 'FAILED') {
+      this.canRunProject = this.currentAttribute?.sourceCode !== '';
+      if (this.currentAttribute?.state == 'FAILED') {
         this.editorOptions = { ...this.editorOptions, readOnly: false };
       }
-      if(this.attribute?.state == 'RUNNING' || this.attribute?.state == 'USABLE') {
+      if (this.currentAttribute?.state == 'RUNNING' || this.currentAttribute?.state == 'USABLE') {
         this.editorOptions = { ...this.editorOptions, readOnly: true };
       }
-      const runningAtt = this.attributes?.find(att => att?.state == 'RUNNING');
-      if(runningAtt != undefined) {
-        this.checkIfAtLeastRunning = true;
-      }
+      this.checkIfAtLeastRunning = this.checkIfSomethingRunning();
       timer(250).subscribe(() => this.updatedThroughWebsocket = false);
     }));
   }
 
+  checkIfSomethingRunning(): boolean {
+    if (!this.attributes) return true;
+    if (!this.currentAttribute) return true;
+    const runningAtt = this.attributes?.find(att => att?.state == 'RUNNING');
+    if (runningAtt != undefined) return true;
+    return false;
+  }
+
   openName(open: boolean, projectId) {
     this.nameOpen = open;
-    if (!open && this.attributeName != this.attribute.name) {
+    this.duplicateNameExists = false;
+    if (!open && this.attributeName != this.currentAttribute.name) {
+      const findDuplicate = this.attributes.find(att => att.name == this.attributeName && att.id != this.currentAttribute.id);
+      this.duplicateNameExists = findDuplicate != undefined ? true : false;
+      if (this.duplicateNameExists) {
+        this.attributeName = this.currentAttribute.name;
+        return;
+      };
+
       var regMatch: any = this.getPythonFunctionRegExMatch(this.code);
-        if (!regMatch) return;
-        this.code = this.code.replace(
-          regMatch[0],
-          'def ' + this.attributeName + '(record)'
-        );
+      if (!regMatch) return;
+      this.code = this.code.replace(
+        regMatch[0],
+        'def ' + this.attributeName + '(record)'
+      );
       this.saveAttribute(projectId);
     }
   }
@@ -179,9 +193,9 @@ export class CreateNewAttributeComponent implements OnInit {
     if (this.updatedThroughWebsocket) return;
     const getCodeToSave = this.getPythonFunctionToSave(this.code);
     this.projectApolloService
-      .updateAttribute(projectId, this.attribute.id, this.attribute.dataType, this.attribute.isPrimaryKey, this.attributeName, getCodeToSave)
+      .updateAttribute(projectId, this.currentAttribute.id, this.currentAttribute.dataType, this.currentAttribute.isPrimaryKey, this.attributeName, getCodeToSave)
       .pipe(first())
-      .subscribe();
+      .subscribe(() => this.duplicateNameExists = false);
   }
 
   changeAttributeName(event) {
@@ -205,21 +219,32 @@ export class CreateNewAttributeComponent implements OnInit {
       )
       .subscribe(() => {
         if (this.hasUnsavedChanges()) {
+          const regMatch: any = this.getPythonFunctionRegExMatch(this.code);
+          const findDuplicate = this.attributes.find(att => att.name == regMatch[2] && att.id != this.currentAttribute.id);
+          this.duplicateNameExists = findDuplicate != undefined ? true : false;
+
+          if (this.duplicateNameExists) {
+            this.code = this.code.replace(
+              'def ' + regMatch[2] + '(record):',
+              'def ' + this.currentAttribute.name + '(record):'
+            );
+            return;
+          }
           this.saveAttribute(projectId);
         }
       });
   }
 
   hasUnsavedChanges(): boolean {
-    if (!this.attribute) return false;
+    if (!this.currentAttribute) return false;
     if (this.updatedThroughWebsocket) return false;
-    if (this.attributeName != this.attribute.name) return true;
-    if (this.attribute.sourceCode == null) return true;
+    if (this.attributeName != this.currentAttribute.name) return true;
+    if (this.currentAttribute.sourceCode == null) return true;
     if (
       this.code !=
-      this.attribute.sourceCode.replace(
+      this.currentAttribute.sourceCode.replace(
         'def ac(record):',
-        'def ' + this.attribute.name + '(record):'
+        'def ' + this.currentAttribute.name + '(record):'
       )) return true;
     return false;
   }
@@ -235,37 +260,39 @@ export class CreateNewAttributeComponent implements OnInit {
         this.router.navigate(["../../settings"], { relativeTo: this.activatedRoute });
       });
   }
-  
+
   calculateUserAttributeSampleRecords() {
     if (this.testerRequestedSomething) return;
     this.testerRequestedSomething = true;
     this.projectApolloService
-      .calculateUserAttributeSampleRecords(this.project.id, this.attribute.id).pipe(first()).subscribe((sampleRecords) => {
+      .calculateUserAttributeSampleRecords(this.project.id, this.currentAttribute.id).pipe(first()).subscribe((sampleRecords) => {
         this.sampleRecords = sampleRecords;
         this.testerRequestedSomething = false;
-        this.attributeQuery$.refetch();
+        this.currentAttributeQuery$.refetch();
       }, (error) => {
         this.testerRequestedSomething = false;
-        this.attributeQuery$.refetch();
+        this.currentAttributeQuery$.refetch();
       });
   }
 
   calculateUserAttributeAllRecords() {
     this.editorOptions = { ...this.editorOptions, readOnly: true };
     this.projectApolloService
-    .calculateUserAttributeAllRecords(this.project.id, this.attribute.id)
-    .pipe(first())
-    .subscribe(() => {
-      this.calculateAttribite.nativeElement.checked = false;
-    });
+      .calculateUserAttributeAllRecords(this.project.id, this.currentAttribute.id)
+      .pipe(first())
+      .subscribe(() => {
+        this.calculateAttribite.nativeElement.checked = false;
+        this.duplicateNameExists = false;
+      });
   }
 
   handleWebsocketNotification(msgParts) {
-    if(msgParts[1]=='attributes_updated') {
+    if (msgParts[1] == 'attributes_updated') {
       this.updatedThroughWebsocket = true;
-      this.attributeQuery$.refetch();
-    } else if(msgParts[1]=='calculate_attribute') {
-      this.attributeQuery$.refetch();
+      this.currentAttributeQuery$.refetch();
+    } else if (msgParts[1] == 'calculate_attribute') {
+      this.attributesQuery$.refetch();
+      this.currentAttributeQuery$.refetch();
     } else if (msgParts[1] == 'tokenization' && msgParts[2] == 'docbin') {
       if (msgParts[3] == 'progress') {
         this.tokenizationProgress = Number(msgParts[4]);
@@ -301,7 +328,7 @@ export class CreateNewAttributeComponent implements OnInit {
     var regMatch: any = this.getPythonFunctionRegExMatch(codeToSave);
     if (!regMatch) return codeToSave;
 
-    if(!this.checkIfNewAttribute || this.checkIfNewAttribute == null) {
+    if (!this.checkIfNewAttribute || this.checkIfNewAttribute == null) {
       this.attributeName = regMatch[2];
     } else {
       localStorage.removeItem("isNewAttribute");
@@ -317,13 +344,14 @@ export class CreateNewAttributeComponent implements OnInit {
 
   prepareAttributes(projectId: string) {
     let attributes$;
-    [this.attributesQuery$, attributes$] = this.projectApolloService.getAttributesByProjectId(projectId, []);
+    [this.attributesQuery$, attributes$] = this.projectApolloService.getAttributesByProjectId(projectId, ['ALL']);
     this.subscriptions$.push(attributes$.subscribe((attributes) => {
       attributes.sort((a, b) => a.relativePosition - b.relativePosition);
       this.attributes = attributes;
-      this.attributesUsableUploaded = this.attributes.filter((attribute) => attribute.state == 'UPLOADED' || attribute.state == 'USABLE');
+      this.attributesUsableUploaded = this.attributes.filter((attribute) => attribute.state == 'UPLOADED' || attribute.state == 'USABLE' || attribute.state == 'AUTOMATICALLY_CREATED');
+      this.checkIfAtLeastRunning = this.checkIfSomethingRunning();
     }));
-    return attributes$;
+    return attributes$.pipe(first());
   }
 
   getRecordByRecordId(recordId: string, index: number) {

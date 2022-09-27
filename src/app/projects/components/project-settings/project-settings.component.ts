@@ -292,7 +292,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
 
   prepareAttributesRequest(projectId: string): Observable<any> {
     let attributes$;
-    [this.attributesQuery$, attributes$] = this.projectApolloService.getAttributesByProjectId(projectId, []);
+    [this.attributesQuery$, attributes$] = this.projectApolloService.getAttributesByProjectId(projectId, ['ALL']);
     this.subscriptions$.push(attributes$.subscribe((attributes) => {
       this.attributes = attributes;
       this.attributesArrayTextUsableUploaded = [];
@@ -308,6 +308,9 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
           sourceCode: att.sourceCode,
           state: att.state
         });
+        if(att.state == 'INITIAL') {
+          group.get('isPrimaryKey').disable();
+        }
         group.valueChanges.pipe(distinctUntilChanged()).subscribe(() => {
           let values = group.getRawValue(); //to ensure disabled will be returned as well          
           if (this.pKeyChanged()) this.requestPKeyCheck(this.project.id);
@@ -316,8 +319,8 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
             updateAttribute(this.project.id, values.id, values.dataType, values.isPrimaryKey).pipe(first()).subscribe();
         });
         this.attributesArray.push(group);
-        if (att.state == 'UPLOADED' || att.state == 'USABLE') {
-          if(att.dataType == 'TEXT') {
+        if (att.state == 'UPLOADED' || att.state == 'USABLE' || att.state == 'AUTOMATICALLY_CREATED') {
+          if (att.dataType == 'TEXT') {
             this.attributesArrayTextUsableUploaded.push({ id: att.id, name: att.name });
             this.attributesArrayUsableUploaded.push({ id: att.id, name: att.name });
           } else {
@@ -1021,13 +1024,13 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
       .pipe(first())
       .subscribe((res) => {
         const id = res?.data?.createUserAttribute.attributeId;
-          if (id) {
-            localStorage.setItem("isNewAttribute", "true");
-            this.router.navigate(['../attributes/' + id],
+        if (id) {
+          localStorage.setItem("isNewAttribute", "true");
+          this.router.navigate(['../attributes/' + id],
             {
               relativeTo: this.activatedRoute
             });
-          }
+        }
       });
   }
 }

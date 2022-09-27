@@ -1,0 +1,12 @@
+<div class="border bg-white flex-grow mt-2">
+    <div class="card-body p-3 overflow-auto" style="max-height: 500px;">
+        <div *ngIf="logs;else noLogsYet">
+            <pre class="text-sm text-indigo-dark-1">{{logs.join("\n")}}</pre>
+        </div>
+        <ng-template #noLogsYet>
+            <div class="text-sm leading-5 font-normal text-gray-500">
+                Run module to display logs
+            </div>
+        </ng-template>
+    </div>
+</div>

@@ -18,7 +18,7 @@ import {
   startWith,
   distinctUntilChanged,
 } from 'rxjs/operators';
-import { combineLatest, Subscription, timer } from 'rxjs';
+import { combineLatest, forkJoin, Subscription, timer } from 'rxjs';
 import { InformationSourceType, informationSourceTypeToString, LabelingTask, LabelSource } from 'src/app/base/enum/graphql-enums';
 import { dateAsUTCDate, parseLinkFromText } from 'src/app/util/helper-functions';
 import { NotificationService } from 'src/app/base/services/notification.service';
@@ -57,12 +57,10 @@ export class CrowdLabelerDetailsComponent
   informationSourceQuery$: any;
   informationSource: any;
   subscriptions$: Subscription[] = [];
-  lastTask$: any;
-  lastTaskQuery$: any;
   labelingTasksQuery$: any;
   labelingTasks: Map<string, any> = new Map<string, any>();
   labelColor: Map<string, Map<string, string>> = new Map<string, Map<string, string>>();
-  labelingTasksClassification: any[];
+  labelingTasksUseable: any[];
   labelingTasksSortOrder = [];
   useTaskLabels: boolean = true;
   zeroShotRecommendations: any;
@@ -118,7 +116,7 @@ export class CrowdLabelerDetailsComponent
 
 
     this.subscriptions$.push(project$.subscribe((project) => this.project = project));
-    combineLatest(tasks$).subscribe(() => this.prepareInformationSource(projectId));
+    forkJoin(tasks$).subscribe(() => this.prepareInformationSource(projectId));
 
     this.checkIfManagedVersion();
 
@@ -191,7 +189,6 @@ export class CrowdLabelerDetailsComponent
         this.removeAccessLink();
         this.fillLinkData(res.data.generateAccessLink.link);
         this.crowdSettings.accessLinkId = res.data.generateAccessLink.link.id;
-        this.crowdSettings.isHTTPS = window.location.protocol == 'https:';
         this.crowdSettings.accessLinkLocked = res.data.generateAccessLink.link.isLocked;
         this.saveInformationSource();
       }
@@ -265,6 +262,7 @@ export class CrowdLabelerDetailsComponent
     this.crowdSettings.accessLink = linkObj.link;
     this.crowdSettings.accessLinkParsed = buildFullLink(linkObj.link);
     this.crowdSettings.accessLinkLocked = linkObj.isLocked;
+    this.crowdSettings.isHTTPS = window.location.protocol == 'https:';
   }
 
 
@@ -274,7 +272,7 @@ export class CrowdLabelerDetailsComponent
 
     vc.subscribe((tasks) => {
       tasks.sort((a, b) => a.relativePosition - b.relativePosition)
-      this.labelingTasksClassification = tasks.filter(t => t.taskType == LabelingTask.MULTICLASS_CLASSIFICATION)
+      this.labelingTasksUseable = tasks.filter(t => t.taskType != LabelingTask.NOT_SET)
       this.labelingTasks.clear();
       this.labelColor.clear();
       this.labelingTasksSortOrder = [];
@@ -292,7 +290,7 @@ export class CrowdLabelerDetailsComponent
       this.colors.domain(labelIds);
     });
 
-    return vc;
+    return vc.pipe(first());
   }
 
   deleteInformationSource(projectId: string, informationSourceId: string) {
@@ -300,6 +298,7 @@ export class CrowdLabelerDetailsComponent
       .deleteInformationSource(projectId, informationSourceId).pipe(first())
       .subscribe();
   }
+
 
   saveInformationSource() {
     this.informationSourceApolloService
@@ -353,7 +352,9 @@ export class CrowdLabelerDetailsComponent
 
   changeSettings(attributeName: string, newValue: any, saveToDb: boolean = true) {
     this.crowdSettings[attributeName] = newValue;
-    if (saveToDb) this.saveInformationSource();
+    if (saveToDb) {
+      this.saveInformationSource();
+    }
   }
 
   handleWebsocketNotification(msgParts) {
