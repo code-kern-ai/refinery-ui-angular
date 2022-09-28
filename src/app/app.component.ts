@@ -52,7 +52,6 @@ export class AppComponent implements OnDestroy, OnInit {
 
   initalRequests() {
     CommentDataManager.initManager(this.organizationService);
-    this.organizationService.getUserInfo().pipe(first()).subscribe((v) => UserManager.initUserManager(this.router, this.organizationService, v));
     this.configService.isManaged().pipe(first()).subscribe((v) => ConfigManager.initConfigManager(this.http, this.configService, v));
     this.configService.isDemo().pipe(first()).subscribe((v) => ConfigManager.setIsDemo(v));
     this.configService.isAdmin().pipe(first()).subscribe((v) => ConfigManager.setIsAdmin(v));
@@ -68,6 +67,8 @@ export class AppComponent implements OnDestroy, OnInit {
     }
     this.initializeIntercom();
     this.initRouterListener();
+    //caution! the first user request needs to run after the db creation since otherwise the backend will try to create an unasigned user
+    this.organizationService.getUserInfo().pipe(first()).subscribe((v) => UserManager.initUserManager(this.router, this.organizationService, v));
   }
 
   initializeIntercom() {

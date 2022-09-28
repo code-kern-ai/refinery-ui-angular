@@ -1,0 +1,9 @@
+#!/bin/bash
+
+
+echo -ne 'building container...'
+docker build -t kernai/refinery-ui:latest -f Dockerfile . #> /dev/null 2>&1
+echo -ne '\t\t [done]\n'
+
+echo -ne 'start refinery like normal (the tag was replaced)'
+
