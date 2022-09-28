@@ -1,4 +1,5 @@
 import { Component, Input, OnChanges } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'kern-heuristic-statuses',
@@ -14,8 +15,11 @@ export class HeuristicStatusesComponent implements OnChanges {
   dataTip: string;
   statusName: string;
   color: string;
+  isAttributesOrSettingsPage: boolean;
 
-  constructor() { }
+  constructor(private router: Router) {
+    this.isAttributesOrSettingsPage = this.router.url.indexOf('attributes') > -1 || this.router.url.indexOf('settings') > -1 ? true : false;
+   }
 
   ngOnChanges(): void {
     switch (this.status) {
@@ -57,7 +61,7 @@ export class HeuristicStatusesComponent implements OnChanges {
         break;
       default:
         this.dataTip = (this.page === 'heuristics' ? 'Heuristic' : 'Attribute') + ' was successfully registered.';
-        this.statusName = 'Initial';
+        this.statusName = this.isAttributesOrSettingsPage ? 'Needs execution' : 'Initial';
         this.color = 'gray';
     }
   }
