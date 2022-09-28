@@ -1191,8 +1191,8 @@
             <input type="checkbox" id="slice-information" class="modal-toggle">
             <div class="modal">
                 <div class="modal-box text-black bg-white justify-center"
-                    style="max-width: 70%; width:fit-content; height:fit-content; max-height: 80%;">
-                    <div class="flex flex-grow justify-center mb-4 font-bold">Slice Information</div>
+                    style="max-width: 70%; width:fit-content; height:fit-content; max-height: 80%;min-width: 30%;">
+                    <div class="flex flex-grow justify-center mb-4 font-bold">Slice information</div>
                     <div *ngFor="let item of sliceInfo | keyvalue : orderOriginal">
                         <ng-template [ngIf]="item.key == 'Link'" [ngIfElse]="normalDisplay">
                             <div class="mt-3 flex rounded-md">
@@ -1213,7 +1213,7 @@
                             </div>
                         </ng-template>
                         <ng-template #normalDisplay>
-                            <div class="flex flex-grow justify-between">
+                            <div class="flex flex-grow justify-between gap-8">
                                 <p>{{item.key}}</p>
                                 <p>{{item.value}}</p>
                             </div>
