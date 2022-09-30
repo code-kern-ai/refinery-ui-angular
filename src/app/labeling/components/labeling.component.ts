@@ -195,7 +195,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
     this.labelingLinkData = parseLabelingLinkData(this.activatedRoute);
     const projectId = this.labelingLinkData.projectId;
 
-    CommentDataManager.registerCommentRequests(this, [{ commentType: CommentType.LABELING_TASK, projectId: projectId }]);
+    CommentDataManager.registerCommentRequests(this, [{ commentType: CommentType.LABELING_TASK, projectId: projectId }, { commentType: CommentType.ATTRIBUTE, projectId: projectId }]);
     NotificationService.subscribeToNotification(this, {
       projectId: projectId,
       whitelist: this.getWhiteListNotificationService(),

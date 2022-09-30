@@ -72,6 +72,8 @@ export class CommentComponent implements OnInit, OnDestroy {
     this.newComment.commentType = this.commentTypeOptions[index].key;
     this.newComment.commentTypeReadable = this.commentTypeOptions[index].name;
     this.commentIdOptions = this.dm.getCommentIdOptions(this.newComment.commentType);
+    this.newComment.commentId = "";
+    this.newComment.commentIdReadable = "";
   }
   switchCommentId(index: number) {
     if (index > this.commentIdOptions.length) return;
