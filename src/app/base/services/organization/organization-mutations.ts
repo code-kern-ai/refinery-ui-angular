@@ -24,5 +24,13 @@ export const mutations = {
       ok
     }
   }  
+  `,
+  CREATE_COMMENT: gql`
+  mutation ($comment: String!, $xftype: String!, $xfkey: ID!, $projectId: ID, $isPrivate: Boolean) {
+    createComment(comment: $comment, xftype: $xftype, xfkey: $xfkey, projectId: $projectId, isPrivate: $isPrivate) {
+      ok
+    }
+  }
+  
   `
 };

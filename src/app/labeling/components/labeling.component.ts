@@ -31,7 +31,7 @@ import { dateAsUTCDate, parseLinkFromText } from 'src/app/util/helper-functions'
 import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
 import { NotificationService } from 'src/app/base/services/notification.service';
 import { assumeUserRole, guessLinkType, labelingHuddle, labelingLinkData, labelingLinkType, parseLabelingLinkData, userRoles } from './helper/labeling-helper';
-import { CommentDataManager } from 'src/app/base/components/comment/comment-helper';
+import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
 
 @Component({
   selector: 'kern-labeling',
@@ -146,7 +146,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
     this.subscriptions$.forEach(element => element.unsubscribe());
     if (this.project) NotificationService.unsubscribeFromNotification(this, this.project.id)
     if (this.roleAssumed) localStorage.removeItem("huddleData");
-    // CommentDataManager.unregisterAllCommentRequests(this);
+    CommentDataManager.unregisterAllCommentRequests(this);
     let removed = false;
     if (this.project) {
       removed = true;
@@ -195,7 +195,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
     this.labelingLinkData = parseLabelingLinkData(this.activatedRoute);
     const projectId = this.labelingLinkData.projectId;
 
-    // CommentDataManager.registerCommentRequests(this, [{ commentType: "LABELING_TASK", projectId: projectId }]);
+    CommentDataManager.registerCommentRequests(this, [{ commentType: CommentType.LABELING_TASK, projectId: projectId }]);
     NotificationService.subscribeToNotification(this, {
       projectId: projectId,
       whitelist: this.getWhiteListNotificationService(),

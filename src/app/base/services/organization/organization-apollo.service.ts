@@ -124,5 +124,18 @@ export class OrganizationApolloService {
       })
       .pipe(map((result) => JSON.parse(result['data']['getAllComments'])));
   }
-
+  createComment(comment: string, xftype: string, xfkey: string, projectId: string = null, isPrivate: boolean = null) {
+    return this.apollo
+      .mutate({
+        mutation: mutations.CREATE_COMMENT,
+        variables: {
+          comment: comment,
+          xftype: xftype,
+          xfkey: xfkey,
+          projectId: projectId,
+          isPrivate: isPrivate,
+        },
+      })
+      .pipe(map((result) => result['data']['createComment']));
+  }
 }

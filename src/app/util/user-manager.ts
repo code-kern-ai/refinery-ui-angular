@@ -10,8 +10,10 @@ export class UserManager {
     private static router: Router;
     private static organizationService: OrganizationApolloService;
     private static user: any;
-    private static actionsAfterInit: Map<Object, () => void> = new Map<Object, () => void>();
-    private static actionsAfterUpdate: Map<Object, () => void> = new Map<Object, () => void>();
+    private static users: any[];
+    private static actionsAfterBaseInit: Map<Object, () => void> = new Map<Object, () => void>();
+    private static actionsAfterFullInit: Map<Object, () => void> = new Map<Object, () => void>();
+    // private static actionsAfterUpdate: Map<Object, () => void> = new Map<Object, () => void>();
 
 
     //needs to be called once from app (because of the http injection)
@@ -19,7 +21,13 @@ export class UserManager {
         UserManager.router = router;
         UserManager.organizationService = organizationService;
         UserManager.user = user;
-        UserManager.actionsAfterInit.forEach((func, key) => func.call(key));
+        UserManager.organizationService.getOrganizationUsers().pipe(first()).subscribe((users: any[]) => {
+            UserManager.users = users;
+            UserManager.actionsAfterFullInit.forEach((func, key) => func.call(key));
+        });
+        UserManager.actionsAfterBaseInit.forEach((func, key) => func.call(key));
+
+
     }
 
 
@@ -31,29 +39,48 @@ export class UserManager {
         if (copy) return { ...UserManager.user };
         return UserManager.user;
     }
-
-    public static rerequestUser() {
-        UserManager.user = null; //not longer init :) 
-        UserManager.organizationService.getUserInfo().pipe(first()).subscribe((u: any) => {
-            UserManager.user = u;
-            UserManager.actionsAfterUpdate.forEach((func, key) => func.call(key));
-        });
+    public static getAllUsers(copy: boolean = true): any {
+        if (!UserManager.isInit()) {
+            console.log("UserManager not initialized - maybe register for after update?");
+            return null;
+        }
+        if (copy) return JSON.parse(JSON.stringify(UserManager.users));
+        return UserManager.users;
     }
 
-    public static isInit(): boolean {
-        return !!UserManager.router && !!UserManager.organizationService && !!UserManager.user;
+    // public static rerequestUser() {
+    //     UserManager.user = null; //not longer init :) 
+    //     UserManager.organizationService.getUserInfo().pipe(first()).subscribe((u: any) => {
+    //         UserManager.user = u;
+    //         UserManager.actionsAfterUpdate.forEach((func, key) => func.call(key));
+    //     });
+    // }
+    // public static requestAllUsers() {
+    //     UserManager.organizationService.getOrganizationUsers().pipe(first()).subscribe((users: any[]) => {
+    //     });
+    //     UserManager.user = null; //not longer init :) 
+    //     UserManager.organizationService.getUserInfo().pipe(first()).subscribe((u: any) => {
+    //         UserManager.user = u;
+    //         UserManager.actionsAfterUpdate.forEach((func, key) => func.call(key));
+    //     });
+    // }
+
+    private static isInit(): boolean {
+        return !!UserManager.router && !!UserManager.organizationService && !!UserManager.user && !!UserManager.users;
     }
-    public static registerAfterUpdateAction(caller: Object, func: () => void) {
-        UserManager.actionsAfterUpdate.set(caller, func);
-    }
-    public static unregisterAfterUpdateAction(caller: Object) {
-        UserManager.actionsAfterUpdate.delete(caller);
-    }
-    public static registerAfterInitAction(caller: Object, func: () => void) {
-        UserManager.actionsAfterInit.set(caller, func);
+    // public static registerAfterUpdateAction(caller: Object, func: () => void) {
+    //     UserManager.actionsAfterUpdate.set(caller, func);
+    // }
+    // public static unregisterAfterUpdateAction(caller: Object) {
+    //     UserManager.actionsAfterUpdate.delete(caller);
+    // }
+    public static registerAfterInitAction(caller: Object, func: () => void, fullInit: boolean = false) {
+        if (fullInit) UserManager.actionsAfterFullInit.set(caller, func);
+        else UserManager.actionsAfterBaseInit.set(caller, func);
     }
     public static unregisterAfterInitAction(caller: Object) {
-        UserManager.actionsAfterInit.delete(caller);
+        if (UserManager.actionsAfterFullInit.has(caller)) UserManager.actionsAfterFullInit.delete(caller);
+        if (UserManager.actionsAfterBaseInit.has(caller)) UserManager.actionsAfterBaseInit.delete(caller);
     }
 
     public static checkUserAndRedirect(caller: Object, allowedRole: string = "ENGINEER") {
@@ -61,8 +88,7 @@ export class UserManager {
             UserManager.registerAfterInitAction(caller, () => {
                 UserManager.checkUserAndRedirect(caller, allowedRole);
                 UserManager.unregisterAfterInitAction(caller);
-            }
-            );
+            });
             return;
         }
 

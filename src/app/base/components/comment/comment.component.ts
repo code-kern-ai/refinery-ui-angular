@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { timer } from 'rxjs';
 import { UserManager } from 'src/app/util/user-manager';
 import { CommentDataManager } from './comment-helper';
@@ -8,7 +8,7 @@ import { CommentDataManager } from './comment-helper';
   templateUrl: './comment.component.html',
   styleUrls: ['./comment.component.scss']
 })
-export class CommentComponent implements OnInit {
+export class CommentComponent implements OnInit, OnDestroy {
   //TODO work in progress not yet useable
   dm: CommentDataManager;
   cData = {
@@ -27,18 +27,61 @@ export class CommentComponent implements OnInit {
     open: true,
     edit: false,
   }
-  user: any;
+  myUser: any;
+  allUsers: any;
+
+  newComment = {
+    areaOpen: false,
+    commentType: "",
+    commentTypeReadable: "",
+    commentId: "",
+    commentIdReadable: "",
+  }
+  commentIdOptions: any[];
+  commentTypeOptions: any[];
+
   constructor() { }
+  ngOnDestroy(): void {
+    UserManager.unregisterAfterInitAction(this);
+  }
   ngOnInit(): void {
     this.initDataManger();
+    UserManager.registerAfterInitAction(this, () => this.initUsers(), true);
   }
 
+  private initUsers() {
+    this.myUser = UserManager.getUser(false);
+    this.allUsers = UserManager.getAllUsers(false);
+  }
   initDataManger() {
     if (!CommentDataManager.isInit()) {
       timer(250).subscribe(() => this.initDataManger());
       return;
     }
     this.dm = CommentDataManager.getInstance();
-    this.user = UserManager.getUser(true);
+  }
+
+  openAddNewComment() {
+    this.newComment.areaOpen = true;
+    this.commentTypeOptions = this.dm.getCommentTypeOptions();
+    if (this.commentTypeOptions.length > 0) this.switchCommentType(0);
+  }
+
+  switchCommentType(index: number) {
+    if (index > this.commentTypeOptions.length) return;
+    this.newComment.commentType = this.commentTypeOptions[index].key;
+    this.newComment.commentTypeReadable = this.commentTypeOptions[index].name;
+    this.commentIdOptions = this.dm.getCommentIdOptions(this.newComment.commentType);
+  }
+  switchCommentId(index: number) {
+    if (index > this.commentIdOptions.length) return;
+    this.newComment.commentId = this.commentIdOptions[index].id;
+    this.newComment.commentIdReadable = this.commentIdOptions[index].name;
+    if (!this.newComment.commentIdReadable) this.newComment.commentIdReadable = 'unknown id';
+
+  }
+  saveCommentToDb(comment: string, isPrivate: boolean) {
+    console.log("tried to save", comment, isPrivate, this.newComment);
+    this.dm.createComment(comment, this.newComment.commentType, this.newComment.commentId, isPrivate);
   }
 }
