@@ -32,5 +32,19 @@ export const mutations = {
     }
   }
   
+  `,
+  DELETE_COMMENT: gql`
+  mutation ($commentId: ID!, $projectId: ID) {
+    deleteComment(commentId: $commentId, projectId: $projectId) {
+      ok
+    }
+  }
+  `,
+  UPDATE_COMMENT: gql`
+  mutation ($commentId: ID!, $changes: JSONString!, $projectId: ID) {
+    updateComment(commentId: $commentId, changes: $changes, projectId: $projectId) {
+      ok
+    }
+  }
   `
 };

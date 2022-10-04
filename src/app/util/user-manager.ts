@@ -24,10 +24,10 @@ export class UserManager {
         UserManager.organizationService.getOrganizationUsers().pipe(first()).subscribe((users: any[]) => {
             UserManager.users = users;
             UserManager.actionsAfterFullInit.forEach((func, key) => func.call(key));
+            UserManager.actionsAfterFullInit.clear();
         });
         UserManager.actionsAfterBaseInit.forEach((func, key) => func.call(key));
-
-
+        UserManager.actionsAfterBaseInit.clear();
     }
 
 
@@ -68,16 +68,23 @@ export class UserManager {
     private static isInit(): boolean {
         return !!UserManager.router && !!UserManager.organizationService && !!UserManager.user && !!UserManager.users;
     }
-    // public static registerAfterUpdateAction(caller: Object, func: () => void) {
-    //     UserManager.actionsAfterUpdate.set(caller, func);
-    // }
-    // public static unregisterAfterUpdateAction(caller: Object) {
-    //     UserManager.actionsAfterUpdate.delete(caller);
-    // }
-    public static registerAfterInitAction(caller: Object, func: () => void, fullInit: boolean = false) {
+    /**
+     * Runs the given function after all init actions are done. If the manager is already initialized the function is called directly.
+     * @param  {Object} caller  This object of under wich the functino is registered (usaully component object).
+     * @callback  {()=>void)} func The function of the object that should be run.
+     */
+    public static registerAfterInitActionOrRun(caller: Object, func: () => void, fullInit: boolean = false) {
+        if (UserManager.isInit()) {
+            func.call(caller);
+            return;
+        }
         if (fullInit) UserManager.actionsAfterFullInit.set(caller, func);
         else UserManager.actionsAfterBaseInit.set(caller, func);
     }
+    /**
+      * Should almost never be used since the action/function is called and cleared after init.
+      * @param  {Object} caller  This object of under wich the functino is registered (usaully component object).
+      */
     public static unregisterAfterInitAction(caller: Object) {
         if (UserManager.actionsAfterFullInit.has(caller)) UserManager.actionsAfterFullInit.delete(caller);
         if (UserManager.actionsAfterBaseInit.has(caller)) UserManager.actionsAfterBaseInit.delete(caller);
@@ -85,7 +92,7 @@ export class UserManager {
 
     public static checkUserAndRedirect(caller: Object, allowedRole: string = "ENGINEER") {
         if (!UserManager.isInit()) {
-            UserManager.registerAfterInitAction(caller, () => {
+            UserManager.registerAfterInitActionOrRun(caller, () => {
                 UserManager.checkUserAndRedirect(caller, allowedRole);
                 UserManager.unregisterAfterInitAction(caller);
             });

@@ -124,6 +124,7 @@ export class OrganizationApolloService {
       })
       .pipe(map((result) => JSON.parse(result['data']['getAllComments'])));
   }
+
   createComment(comment: string, xftype: string, xfkey: string, projectId: string = null, isPrivate: boolean = null) {
     return this.apollo
       .mutate({
@@ -137,5 +138,30 @@ export class OrganizationApolloService {
         },
       })
       .pipe(map((result) => result['data']['createComment']));
+  }
+
+
+  deleteComment(commentId: string, projectId: string = null) {
+    return this.apollo
+      .mutate({
+        mutation: mutations.DELETE_COMMENT,
+        variables: {
+          commentId: commentId,
+          projectId: projectId,
+        },
+      })
+      .pipe(map((result) => result['data']['deleteComment']));
+  }
+  updateComment(commentId: string, changesJson: string, projectId: string = null) {
+    return this.apollo
+      .mutate({
+        mutation: mutations.UPDATE_COMMENT,
+        variables: {
+          commentId: commentId,
+          changes: changesJson,
+          projectId: projectId,
+        },
+      })
+      .pipe(map((result) => result['data']['updateComment']));
   }
 }
