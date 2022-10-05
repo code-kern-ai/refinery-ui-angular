@@ -491,4 +491,21 @@ export class WeakSourceApolloService {
     });
   }
 
+  getabelingFunctionOn10Records(projectId: string, informationSourceId: string) {
+    const query = this.apollo
+      .watchQuery({
+        query: queries.GET_LABELING_FUNCTION_ON_10_RECORDS,
+        variables: {
+          projectId: projectId,
+          informationSourceId: informationSourceId
+        },
+        fetchPolicy: 'network-only',
+        nextFetchPolicy: 'cache-first',
+      });
+      const vc = query.valueChanges.pipe(
+        map((result) => result['data']['getLabelingFunctionOn10Records'])
+      );
+    return [query, vc];
+  }
+
 }

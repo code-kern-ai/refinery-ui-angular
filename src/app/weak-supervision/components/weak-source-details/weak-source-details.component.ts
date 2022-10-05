@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl } from '@angular/forms';
-import { first } from 'rxjs/operators';
+import { first, mergeMap } from 'rxjs/operators';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { RouteService } from 'src/app/base/services/route.service';
 import { WeakSourceApolloService } from 'src/app/base/services/weak-source/weak-source-apollo.service';
@@ -26,6 +26,7 @@ import { NotificationService } from 'src/app/base/services/notification.service'
 import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
 import { schemeCategory24 } from 'src/app/util/colors';
 import { UserManager } from 'src/app/util/user-manager';
+import { RecordApolloService } from 'src/app/base/services/record/record-apollo.service';
 
 @Component({
   selector: 'kern-weak-source-details',
@@ -85,6 +86,14 @@ export class WeakSourceDetailsComponent
 
   stickyObserver: IntersectionObserver;
   isHeaderNormal: boolean = true;
+  sampleRecordsQuery$;
+  sampleRecordsData$: any;
+  currentRecordId: string;
+  currentRecordIdx: number = -1;
+  recordData: any = [];
+  recordDataAttributes: any;
+  sampleRecords: any = [];
+
   constructor(
     private router: Router,
     private routeService: RouteService,
@@ -92,6 +101,7 @@ export class WeakSourceDetailsComponent
     private projectApolloService: ProjectApolloService,
     private informationSourceApolloService: WeakSourceApolloService,
     private organizationService: OrganizationApolloService,
+    private recordApolloService: RecordApolloService,
   ) { }
 
   getTargetTaskLabels() {
@@ -607,4 +617,53 @@ export class WeakSourceDetailsComponent
     return attributes$.pipe(first());
   }
 
+  getabelingFunctionOn10Records(projectId: string) {
+    if (this.requestTimeOut) return;
+    if (this.hasUnsavedChanges()) {
+      console.log('Unsaved changes -- aborted!');
+      return;
+    }
+    this.justClickedRun = true;
+    this.sampleRecords = [];
+
+    [this.sampleRecordsQuery$, this.sampleRecordsData$] = this.informationSourceApolloService.getabelingFunctionOn10Records(projectId, this.informationSource.id)   
+    this.subscriptions$.push(this.sampleRecordsData$
+      .subscribe((sampleRecords) => {
+        this.sampleRecords = sampleRecords;
+        this.sampleRecords.recordIds.forEach(recordId => {
+          this.getRecordByRecordId(recordId);
+        });
+        this.lastTaskLogs = this.sampleRecords.containerLogs;
+        this.justClickedRun = false;
+      }));
+    this.requestTimeOut = true;
+    timer(1000).subscribe(() => this.requestTimeOut = false);
+  }
+
+  getRecordByRecordId(recordId: string, index?: number) {
+    this.currentRecordId = recordId;
+    this.currentRecordIdx = index;
+    this.recordApolloService
+      .getRecordByRecordId(this.project.id, recordId)
+      .pipe(first())
+      .subscribe((record) => {
+        this.recordDataAttributes = record.data;
+        Object.keys(record.data).forEach(key => {
+          if(this.informationSource.sourceCode.includes(key)) {
+            this.recordData.push(record.data[key]);
+          }
+        })
+      });
+  }
+
+  getColorForLabel(label: string) {
+    return this.getTargetTaskLabels().find(el => el.name == label)?.color;
+  }
+
+  convertStringToArray(str: string) {
+    const array = str.split('\'');
+    const filteredArr = array.filter((el, idx) => idx % 2 == 1);
+    return array.length == 1 ? array : filteredArr;
+
+  }
 }
