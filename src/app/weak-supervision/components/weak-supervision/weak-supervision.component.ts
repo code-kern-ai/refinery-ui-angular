@@ -3,6 +3,7 @@ import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription, timer } from 'rxjs';
 import { first } from 'rxjs/operators';
+import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
 import { InformationSourceType, LabelingTask, LabelSource } from 'src/app/base/enum/graphql-enums';
 import { NotificationService } from 'src/app/base/services/notification.service';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
@@ -91,6 +92,7 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
     this.subscriptions$.forEach((subscription) => subscription.unsubscribe());
     const projectId = this.project?.id ? this.project.id : this.activatedRoute.parent.snapshot.paramMap.get('projectId');
     NotificationService.unsubscribeFromNotification(this, projectId);
+    CommentDataManager.unregisterAllCommentRequests(this);
   }
 
   ngOnInit(): void {
@@ -127,8 +129,17 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
       whitelist: this.getWhiteListNotificationService(),
       func: this.handleWebsocketNotification
     });
+    this.setUpCommentRequests(projectId);
   }
-
+  private setUpCommentRequests(projectId: string) {
+    const requests = [];
+    requests.push({ commentType: CommentType.ATTRIBUTE, projectId: projectId });
+    requests.push({ commentType: CommentType.LABELING_TASK, projectId: projectId });
+    requests.push({ commentType: CommentType.HEURISTIC, projectId: projectId });
+    requests.push({ commentType: CommentType.EMBEDDING, projectId: projectId });
+    requests.push({ commentType: CommentType.LABEL, projectId: projectId });
+    CommentDataManager.registerCommentRequests(this, requests);
+  }
 
   prepareCurrentWeakSupervisionInfo(projectId: string) {
     [this.currentWeakSupervisionRunQuery$, this.currentWeakSupervisionRun$] = this.projectApolloService.getCurrentWeakSupervisionRun(projectId);

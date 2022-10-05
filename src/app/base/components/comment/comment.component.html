@@ -17,12 +17,13 @@
     <div class="modal-box text-black bg-white flex flex-col"
         style="max-width: 80%;min-width: 50%; width:fit-content;height:fit-content;max-height: 90%;">
         <div class="self-center flex flex-row flex-nowrap items-center">
-            <p class="mr-2 font-bold">Comments</p>
+            <p class="font-bold tooltip tooltip-bottom cursor-pointer" [attr.data-tip]="allOpen?'close all':'open all'"
+                (click)="openAllComments(!allOpen)">Comments</p>
         </div>
-        <div *ngIf="myUser && dm?.currentData" class="flex flex-col gap-2">
-
-            <div *ngFor="let kv of dm.currentData | keyvalue; let i = index;">
-                <ng-container [ngTemplateOutlet]="displayComment" [ngTemplateOutletContext]="{cData:kv.value}">
+        <div *ngIf="myUser && dm?.currentData && dm?.currentDataOrder" class="flex flex-col gap-2">
+            <div *ngFor="let cWrapper of dm.currentDataOrder;">
+                <ng-container [ngTemplateOutlet]="displayComment"
+                    [ngTemplateOutletContext]="{cData:dm.currentData[cWrapper.key]}">
                 </ng-container>
 
             </div>
@@ -34,9 +35,8 @@
                 </svg>
                 Add new comment
             </button>
-            <ng-template [ngIf]="commentTypeOptions">
+            <ng-template [ngIf]="newComment.areaOpen">
                 <ng-container class="mt-2" [ngTemplateOutlet]="addNewComment">
-                    <!-- [ngTemplateOutletContext]="{iconName:dropdownOptions.optionIcons[i]}" -->
                 </ng-container>
             </ng-template>
         </div>
@@ -51,22 +51,15 @@
 
 <ng-template #displayComment let-cData="cData">
     <div class="flex flex-row pl-2 flex-nowrap items-center justify-between border border-gray-300">
-        <div class="flex flex-row flex-nowrap whitespace-nowrap items-center">
+        <div class="flex flex-row flex-nowrap whitespace-nowrap items-center mr-2">
             <span>{{cData.xfkeyAdd}}</span>
-            <span class="ml-1 text-gray-400 text-sm whitespace-nowrap">(created by {{cData.creationUser}})</span>
+            <span class="ml-1 text-gray-400 text-sm whitespace-nowrap">(created by {{myUser.id ==
+                cData.created_by?'you':cData.creationUser}})</span>
         </div>
-        <!-- <div [attr.data-tip]="'created by ' + cData.creationUser" class="tooltip tooltip-bottom relative"><span
-                class="cursor-help underline"
-                style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">
-                {{cData.xfkeyAdd}}
-
-            </span>
-        </div> -->
-        <!-- <span class="tooltip">{{cData.xfkeyAdd}}</span> -->
         <div class="flex flex-row flex-nowrap gap-2 items-center">
             <div *ngIf="cData.is_private" data-tip="private comment" class="tooltip"
                 (click)="updateComment(cData.id,'is_private',!cData.is_private)"
-                [ngClass]="myUser.id == cData.created_by?'cursor-pointer':'text-gray-400'">
+                [ngClass]="myUser.id == cData.created_by?'cursor-pointer':'text-gray-400 pointer-events-none'">
                 <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-eye-off" width="24"
                     height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
                     stroke-linecap="round" stroke-linejoin="round">
@@ -80,7 +73,7 @@
             </div>
             <div *ngIf="!cData.is_private" data-tip="public comment" class="tooltip"
                 (click)="updateComment(cData.id,'is_private',!cData.is_private)"
-                [ngClass]="myUser.id == cData.created_by?'cursor-pointer':'text-gray-400'">
+                [ngClass]="myUser.id == cData.created_by?'cursor-pointer':'text-gray-400 pointer-events-none'">
                 <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-eye" width="24" height="24"
                     viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
                     stroke-linejoin="round">
@@ -93,7 +86,7 @@
             </div>
 
             <div data-tip="edit comment" class="tooltip" (click)="editComment(cData)"
-                [ngClass]="myUser.id == cData.created_by?'cursor-pointer':'text-gray-400'">
+                [ngClass]="myUser.id == cData.created_by?'cursor-pointer':'text-gray-400 pointer-events-none'">
 
                 <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-pencil" width="24"
                     height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
@@ -104,7 +97,7 @@
                 </svg>
             </div>
             <div data-tip="delete comment" class="tooltip" (click)="deleteComment(cData.id,cData.project_id)"
-                [ngClass]="myUser.id == cData.created_by || myUser.role=='ENGINEER'?'cursor-pointer':'text-gray-400'">
+                [ngClass]="myUser.id == cData.created_by || myUser.role=='ENGINEER'?'cursor-pointer':'text-gray-400 pointer-events-none'">
 
                 <svg xmlns="http://www.w3.org/2000/svg" class="inline-block w-6 h-6 stroke-current" fill="none"
                     viewBox="0 0 24 24" stroke="currentColor">
@@ -113,7 +106,8 @@
                 </svg>
             </div>
 
-            <div [ngClass]="cData.open?'rotate_transform':null" class="cursor-pointer" (click)="cData.open=!cData.open">
+            <div [ngClass]="cData.open?'rotate_transform':null" class="cursor-pointer"
+                (click)="cData.open=!cData.open;checkAllOpen()">
                 <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevrons-down" width="24"
                     height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
                     stroke-linecap="round" stroke-linejoin="round">
@@ -130,8 +124,8 @@
         (keydown)="preventEventPropagation($event)"
         [ngClass]="[cData.open?'null':'hidden',!cData.edit?'bg-gray-200':'']"
         class="textarea placeholder-italic w-full p-2 leading-4 focus:outline-none border border-gray-300"
-        style="line-height:1rem;border-radius: 0px"
-        [ngStyle]="{'background-color': !cData.edit?'#dedede':null}">{{cData.comment}}</textarea>
+        style="line-height:1rem;border-radius: 0px;max-height:400px"
+        [ngStyle]="{'background-color': !cData.edit?'#dedede':null,'height':commentText.scrollHeight + 'px','overflow-y':commentText.scrollHeight < 400 ? 'hidden':'auto'}">{{cData.comment}}</textarea>
 </ng-template>
 
 <ng-template #addNewComment>
@@ -144,7 +138,7 @@
                 <div class="flex flex-row flex-nowrap gap-2 items-center">
                     <div>Type:</div>
                     <kern-dropdown [dropdownOptions]="{
-            optionArray:commentTypeOptions,
+            optionArray:dm.currentCommentTypeOptions,
             buttonCaption:newComment.commentType?newComment.commentTypeReadable:'Select Type',
             emitIndex:true
         }" (optionClicked)="switchCommentType($event)">
@@ -174,7 +168,7 @@
             <div class="flex flex-row mt-2 justify-between">
                 <button (click)="saveCommentToDb(commentBox.value,privateComment.checked);commentBox.value=''"
                     class="px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none"
-                    [ngClass]="commentBox.value =='' || newComment.commentId == ''? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer'">
+                    [ngClass]="commentBox.value =='' || newComment.commentId == '' ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer'">
 
                     Save to database
                 </button>

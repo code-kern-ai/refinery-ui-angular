@@ -120,7 +120,8 @@ export class OrganizationApolloService {
         query: queries.REQUEST_COMMENTS,
         variables: {
           requested: requestJson
-        }
+        },
+        fetchPolicy: 'no-cache',
       })
       .pipe(map((result) => JSON.parse(result['data']['getAllComments'])));
   }
@@ -163,5 +164,19 @@ export class OrganizationApolloService {
         },
       })
       .pipe(map((result) => result['data']['updateComment']));
+  }
+
+  allProjectIds() {
+    return this.apollo
+      .query({
+        query: queries.PROJECT_IDS,
+        fetchPolicy: 'no-cache',
+      }).pipe(
+        map((result) => {
+          return result['data']['allProjects']['edges'].map(
+            (wrapper) => wrapper['node']
+          );
+        })
+      );
   }
 }

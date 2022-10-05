@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { RouteService } from 'src/app/base/services/route.service';
@@ -13,13 +13,14 @@ import {
 import { NotificationService } from 'src/app/base/services/notification.service';
 import { AttributeCalculationExamples, AttributeCodeLookup } from './new-attribute-code-lookup';
 import { RecordApolloService } from 'src/app/base/services/record/record-apollo.service';
+import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
 
 @Component({
   selector: 'kern-create-new-attribute',
   templateUrl: './create-new-attribute.component.html',
   styleUrls: ['./create-new-attribute.component.scss']
 })
-export class CreateNewAttributeComponent implements OnInit {
+export class CreateNewAttributeComponent implements OnInit, OnDestroy {
 
   project: any;
   attribute$: any;
@@ -82,6 +83,14 @@ export class CreateNewAttributeComponent implements OnInit {
       whitelist: this.getWhiteListNotificationService(),
       func: this.handleWebsocketNotification
     });
+    this.setUpCommentRequests(projectId);
+  }
+
+  private setUpCommentRequests(projectId: string) {
+    const requests = [];
+    requests.push({ commentType: CommentType.ATTRIBUTE, projectId: projectId });
+    requests.push({ commentType: CommentType.LABELING_TASK, projectId: projectId });
+    CommentDataManager.registerCommentRequests(this, requests);
   }
 
   ngAfterViewInit() {
@@ -103,6 +112,7 @@ export class CreateNewAttributeComponent implements OnInit {
       this.stickyObserver.unobserve(e.nativeElement);
     }
     NotificationService.unsubscribeFromNotification(this, this.project.id);
+    CommentDataManager.unregisterAllCommentRequests(this);
   }
 
   getWhiteListNotificationService(): string[] {

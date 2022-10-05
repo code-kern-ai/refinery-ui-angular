@@ -6,6 +6,7 @@ import { first, switchMap } from 'rxjs/operators';
 import { NotificationService } from 'src/app/base/services/notification.service';
 import { Subscription } from 'rxjs';
 import { UserManager } from 'src/app/util/user-manager';
+import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
 
 @Component({
   selector: 'kern-knowledge-bases',
@@ -33,6 +34,7 @@ export class KnowledgeBasesComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.subscriptions$.forEach((subscription) => subscription.unsubscribe());
     NotificationService.unsubscribeFromNotification(this, this.projectId);
+    CommentDataManager.unregisterAllCommentRequests(this);
   }
 
   ngOnInit(): void {
@@ -47,8 +49,13 @@ export class KnowledgeBasesComponent implements OnInit, OnDestroy {
       func: this.handleWebsocketNotification
     });
     this.subscriptions$.push(this.knowledgeBases$.subscribe(lists => this.lists = lists));
+    this.setUpCommentRequests(this.projectId);
   }
-
+  private setUpCommentRequests(projectId: string) {
+    const requests = [];
+    requests.push({ commentType: CommentType.KNOWLEDGE_BASE, projectId: projectId });
+    CommentDataManager.registerCommentRequests(this, requests);
+  }
   createKnowledgeBase(project_id) {
     this.knowledgeBaseApollo.createKnowledgeBase(project_id).pipe(first()).subscribe((result: any) => {
       const id = result?.data?.createKnowledgeBase.knowledgeBase.id;

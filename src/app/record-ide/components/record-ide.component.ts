@@ -1,6 +1,7 @@
 import {
   Component,
   HostListener,
+  OnDestroy,
   OnInit,
 } from '@angular/core';
 import { Subscription, timer } from 'rxjs';
@@ -14,6 +15,7 @@ import { ProjectApolloService } from 'src/app/base/services/project/project-apol
 import { bool } from 'aws-sdk/clients/signer';
 import { labelingHuddle, labelingLinkData, parseLabelingLinkData } from 'src/app/labeling/components/helper/labeling-helper';
 import { UserManager } from 'src/app/util/user-manager';
+import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
 
 
 @Component({
@@ -21,7 +23,7 @@ import { UserManager } from 'src/app/util/user-manager';
   templateUrl: './record-ide.component.html',
   styleUrls: ['./record-ide.component.scss'],
 })
-export class RecordIDEComponent implements OnInit {
+export class RecordIDEComponent implements OnInit, OnDestroy {
 
   codeFormCtrl = new FormControl('');
   editorOptions = { theme: 'vs-light', language: 'python' };
@@ -59,6 +61,9 @@ export class RecordIDEComponent implements OnInit {
     });
 
   }
+  ngOnDestroy(): void {
+    CommentDataManager.unregisterAllCommentRequests(this);
+  }
 
   ngOnInit(): void {
     UserManager.checkUserAndRedirect(this);
@@ -73,6 +78,14 @@ export class RecordIDEComponent implements OnInit {
       this.vertical = !horizontal;
     }
     this.changeScreenSize();
+    const projectId = this.activatedRoute.parent.snapshot.paramMap.get('projectId');
+    this.setUpCommentRequests(projectId);
+  }
+  private setUpCommentRequests(projectId: string) {
+    const requests = [];
+    requests.push({ commentType: CommentType.ATTRIBUTE, projectId: projectId });
+    requests.push({ commentType: CommentType.KNOWLEDGE_BASE, projectId: projectId });
+    CommentDataManager.registerCommentRequests(this, requests);
   }
 
   initEditor() {
@@ -163,7 +176,7 @@ export class RecordIDEComponent implements OnInit {
     this.linkData.requestedPos = Math.max(this.linkData.requestedPos - 1, 1);
     this.router.navigate(["projects", this.project.id, "record-ide", this.linkData.id], { queryParams: { pos: this.linkData.requestedPos, type: 'SESSION' } });
 
-    this.runRecordIde();    
+    this.runRecordIde();
   }
 
 }
