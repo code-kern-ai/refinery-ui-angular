@@ -20,15 +20,16 @@
             <p class="font-bold tooltip tooltip-bottom cursor-pointer" [attr.data-tip]="allOpen?'close all':'open all'"
                 (click)="openAllComments(!allOpen)">Comments</p>
         </div>
-        <div *ngIf="myUser && dm?.currentData && dm?.currentDataOrder" class="flex flex-col gap-2">
+        <div *ngIf="myUser && dm?.currentData && dm?.currentDataOrder"
+            class="flex flex-col gap-2 overflow-y-auto overflow-x-hidden" style="max-height:80%">
             <div *ngFor="let cWrapper of dm.currentDataOrder;">
                 <ng-container [ngTemplateOutlet]="displayComment"
                     [ngTemplateOutletContext]="{cData:dm.currentData[cWrapper.key]}">
                 </ng-container>
 
             </div>
-            <button *ngIf="!newComment.areaOpen" (click)="openAddNewComment()" data-tip="Add new comment"
-                class="tooltip tooltip-bottom inline-flex items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none cursor-pointer">
+            <button *ngIf="!newComment.areaOpen" (click)="openAddNewComment()"
+                class="inline-flex items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none cursor-pointer">
                 <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 h-5 w-5 inline-block stroke-current" fill="none"
                     viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -125,7 +126,7 @@
         [ngClass]="[cData.open?'null':'hidden',!cData.edit?'bg-gray-200':'']"
         class="textarea placeholder-italic w-full p-2 leading-4 focus:outline-none border border-gray-300"
         style="line-height:1rem;border-radius: 0px;max-height:400px"
-        [ngStyle]="{'background-color': !cData.edit?'#dedede':null,'height':commentText.scrollHeight + 'px','overflow-y':commentText.scrollHeight < 400 ? 'hidden':'auto'}">{{cData.comment}}</textarea>
+        [ngStyle]="{'background-color': !cData.edit?'#dedede':null,'height':(commentText.scrollHeight+2) + 'px','overflow-y':commentText.scrollHeight < 400 ? 'hidden':'auto'}">{{cData.comment}}</textarea>
 </ng-template>
 
 <ng-template #addNewComment>

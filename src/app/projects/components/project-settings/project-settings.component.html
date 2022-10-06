@@ -84,18 +84,22 @@
                                             </label>
                                         </td>
                                         <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                            <kern-heuristic-statuses [status]="attributeContainer.get('state').value" page="attributes"></kern-heuristic-statuses>
+                                            <kern-heuristic-statuses [status]="attributeContainer.get('state').value"
+                                                page="attributes"></kern-heuristic-statuses>
                                         </td>
                                         <td class="text-center px-3 py-2 text-sm text-gray-500">
-                                            <button type="button" [routerLink]="['../attributes/' + attributeContainer.get('id').value]" *ngIf="attributeContainer.get('userCreated').value"
+                                            <button type="button"
+                                                [routerLink]="['../attributes/' + attributeContainer.get('id').value]"
+                                                *ngIf="attributeContainer.get('userCreated').value"
                                                 class="text-green-800 text-sm font-medium">
                                                 <span class="leading-5">Details</span>
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block" fill="none"
-                                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block"
+                                                    fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                                    stroke-width="2">
                                                     <path stroke-linecap="round" stroke-linejoin="round"
                                                         d="M13 7l5 5m0 0l-5 5m5-5H6" />
                                                 </svg>
-                                            </button> 
+                                            </button>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -107,11 +111,10 @@
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-2 mt-1 align-top">
                 <div class="items-center flex flex-row">
-                    <button (click)="createUserAttribute()"
-                        data-tip="Add new attribute"
+                    <button (click)="createUserAttribute()" data-tip="Add new attribute"
                         class="tooltip tooltip-bottom mr-1 inline-flex items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none cursor-pointer">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 h-5 w-5 inline-block stroke-current" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 h-5 w-5 inline-block stroke-current"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                         </svg>
                         Add new attibute
@@ -274,7 +277,7 @@
 
                 <div class="text-left lg:text-right">
                     <div [attr.data-tip]="project.tokenizer"
-                        class="z-50 tooltip tooltip-right font-medium inline-block">
+                        class="z-10 tooltip tooltip-right font-medium inline-block">
                         <span class="cursor-help underline"
                             style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">
                             Tokenization</span>
@@ -456,55 +459,59 @@
                             <div class="mb-2 flex flex-grow justify-center text-sm text-gray-500">
                                 Pick from the below solutions to build a vector representation</div>
 
-                        <div *ngIf="attributesArray && embeddingCreationFormGroup">
-                            <form [formGroup]="embeddingCreationFormGroup" class="grid grid-cols-2  gap-2 items-center"
-                                style="grid-template-columns: max-content auto;">
-                                <span data-tip="Choose attribute that will be encoded"
-                                    class="tooltip tooltip-right card-title mb-0 label-text flex"><span
-                                        class="cursor-help underline"
-                                        style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Target
-                                        Attribute</span></span>
-                                <select formControlName="targetAttribute"
-                                    class="select select-bordered select-sm max-w-xs"
-                                    data-intercom-target="Settings Page Embedding Mask Target Attribute Selector">
-                                    <option *ngFor="let attribute of attributesArrayTextUsableUploaded" [value]="attribute.id">
-                                        {{attribute.name}}
-                                    </option>
-                                </select>
-                                <span data-tip="One embedding per record vs. per token"
-                                    class="tooltip tooltip-right card-title mb-0 label-text flex"><span
-                                        class="cursor-help underline"
-                                        style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Granularity</span></span>
-                                <select formControlName="granularity" class="select select-bordered select-sm max-w-xs"
-                                    data-intercom-target="Settings Page Embedding Mask Granularity Selector"
-                                    (change)="checkForceHiddenHandles()">
-                                    <option *ngFor="let granularity of granularityTypesArray"
-                                        [value]="granularity.value">
-                                        {{granularity.name}}
-                                    </option>
-                                </select>
-                                <span data-tip="Name of your Hugging Face model"
-                                    class="z-50 tooltip tooltip-right card-title mb-0 label-text flex"><span
-                                        class="cursor-help underline"
-                                        style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Configuration</span></span>
-                                <div class="dropdown"
-                                    data-intercom-target="Settings Page Embedding Mask Handle Selector With Suggestions"
-                                    *ngIf="embeddingHandlesMap.get(embeddingCreationFormGroup.get('targetAttribute').value) as suggestions;else noSuggestions">
-                                    <div tabindex="0" class="flex flex-row select select-bordered select-sm pl-0 pr-8">
-                                        <input #inputEmbeddingHandle type="text" placeholder="Type to search..."
-                                            class="w-full font-bold input input-sm"
-                                            style="outline:none; box-shadow:none;height:1.9rem;"
-                                            [value]="embeddingCreationFormGroup.get('embeddingHandle').value"
-                                            (focus)="$event.target.select()"
-                                            (keydown.enter)="selectFirstUnhiddenEmbeddingHandle(inputEmbeddingHandle)"
-                                            (input)="checkEmbeddingHandles($event.target)">
-                                    </div>
-                                    <ul tabindex="0"
-                                        class="p-2 w-full menu dropdown-content bg-base-100 shadow max-h-80 overflow-y-auto">
-                                        <li #me *ngFor="let embeddingHandle of suggestions; let k = index"
-                                            [ngClass]="embeddingHandle.hidden || embeddingHandle.forceHidden?'hidden':null"
-                                            (mouseenter)="setCurrentEmbeddingHandle(embeddingHandle,hoverBox,me)"
-                                            (mouseleave)="setCurrentEmbeddingHandle(null)">
+                            <div *ngIf="attributesArray && embeddingCreationFormGroup">
+                                <form [formGroup]="embeddingCreationFormGroup"
+                                    class="grid grid-cols-2  gap-2 items-center"
+                                    style="grid-template-columns: max-content auto;">
+                                    <span data-tip="Choose attribute that will be encoded"
+                                        class="tooltip tooltip-right card-title mb-0 label-text flex"><span
+                                            class="cursor-help underline"
+                                            style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Target
+                                            Attribute</span></span>
+                                    <select formControlName="targetAttribute"
+                                        class="select select-bordered select-sm max-w-xs"
+                                        data-intercom-target="Settings Page Embedding Mask Target Attribute Selector">
+                                        <option *ngFor="let attribute of attributesArrayTextUsableUploaded"
+                                            [value]="attribute.id">
+                                            {{attribute.name}}
+                                        </option>
+                                    </select>
+                                    <span data-tip="One embedding per record vs. per token"
+                                        class="tooltip tooltip-right card-title mb-0 label-text flex"><span
+                                            class="cursor-help underline"
+                                            style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Granularity</span></span>
+                                    <select formControlName="granularity"
+                                        class="select select-bordered select-sm max-w-xs"
+                                        data-intercom-target="Settings Page Embedding Mask Granularity Selector"
+                                        (change)="checkForceHiddenHandles()">
+                                        <option *ngFor="let granularity of granularityTypesArray"
+                                            [value]="granularity.value">
+                                            {{granularity.name}}
+                                        </option>
+                                    </select>
+                                    <span data-tip="Name of your Hugging Face model"
+                                        class="z-50 tooltip tooltip-right card-title mb-0 label-text flex"><span
+                                            class="cursor-help underline"
+                                            style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Configuration</span></span>
+                                    <div class="dropdown"
+                                        data-intercom-target="Settings Page Embedding Mask Handle Selector With Suggestions"
+                                        *ngIf="embeddingHandlesMap.get(embeddingCreationFormGroup.get('targetAttribute').value) as suggestions;else noSuggestions">
+                                        <div tabindex="0"
+                                            class="flex flex-row select select-bordered select-sm pl-0 pr-8">
+                                            <input #inputEmbeddingHandle type="text" placeholder="Type to search..."
+                                                class="w-full font-bold input input-sm"
+                                                style="outline:none; box-shadow:none;height:1.9rem;"
+                                                [value]="embeddingCreationFormGroup.get('embeddingHandle').value"
+                                                (focus)="$event.target.select()"
+                                                (keydown.enter)="selectFirstUnhiddenEmbeddingHandle(inputEmbeddingHandle)"
+                                                (input)="checkEmbeddingHandles($event.target)">
+                                        </div>
+                                        <ul tabindex="0"
+                                            class="p-2 w-full menu dropdown-content bg-base-100 shadow max-h-80 overflow-y-auto">
+                                            <li #me *ngFor="let embeddingHandle of suggestions; let k = index"
+                                                [ngClass]="embeddingHandle.hidden || embeddingHandle.forceHidden?'hidden':null"
+                                                (mouseenter)="setCurrentEmbeddingHandle(embeddingHandle,hoverBox,me)"
+                                                (mouseleave)="setCurrentEmbeddingHandle(null)">
 
                                                 <label class="cursor-pointer label"
                                                     [ngClass]="checkIfModelIsDownloaded(embeddingHandle.configString) ? 'text-green-700' : ''"

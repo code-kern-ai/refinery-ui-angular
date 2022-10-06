@@ -401,6 +401,7 @@ export class CommentDataManager {
 
     private removeCommentFromData(commentId: string, onlyFlag: boolean = false): boolean {
         let removedSomething = false;
+        let markedSomething = false;
         for (const key in this.data) {
             for (const projectId in this.data[key]) {
                 for (const commentKey in this.data[key][projectId]) {
@@ -408,6 +409,7 @@ export class CommentDataManager {
                     const index = arr.findIndex(c => c.id == commentId);
                     if (onlyFlag && index >= 0) {
                         arr[index].markedForDeletion = true;
+                        markedSomething = true;
                     } else {
                         if (index >= 0) {
                             arr.splice(index, 1);
@@ -420,7 +422,7 @@ export class CommentDataManager {
             }
             if (removedSomething && Object.keys(this.data[key]).length == 0) delete this.data[key];
         }
-        return removedSomething;
+        return removedSomething || markedSomething;
     }
     private removeCommentsFlaggedForDeletion() {
         let removedSomething = false;
