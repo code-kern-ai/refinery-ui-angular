@@ -123,14 +123,13 @@ export class CommentDataManager {
             toReturn.push(...['comment_created', 'comment_updated', 'comment_deleted']);
             toReturn.push(...['project_created', 'project_deleted']);
         } else {
-
             toReturn.push(...['label_created', 'label_deleted']);
             toReturn.push(...['attributes_updated', 'calculate_attribute']);
             toReturn.push(...['embedding_deleted', 'embedding']);
             toReturn.push(...['labeling_task_updated', 'labeling_task_deleted', 'labeling_task_created']);
             toReturn.push(...['data_slice_created', 'data_slice_updated', 'data_slice_deleted']);
             toReturn.push(...['information_source_created', 'information_source_updated', 'information_source_deleted']);
-            toReturn.push(...['knowledge_base_updated', 'knowledge_base_deleted']);
+            toReturn.push(...['knowledge_base_created', 'knowledge_base_updated', 'knowledge_base_deleted']);
         }
 
         return toReturn;
@@ -172,22 +171,24 @@ export class CommentDataManager {
     private handleWebsocketNotificationProject(msgParts: string[]) {
         //messages will be {project_id}:{messageType}:{additionalInfo}
         let somethingToRerequest = false;
-        /**
-         * TODO: still open
-            toReturn.push(...['embedding_deleted', 'embedding']);
-            toReturn.push(...['labeling_task_updated', 'labeling_task_deleted', 'labeling_task_created']);
-            toReturn.push(...['data_slice_created', 'data_slice_updated', 'data_slice_deleted']);
-            toReturn.push(...['information_source_created', 'information_source_updated', 'information_source_deleted']);
-            toReturn.push(...['knowledge_base_updated', 'knowledge_base_deleted']);
-         */
         if (['label_created', 'label_deleted'].includes(msgParts[1])) {
             somethingToRerequest = this.modifyCacheFor(CommentType.LABEL, msgParts[0], msgParts[2], msgParts[1] == 'label_created');
-
         } else if (msgParts[1] == 'attributes_updated') {
-            somethingToRerequest = this.modifyCacheFor(CommentType.LABEL, msgParts[0], null, true);
+            somethingToRerequest = this.modifyCacheFor(CommentType.ATTRIBUTE, msgParts[0], null, true);
         } else if (msgParts[1] == 'calculate_attribute') {
             somethingToRerequest = this.modifyCacheFor(CommentType.ATTRIBUTE, msgParts[0], msgParts[3], msgParts[2] == 'created');
-
+        } else if (msgParts[1] == 'embedding_deleted') {
+            somethingToRerequest = this.modifyCacheFor(CommentType.EMBEDDING, msgParts[0], msgParts[2], false);
+        } else if (msgParts[1] == 'embedding' && msgParts[3] == 'state' && msgParts[4] == 'INITIALIZING') {
+            somethingToRerequest = this.modifyCacheFor(CommentType.EMBEDDING, msgParts[0], msgParts[2], true);
+        } else if (['labeling_task_updated', 'labeling_task_deleted', 'labeling_task_created'].includes(msgParts[1])) {
+            somethingToRerequest = this.modifyCacheFor(CommentType.LABELING_TASK, msgParts[0], msgParts[2], msgParts[1] != 'labeling_task_deleted');
+        } else if (['data_slice_created', 'data_slice_updated', 'data_slice_deleted'].includes(msgParts[1])) {
+            somethingToRerequest = this.modifyCacheFor(CommentType.DATA_SLICE, msgParts[0], msgParts[2], msgParts[1] != 'data_slice_deleted');
+        } else if (['information_source_created', 'information_source_updated', 'information_source_deleted'].includes(msgParts[1])) {
+            somethingToRerequest = this.modifyCacheFor(CommentType.HEURISTIC, msgParts[0], msgParts[2] == "all" ? null : msgParts[2], msgParts[1] != 'information_source_deleted');
+        } else if (['knowledge_base_created', 'knowledge_base_updated', 'knowledge_base_deleted'].includes(msgParts[1])) {
+            somethingToRerequest = this.modifyCacheFor(CommentType.KNOWLEDGE_BASE, msgParts[0], msgParts[2], msgParts[1] != 'knowledge_base_deleted');
         }
 
         if (somethingToRerequest) this.requestMissingData(200);
@@ -219,6 +220,8 @@ export class CommentDataManager {
                     this.addInfo[addInfoKey].values = [];
                     if (this.updateCommentModule) this.updateCommentModule();
                 }
+                //no need to refetch since everything is up to date with the delete 
+                return false;
             }
             return true;
         }
@@ -269,7 +272,7 @@ export class CommentDataManager {
     public getCommentKeyOptions(key: string): any[] {
         let projectId = this.getProjectIdFromCommentType(key);
         key += "@" + projectId;
-        const list = this.addInfo?.[key].values
+        const list = this.addInfo?.[key]?.values
         if (!list) console.log("Can't find addInfo for key", key);
         return list;
     }
