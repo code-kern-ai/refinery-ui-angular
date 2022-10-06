@@ -54,6 +54,7 @@ import { UserFilter } from './helper-classes/user-filter';
 import { DownloadState } from 'src/app/import/services/s3.enums';
 import { UserManager } from 'src/app/util/user-manager';
 import { labelingLinkType } from 'src/app/labeling/components/helper/labeling-helper';
+import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
 
 
 type DataSlice = {
@@ -202,7 +203,8 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions$.forEach((subscription) => subscription.unsubscribe());
-    NotificationService.unsubscribeFromNotification(this, this.projectId)
+    NotificationService.unsubscribeFromNotification(this, this.projectId);
+    CommentDataManager.unregisterAllCommentRequests(this);
   }
 
   ngOnInit(): void {
@@ -235,10 +237,19 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       whitelist: this.getWhiteListNotificationService(),
       func: this.handleWebsocketNotification
     });
-
+    this.setUpCommentRequests(this.projectId);
   }
 
-
+  private setUpCommentRequests(projectId: string) {
+    const requests = [];
+    requests.push({ commentType: CommentType.ATTRIBUTE, projectId: projectId });
+    requests.push({ commentType: CommentType.LABELING_TASK, projectId: projectId });
+    requests.push({ commentType: CommentType.DATA_SLICE, projectId: projectId });
+    requests.push({ commentType: CommentType.HEURISTIC, projectId: projectId });
+    requests.push({ commentType: CommentType.EMBEDDING, projectId: projectId });
+    requests.push({ commentType: CommentType.LABEL, projectId: projectId });
+    CommentDataManager.registerCommentRequests(this, requests);
+  }
 
   getWhiteListNotificationService(): string[] {
     let toReturn = ['label_created', 'label_deleted', 'attributes_updated', 'calculate_attribute'];

@@ -26,6 +26,7 @@ import { NotificationService } from 'src/app/base/services/notification.service'
 import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
 import { schemeCategory24 } from 'src/app/util/colors';
 import { UserManager } from 'src/app/util/user-manager';
+import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
 
 @Component({
   selector: 'kern-weak-source-details',
@@ -121,6 +122,7 @@ export class WeakSourceDetailsComponent
       whitelist: this.getWhiteListNotificationService(),
       func: this.handleWebsocketNotification
     });
+    this.setUpCommentRequests(projectId, isType);
   }
 
   getWhiteListNotificationService(): string[] {
@@ -131,6 +133,16 @@ export class WeakSourceDetailsComponent
     toReturn.push(...['embedding_deleted', 'embedding']);
     return toReturn;
   }
+  private setUpCommentRequests(projectId: string, isType: string) {
+    const requests = [];
+    requests.push({ commentType: CommentType.ATTRIBUTE, projectId: projectId });
+    requests.push({ commentType: CommentType.LABELING_TASK, projectId: projectId });
+    requests.push({ commentType: CommentType.HEURISTIC, projectId: projectId });
+    if (isType == 'ACTIVE_LEARNING') requests.push({ commentType: CommentType.EMBEDDING, projectId: projectId });
+    else requests.push({ commentType: CommentType.KNOWLEDGE_BASE, projectId: projectId });
+    requests.push({ commentType: CommentType.LABEL, projectId: projectId });
+    CommentDataManager.registerCommentRequests(this, requests);
+  }
 
   ngOnDestroy() {
     this.subscriptions$.forEach((subscription) => subscription.unsubscribe());
@@ -139,6 +151,7 @@ export class WeakSourceDetailsComponent
     }
     const projectId = this.project?.id ? this.project.id : this.activatedRoute.parent.snapshot.paramMap.get('projectId');
     NotificationService.unsubscribeFromNotification(this, projectId);
+    CommentDataManager.unregisterAllCommentRequests(this);
   }
 
   ngAfterViewInit() {

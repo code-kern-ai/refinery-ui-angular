@@ -61,7 +61,18 @@ export const queries = {
   query ($requested: JSONString!) {
     getAllComments(requested: $requested)
   }
-  `
+  `,
+  PROJECT_IDS: gql`
+  query {
+      allProjects {
+        edges {
+          node {
+            id
+          }
+        }
+      }
+    }      
+`,
 
 
 

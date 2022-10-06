@@ -31,7 +31,7 @@ import { dateAsUTCDate, parseLinkFromText } from 'src/app/util/helper-functions'
 import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
 import { NotificationService } from 'src/app/base/services/notification.service';
 import { assumeUserRole, guessLinkType, labelingHuddle, labelingLinkData, labelingLinkType, parseLabelingLinkData, userRoles } from './helper/labeling-helper';
-import { CommentDataManager } from 'src/app/base/components/comment/comment-helper';
+import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
 
 @Component({
   selector: 'kern-labeling',
@@ -61,6 +61,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
   fullRecordData: any;
   project: Project;
   project$: any;
+  commentRecordId: string;
 
   dataSliceQuery$: any;
   dataSlices$: any;
@@ -146,7 +147,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
     this.subscriptions$.forEach(element => element.unsubscribe());
     if (this.project) NotificationService.unsubscribeFromNotification(this, this.project.id)
     if (this.roleAssumed) localStorage.removeItem("huddleData");
-    // CommentDataManager.unregisterAllCommentRequests(this);
+    CommentDataManager.unregisterAllCommentRequests(this);
     let removed = false;
     if (this.project) {
       removed = true;
@@ -194,8 +195,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
     this.routeService.updateActivatedRoute(this.activatedRoute);
     this.labelingLinkData = parseLabelingLinkData(this.activatedRoute);
     const projectId = this.labelingLinkData.projectId;
-
-    // CommentDataManager.registerCommentRequests(this, [{ commentType: "LABELING_TASK", projectId: projectId }]);
+    this.setUpCommentRequests(projectId);
     NotificationService.subscribeToNotification(this, {
       projectId: projectId,
       whitelist: this.getWhiteListNotificationService(),
@@ -211,6 +211,15 @@ export class LabelingComponent implements OnInit, OnDestroy {
       localStorage.removeItem("huddleData");
       this.huddleData = null;
     }
+
+  }
+
+  private setUpCommentRequests(projectId: string) {
+    const requests = [];
+    requests.push({ commentType: CommentType.LABELING_TASK, projectId: projectId });
+    requests.push({ commentType: CommentType.ATTRIBUTE, projectId: projectId });
+    requests.push({ commentType: CommentType.LABEL, projectId: projectId });
+    CommentDataManager.registerCommentRequests(this, requests);
 
   }
 
@@ -640,11 +649,18 @@ export class LabelingComponent implements OnInit, OnDestroy {
   }
 
   collectRecordData(projectId: string, recordId: string) {
+
     if (recordId == null || recordId == "deleted") {
       this.fullRecordData = { id: recordId };
       if (this.recordLabelAssociations$) this.recordLabelAssociations$.unsubscribe();
       return;
     }
+    if (this.commentRecordId) {
+      CommentDataManager.unregisterPartialCommentRequests(this, [{ commentType: CommentType.RECORD, projectId: projectId, commentKey: this.commentRecordId }]);
+    }
+    this.commentRecordId = recordId;
+    CommentDataManager.registerCommentRequests(this, [{ commentType: CommentType.RECORD, projectId: projectId, commentKey: this.commentRecordId }]);
+
     this.labelingTasksQuery$.refetch();
     this.resetDataToInitialTask();
     //call parallel so time isn't lost for each request

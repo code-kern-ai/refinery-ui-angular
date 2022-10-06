@@ -18,6 +18,7 @@ import { DownloadState } from 'src/app/import/services/s3.enums';
 import { timer } from 'rxjs';
 import { UploadComponent } from 'src/app/import/components/upload/upload.component';
 import { UserManager } from 'src/app/util/user-manager';
+import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
 
 
 @Component({
@@ -68,6 +69,7 @@ export class KnowledgeBaseDetailsComponent implements OnInit, AfterViewInit, OnD
       this.stickyObserver.unobserve(e.nativeElement);
     }
     NotificationService.unsubscribeFromNotification(this, this.projectId);
+    CommentDataManager.unregisterAllCommentRequests(this);
   }
 
   ngOnInit(): void {
@@ -99,6 +101,12 @@ export class KnowledgeBaseDetailsComponent implements OnInit, AfterViewInit, OnD
       this.knowledgeBaseName = val.name;
       this.knowledgeBaseDescription = val.description;
     })
+    this.setUpCommentRequests(this.projectId);
+  }
+  private setUpCommentRequests(projectId: string) {
+    const requests = [];
+    requests.push({ commentType: CommentType.KNOWLEDGE_BASE, projectId: projectId });
+    CommentDataManager.registerCommentRequests(this, requests);
   }
 
   ngAfterViewInit() {
