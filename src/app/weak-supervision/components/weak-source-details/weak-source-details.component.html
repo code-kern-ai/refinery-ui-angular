@@ -175,9 +175,13 @@
                         <div class="text-sm font-normal text-gray-500">Saving...</div>
                         <kern-loading color="indigo"></kern-loading>
                     </div>
+                    <div *ngIf="justClickedRun" class="flex items-center">
+                        <kern-loading color="indigo"></kern-loading>
+                    </div>
                     <div [attr.data-tip]="hasUnsavedChanges() ? 'Unsaved Changes detected':'Runs function on 10 records'"
                         class="tooltip tooltip-left">
-                        <button  *ngIf="informationSource.informationSourceType == 'LABELING_FUNCTION'" (click)="getabelingFunctionOn10Records(project.id)"
+                        <button *ngIf="informationSource.informationSourceType == 'LABELING_FUNCTION'" 
+                            (click)="getLabelingFunctionOn10Records(project.id)"
                             [ngClass]="hasUnsavedChanges() || justClickedRun ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
                             [disabled]="hasUnsavedChanges() || justClickedRun"
                             class="bg-white text-gray-700 text-xs font-semibold px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
@@ -204,7 +208,7 @@
                 </div>
             </div>
 
-            <div *ngIf="recordData?.length > 0" class="mt-12 flex flex-col">
+            <div *ngIf="sampleRecords?.calculatedLabels?.length > 0 && recordData?.length > 0" class="mt-12 flex flex-col">
                 <div class="overflow-x-auto">
                     <div class="inline-block min-w-full align-middle">
                         <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">

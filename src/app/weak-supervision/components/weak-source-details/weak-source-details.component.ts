@@ -617,18 +617,18 @@ export class WeakSourceDetailsComponent
     return attributes$.pipe(first());
   }
 
-  getabelingFunctionOn10Records(projectId: string) {
+  getLabelingFunctionOn10Records(projectId: string) {
     if (this.requestTimeOut) return;
     if (this.hasUnsavedChanges()) {
       console.log('Unsaved changes -- aborted!');
       return;
     }
     this.justClickedRun = true;
-    this.sampleRecords = [];
 
     [this.sampleRecordsQuery$, this.sampleRecordsData$] = this.informationSourceApolloService.getabelingFunctionOn10Records(projectId, this.informationSource.id)   
     this.subscriptions$.push(this.sampleRecordsData$
       .subscribe((sampleRecords) => {
+        this.recordData = [];
         this.sampleRecords = sampleRecords;
         this.sampleRecords.recordIds.forEach(recordId => {
           this.getRecordByRecordId(recordId);
@@ -653,6 +653,8 @@ export class WeakSourceDetailsComponent
             this.recordData.push(record.data[key]);
           }
         })
+        const uniq = a => [...new Set(a)];
+        this.recordData = uniq(this.recordData);
       });
   }
 
