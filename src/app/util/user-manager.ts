@@ -48,23 +48,6 @@ export class UserManager {
         return UserManager.users;
     }
 
-    // public static rerequestUser() {
-    //     UserManager.user = null; //not longer init :) 
-    //     UserManager.organizationService.getUserInfo().pipe(first()).subscribe((u: any) => {
-    //         UserManager.user = u;
-    //         UserManager.actionsAfterUpdate.forEach((func, key) => func.call(key));
-    //     });
-    // }
-    // public static requestAllUsers() {
-    //     UserManager.organizationService.getOrganizationUsers().pipe(first()).subscribe((users: any[]) => {
-    //     });
-    //     UserManager.user = null; //not longer init :) 
-    //     UserManager.organizationService.getUserInfo().pipe(first()).subscribe((u: any) => {
-    //         UserManager.user = u;
-    //         UserManager.actionsAfterUpdate.forEach((func, key) => func.call(key));
-    //     });
-    // }
-
     private static isInit(): boolean {
         return !!UserManager.router && !!UserManager.organizationService && !!UserManager.user && !!UserManager.users;
     }
