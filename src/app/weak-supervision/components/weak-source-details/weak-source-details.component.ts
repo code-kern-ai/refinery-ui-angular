@@ -641,20 +641,22 @@ export class WeakSourceDetailsComponent
       return;
     }
     this.justClickedRun = true;
+    this.informationSourceApolloService.getLabelingFunctionOn10Records(projectId, this.informationSource.id).pipe(first()).subscribe((res) => {
+      console.log(res);
+    });
+    // [this.sampleRecordsQuery$, this.sampleRecordsData$] = this.informationSourceApolloService.getLabelingFunctionOn10Records(projectId, this.informationSource.id)
+    // this.subscriptions$.push(this.sampleRecordsData$
+    //   .subscribe((sampleRecords) => {
+    //     // Currently commented because the arrays will be reformatted 
 
-    [this.sampleRecordsQuery$, this.sampleRecordsData$] = this.informationSourceApolloService.getabelingFunctionOn10Records(projectId, this.informationSource.id)
-    this.subscriptions$.push(this.sampleRecordsData$
-      .subscribe((sampleRecords) => {
-        // Currently commented because the arrays will be reformatted 
-
-        // this.recordData = [];
-        // this.sampleRecords = sampleRecords;
-        // this.sampleRecords.recordIds.forEach(recordId => {
-        //   this.getRecordByRecordId(recordId);
-        // });
-        // this.lastTaskLogs = this.sampleRecords.containerLogs;
-        // this.justClickedRun = false;
-      }));
+    //     // this.recordData = [];
+    //     // this.sampleRecords = sampleRecords;
+    //     // this.sampleRecords.recordIds.forEach(recordId => {
+    //     //   this.getRecordByRecordId(recordId);
+    //     // });
+    //     // this.lastTaskLogs = this.sampleRecords.containerLogs;
+    //     // this.justClickedRun = false;
+    //   }));
     this.requestTimeOut = true;
     timer(1000).subscribe(() => this.requestTimeOut = false);
   }

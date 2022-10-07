@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Apollo } from 'apollo-angular';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { parseLogData } from 'src/app/util/helper-functions';
 import { Project } from '../../entities/project';
 import { ApolloChecker } from '../base/apollo-checker';
 import { mutations } from './project-mutations';
@@ -1073,40 +1074,15 @@ export class ProjectApolloService {
           projectId: projectId,
           attributeId: attributeId,
         },
-        fetchPolicy: 'network-only',
+        fetchPolicy: 'no-cache',
       });
     const vc = query
       .valueChanges.pipe(
         map((result) => {
-          let task = result['data']['attributeByAttributeId'];
-          if (task == null) return null;
-          let neededIDLength = task['logs']
-            ? String(task['logs'].length)?.length
-            : 0;
-          return {
-            id: task['id'],
-            name: task['name'],
-            dataType: task['dataType'],
-            isPrimaryKey: task['isPrimaryKey'],
-            relativePosition: task['relativePosition'],
-            userCreated: task['userCreated'],
-            sourceCode: task['sourceCode'],
-            state: task['state'],
-            logs: !task['logs']
-              ? null
-              : task['logs'].map((wrapper, index) => {
-                let d: Date = new Date(
-                  wrapper.substr(0, wrapper.indexOf(' '))
-                );
-                return (
-                  String(index + 1).padStart(neededIDLength, '0') +
-                  ': ' +
-                  d.toLocaleString() +
-                  ' - ' +
-                  wrapper.substr(wrapper.indexOf(' ') + 1)
-                );
-              }),
-          };
+          const att = result['data']['attributeByAttributeId'];
+          if (att == null) return null;
+          att.logs = parseLogData(att['logs']);
+          return att
         })
       );
     return [query, vc];

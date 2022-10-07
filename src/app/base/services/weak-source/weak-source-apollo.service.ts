@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Apollo } from 'apollo-angular';
 import { map } from 'rxjs/operators';
+import { parseLogData } from 'src/app/util/helper-functions';
 import { InformationSourceType, informationSourceTypeToString, LabelSource } from '../../enum/graphql-enums';
 import { ApolloChecker } from '../base/apollo-checker';
 import { mutations } from './weak-source-mutations';
@@ -314,35 +315,15 @@ export class WeakSourceApolloService {
           projectId: projectId,
           payloadId: taskId,
         },
-        fetchPolicy: 'cache-and-network',
+        fetchPolicy: 'no-cache',
       });
     const vc = query
       .valueChanges.pipe(
         map((result) => {
-          let task = result['data']['payloadByPayloadId'];
-          let neededIDLength = task['logs']
-            ? String(task['logs'].length).length
-            : 0;
-          return {
-            id: task['id'],
-            createdAt: task['createdAt'],
-            state: task['state'],
-            iteration: task['iteration'],
-            logs: !task['logs']
-              ? [`Running ${informationSourceTypeToString(task['informationSource']['type'], false)}...`]
-              : task['logs'].map((wrapper, index) => {
-                let d: Date = new Date(
-                  wrapper.substr(0, wrapper.indexOf(' '))
-                );
-                return (
-                  String(index + 1).padStart(neededIDLength, '0') +
-                  ': ' +
-                  d.toLocaleString() +
-                  ' - ' +
-                  wrapper.substr(wrapper.indexOf(' ') + 1)
-                );
-              }),
-          };
+          const payload = result['data']['payloadByPayloadId'];
+          if (payload == null) return null;
+          payload.logs = parseLogData(payload['logs'], payload['informationSource']['type']);
+          return payload;
         })
       );
     return [query, vc]
@@ -491,51 +472,32 @@ export class WeakSourceApolloService {
     });
   }
 
-  getabelingFunctionOn10Records(projectId: string, informationSourceId: string) {
-    const query = this.apollo
-      .watchQuery({
+  getLabelingFunctionOn10Records(projectId: string, informationSourceId: string) {
+    return this.apollo
+      .query({
         query: queries.GET_LABELING_FUNCTION_ON_10_RECORDS,
         variables: {
           projectId: projectId,
           informationSourceId: informationSourceId
         },
-        fetchPolicy: 'network-only',
-        nextFetchPolicy: 'cache-first',
-      });
-      const vc = query.valueChanges.pipe(
+        fetchPolicy: 'no-cache'
+      }).pipe(
         map((result) => {
-          let task = result['data']['getLabelingFunctionOn10Records'];
-          if (task == null) return null;
-          let neededIDLength = task['containerLogs']
-            ? String(task['containerLogs'].length)?.length
-            : 0;
+          const lfRun = result['data']['getLabelingFunctionOn10Records'];
+          if (lfRun == null) return null;
           return {
-            records: task['records'].map((record, index) => {
+            records: lfRun['records'].map((record, index) => {
               return {
                 calculatedLabels: record['calculatedLabels'],
                 fullRecord: record['fullRecord'],
                 recordId: record['recordId']
               }
             }),
-            codeHasErrors: task['codeHasErrors'],
-            containerLogs: !task['containerLogs']
-              ? null
-              : task['containerLogs'].map((wrapper, index) => {
-                let d: Date = new Date(
-                  wrapper.substr(0, wrapper.indexOf(' '))
-                );
-                return (
-                  String(index + 1).padStart(neededIDLength, '0') +
-                  ': ' +
-                  d.toLocaleString() +
-                  ' - ' +
-                  wrapper.substr(wrapper.indexOf(' ') + 1)
-                );
-              }),
+            codeHasErrors: lfRun['codeHasErrors'],
+            containerLogs: parseLogData(lfRun['containerLogs'], InformationSourceType.LABELING_FUNCTION)
           };
         })
       );
-    return [query, vc];
   }
 
 }

@@ -1,3 +1,4 @@
+import { InformationSourceType, informationSourceTypeToString } from "../base/enum/graphql-enums";
 
 
 export function dateAsUTCDate(date: Date) {
@@ -50,4 +51,26 @@ export function parseLinkFromText(link: string) {
 
 
     return linkData;
+}
+
+
+export function parseLogData(logs: string[], isType: InformationSourceType = null) {
+    if (!logs) {
+        if (isType) return [`Running ${informationSourceTypeToString(isType, false)}...`];
+        else return null;
+    }
+    if (!Array.isArray(logs)) return null;
+    if (logs.length == 0) return [];
+
+    let neededIDLength = String(logs.length)?.length;
+    return logs.map((wrapper, index) => {
+        const d: Date = new Date(wrapper.substr(0, wrapper.indexOf(' ')));
+        return (
+            String(index + 1).padStart(neededIDLength, '0') +
+            ': ' +
+            d.toLocaleString() +
+            ' - ' +
+            wrapper.substr(wrapper.indexOf(' ') + 1)
+        );
+    });
 }
