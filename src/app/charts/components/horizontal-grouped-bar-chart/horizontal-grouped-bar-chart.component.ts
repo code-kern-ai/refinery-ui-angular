@@ -141,7 +141,7 @@ export class HorizontalGroupedBarChartComponent implements OnInit, OnChanges, On
     // setting up domain for y which will be from 0 to max day of week for any month
     y.domain([0, d3.max(data, function (d) {
       return d3.max(keys, function (key) {
-        return d[key];
+        return d[key] * 100;
       });
     })]).nice()
 
@@ -164,13 +164,14 @@ export class HorizontalGroupedBarChartComponent implements OnInit, OnChanges, On
       .style("opacity", "1")
 
     // setting up y axis    
-    g.append("g")
+    let yAxis =g.append("g")
       .attr("class", "y axis")
       .style("font-size", 14)
       .style('font-family', '"DM Sans", sans-serif')
       // setting up y axis opacity to 0 before transition
-      .style("opacity", "0")
-      .call(d3.axisLeft(y).ticks(null, "s").tickFormat(d3.format(",.0%"))).selectAll(".tick").each(function (data) {
+      .style("opacity", "0");
+
+      yAxis.call(d3.axisLeft(y).ticks(null, "s").tickFormat(d3.format(".0%"))).selectAll(".tick").each(function (data) {
         var tick = d3.select(this);
         // pull the transform data out of the tick
         var positionString = tick.attr("transform")
@@ -190,6 +191,16 @@ export class HorizontalGroupedBarChartComponent implements OnInit, OnChanges, On
           // setting up full opacity after transition
           .style("stroke-opacity", "0.5");
       });
+
+    yAxis
+      .call(d3.axisLeft(y))
+      .append("text")
+      .attr("x", 0)
+      .attr("dy", 15)
+      .attr("fill", "#000")
+      .attr("text-anchor", "end")
+      .attr("transform", "rotate(-90)")
+      .text("Label score (%)")
 
     // setting up y axis transition    
     g.select(".y")
@@ -215,8 +226,8 @@ export class HorizontalGroupedBarChartComponent implements OnInit, OnChanges, On
         return keys.map(function (key) {
           return {
             key: key,
-            value: d[key],
-            absolute: d[key + " a"]
+            value: d[key] * 100,
+            absolute: d[key + " a"] * 100
           };
         });
       })

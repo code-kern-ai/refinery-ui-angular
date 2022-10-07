@@ -17,7 +17,7 @@
                     <div *ngIf="!isHeaderNormal" class="mx-4 text-sm leading-5 font-medium text-gray-500 inline-block">
                         {{currentAttribute.name}}</div>
 
-                    <kern-heuristic-statuses [status]="currentAttribute.state" page="attributes">
+                    <kern-heuristic-statuses [status]="currentAttribute.state" page="attributes" initialCaption="Needs execution">
                     </kern-heuristic-statuses>
 
                 </div>
@@ -125,11 +125,11 @@
                                 Run on 10
                             </button>
                         </div>
-                        <div [attr.data-tip]="hasUnsavedChanges() ? 'Unsaved changes': currentAttribute.state=='USABLE' || currentAttribute.state=='RUNNING' ? 'Attribute is already in use' : testerRequestedSomething ? 'Test is running' : checkIfAtLeastRunning? 'At least one attribute is running' : tokenizationProgress < 1 ? 'Tokenization is in progress' : 'Execute the attribute on all records' "
+                        <div [attr.data-tip]="hasUnsavedChanges() ? 'Unsaved changes': currentAttribute.state=='USABLE' || currentAttribute.state=='RUNNING' ? 'Attribute is already in use' : testerRequestedSomething ? 'Test is running' : checkIfAtLeastRunning? 'At least one attribute is running' : tokenizationProgress < 1 ? 'Tokenization is in progress' : runOn10HasError ? 'Run on 10 records has an error' : 'Execute the attribute on all records' "
                             class="tooltip tooltip-left"
-                            [ngClass]="hasUnsavedChanges() || currentAttribute.state=='USABLE' || currentAttribute.state=='RUNNING' || testerRequestedSomething || checkIfAtLeastRunning || tokenizationProgress < 1 ? 'cursor-not-allowed' : ''">
+                            [ngClass]="hasUnsavedChanges() || currentAttribute.state=='USABLE' || currentAttribute.state=='RUNNING' || testerRequestedSomething || checkIfAtLeastRunning || tokenizationProgress < 1 || runOn10HasError ? 'cursor-not-allowed' : ''">
                             <label [for]="'attribute-calculation'"
-                                [ngClass]="hasUnsavedChanges() || currentAttribute.state=='USABLE' || currentAttribute.state=='RUNNING' || testerRequestedSomething || checkIfAtLeastRunning || tokenizationProgress < 1 ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer'"
+                                [ngClass]="hasUnsavedChanges() || currentAttribute.state=='USABLE' || currentAttribute.state=='RUNNING' || testerRequestedSomething || checkIfAtLeastRunning || tokenizationProgress < 1 || runOn10HasError ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer'"
                                 class="bg-indigo-700 text-white text-xs leading-4 font-semibold px-4 py-2 rounded-md cursor-pointer ml-3 hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                                 Run
                             </label>
@@ -171,7 +171,7 @@
                                     <div
                                         class="flex-shrink-0 border-b border-gray-200 shadow-sm flex justify-between items-center">
                                         <div
-                                            class="flex items-center text-xs leading-5 text-gray-500 font-normal text-center ml-4 my-3 text-left">
+                                            class="flex items-center text-xs leading-5 text-gray-500 font-normal mx-4 my-3" style="text-align: justify;">
                                             {{record}}
                                         </div>
                                         <div class="flex items-center justify-center mr-5 ml-auto">

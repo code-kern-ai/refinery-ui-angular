@@ -10,12 +10,13 @@ export class HeuristicStatusesComponent implements OnChanges {
   @Input() status: string;
   @Input() tooltipPosition: string = 'tooltip-bottom';
   @Input() page: string = 'heuristics';
+  @Input() initialCaption: string = 'Initial';
 
   dataTip: string;
   statusName: string;
   color: string;
 
-  constructor() { }
+  constructor() {}
 
   ngOnChanges(): void {
     switch (this.status) {
@@ -57,7 +58,7 @@ export class HeuristicStatusesComponent implements OnChanges {
         break;
       default:
         this.dataTip = (this.page === 'heuristics' ? 'Heuristic' : 'Attribute') + ' was successfully registered.';
-        this.statusName = 'Initial';
+        this.statusName = this.initialCaption;
         this.color = 'gray';
     }
   }

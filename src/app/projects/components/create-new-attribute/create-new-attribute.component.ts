@@ -54,6 +54,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
   tokenizationProgress: Number = 0;
   isDeleting: boolean = false;
   duplicateNameExists: boolean = false;
+  runOn10HasError: boolean = false;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -278,6 +279,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
       .calculateUserAttributeSampleRecords(this.project.id, this.currentAttribute.id).pipe(first()).subscribe((sampleRecords) => {
         this.sampleRecords = sampleRecords;
         this.testerRequestedSomething = false;
+        this.runOn10HasError = this.sampleRecords.calculatedAttributes.length > 0 ? false : true;
         this.currentAttributeQuery$.refetch();
       }, (error) => {
         this.testerRequestedSomething = false;

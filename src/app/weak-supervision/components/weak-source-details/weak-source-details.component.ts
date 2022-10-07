@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl } from '@angular/forms';
-import { first } from 'rxjs/operators';
+import { first, mergeMap } from 'rxjs/operators';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { RouteService } from 'src/app/base/services/route.service';
 import { WeakSourceApolloService } from 'src/app/base/services/weak-source/weak-source-apollo.service';
@@ -26,6 +26,7 @@ import { NotificationService } from 'src/app/base/services/notification.service'
 import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
 import { schemeCategory24 } from 'src/app/util/colors';
 import { UserManager } from 'src/app/util/user-manager';
+import { RecordApolloService } from 'src/app/base/services/record/record-apollo.service';
 import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
 
 @Component({
@@ -86,6 +87,10 @@ export class WeakSourceDetailsComponent
 
   stickyObserver: IntersectionObserver;
   isHeaderNormal: boolean = true;
+  currentRecordIdx: number = -1;
+  sampleRecords: any;
+  selectedAttribute: string = '';
+
   constructor(
     private router: Router,
     private routeService: RouteService,
@@ -93,6 +98,7 @@ export class WeakSourceDetailsComponent
     private projectApolloService: ProjectApolloService,
     private informationSourceApolloService: WeakSourceApolloService,
     private organizationService: OrganizationApolloService,
+    private recordApolloService: RecordApolloService,
   ) { }
 
   getTargetTaskLabels() {
@@ -620,4 +626,59 @@ export class WeakSourceDetailsComponent
     return attributes$.pipe(first());
   }
 
+  getLabelingFunctionOn10Records(projectId: string) {
+    if (this.requestTimeOut) return;
+    if (this.hasUnsavedChanges()) {
+      console.log('Unsaved changes -- aborted!');
+      return;
+    }
+    this.justClickedRun = true;
+    this.informationSourceApolloService.getLabelingFunctionOn10Records(projectId, this.informationSource.id).pipe(first()).subscribe((sampleRecords) => {
+      this.sampleRecords = sampleRecords;
+      this.sampleRecords.records.forEach(record => {
+        record.fullRecordData = JSON.parse(record.fullRecordData);
+        if (this.labelingTasks.get(this.labelingTaskControl.value).taskType == 'MULTICLASS_CLASSIFICATION') {
+          const label = record.calculatedLabels.length > 0 ? record.calculatedLabels[1] : '-';
+          record.calculatedLabelsResult = {
+            label: {
+            label: label,
+            color: this.getColorForLabel(label),
+            count: 1,
+            displayAmount: false
+          }};
+        } else {
+          const resultDict = {};
+          record.calculatedLabels.forEach(e => {
+            const label = this.getLabelFromExtractionResult(e);
+            if (!resultDict[label])  {
+              resultDict[label] = {
+                label: label,
+                color: this.getColorForLabel(label),
+                count: 0
+              };
+            }
+            resultDict[label].count++;
+          });
+          const displayAmount = Object.keys(resultDict).length > 1;
+          for (const key in resultDict) { 
+            resultDict[key].displayAmount = displayAmount || resultDict[key].count > 1;
+          }
+          record.calculatedLabelsResult = resultDict;
+        }
+      });
+      this.lastTaskLogs = this.sampleRecords.containerLogs;
+      this.justClickedRun = false;
+    });
+    this.requestTimeOut = true;
+    timer(1000).subscribe(() => this.requestTimeOut = false);
+  }
+
+  getColorForLabel(label: string) {
+    return label != '-' ? this.getTargetTaskLabels().find(el => el.name == label)?.color : 'gray';
+  }
+
+  getLabelFromExtractionResult(str: string) {
+    const array = str.split('\'');
+    return array.length == 1 ? array[0] : array[1];
+  }
 }
