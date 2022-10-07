@@ -24,5 +24,27 @@ export const mutations = {
       ok
     }
   }  
+  `,
+  CREATE_COMMENT: gql`
+  mutation ($comment: String!, $xftype: String!, $xfkey: ID!, $projectId: ID, $isPrivate: Boolean) {
+    createComment(comment: $comment, xftype: $xftype, xfkey: $xfkey, projectId: $projectId, isPrivate: $isPrivate) {
+      ok
+    }
+  }
+  
+  `,
+  DELETE_COMMENT: gql`
+  mutation ($commentId: ID!, $projectId: ID) {
+    deleteComment(commentId: $commentId, projectId: $projectId) {
+      ok
+    }
+  }
+  `,
+  UPDATE_COMMENT: gql`
+  mutation ($commentId: ID!, $changes: JSONString!, $projectId: ID) {
+    updateComment(commentId: $commentId, changes: $changes, projectId: $projectId) {
+      ok
+    }
+  }
   `
 };

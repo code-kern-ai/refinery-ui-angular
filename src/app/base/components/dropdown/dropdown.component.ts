@@ -132,6 +132,10 @@ export class DropdownComponent implements OnChanges {
       console.log("something is wrong in the click action of the dropdown component");
       return;
     }
+    if (this.dropdownOptions.emitIndex) {
+      this.optionClicked.emit(clickIndex);
+      return;
+    }
 
     if (!this.dropdownOptions.valuePropertyPath) {
       if (this.useValueAsCaption) this.dropdownOptions.buttonCaption = this.dropdownOptionCaptions[clickIndex];

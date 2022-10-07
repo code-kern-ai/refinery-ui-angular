@@ -7,6 +7,7 @@ import { FormControl, FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription, timer } from 'rxjs';
 import { first, tap, distinctUntilChanged, debounceTime } from 'rxjs/operators';
+import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
 import { Project } from 'src/app/base/entities/project';
 import { LabelingTaskTarget } from 'src/app/base/enum/graphql-enums';
 import { ConfigManager } from 'src/app/base/services/config-service';
@@ -85,6 +86,7 @@ export class ProjectOverviewComponent implements OnInit, OnDestroy {
     const projectId = this.project?.id ? this.project.id : this.activatedRoute.parent.snapshot.paramMap.get('projectId');
     NotificationService.unsubscribeFromNotification(this, projectId)
     this.saveSettingsToLocalStorage();
+    CommentDataManager.unregisterAllCommentRequests(this);
   }
 
 
@@ -139,6 +141,16 @@ export class ProjectOverviewComponent implements OnInit, OnDestroy {
       this.saveSettingsToLocalStorage();
     });
     this.displayGraphsForm.valueChanges.subscribe(() => this.saveSettingsToLocalStorage())
+    this.setUpCommentRequests(currentProjectID);
+  }
+
+  private setUpCommentRequests(projectId: string) {
+    const requests = [];
+    requests.push({ commentType: CommentType.ATTRIBUTE, projectId: projectId });
+    requests.push({ commentType: CommentType.LABELING_TASK, projectId: projectId });
+    requests.push({ commentType: CommentType.DATA_SLICE, projectId: projectId });
+    requests.push({ commentType: CommentType.LABEL, projectId: projectId });
+    CommentDataManager.registerCommentRequests(this, requests);
   }
 
   checkIfManagedVersion() {

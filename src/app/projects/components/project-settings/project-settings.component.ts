@@ -13,6 +13,7 @@ import { S3Service } from 'src/app/import/services/s3.service';
 import { WeakSourceApolloService } from 'src/app/base/services/weak-source/weak-source-apollo.service';
 import { ConfigManager } from 'src/app/base/services/config-service';
 import { UserManager } from 'src/app/util/user-manager';
+import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
 
 @Component({
   selector: 'kern-project-settings',
@@ -159,6 +160,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
       whitelist: ['tokenization', 'embedding', 'embedding_deleted', 'label_created', 'label_deleted', 'attributes_updated', 'labeling_task_deleted', 'labeling_task_updated', 'labeling_task_created', 'project_update', 'project_export', 'calculate_attribute'],
       func: this.handleWebsocketNotification
     });
+    this.setUpCommentRequests(projectId);
 
     this.requestPKeyCheck(projectId);
     this.checkProjectTokenization(projectId);
@@ -187,6 +189,14 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
       })
     }
     this.checkIfManagedVersion();
+  }
+  private setUpCommentRequests(projectId: string) {
+    const requests = [];
+    requests.push({ commentType: CommentType.LABELING_TASK, projectId: projectId });
+    requests.push({ commentType: CommentType.ATTRIBUTE, projectId: projectId });
+    requests.push({ commentType: CommentType.EMBEDDING, projectId: projectId });
+    requests.push({ commentType: CommentType.LABEL, projectId: projectId });
+    CommentDataManager.registerCommentRequests(this, requests);
   }
 
   checkIfManagedVersion() {
@@ -308,7 +318,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
           sourceCode: att.sourceCode,
           state: att.state
         });
-        if(att.state == 'INITIAL') {
+        if (att.state == 'INITIAL') {
           group.get('isPrimaryKey').disable();
         }
         group.valueChanges.pipe(distinctUntilChanged()).subscribe(() => {
@@ -538,7 +548,8 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
   ngOnDestroy(): void {
     this.subscriptions$.forEach((subscription) => subscription.unsubscribe());
     const projectId = this.project?.id ? this.project.id : this.activatedRoute.parent.snapshot.paramMap.get('projectId');
-    NotificationService.unsubscribeFromNotification(this, projectId)
+    NotificationService.unsubscribeFromNotification(this, projectId);
+    CommentDataManager.unregisterAllCommentRequests(this);
   }
 
   updateProjectNameAndDescription(projectId: string, newName: string, newDescription: string) {

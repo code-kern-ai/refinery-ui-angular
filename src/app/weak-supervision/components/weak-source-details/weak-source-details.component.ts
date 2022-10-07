@@ -27,6 +27,7 @@ import { OrganizationApolloService } from 'src/app/base/services/organization/or
 import { schemeCategory24 } from 'src/app/util/colors';
 import { UserManager } from 'src/app/util/user-manager';
 import { RecordApolloService } from 'src/app/base/services/record/record-apollo.service';
+import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
 
 @Component({
   selector: 'kern-weak-source-details',
@@ -133,6 +134,7 @@ export class WeakSourceDetailsComponent
       whitelist: this.getWhiteListNotificationService(),
       func: this.handleWebsocketNotification
     });
+    this.setUpCommentRequests(projectId, isType);
   }
 
   getWhiteListNotificationService(): string[] {
@@ -143,6 +145,16 @@ export class WeakSourceDetailsComponent
     toReturn.push(...['embedding_deleted', 'embedding']);
     return toReturn;
   }
+  private setUpCommentRequests(projectId: string, isType: string) {
+    const requests = [];
+    requests.push({ commentType: CommentType.ATTRIBUTE, projectId: projectId });
+    requests.push({ commentType: CommentType.LABELING_TASK, projectId: projectId });
+    requests.push({ commentType: CommentType.HEURISTIC, projectId: projectId });
+    if (isType == 'ACTIVE_LEARNING') requests.push({ commentType: CommentType.EMBEDDING, projectId: projectId });
+    else requests.push({ commentType: CommentType.KNOWLEDGE_BASE, projectId: projectId });
+    requests.push({ commentType: CommentType.LABEL, projectId: projectId });
+    CommentDataManager.registerCommentRequests(this, requests);
+  }
 
   ngOnDestroy() {
     this.subscriptions$.forEach((subscription) => subscription.unsubscribe());
@@ -151,6 +163,7 @@ export class WeakSourceDetailsComponent
     }
     const projectId = this.project?.id ? this.project.id : this.activatedRoute.parent.snapshot.paramMap.get('projectId');
     NotificationService.unsubscribeFromNotification(this, projectId);
+    CommentDataManager.unregisterAllCommentRequests(this);
   }
 
   ngAfterViewInit() {
@@ -196,8 +209,8 @@ export class WeakSourceDetailsComponent
       this.informationSourceQuery$.refetch();
 
       if (msgParts[1] == 'payload_finished' || msgParts[1] == 'payload_failed' || msgParts[1] == 'payload_created' || msgParts[1] == 'payload_sample_records') {
-        if(msgParts[1] == 'payload_sample_records') this.payloadFailed = false;
-        if(msgParts[1] == 'payload_failed') this.payloadFailed = true;
+        if (msgParts[1] == 'payload_sample_records') this.payloadFailed = false;
+        if (msgParts[1] == 'payload_failed') this.payloadFailed = true;
         if (this.lastTaskQuery$) this.lastTaskQuery$.refetch();
       }
     }
@@ -629,7 +642,7 @@ export class WeakSourceDetailsComponent
     }
     this.justClickedRun = true;
 
-    [this.sampleRecordsQuery$, this.sampleRecordsData$] = this.informationSourceApolloService.getabelingFunctionOn10Records(projectId, this.informationSource.id)   
+    [this.sampleRecordsQuery$, this.sampleRecordsData$] = this.informationSourceApolloService.getabelingFunctionOn10Records(projectId, this.informationSource.id)
     this.subscriptions$.push(this.sampleRecordsData$
       .subscribe((sampleRecords) => {
         // Currently commented because the arrays will be reformatted 
@@ -654,7 +667,7 @@ export class WeakSourceDetailsComponent
       .pipe(first())
       .subscribe((record) => {
         // Currently commented because the arrays will be reformatted 
-        
+
         // this.recordDataAttributes = record.data;
         // Object.keys(record.data).forEach(key => {
         //   if(key == this.selectedAttribute) {
@@ -672,7 +685,7 @@ export class WeakSourceDetailsComponent
 
         // }
 
-        
+
       });
   }
 
@@ -685,7 +698,7 @@ export class WeakSourceDetailsComponent
     const filteredArr = array.filter((el, idx) => idx % 2 == 1);
     return array.length == 1 ? array : filteredArr;
   }
-  
+
   setSelectedAttribute(event: any) {
     this.selectedAttribute = event.target.value;
   }

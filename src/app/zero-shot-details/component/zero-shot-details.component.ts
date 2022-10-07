@@ -22,6 +22,7 @@ import { schemeCategory24 } from 'src/app/util/colors';
 import { parseToSettingsJson, parseZeroShotSettings, ZeroShotSettings } from './zero-shot-settings';
 import { ConfigManager } from 'src/app/base/services/config-service';
 import { UserManager } from 'src/app/util/user-manager';
+import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
 
 @Component({
   selector: 'kern-zero-shot-details',
@@ -127,6 +128,16 @@ export class ZeroShotDetailsComponent
       whitelist: this.getWhiteListNotificationService(),
       func: this.handleWebsocketNotification
     });
+    this.setUpCommentRequests(projectId);
+  }
+
+  private setUpCommentRequests(projectId: string) {
+    const requests = [];
+    requests.push({ commentType: CommentType.ATTRIBUTE, projectId: projectId });
+    requests.push({ commentType: CommentType.LABELING_TASK, projectId: projectId });
+    requests.push({ commentType: CommentType.HEURISTIC, projectId: projectId });
+    requests.push({ commentType: CommentType.LABEL, projectId: projectId });
+    CommentDataManager.registerCommentRequests(this, requests);
   }
 
   getWhiteListNotificationService(): string[] {
@@ -154,6 +165,7 @@ export class ZeroShotDetailsComponent
     }
     const projectId = this.project?.id ? this.project.id : this.activatedRoute.parent.snapshot.paramMap.get('projectId');
     NotificationService.unsubscribeFromNotification(this, projectId);
+    CommentDataManager.unregisterAllCommentRequests(this);
   }
 
   ngAfterViewInit() {
