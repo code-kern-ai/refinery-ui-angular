@@ -179,13 +179,11 @@
                         <kern-loading color="indigo"></kern-loading>
                     </div>
                     <div class="flex items-center mr-2 tooltip tooltip-right" data-tip="Select an attribute">
-                        <select class="select select-sm select-bordered w-full input input-sm text-xs" style="height: 34px;" 
-                            [(ngModel)]="selectedAttribute" (change)="setSelectedAttribute($event)">
-                            <option selected disabled value="">Select</option>
-                            <option *ngFor="let att of attributes" [value]="att.name">
-                                {{att.name}}
-                            </option>
-                        </select>
+                        <kern-dropdown [dropdownOptions]="{
+                            optionArray: attributes,
+                            buttonCaption:selectedAttribute ? selectedAttribute : 'Select display attribute'
+                        }" (optionClicked)="selectedAttribute = $event">
+                         </kern-dropdown>
                     </div>
                     <div [attr.data-tip]="hasUnsavedChanges() ? 'Unsaved Changes detected': selectedAttribute == '' ? 'Select an attribute' : 'Runs function on 10 records'"
                         class="tooltip tooltip-left">
@@ -217,117 +215,37 @@
                 </div>
             </div>
 
-            <div *ngIf="sampleRecords?.calculatedLabels?.length > 0 && recordData?.length > 0 && !payloadFailed" class="mt-12 flex flex-col">
+            <div *ngIf="sampleRecords && sampleRecords.records.length > 0 && !sampleRecords.codeHasErrors" class="mt-12 flex flex-col">
                 <div class="overflow-x-auto">
                     <div class="inline-block min-w-full align-middle">
                         <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
                             <table class="min-w-full border divide-y divide-gray-300">
-                                <ng-template [ngIf]="labelingTasks.get(labelingTaskControl.value).taskType == 'MULTICLASS_CLASSIFICATION'" [ngIfElse]="informationExtraction">
-                                    <div class="divide-y divide-gray-200 bg-white"
-                                        *ngFor="let record of recordData; let i = index">
+                                <div class="divide-y divide-gray-200 bg-white"
+                                    *ngFor="let record of sampleRecords.records; let i = index">
+                                    <div
+                                        class="flex-shrink-0 border-b border-gray-200 shadow-sm flex justify-between items-center">
                                         <div
-                                            class="flex-shrink-0 border-b border-gray-200 shadow-sm flex justify-between items-center">
-                                            <div
-                                                class="flex items-center text-xs leading-5 text-gray-500 font-normal mx-4 my-3" style="text-align: justify;">
-                                                {{record}}
-                                            </div>
-                                            <div class="flex items-center justify-center mr-5 ml-auto">
-                                                <!-- <span *ngIf="sampleRecords?.calculatedLabels[i]?.length > 0; else noLabel">
-                                                    <span *ngFor="let labelIdx of convertStringToArray(sampleRecords?.calculatedLabels[i][1])">
-                                                        <label [ngClass]="[getBackground(getColorForLabel(labelIdx)), getText(getColorForLabel(labelIdx)), getBorder(getColorForLabel(labelIdx)), getHover(getColorForLabel(labelIdx))]"
-                                                            class="border inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border ml-2">
-                                                            {{labelIdx}}
-                                                        </label>
-                                                    </span>                                       
-                                                </span> -->
-                                                <ng-template #noLabel>
-                                                    <label class="border text-gray-700 bg-gray-100 border-gray-400 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border hover:bg-gray-200">
-                                                        -
-                                                    </label>
-                                                </ng-template>
-                                            </div>
-                                            <div class="flex items-center justify-center mr-5">
-                                                <!-- <label (click)="getRecordByRecordId(sampleRecords.recordIds[i],i)"
-                                                    [for]="'attribute-details-'+sampleRecords.recordIds[i]"
-                                                    class="text-xs bg-white text-gray-700 text-xs font-semibold px-4 py-1 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">
-                                                    View
-                                                </label> -->
-                                            </div>
+                                            class="flex items-center text-xs leading-5 text-gray-500 font-normal mx-4 my-3" style="text-align: justify;">
+                                            {{record.fullRecordData[selectedAttribute]}}
                                         </div>
-                                    </div>
-                                </ng-template>
-
-                                <ng-template #informationExtraction>
-                                    <div class="divide-y divide-gray-200 bg-white"
-                                        *ngFor="let record of recordData; let i = index">
-                                        <div
-                                            class="flex-shrink-0 border-b border-gray-200 shadow-sm flex justify-between items-center">
-                                            <div
-                                                class="flex items-center text-xs leading-5 text-gray-500 font-normal mx-4 my-3" style="text-align: justify;">
-                                                {{record}}
+                                        <div class="flex items-center justify-center mr-5 ml-auto">
+                                            <div *ngFor="let kv of record.calculatedLabelsResult | keyvalue" class="ml-2 flex flex-row flex-nowrap items-center">
+                                                <span *ngIf="kv.value.displayAmount" class="text-xs text-gray-500 font-normal">
+                                                    {{kv.value.count}}x
+                                                </span>
+                                                <label [ngClass]="[getBackground(kv.value.color), getText(kv.value.color), getBorder(kv.value.color), getHover(kv.value.color)]"
+                                                    class="border inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border">
+                                                    {{kv.value.label}}
+                                                </label>  
                                             </div>
-                                            <div class="flex items-center justify-center mr-5 ml-auto">
-                                                <!--<span *ngIf="sampleRecords?.calculatedLabels[i]?.length > 0; else noLabel">
-                                                     <span *ngFor="let labelIdx of convertStringToArray(sampleRecords?.calculatedLabels[i][1])">
-                                                        <label [ngClass]="[getBackground(getColorForLabel(labelIdx)), getText(getColorForLabel(labelIdx)), getBorder(getColorForLabel(labelIdx)), getHover(getColorForLabel(labelIdx))]"
-                                                            class="border inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border ml-2">
-                                                            {{labelIdx}}
-                                                        </label>
-                                                    </span>                                        
-                                                </span>-->
-                                                <ng-template #noLabel>
-                                                    <label class="border text-gray-700 bg-gray-100 border-gray-400 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border hover:bg-gray-200">
-                                                        -
-                                                    </label>
-                                                </ng-template>
-                                            </div>
-                                            <div class="flex items-center justify-center mr-5">
-                                                <!-- <label (click)="getRecordByRecordId(sampleRecords.recordIds[i],i)"
-                                                    [for]="'attribute-details-'+sampleRecords.recordIds[i]"
-                                                    class="text-xs bg-white text-gray-700 text-xs font-semibold px-4 py-1 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">
-                                                    View
-                                                </label> -->
-                                            </div>
+                                                
                                         </div>
-                                    </div>
-                                </ng-template>
-                                
-                                <input type="checkbox" [id]="'attribute-details-'+currentRecordId" class="modal-toggle">
-                                <div class="modal text-center items-center">
-                                    <div class="modal-box" style="max-width: 48rem;">
-                                        <h1 class="text-lg text-gray-900 mb-2">View details</h1>
-                                        <div class="text-sm text-gray-500 my-2"
-                                            class="overflow-y-auto max-height-modal scrollable-size">
-                                            <div *ngFor="let att of recordDataAttributes | keyvalue"
-                                                class="text-sm leading-5 text-left my-3">
-                                                <div class="text-gray-900 font-medium">{{att.key}}</div>
-                                                <div class="text-gray-500 font-normal">
-                                                    {{att.value}}
-                                                </div>
-                                            </div>
-                                            <div class="text-sm leading-5 text-left text-gray-900 font-medium">
-                                                Calculated value
-                                                <div *ngIf="sampleRecords?.calculatedLabels[currentRecordIdx]?.length > 0; else noLabel">
-                                                    <span *ngFor="let labelIdx of convertStringToArray(sampleRecords?.calculatedLabels[currentRecordIdx][1])">
-                                                        <label [ngClass]="[getBackground(getColorForLabel(labelIdx)), getText(getColorForLabel(labelIdx)), getBorder(getColorForLabel(labelIdx)), getHover(getColorForLabel(labelIdx))]"
-                                                            class="border inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border">
-                                                            {{labelIdx}}
-                                                        </label>
-                                                    </span>                                       
-                                                </div>
-                                                <ng-template #noLabel>
-                                                    <div>
-                                                        <label class="border text-gray-700 bg-gray-100 border-gray-400 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border hover:bg-gray-200">
-                                                            -
-                                                        </label>
-                                                    </div>
-                                                </ng-template>
-                                            </div>
-                                        </div>
-
-                                        <div class="modal-action text-center">
-                                            <label [for]="'attribute-details-'+currentRecordId"
-                                                class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
+                                        <div class="flex items-center justify-center mr-5">
+                                            <label (click)="currentRecordIdx = i"
+                                                for="attribute-details"
+                                                class="text-xs bg-white text-gray-700 text-xs font-semibold px-4 py-1 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">
+                                                View
+                                            </label>
                                         </div>
                                     </div>
                                 </div>
@@ -490,6 +408,46 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<input type="checkbox" id="attribute-details" class="modal-toggle">
+<div class="modal text-center items-center">
+    <div *ngIf="currentRecordIdx != -1" class="modal-box" style="max-width: 48rem;">
+        <div *ngIf="sampleRecords.records[currentRecordIdx] as record">
+            <h1 class="text-lg text-gray-900 mb-2">View details</h1>
+            <div class="text-sm text-gray-500 my-2"
+                class="overflow-y-auto max-height-modal scrollable-size">
+                <div *ngFor="let att of attributes"
+                    class="text-sm leading-5 text-left my-3">
+                    <div class="text-gray-900 font-medium">{{att.name}}</div>
+                    <div class="text-gray-500 font-normal">
+                        {{record.fullRecordData[att.name]}}
+                    </div>
+                </div>
+                <div class="text-sm leading-5 text-left text-gray-900 font-medium">
+                    Label data
+
+                    <div class="flex flex-row items-center">
+                        <div *ngFor="let kv of record.calculatedLabelsResult | keyvalue" class="mr-2 flex flex-row flex-nowrap items-center">
+                            <span *ngIf="kv.value.displayAmount" class="text-xs text-gray-500 font-normal">
+                                {{kv.value.count}}x
+                            </span>
+                            <label [ngClass]="[getBackground(kv.value.color), getText(kv.value.color), getBorder(kv.value.color), getHover(kv.value.color)]"
+                                class="border inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border">
+                                {{kv.value.label}}
+                            </label>  
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-action text-center">
+                <label for="attribute-details"
+                    class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
             </div>
         </div>
     </div>

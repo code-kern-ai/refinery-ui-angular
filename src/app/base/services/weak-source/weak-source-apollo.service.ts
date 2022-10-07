@@ -489,7 +489,7 @@ export class WeakSourceApolloService {
             records: lfRun['records'].map((record, index) => {
               return {
                 calculatedLabels: record['calculatedLabels'],
-                fullRecord: record['fullRecord'],
+                fullRecordData: record['fullRecordData'],
                 recordId: record['recordId']
               }
             }),

@@ -87,14 +87,8 @@ export class WeakSourceDetailsComponent
 
   stickyObserver: IntersectionObserver;
   isHeaderNormal: boolean = true;
-  sampleRecordsQuery$;
-  sampleRecordsData$: any;
-  currentRecordId: string;
   currentRecordIdx: number = -1;
-  recordData: any = [];
-  recordDataAttributes: any;
-  sampleRecords: any = [];
-  payloadFailed: boolean = false;
+  sampleRecords: any;
   selectedAttribute: string = '';
 
   constructor(
@@ -138,7 +132,7 @@ export class WeakSourceDetailsComponent
   }
 
   getWhiteListNotificationService(): string[] {
-    let toReturn = ['payload_finished', 'payload_failed', 'payload_created', 'payload_update_statistics', 'payload_sample_records'];
+    let toReturn = ['payload_finished', 'payload_failed', 'payload_created', 'payload_update_statistics'];
     toReturn.push(...['labeling_task_deleted', 'labeling_task_updated', 'labeling_task_created']);
     toReturn.push(...['information_source_deleted', 'information_source_updated']);
     toReturn.push(...['label_created', 'label_deleted']);
@@ -208,9 +202,7 @@ export class WeakSourceDetailsComponent
       if (msgParts[2] != this.informationSource.id) return;
       this.informationSourceQuery$.refetch();
 
-      if (msgParts[1] == 'payload_finished' || msgParts[1] == 'payload_failed' || msgParts[1] == 'payload_created' || msgParts[1] == 'payload_sample_records') {
-        if (msgParts[1] == 'payload_sample_records') this.payloadFailed = false;
-        if (msgParts[1] == 'payload_failed') this.payloadFailed = true;
+      if (msgParts[1] == 'payload_finished' || msgParts[1] == 'payload_failed' || msgParts[1] == 'payload_created') {
         if (this.lastTaskQuery$) this.lastTaskQuery$.refetch();
       }
     }
@@ -641,67 +633,52 @@ export class WeakSourceDetailsComponent
       return;
     }
     this.justClickedRun = true;
-    this.informationSourceApolloService.getLabelingFunctionOn10Records(projectId, this.informationSource.id).pipe(first()).subscribe((res) => {
-      console.log(res);
+    this.informationSourceApolloService.getLabelingFunctionOn10Records(projectId, this.informationSource.id).pipe(first()).subscribe((sampleRecords) => {
+      this.sampleRecords = sampleRecords;
+      this.sampleRecords.records.forEach(record => {
+        record.fullRecordData = JSON.parse(record.fullRecordData);
+        if (this.labelingTasks.get(this.labelingTaskControl.value).taskType == 'MULTICLASS_CLASSIFICATION') {
+          const label = record.calculatedLabels.length > 0 ? record.calculatedLabels[1] : '-';
+          record.calculatedLabelsResult = {
+            label: {
+            label: label,
+            color: this.getColorForLabel(label),
+            count: 1,
+            displayAmount: false
+          }};
+        } else {
+          const resultDict = {};
+          record.calculatedLabels.forEach(e => {
+            const label = this.getLabelFromExtractionResult(e);
+            if (!resultDict[label])  {
+              resultDict[label] = {
+                label: label,
+                color: this.getColorForLabel(label),
+                count: 0
+              };
+            }
+            resultDict[label].count++;
+          });
+          const displayAmount = Object.keys(resultDict).length > 1;
+          for (const key in resultDict) { 
+            resultDict[key].displayAmount = displayAmount || resultDict[key].count > 1;
+          }
+          record.calculatedLabelsResult = resultDict;
+        }
+      });
+      this.lastTaskLogs = this.sampleRecords.containerLogs;
+      this.justClickedRun = false;
     });
-    // [this.sampleRecordsQuery$, this.sampleRecordsData$] = this.informationSourceApolloService.getLabelingFunctionOn10Records(projectId, this.informationSource.id)
-    // this.subscriptions$.push(this.sampleRecordsData$
-    //   .subscribe((sampleRecords) => {
-    //     // Currently commented because the arrays will be reformatted 
-
-    //     // this.recordData = [];
-    //     // this.sampleRecords = sampleRecords;
-    //     // this.sampleRecords.recordIds.forEach(recordId => {
-    //     //   this.getRecordByRecordId(recordId);
-    //     // });
-    //     // this.lastTaskLogs = this.sampleRecords.containerLogs;
-    //     // this.justClickedRun = false;
-    //   }));
     this.requestTimeOut = true;
     timer(1000).subscribe(() => this.requestTimeOut = false);
   }
 
-  getRecordByRecordId(recordId: string, index?: number) {
-    this.currentRecordId = recordId;
-    this.currentRecordIdx = index;
-    this.recordApolloService
-      .getRecordByRecordId(this.project.id, recordId)
-      .pipe(first())
-      .subscribe((record) => {
-        // Currently commented because the arrays will be reformatted 
-
-        // this.recordDataAttributes = record.data;
-        // Object.keys(record.data).forEach(key => {
-        //   if(key == this.selectedAttribute) {
-        //     this.recordData.push(record.data[key]);
-        //   }
-        // })
-        // const uniq = a => [...new Set(a)];
-        // this.recordData = uniq(this.recordData);
-
-        // if(this.labelingTasks.get(this.labelingTaskControl.value).taskType == LabelingTask.INFORMATION_EXTRACTION) {
-        //   console.log(this.sampleRecords.calculatedLabels)
-        //   this.sampleRecords.calculatedLabels.forEach((label) => {
-        //     console.log(label.length)
-        //   });
-
-        // }
-
-
-      });
-  }
-
   getColorForLabel(label: string) {
-    return this.getTargetTaskLabels().find(el => el.name == label)?.color;
+    return label != '-' ? this.getTargetTaskLabels().find(el => el.name == label)?.color : 'gray';
   }
 
-  convertStringToArray(str: string) {
+  getLabelFromExtractionResult(str: string) {
     const array = str.split('\'');
-    const filteredArr = array.filter((el, idx) => idx % 2 == 1);
-    return array.length == 1 ? array : filteredArr;
-  }
-
-  setSelectedAttribute(event: any) {
-    this.selectedAttribute = event.target.value;
+    return array.length == 1 ? array[0] : array[1];
   }
 }
