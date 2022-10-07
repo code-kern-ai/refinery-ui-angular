@@ -503,7 +503,37 @@ export class WeakSourceApolloService {
         nextFetchPolicy: 'cache-first',
       });
       const vc = query.valueChanges.pipe(
-        map((result) => result['data']['getLabelingFunctionOn10Records'])
+        map((result) => {
+          let task = result['data']['getLabelingFunctionOn10Records'];
+          if (task == null) return null;
+          let neededIDLength = task['containerLogs']
+            ? String(task['containerLogs'].length)?.length
+            : 0;
+          return {
+            records: task['records'].map((record, index) => {
+              return {
+                calculatedLabels: record['calculatedLabels'],
+                fullRecord: record['fullRecord'],
+                recordId: record['recordId']
+              }
+            }),
+            codeHasErrors: task['codeHasErrors'],
+            containerLogs: !task['containerLogs']
+              ? null
+              : task['containerLogs'].map((wrapper, index) => {
+                let d: Date = new Date(
+                  wrapper.substr(0, wrapper.indexOf(' '))
+                );
+                return (
+                  String(index + 1).padStart(neededIDLength, '0') +
+                  ': ' +
+                  d.toLocaleString() +
+                  ' - ' +
+                  wrapper.substr(wrapper.indexOf(' ') + 1)
+                );
+              }),
+          };
+        })
       );
     return [query, vc];
   }
