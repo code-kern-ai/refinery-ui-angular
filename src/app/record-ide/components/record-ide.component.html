@@ -63,10 +63,10 @@
                             </svg>
                         </ng-template>
                     </button>
-                    <button (click)="prevRecord()"
+                    <button (click)="prevRecord()" [ngClass]="this.position == 1 ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer'"
                         class="bg-white text-gray-700 text-xs font-semibold mr-3 px-4 py-2 rounded-md border border-gray-300 whitespace-nowrap hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Back
                     </button>
-                    <button (click)="nextRecord()"
+                    <button (click)="nextRecord()" [ngClass]="this.position == this.huddleData.recordIds.length ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer'"
                         class="bg-indigo-700 text-white text-xs font-semibold mr-3 px-4 py-2 rounded-md cursor-pointer whitespace-nowrap hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Next
                     </button>
                     <span data-tip="Number of the current index in session"
