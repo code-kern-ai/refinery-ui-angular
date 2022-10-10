@@ -281,7 +281,7 @@
                                                                     <div *ngIf="rla.sourceType != LabelSourceType.INFORMATION_SOURCE || (rla.sourceType == LabelSourceType.INFORMATION_SOURCE && showInformationSourcesFlag)"
                                                                         [attr.data-tip]="rla.dataTip"
                                                                         class="tooltip table"
-                                                                        [ngClass]="(displayUserId == GOLD_USER_ID || displayUserId == user.id)?'mt-3':null">
+                                                                        [ngClass]=" displayUserId != user.id && rla.sourceType == LabelSourceType.MANUAL ?null:'mt-3'">
                                                                         <ng-template
                                                                             [ngIf]="rla.sourceType != LabelSourceType.MANUAL"
                                                                             [ngIfElse]="displayNormalLabel">
