@@ -65,7 +65,7 @@ export class DropdownComponent implements OnChanges {
     this.dropdownClassList += this.dropdownOptions.buttonVersion != 'default' ? 'right-0 width-icon-menues' : '';
     this.buttonClassList += this.dropdownOptions.isButtonSampleProjects ? 'py-2' : 'border-gray-300 py-1.5';
     this.buttonClassList += this.dropdownClassList;
-    this.tooltipClassList = 'tooltip';
+    this.tooltipClassList = this.dropdownOptions.buttonTooltip ? 'tooltip' : '';
     if (this.dropdownOptions.buttonTooltipPosition && this.dropdownOptions.buttonTooltip) {
       this.tooltipClassList += ' tooltip-' + this.dropdownOptions.buttonTooltipPosition;
     } else {
