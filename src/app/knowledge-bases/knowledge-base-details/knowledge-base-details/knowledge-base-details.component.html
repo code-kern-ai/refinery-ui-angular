@@ -91,14 +91,17 @@
 
                     <button (click)="requestFileExport(projectId)"
                         data-tip="Download your lookup list to your local machine" class="tooltip tooltip-bottom">
-                        <label class="ml-2 mr-1 inline-flex items-center px-4 py-2 border border-gray-200 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer" style="max-height: 34px;">
+                        <label
+                            class="ml-2 mr-1 inline-flex items-center px-4 py-2 border border-gray-200 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer"
+                            style="max-height: 34px;">
                             <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 h-4 w-4" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                             </svg>
                             Download list
-                            <span *ngIf="downloadMessage == DownloadStateType.PREPARATION || downloadMessage == DownloadStateType.DOWNLOAD"
+                            <span
+                                *ngIf="downloadMessage == DownloadStateType.PREPARATION || downloadMessage == DownloadStateType.DOWNLOAD"
                                 class="ml-2 inline-flex items-center rounded text-xs font-medium bg-gray-100 text-gray-800">
                                 <kern-loading color="gray"></kern-loading>
                             </span>
@@ -155,19 +158,21 @@
         <div *ngIf="terms" class="grid grid-cols-1 gap-6 mt-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3">
             <ng-container *ngFor="let term of terms; let i = index">
                 <ng-template [ngIf]="!isTermEditorOpen()" [ngIfElse]="editTerm">
-                    <div *ngIf="!(term.blacklisted)"
-                        class="relative rounded-lg border border-gray-300 bg-white px-4 py-3 shadow-sm items-center text-sm hover:border-gray-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
-                        <div class="flow-root">
-                            <div class="text-gray-900 font-medium float-left">{{term.value}}</div>
-                            <kern-dropdown class="mr-2" [dropdownOptions]="{
+                    <div *ngIf="!(term.blacklisted)" class="flex items-center">
+                        <div
+                            class="w-full relative rounded-lg border border-gray-300 bg-white px-4 py-3 shadow-sm items-center text-sm hover:border-gray-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
+                            <div class="flow-root">
+                                <div class="text-gray-900 font-medium float-left">{{term.value}}</div>
+                                <kern-dropdown class="mr-2" [dropdownOptions]="{
                                 optionArray:['Edit term','Remove term', 'Blacklist term'],
                                 optionIcons:['edit-term','remove-term', 'blacklist-term'],
                                 buttonVersion: '...'
                             }" (optionClicked)="executeOption($event, term)">
-                            </kern-dropdown>
-                        </div>
+                                </kern-dropdown>
+                            </div>
 
-                        <div class="text-gray-500 font-normal italic">{{term.comment}}</div>
+                            <div class="text-gray-500 font-normal italic">{{term.comment}}</div>
+                        </div>
                     </div>
                 </ng-template>
 
@@ -230,18 +235,20 @@
             <div *ngIf="terms$ | async as terms"
                 class="grid grid-cols-1 gap-6 mt-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3">
                 <ng-container *ngFor="let term of terms; let i = index">
-                    <div *ngIf="(term.blacklisted)"
-                        class="relative rounded-lg border border-gray-300 bg-white px-4 py-3 shadow-sm items-center text-sm hover:border-gray-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
-                        <div class="flow-root">
-                            <div class="text-gray-900 font-medium float-left">{{term.value}}</div>
-                            <kern-dropdown class="mr-2" [dropdownOptions]="{
+                    <div *ngIf="(term.blacklisted)" class="flex items-center">
+                        <div
+                            class="w-full relative rounded-lg border border-gray-300 bg-white px-4 py-3 shadow-sm items-center text-sm hover:border-gray-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
+                            <div class="flow-root">
+                                <div class="text-gray-900 font-medium float-left">{{term.value}}</div>
+                                <kern-dropdown class="mr-2" [dropdownOptions]="{
                                 optionArray:['Remove term', 'Whitelist term'],
                                 optionIcons:['remove-term', 'whitelist-term'],
                                 buttonVersion: '...'
                             }" (optionClicked)="executeOption($event, term)">
-                            </kern-dropdown>
+                                </kern-dropdown>
+                            </div>
+                            <div class="text-gray-500 font-normal block">{{term.comment}}</div>
                         </div>
-                        <div class="text-gray-500 font-normal block">{{term.comment}}</div>
                     </div>
                 </ng-container>
             </div>

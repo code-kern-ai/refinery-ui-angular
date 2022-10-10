@@ -12,6 +12,7 @@
                             optionArray:['Select all','Deselect all', 'Delete selected'],
                             optionIcons:['select-all','deselect-all', 'delete-selected'],
                             buttonTooltip:'Actions',
+                            buttonTooltipPosition: 'left',
                             buttonCaption: 'Actions',
                             isOptionDisabled: [false, false, this.selectedLookupLists.length == 0]
                         }" (optionClicked)="executeOption($event)">
@@ -42,7 +43,7 @@
                     </ng-template>
                     <ng-template #noLookupLists>
                         <div data-tip="At least one lookup list is needed to enable actions"
-                            class="tooltip tooltip-bottom mr-3">
+                            class="tooltip tooltip-left mr-3">
                             <button type="button"
                                 class="inline-flex items-center justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-1.5 bg-white text-xs font-medium text-gray-700 opacity-50 cursor-not-allowed focus:ring-offset-2 focus:ring-offset-gray-400"
                                 id="menu-button" aria-expanded="true" aria-haspopup="true">
@@ -66,14 +67,14 @@
 
                     <div class="flex justify-center overflow-visible">
                         <button [routerLink]="['../heuristics']" data-tip="Go to heuristics overview"
-                            class="tooltip tooltip-bottom bg-white text-gray-700 text-xs font-medium mr-3 px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            class="tooltip tooltip-left bg-white text-gray-700 text-xs font-medium mr-3 px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                             Heuristics
                         </button>
                     </div>
 
                     <div class="flex justify-center overflow-visible">
                         <button [routerLink]="['../model-callbacks']" data-tip="Go to the model callbacks"
-                            class="tooltip tooltip-bottom bg-white text-gray-700 text-xs font-medium mr-3 px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            class="tooltip tooltip-left bg-white text-gray-700 text-xs font-medium mr-3 px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                             Model callbacks
                         </button>
                     </div>
