@@ -3,7 +3,7 @@
     </kern-snake>
 </div>
 <ng-template #normalDisplay>
-    <div *ngIf="project" class="bg-white grid" [ngClass]="vertical?'grid-cols-2': 'grid-cols-1'">
+    <div *ngIf="project" class="bg-white grid overflow-hidden" [ngClass]="vertical?'grid-cols-2': 'grid-cols-1'">
         <div class="h-full">
             <div class="m-3">
                 <span class="mr-4">Editor</span>
