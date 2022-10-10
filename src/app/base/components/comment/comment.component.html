@@ -1,5 +1,5 @@
 <div class=" mr-6 flex items-center" [ngClass]="dm?.canCommentOnPage?null:'hidden'">
-    <label for="comment-box" class="tooltip tooltip-left modal-button cursor-pointer inline-block" data-tip="comments">
+    <label for="comment-box" class="tooltip tooltip-left modal-button cursor-pointer inline-block" data-tip="Comments">
         <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-notes" width="24" height="24"
             viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
             stroke-linejoin="round">
@@ -58,7 +58,7 @@
                 cData.created_by?'you':cData.creationUser}})</span>
         </div>
         <div class="flex flex-row flex-nowrap gap-2 items-center">
-            <div *ngIf="cData.is_private" data-tip="private comment" class="tooltip"
+            <div *ngIf="cData.is_private" data-tip="private comment" class="tooltip tooltip-left"
                 (click)="updateComment(cData.id,'is_private',!cData.is_private)"
                 [ngClass]="myUser.id == cData.created_by?'cursor-pointer':'text-gray-400 pointer-events-none'">
                 <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-eye-off" width="24"
@@ -72,7 +72,7 @@
                     </path>
                 </svg>
             </div>
-            <div *ngIf="!cData.is_private" data-tip="public comment" class="tooltip"
+            <div *ngIf="!cData.is_private" data-tip="public comment" class="tooltip tooltip-left"
                 (click)="updateComment(cData.id,'is_private',!cData.is_private)"
                 [ngClass]="myUser.id == cData.created_by?'cursor-pointer':'text-gray-400 pointer-events-none'">
                 <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-eye" width="24" height="24"
@@ -86,7 +86,7 @@
                 </svg>
             </div>
 
-            <div data-tip="edit comment" class="tooltip" (click)="editComment(cData)"
+            <div data-tip="edit comment" class="tooltip tooltip-left" (click)="editComment(cData)"
                 [ngClass]="myUser.id == cData.created_by?'cursor-pointer':'text-gray-400 pointer-events-none'">
 
                 <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-pencil" width="24"
@@ -97,7 +97,8 @@
                     <line x1="13.5" y1="6.5" x2="17.5" y2="10.5"></line>
                 </svg>
             </div>
-            <div data-tip="delete comment" class="tooltip" (click)="deleteComment(cData.id,cData.project_id)"
+            <div data-tip="delete comment" class="tooltip tooltip-left"
+                (click)="deleteComment(cData.id,cData.project_id)"
                 [ngClass]="myUser.id == cData.created_by || myUser.role=='ENGINEER'?'cursor-pointer':'text-gray-400 pointer-events-none'">
 
                 <svg xmlns="http://www.w3.org/2000/svg" class="inline-block w-6 h-6 stroke-current" fill="none"
@@ -167,14 +168,19 @@
                 style="line-height:1rem;border-radius: 0px" (change)="preventEventPropagation($event)"
                 (keyup)="preventEventPropagation($event)" (keydown)="preventEventPropagation($event)"></textarea>
             <div class="flex flex-row mt-2 justify-between">
-                <button (click)="saveCommentToDb(commentBox.value,privateComment.checked);commentBox.value=''"
-                    class="px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none"
-                    [ngClass]="commentBox.value =='' || newComment.commentId == '' ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer'">
-
+                <button *ngIf="commentBox.value =='' || newComment.commentId == '' else enabledSave"
+                    class="px-2.5 py-1.5 border border-gray-300 opacity-50 cursor-not-allowed pointer-events-none shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
                     Save to database
                 </button>
+                <ng-template #enabledSave>
+                    <button (click)="saveCommentToDb(commentBox.value,privateComment.checked);commentBox.value=''"
+                        class="bg-green-100 text-green-700 border border-green-400 text-white text-xs font-semibold px-2.5 py-1.5 rounded-md hover:bg-green-200 focus:outline-none inline-block opacity-100 cursor-pointer">
+                        Save to database
+                    </button>
+                </ng-template>
+
                 <button (click)="newComment.areaOpen=false;"
-                    class="bg-red-100 border border-red-400 text-red-700 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer ml-3 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                    class="bg-red-100 border border-red-400 text-red-700 text-xs font-semibold px-2.5 py-1.5 rounded-md cursor-pointer ml-3 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
                     Cancel comment creation
                 </button>
             </div>
