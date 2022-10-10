@@ -75,10 +75,12 @@ export class CommentComponent implements OnInit, OnDestroy {
     this.dm.createComment(comment, this.newComment.commentType, this.newComment.commentId, isPrivate);
   }
 
-  deleteComment(commentId: string, projectId: string = null) {
+  deleteComment(event: Event, commentId: string, projectId: string = null) {
+    this.preventEventPropagation(event);
     this.dm.deleteComment(commentId, projectId);
   }
-  updateComment(commentId: string, toChangeKey: string, toChangeValue: any) {
+  updateComment(event: Event, commentId: string, toChangeKey: string, toChangeValue: any) {
+    this.preventEventPropagation(event);
     const changes = {};
     changes[toChangeKey] = toChangeValue;
     const projectId = this.dm.currentData[commentId].project_id;
@@ -90,7 +92,8 @@ export class CommentComponent implements OnInit, OnDestroy {
     event.stopPropagation();
     event.stopImmediatePropagation();
   }
-  editComment(commentData: any) {
+  editComment(event: Event, commentData: any) {
+    this.preventEventPropagation(event);
     if (commentData.edit) {
       commentData.edit = false;
       commentData.open = false;
@@ -102,12 +105,12 @@ export class CommentComponent implements OnInit, OnDestroy {
   }
   checkAllOpen() {
     for (const key in this.dm.currentData) {
-      if (this.dm.currentData[key].open) {
-        this.allOpen = true;
+      if (!this.dm.currentData[key].open) {
+        this.allOpen = false;
         return;
       }
     }
-    this.allOpen = false;
+    this.allOpen = true;
   }
   openAllComments(value: boolean) {
     for (const key in this.dm.currentData) this.dm.currentData[key].open = value;

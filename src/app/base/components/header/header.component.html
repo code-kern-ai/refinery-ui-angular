@@ -93,10 +93,6 @@
                     </svg>
                 </a>
             </div>
-            <div class="flex items-center justify-center">
-                <kern-comment></kern-comment>
-            </div>
-
 
             <div *ngIf="user?.role == 'ENGINEER'" class="flex items-center justify-center">
                 <a [routerLink]="['/users']" class="flex mr-6 tooltip tooltip-left" data-tip="Home page - Users">
@@ -109,6 +105,10 @@
                         <path d="M12 13l4 -2l4 2v5l-4 2l-4 -2"></path>
                     </svg>
                 </a>
+            </div>
+
+            <div class="flex items-center justify-center">
+                <kern-comment></kern-comment>
             </div>
 
 
