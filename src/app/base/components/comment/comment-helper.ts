@@ -144,6 +144,7 @@ export class CommentDataManager {
 
         } else if (msgParts[1] == "comment_updated") {
             somethingToRerequest = this.removeCommentFromCache(msgParts[3]);
+            somethingToRerequest = somethingToRerequest || this.isCommentUpdateInterestingForMe(msgParts);
             if (somethingToRerequest) {
                 //create helper addon
                 const backRequest: CommentRequest = { commentType: msgParts[4] as CommentType, projectId: msgParts[2], commentKey: msgParts[5], commentId: msgParts[3] };
@@ -160,10 +161,8 @@ export class CommentDataManager {
             }
         } else if (msgParts[1] == 'project_created') {
             this.subScribeToProjectNotifications(msgParts[2]);
-
         } else if (msgParts[1] == 'project_deleted') {
             this.unsubScribeFromProjectNotifications(msgParts[2]);
-
         }
 
         if (somethingToRerequest) this.requestMissingData(200);
@@ -193,6 +192,14 @@ export class CommentDataManager {
 
         if (somethingToRerequest) this.requestMissingData(200);
     }
+
+    private isCommentUpdateInterestingForMe(msgParts: string[]): boolean {
+        const commentType = msgParts[4] as CommentType;
+        const projectId = msgParts[2];
+        const interestingForMe = !!this.data[commentType]?.[projectId];
+        return interestingForMe;
+    }
+
     private modifyCacheFor(commentType: string, projectId: string, xfkey: string, reReQuest: boolean): boolean {
         const addInfoKey = commentType + "@" + projectId;
         if (addInfoKey in this.addInfo) {

@@ -17,8 +17,9 @@
     <div class="modal-box text-black bg-white flex flex-col"
         style="max-width: 80%;min-width: 50%; width:fit-content;height:fit-content;max-height: 90%;">
         <div class="self-center flex flex-row flex-nowrap items-center">
-            <p class="font-bold tooltip tooltip-bottom cursor-pointer" [attr.data-tip]="allOpen?'close all':'open all'"
-                (click)="openAllComments(!allOpen)">Comments</p>
+            <div class="tooltip tooltip-bottom" [attr.data-tip]="allOpen?'close all':'open all'">
+                <p class="font-bold cursor-pointer" (click)="openAllComments(!allOpen)">Comments</p>
+            </div>
         </div>
         <div *ngIf="myUser && dm?.currentData && dm?.currentDataOrder"
             class="flex flex-col gap-2 overflow-y-auto overflow-x-hidden" style="max-height:80%">
