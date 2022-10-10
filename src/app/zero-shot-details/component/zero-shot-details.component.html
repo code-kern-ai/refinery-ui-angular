@@ -104,13 +104,13 @@
                         Model
                         <button
                             class="ml-1 tooltip tooltip-right inline-block items-center border border-gray-300 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none cursor-pointer"
-                            [routerLink]="['../../model-download']" [queryParams]="{lastPage: 'zero-shot/'+informationSource.id}"
-                            [disabled]="!isManaged"
+                            [routerLink]="['../../model-download']"
+                            [queryParams]="{lastPage: 'zero-shot/'+informationSource.id}" [disabled]="!isManaged"
                             [ngClass]="!isManaged ? 'tooltip tooltip-right cursor-not-allowed' : 'opacity-100 cursor-pointer'"
                             [attr.data-tip]="!isManaged ? 'Check out our hosted version to use this function' : 'See which models are downloaded'">
                             <svg xmlns="http://www.w3.org/2000/svg"
-                                class="inline-block icon icon-tabler icon-tabler-arrow-autofit-down" width="20" height="20"
-                                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                class="inline-block icon icon-tabler icon-tabler-arrow-autofit-down" width="20"
+                                height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
                                 stroke-linecap="round" stroke-linejoin="round">
                                 <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                                 <path d="M12 20h-6a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h8"></path>
@@ -299,7 +299,7 @@
                                             class="flex items-center text-xs leading-5 text-gray-500 font-normal text-center ml-4 my-3 text-left">
                                             {{record.checkedText}}
                                         </div>
-                                        <div class="flex flex-row flex-nowrap items-center my-3 grid"
+                                        <div class="flex flex-row flex-nowrap items-center grid"
                                             style="grid-template-columns: auto 40px 40px 80px;">
                                             <div class="flex items-center justify-center mr-5">
                                                 <span
