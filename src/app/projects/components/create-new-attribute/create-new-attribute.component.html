@@ -17,7 +17,8 @@
                     <div *ngIf="!isHeaderNormal" class="mx-4 text-sm leading-5 font-medium text-gray-500 inline-block">
                         {{currentAttribute.name}}</div>
 
-                    <kern-heuristic-statuses [status]="currentAttribute.state" page="attributes" initialCaption="Needs execution">
+                    <kern-heuristic-statuses [status]="currentAttribute.state" page="attributes"
+                        initialCaption="Needs execution">
                     </kern-heuristic-statuses>
 
                 </div>
@@ -170,8 +171,8 @@
                                     *ngFor="let record of sampleRecords.calculatedAttributes; let i = index">
                                     <div
                                         class="flex-shrink-0 border-b border-gray-200 shadow-sm flex justify-between items-center">
-                                        <div
-                                            class="flex items-center text-xs leading-5 text-gray-500 font-normal mx-4 my-3" style="text-align: justify;">
+                                        <div class="flex items-center text-xs leading-5 text-gray-500 font-normal mx-4 my-3"
+                                            style="text-align: justify;">
                                             {{record}}
                                         </div>
                                         <div class="flex items-center justify-center mr-5 ml-auto">
@@ -191,7 +192,7 @@
                                             class="overflow-y-auto max-height-modal scrollable-size">
                                             <div *ngFor="let att of recordData | keyvalue"
                                                 class="text-sm leading-5 text-left my-3">
-                                                <div class="text-gray-900 font-medium">{{att.key}}</div>
+                                                <div class="text-gray-900 font-bold">{{att.key}}</div>
                                                 <div class="text-gray-500 font-normal">
                                                     {{att.value}}
                                                 </div>

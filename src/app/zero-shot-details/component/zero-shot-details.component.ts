@@ -60,7 +60,6 @@ export class ZeroShotDetailsComponent
   labelColor: Map<string, Map<string, string>> = new Map<string, Map<string, string>>();
   labelingTasksClassification: any[];
   labelingTasksSortOrder = [];
-  useTaskLabels: boolean = true;
   zeroShotRecommendations: any;
   isModelDownloading: boolean = false;
 
@@ -336,10 +335,8 @@ export class ZeroShotDetailsComponent
     if (text.length == 0) return;
     if (this.testerRequestedSomething) return;
     let labels;
-    if (this.customLabels.nativeElement.value != '') {
-      this.useTaskLabels = false;
-    }
-    if (this.useTaskLabels) {
+    const useTaskLabels = this.customLabels.nativeElement.value == '';
+    if (useTaskLabels) {
       labels = this.labelingTasks.get(this.zeroShotSettings.taskId).labels
         .filter(l => !this.zeroShotSettings.excludedLabels.includes(l.id))
         .map(l => l.name);
@@ -356,7 +353,6 @@ export class ZeroShotDetailsComponent
         });
         this.singleLineTesterResult = r.labels;
         this.testerRequestedSomething = false;
-        this.useTaskLabels = true;
       })
   }
 
@@ -365,11 +361,10 @@ export class ZeroShotDetailsComponent
     this.testerRequestedSomething = true;
     this.randomRecordTesterResult = null;
     let labels = null;
-    if (this.customLabels.nativeElement.value != '') {
-      this.useTaskLabels = false;
-    }
-    if (!this.useTaskLabels) labels = JSON.stringify(this.customLabels.nativeElement.value.split(",").map(l => l.trim()));
-    else if (this.useTaskLabels && this.zeroShotSettings.excludedLabels.length) {
+    const customLabelValue = this.customLabels.nativeElement.value;
+    const useTaskLabels = customLabelValue == '';
+    if (!useTaskLabels) labels = JSON.stringify(customLabelValue.split(",").map(l => l.trim()));
+    else if (useTaskLabels && this.zeroShotSettings.excludedLabels.length) {
       labels = JSON.stringify(this.labelingTasks.get(this.zeroShotSettings.taskId).labels
         .filter(l => !this.zeroShotSettings.excludedLabels.includes(l.id))
         .map(l => l.name));
