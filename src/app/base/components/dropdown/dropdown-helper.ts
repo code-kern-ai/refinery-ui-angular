@@ -8,6 +8,7 @@ import { FormArray } from "@angular/forms";
  * @emitIndex {boolean, optional} - if enabled the index of the selected option is emitted instead of the value
  * @keepDropdownOpen {boolean, optional} - stops the event propagation of the click event and therfore keeps the menu open
  * @buttonTooltip {string, optional} - adds a tooltip if defined
+ * @buttonTooltipPosition {string, optional} - if empty defaults to right otherwise tooltip + position (e.g. tooltip-left)
  * @isDisabled {boolean, optional} - disables the dropdown
  * @isOptionDisabled {boolean[], optional} - disables the dropdown option (needs to be the exact same length as the optionArray)
  * @optionIcons {string[], optional} - displays a predfined icon if set for the index (needs to be the exact same length as the optionArray)
@@ -33,6 +34,7 @@ export type DropdownOptions = {
     emitIndex?: boolean;
     keepDropdownOpen?: boolean;
     buttonTooltip?: string;
+    buttonTooltipPosition?: string;
     isDisabled?: boolean;
     isOptionDisabled?: boolean[];
     optionIcons?: string[];

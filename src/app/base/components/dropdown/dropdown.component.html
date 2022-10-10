@@ -1,23 +1,27 @@
 <div class="relative" [ngClass]="dropdownOptions.buttonVersion == 'default' ? ' w-max' : '' ">
-    <button #dropdownOpenButton type="button" [attr.data-tip]="dropdownOptions.buttonTooltip"
-        *ngIf="dropdownOptions.buttonVersion == 'default'"
-        class="inline-flex rounded-md border shadow-sm px-4 items-center text-xs font-semibold cursor-pointer focus:ring-offset-2 focus:ring-offset-gray-400"
-        id="menu-button" aria-expanded="true" aria-haspopup="true" [disabled]="dropdownOptions.isDisabled"
-        [ngClass]="buttonClassList" (isMenuOpen)="toggleVisible($event, dropdownOptionsDiv)" appDropdown>
-        {{ dropdownOptions.hasCheckboxes?'':dropdownOptions.buttonCaption }}
-        <ng-template [ngIf]="dropdownOptions.hasCheckboxes">
-            <label class="truncate cursor-pointer">{{getDropdownDisplayText(dropdownOptions.optionArray,"EMPTY")}}
-                <span style="color:#2563eb">{{getDropdownDisplayText(dropdownOptions.optionArray,"NOT_NEGATED")}}</span>
-                <span style="color:#ef4444">{{getDropdownDisplayText(dropdownOptions.optionArray,"NEGATED")}}</span>
-            </label>
-        </ng-template>
-        <svg class="-mr-1 ml-auto h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
-            aria-hidden="true">
-            <path fill-rule="evenodd"
-                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                clip-rule="evenodd" />
-        </svg>
-    </button>
+    <div [ngClass]="tooltipClassList" [attr.data-tip]="dropdownOptions.buttonTooltip">
+
+        <button #dropdownOpenButton type="button" *ngIf="dropdownOptions.buttonVersion == 'default'"
+            class="inline-flex rounded-md border shadow-sm px-4 items-center text-xs font-semibold cursor-pointer focus:ring-offset-2 focus:ring-offset-gray-400"
+            id="menu-button" aria-expanded="true" aria-haspopup="true" [disabled]="dropdownOptions.isDisabled"
+            [ngClass]="buttonClassList" (isMenuOpen)="toggleVisible($event, dropdownOptionsDiv)" appDropdown>
+            {{ dropdownOptions.hasCheckboxes?'':dropdownOptions.buttonCaption }}
+            <ng-template [ngIf]="dropdownOptions.hasCheckboxes">
+                <label class="truncate cursor-pointer">{{getDropdownDisplayText(dropdownOptions.optionArray,"EMPTY")}}
+                    <span
+                        style="color:#2563eb">{{getDropdownDisplayText(dropdownOptions.optionArray,"NOT_NEGATED")}}</span>
+                    <span style="color:#ef4444">{{getDropdownDisplayText(dropdownOptions.optionArray,"NEGATED")}}</span>
+                </label>
+            </ng-template>
+            <svg class="-mr-1 ml-auto h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd"
+                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                    clip-rule="evenodd" />
+            </svg>
+        </button>
+
+    </div>
 
     <svg *ngIf="dropdownOptions.buttonVersion== '...'" (isMenuOpen)="toggleVisible($event, dropdownOptionsDiv)"
         appDropdown xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 float-right cursor-pointer text-gray-500"

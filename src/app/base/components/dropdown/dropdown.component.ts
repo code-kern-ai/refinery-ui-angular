@@ -19,6 +19,7 @@ export class DropdownComponent implements OnChanges {
   hasInputErrors: string;
   buttonClassList: string;
   dropdownClassList: string;
+  tooltipClassList: string;
   dropdownOptionCaptions: string[];
   useValueAsCaption: boolean = false;
   static colorWithoutNumber: string[] = ['kernindigo', 'black', 'white']
@@ -60,11 +61,16 @@ export class DropdownComponent implements OnChanges {
 
   private buildHelperValues() {
     this.buttonClassList += this.dropdownOptions.isDisabled ? 'opacity-50 cursor-not-allowed ' : 'opacity-100 cursor-pointer ';
-    this.buttonClassList += this.dropdownOptions.buttonTooltip ? ' tooltip tooltip-right ' : '';
     this.dropdownClassList = this.dropdownOptions.hasCheckboxes ? ' w-80 ' : '';
     this.dropdownClassList += this.dropdownOptions.buttonVersion != 'default' ? 'right-0 width-icon-menues' : '';
     this.buttonClassList += this.dropdownOptions.isButtonSampleProjects ? 'py-2' : 'border-gray-300 py-1.5';
     this.buttonClassList += this.dropdownClassList;
+    this.tooltipClassList = 'tooltip';
+    if (this.dropdownOptions.buttonTooltipPosition && this.dropdownOptions.buttonTooltip) {
+      this.tooltipClassList += ' tooltip-' + this.dropdownOptions.buttonTooltipPosition;
+    } else {
+      this.tooltipClassList += ' tooltip-right';
+    }
   }
 
   private runInputChecks() {
