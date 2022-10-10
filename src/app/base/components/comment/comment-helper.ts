@@ -152,13 +152,12 @@ export class CommentDataManager {
                 this.addCommentRequests[key] = backRequest;
             }
         } else if (msgParts[1] == "comment_created") {
-            somethingToRerequest = !!(this.data[msgParts[3]]?.[msgParts[2]])
-            if (somethingToRerequest) {
-                //create helper addon
-                const backRequest: CommentRequest = { commentType: msgParts[3] as CommentType, projectId: msgParts[2], commentKey: msgParts[4], commentId: msgParts[5] };
-                const key = commentRequestToKey(backRequest);
-                this.addCommentRequests[key] = backRequest;
-            }
+            somethingToRerequest = true;
+            //create helper addon
+            const backRequest: CommentRequest = { commentType: msgParts[3] as CommentType, projectId: msgParts[2], commentKey: msgParts[4], commentId: msgParts[5] };
+            const key = commentRequestToKey(backRequest);
+            this.addCommentRequests[key] = backRequest;
+
         } else if (msgParts[1] == 'project_created') {
             this.subScribeToProjectNotifications(msgParts[2]);
         } else if (msgParts[1] == 'project_deleted') {
