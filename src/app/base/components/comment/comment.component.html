@@ -51,7 +51,8 @@
 </div>
 
 <ng-template #displayComment let-cData="cData">
-    <div class="flex flex-row pl-2 flex-nowrap items-center justify-between border border-gray-300">
+    <div class="flex flex-row pl-2 flex-nowrap items-center justify-between border border-gray-300 cursor-pointer"
+        (click)="cData.open=!cData.open;checkAllOpen()">
         <div class="flex flex-row flex-nowrap whitespace-nowrap items-center mr-2">
             <span>{{cData.xfkeyAdd}}</span>
             <span class="ml-1 text-gray-400 text-sm whitespace-nowrap">(created by {{myUser.id ==
@@ -59,7 +60,7 @@
         </div>
         <div class="flex flex-row flex-nowrap gap-2 items-center">
             <div *ngIf="cData.is_private" data-tip="private comment" class="tooltip tooltip-left"
-                (click)="updateComment(cData.id,'is_private',!cData.is_private)"
+                (click)="updateComment($event,cData.id,'is_private',!cData.is_private)"
                 [ngClass]="myUser.id == cData.created_by?'cursor-pointer':'text-gray-400 pointer-events-none'">
                 <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-eye-off" width="24"
                     height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
@@ -73,7 +74,7 @@
                 </svg>
             </div>
             <div *ngIf="!cData.is_private" data-tip="public comment" class="tooltip tooltip-left"
-                (click)="updateComment(cData.id,'is_private',!cData.is_private)"
+                (click)="updateComment($event,cData.id,'is_private',!cData.is_private)"
                 [ngClass]="myUser.id == cData.created_by?'cursor-pointer':'text-gray-400 pointer-events-none'">
                 <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-eye" width="24" height="24"
                     viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
@@ -86,7 +87,7 @@
                 </svg>
             </div>
 
-            <div data-tip="edit comment" class="tooltip tooltip-left" (click)="editComment(cData)"
+            <div data-tip="edit comment" class="tooltip tooltip-left" (click)="editComment($event,cData)"
                 [ngClass]="myUser.id == cData.created_by?'cursor-pointer':'text-gray-400 pointer-events-none'">
 
                 <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-pencil" width="24"
@@ -98,7 +99,7 @@
                 </svg>
             </div>
             <div data-tip="delete comment" class="tooltip tooltip-left"
-                (click)="deleteComment(cData.id,cData.project_id)"
+                (click)="deleteComment($event,cData.id,cData.project_id)"
                 [ngClass]="myUser.id == cData.created_by || myUser.role=='ENGINEER'?'cursor-pointer':'text-gray-400 pointer-events-none'">
 
                 <svg xmlns="http://www.w3.org/2000/svg" class="inline-block w-6 h-6 stroke-current" fill="none"
@@ -121,7 +122,7 @@
         </div>
     </div>
     <textarea #commentText [attr.disabled]="!cData.edit?true:null"
-        (blur)="cData.edit?updateComment(cData.id,'comment',commentText.value):null"
+        (blur)="cData.edit?updateComment($event,cData.id,'comment',commentText.value):null"
         (change)="preventEventPropagation($event)" (keyup)="preventEventPropagation($event)"
         (keydown)="preventEventPropagation($event)"
         [ngClass]="[cData.open?'null':'hidden',!cData.edit?'bg-gray-200':'']"
