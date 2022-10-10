@@ -31,7 +31,7 @@
             <div class="grid gap-4 " [ngClass]="isHeaderNormal ? 'grid-cols-2' : 'grid-cols-1'">
                 <div class="flex items-center mt-2" *ngIf="isHeaderNormal">
                     <button (click)="openName(true)" data-tip="Edit your heuristic's name"
-                        class="tooltip tooltip-right flex-shrink-0 bg-white text-gray-700 text-xs font-semibold mr-3 px-4 py-2 rounded-md border border-gray-300 block float-left hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        class="tooltip tooltip-right flex-shrink-0 bg-white text-gray-700 text-xs font-semibold mr-3 px-4 py-2 rounded-md border border-gray-300 block float-left hover:bg-gray-50 focus:outline-none">
                         Edit name
                     </button>
 
@@ -51,7 +51,7 @@
 
                 <div class="flex items-center mt-2">
                     <button (click)="openDescription(true)" data-tip="Edit your heuristic's description"
-                        class="tooltip tooltip-right flex-shrink-0 bg-white text-gray-700 text-xs font-semibold mr-3 px-4 py-2 rounded-md border border-gray-300 block float-left hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        class="tooltip tooltip-right flex-shrink-0 bg-white text-gray-700 text-xs font-semibold mr-3 px-4 py-2 rounded-md border border-gray-300 block float-left hover:bg-gray-50 focus:outline-none">
                         Edit description
                     </button>
                     <div class="inline-block" (dblclick)="openDescription(true,project.id)" class="inline-flex w-full">
@@ -109,12 +109,12 @@
                             *ngIf="informationSource.informationSourceType == 'LABELING_FUNCTION'">
                             <a href="https://github.com/code-kern-ai/template-functions" target="_blank"
                                 data-tip="Go to GitHub repository"
-                                class="tooltip tooltip-left bg-white text-gray-700 text-xs font-semibold  px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                class="tooltip tooltip-left bg-white text-gray-700 text-xs font-semibold  px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none">
                                 See function templates
                             </a>
                             <a href="https://github.com/code-kern-ai/refinery-lf-exec-env/blob/dev/requirements.txt"
                                 target="_blank" data-tip="See available libraries for this labeling function"
-                                class="ml-2 tooltip tooltip-left bg-white text-gray-700 text-xs font-semibold  px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                class="ml-2 tooltip tooltip-left bg-white text-gray-700 text-xs font-semibold  px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none">
                                 See installed libraries
                             </a>
                         </div>
@@ -183,15 +183,15 @@
                             optionArray: attributes,
                             buttonCaption:selectedAttribute ? selectedAttribute : 'Select display attribute'
                         }" (optionClicked)="selectedAttribute = $event">
-                         </kern-dropdown>
+                        </kern-dropdown>
                     </div>
                     <div [attr.data-tip]="hasUnsavedChanges() ? 'Unsaved Changes detected': selectedAttribute == '' ? 'Select an attribute' : 'Runs function on 10 records'"
                         class="tooltip tooltip-left">
-                        <button *ngIf="informationSource.informationSourceType == 'LABELING_FUNCTION'" 
+                        <button *ngIf="informationSource.informationSourceType == 'LABELING_FUNCTION'"
                             (click)="getLabelingFunctionOn10Records(project.id)"
                             [ngClass]="hasUnsavedChanges() || justClickedRun || selectedAttribute =='' ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
                             [disabled]="hasUnsavedChanges() || justClickedRun || selectedAttribute ==''"
-                            class="bg-white text-gray-700 text-xs font-semibold px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            class="bg-white text-gray-700 text-xs font-semibold px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none">
                             Run on 10
                         </button>
                     </div>
@@ -200,7 +200,7 @@
                         <button (click)="runInformationSource(project.id)"
                             [ngClass]="hasUnsavedChanges() || !canStartISRun() ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
                             [disabled]="hasUnsavedChanges() || !canStartISRun()"
-                            class="ml-2 text-xs font-medium px-4 py-2 rounded-md border border-blue-300 text-blue-700 bg-blue-50 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            class="ml-2 text-xs font-medium px-4 py-2 rounded-md border border-blue-300 text-blue-700 bg-blue-50 hover:bg-blue-100 focus:outline-none">
                             Run
                         </button>
                     </div>
@@ -208,14 +208,15 @@
                         <button #runWithWS (click)="runInformationSourceAndWeaklySupervise(project.id)"
                             [ngClass]="runWithWS.disabled ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
                             [disabled]="hasUnsavedChanges() || !canStartISRun()"
-                            class="ml-2 text-white text-xs font-medium px-4 py-2 rounded-md border bg-indigo-700 hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            class="ml-2 text-white text-xs font-medium px-4 py-2 rounded-md border bg-indigo-700 hover:bg-indigo-800 focus:outline-none">
                             Run + weakly supervise
                         </button>
                     </div>
                 </div>
             </div>
 
-            <div *ngIf="sampleRecords && sampleRecords.records.length > 0 && !sampleRecords.codeHasErrors" class="mt-12 flex flex-col">
+            <div *ngIf="sampleRecords && sampleRecords.records.length > 0 && !sampleRecords.codeHasErrors"
+                class="mt-12 flex flex-col">
                 <div class="overflow-x-auto">
                     <div class="inline-block min-w-full align-middle">
                         <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
@@ -224,26 +225,28 @@
                                     *ngFor="let record of sampleRecords.records; let i = index">
                                     <div
                                         class="flex-shrink-0 border-b border-gray-200 shadow-sm flex justify-between items-center">
-                                        <div
-                                            class="flex items-center text-xs leading-5 text-gray-500 font-normal mx-4 my-3" style="text-align: justify;">
+                                        <div class="flex items-center text-xs leading-5 text-gray-500 font-normal mx-4 my-3"
+                                            style="text-align: justify;">
                                             {{record.fullRecordData[selectedAttribute]}}
                                         </div>
                                         <div class="flex items-center justify-center mr-5 ml-auto">
-                                            <div *ngFor="let kv of record.calculatedLabelsResult | keyvalue" class="ml-2 flex flex-row flex-nowrap items-center">
-                                                <span *ngIf="kv.value.displayAmount" class="text-xs text-gray-500 font-normal">
+                                            <div *ngFor="let kv of record.calculatedLabelsResult | keyvalue"
+                                                class="ml-2 flex flex-row flex-nowrap items-center">
+                                                <span *ngIf="kv.value.displayAmount"
+                                                    class="text-xs text-gray-500 font-normal">
                                                     {{kv.value.count}}x
                                                 </span>
-                                                <label [ngClass]="[getBackground(kv.value.color), getText(kv.value.color), getBorder(kv.value.color), getHover(kv.value.color)]"
+                                                <label
+                                                    [ngClass]="[getBackground(kv.value.color), getText(kv.value.color), getBorder(kv.value.color), getHover(kv.value.color)]"
                                                     class="border inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border">
                                                     {{kv.value.label}}
-                                                </label>  
+                                                </label>
                                             </div>
-                                                
+
                                         </div>
                                         <div class="flex items-center justify-center mr-5">
-                                            <label (click)="currentRecordIdx = i"
-                                                for="attribute-details"
-                                                class="text-xs bg-white text-gray-700 text-xs font-semibold px-4 py-1 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">
+                                            <label (click)="currentRecordIdx = i" for="attribute-details"
+                                                class="text-xs bg-white text-gray-700 text-xs font-semibold px-4 py-1 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none inline-block">
                                                 View
                                             </label>
                                         </div>
@@ -386,7 +389,7 @@
 
                 <div data-tip="This can't be reverted!" class="tooltip tooltip-right">
                     <label [for]="'delete-modal-'+informationSource.id"
-                        class="bg-red-100 text-red-700 border border-red-400 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer ml-6 h-9 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                        class="bg-red-100 text-red-700 border border-red-400 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer ml-6 h-9 hover:bg-red-200 focus:outline-none">
                         Delete {{ informationSource.name}}
                     </label>
                 </div>
@@ -400,11 +403,11 @@
 
                         <div class="modal-action text-center mt-0">
                             <label [for]="'delete-modal-'+informationSource.id"
-                                class="bg-red-100 text-red-700 border border-red-400 text-xs font-semibold mr-2 px-4 py-2 rounded flex cursor-pointer inline-block hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                                class="bg-red-100 text-red-700 border border-red-400 text-xs font-semibold mr-2 px-4 py-2 rounded flex cursor-pointer inline-block hover:bg-red-200 focus:outline-none"
                                 [routerLink]="['../']"
                                 (click)="deleteInformationSource(project.id, informationSource.id)">Delete</label>
                             <label [for]="'delete-modal-'+informationSource.id"
-                                class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer inline-block hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Close</label>
+                                class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer inline-block hover:bg-gray-50 focus:outline-none">Close</label>
                         </div>
                     </div>
                 </div>
@@ -419,10 +422,8 @@
     <div *ngIf="currentRecordIdx != -1" class="modal-box" style="max-width: 48rem;">
         <div *ngIf="sampleRecords.records[currentRecordIdx] as record">
             <h1 class="text-lg text-gray-900 mb-2">View details</h1>
-            <div class="text-sm text-gray-500 my-2"
-                class="overflow-y-auto max-height-modal scrollable-size">
-                <div *ngFor="let att of attributes"
-                    class="text-sm leading-5 text-left my-3">
+            <div class="text-sm text-gray-500 my-2" class="overflow-y-auto max-height-modal scrollable-size">
+                <div *ngFor="let att of attributes" class="text-sm leading-5 text-left my-3">
                     <div class="text-gray-900 font-medium">{{att.name}}</div>
                     <div class="text-gray-500 font-normal">
                         {{record.fullRecordData[att.name]}}
@@ -432,14 +433,16 @@
                     Label data
 
                     <div class="flex flex-row items-center">
-                        <div *ngFor="let kv of record.calculatedLabelsResult | keyvalue" class="mr-2 flex flex-row flex-nowrap items-center">
+                        <div *ngFor="let kv of record.calculatedLabelsResult | keyvalue"
+                            class="mr-2 flex flex-row flex-nowrap items-center">
                             <span *ngIf="kv.value.displayAmount" class="text-xs text-gray-500 font-normal">
                                 {{kv.value.count}}x
                             </span>
-                            <label [ngClass]="[getBackground(kv.value.color), getText(kv.value.color), getBorder(kv.value.color), getHover(kv.value.color)]"
+                            <label
+                                [ngClass]="[getBackground(kv.value.color), getText(kv.value.color), getBorder(kv.value.color), getHover(kv.value.color)]"
                                 class="border inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border">
                                 {{kv.value.label}}
-                            </label>  
+                            </label>
                         </div>
                     </div>
                 </div>
@@ -447,7 +450,7 @@
 
             <div class="modal-action text-center">
                 <label for="attribute-details"
-                    class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
+                    class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none inline-block">Close</label>
             </div>
         </div>
     </div>
