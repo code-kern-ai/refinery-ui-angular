@@ -382,10 +382,8 @@ export class CommentDataManager {
 
     private getUserNameFromId(userId: string): string {
         const user = this.allUsers?.find(u => u.id == userId);
-        if (!user) return "";
+        if (!user || !user.mail) return "Unknown user ID";
         return user.mail;
-
-
     }
 
     public createComment(commentText: string, commentType: string, commentKey: string, isPrivate: boolean) {
