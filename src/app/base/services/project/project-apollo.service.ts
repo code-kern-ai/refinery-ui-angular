@@ -51,7 +51,7 @@ export class ProjectApolloService {
     const query = this.apollo
       .watchQuery({
         query: queries.GET_PROJECT_LIST,
-        fetchPolicy: 'network-only',
+        fetchPolicy: 'no-cache',
       });
     const vc = query.valueChanges.pipe(
       map((result) => {
