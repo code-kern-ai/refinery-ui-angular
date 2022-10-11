@@ -1,5 +1,6 @@
 <div class="relative" [ngClass]="dropdownOptions.buttonVersion == 'default' ? ' w-max' : '' ">
-    <div [ngClass]="tooltipClassList" [attr.data-tip]="dropdownOptions.buttonTooltip">
+    <div [ngClass]="dropdownOptions.buttonTooltip? tooltipClassList: ''"
+        [attr.data-tip]="dropdownOptions.buttonTooltip">
 
         <button #dropdownOpenButton type="button" *ngIf="dropdownOptions.buttonVersion == 'default'"
             class="inline-flex rounded-md border shadow-sm px-4 items-center text-xs font-semibold cursor-pointer focus:ring-offset-2 focus:ring-offset-gray-400"
@@ -41,26 +42,30 @@
         role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
         <div class="py-1 cursor-pointer" role="none">
             <div *ngFor="let caption of dropdownOptionCaptions;let i = index" (click)="performActionOnOption($event,i)"
-                [ngClass]="[dropdownOptions.textSize,dropdownOptions.textColor,dropdownOptions.optionDescriptions ? '' : 'flex' ,dropdownOptions.isOptionDisabled?.length && dropdownOptions.isOptionDisabled[i]?'opacity-50 cursor-not-allowed':'',!dropdownOptions.hasCheckboxes ? dropdownOptions.hoverColor + ' ' +dropdownOptions.textHoverColor:'', dropdownOptions.isModelDownloaded?.length && dropdownOptions.isModelDownloaded[i] ? 'text-green-700 hover:text-lime-300': '']"
-                [ngStyle]="{'border-bottom': dropdownOptions.isButtonSampleProjects && i%2 == 0 && i!=dropdownOptionCaptions.length-1 ? '1px dashed #e2e8f0' : (dropdownOptions.isButtonSampleProjects && i%2 != 0 && i!=dropdownOptionCaptions.length-1 ? '1px solid #e2e8f0' : null) }"
-                class="block px-2 py-1.5 flex-row flex-nowrap items-center gap-x-2 w-max min-w-full" role="menuitem"
-                tabindex="-1" id="menu-item-0">
-                <ng-template [ngIf]="dropdownOptions.hasCheckboxes">
-                    <div class="h-4 w-4 border-gray-300 border rounded hover:bg-gray-200"
-                        [ngStyle]="{'background-color':getActiveNegateGroupColor(dropdownOptions.optionArray[i]), 'border-color':getActiveNegateGroupColor(dropdownOptions.optionArray[i])}">
-                    </div>
-                </ng-template>
-                <ng-template [ngIf]="dropdownOptions.optionIcons?.length">
-                    <ng-container [ngTemplateOutlet]="icons"
-                        [ngTemplateOutletContext]="{iconName:dropdownOptions.optionIcons[i]}">
-                    </ng-container>
-                </ng-template>
-                {{ caption }}
+                [attr.data-tip]="dropdownOptions.optionTooltips && dropdownOptions.optionTooltips[i]?dropdownOptions.optionTooltips[i]:null"
+                [ngClass]="dropdownOptions.optionTooltips && dropdownOptions.optionTooltips[i]?tooltipClassList:''"
+                class="min-w-full">
+                <div [ngClass]="[dropdownOptions.textSize,dropdownOptions.textColor,dropdownOptions.optionDescriptions ? '' : 'flex' ,dropdownOptions.isOptionDisabled?.length && dropdownOptions.isOptionDisabled[i]?'opacity-50 cursor-not-allowed':'',!dropdownOptions.hasCheckboxes ? dropdownOptions.hoverColor + ' ' +dropdownOptions.textHoverColor:'', dropdownOptions.isModelDownloaded?.length && dropdownOptions.isModelDownloaded[i] ? 'text-green-700 hover:text-lime-300': '']"
+                    [ngStyle]="{'border-bottom': dropdownOptions.isButtonSampleProjects && i%2 == 0 && i!=dropdownOptionCaptions.length-1 ? '1px dashed #e2e8f0' : (dropdownOptions.isButtonSampleProjects && i%2 != 0 && i!=dropdownOptionCaptions.length-1 ? '1px solid #e2e8f0' : null) }"
+                    class="block px-2 py-1.5 flex-row flex-nowrap items-center gap-x-2 w-max min-w-full" role="menuitem"
+                    tabindex="-1" id="menu-item-0">
+                    <ng-template [ngIf]="dropdownOptions.hasCheckboxes">
+                        <div class="h-4 w-4 border-gray-300 border rounded hover:bg-gray-200"
+                            [ngStyle]="{'background-color':getActiveNegateGroupColor(dropdownOptions.optionArray[i]), 'border-color':getActiveNegateGroupColor(dropdownOptions.optionArray[i])}">
+                        </div>
+                    </ng-template>
+                    <ng-template [ngIf]="dropdownOptions.optionIcons?.length">
+                        <ng-container [ngTemplateOutlet]="icons"
+                            [ngTemplateOutletContext]="{iconName:dropdownOptions.optionIcons[i]}">
+                        </ng-container>
+                    </ng-template>
+                    {{ caption }}
 
-                <p *ngIf="dropdownOptions.optionDescriptions && dropdownOptions.optionDescriptions[i] != ''"
-                    class="mt-2">
-                    {{dropdownOptions.optionDescriptions[i]}}
-                </p>
+                    <p *ngIf="dropdownOptions.optionDescriptions && dropdownOptions.optionDescriptions[i] != ''"
+                        class="mt-2">
+                        {{dropdownOptions.optionDescriptions[i]}}
+                    </p>
+                </div>
             </div>
         </div>
     </div>

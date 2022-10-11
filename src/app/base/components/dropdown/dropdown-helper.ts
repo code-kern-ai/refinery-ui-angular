@@ -11,6 +11,7 @@ import { FormArray } from "@angular/forms";
  * @buttonTooltipPosition {string, optional} - if empty defaults to right otherwise tooltip + position (e.g. tooltip-left)
  * @isDisabled {boolean, optional} - disables the dropdown
  * @isOptionDisabled {boolean[], optional} - disables the dropdown option (needs to be the exact same length as the optionArray)
+ * @optionTooltips {string[], optional} - adds a tooltip to the dropdown option (needs to be the exact same length as the optionArray - can hold null values)
  * @optionIcons {string[], optional} - displays a predfined icon if set for the index (needs to be the exact same length as the optionArray)
  * @hasCheckboxes {boolean, optional} - helper for checkbox like dropdowns (e.g. data browser)
  * @buttonVersion {string, optional} - defaults to 'default' (button with a caption text), '...', 'userIcon'
@@ -37,6 +38,7 @@ export type DropdownOptions = {
     buttonTooltipPosition?: string;
     isDisabled?: boolean;
     isOptionDisabled?: boolean[];
+    optionTooltips?: string[];
     optionIcons?: string[];
     hasCheckboxes?: boolean;
     buttonVersion?: string;

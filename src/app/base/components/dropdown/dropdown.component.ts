@@ -65,12 +65,23 @@ export class DropdownComponent implements OnChanges {
     this.dropdownClassList += this.dropdownOptions.buttonVersion != 'default' ? 'right-0 width-icon-menues' : '';
     this.buttonClassList += this.dropdownOptions.isButtonSampleProjects ? 'py-2' : 'border-gray-300 py-1.5';
     this.buttonClassList += this.dropdownClassList;
-    this.tooltipClassList = this.dropdownOptions.buttonTooltip ? 'tooltip' : '';
-    if (this.dropdownOptions.buttonTooltipPosition && this.dropdownOptions.buttonTooltip) {
-      this.tooltipClassList += ' tooltip-' + this.dropdownOptions.buttonTooltipPosition;
-    } else {
-      this.tooltipClassList += ' tooltip-right';
+    this.tooltipClassList = this.getTooltipClasses();
+  }
+  private getTooltipClasses(): string {
+    let returnValue = "";
+    if (this.dropdownOptions.buttonTooltip || (this.dropdownOptions.optionTooltips && this.dropdownOptions.optionTooltips.filter(e => !!e).length > 0)) {
+      returnValue += "tooltip";
     }
+
+    if (returnValue) {
+      if (this.dropdownOptions.buttonTooltipPosition) {
+        returnValue += " tooltip-" + this.dropdownOptions.buttonTooltipPosition;
+      } else {
+        returnValue += " tooltip-right";
+      }
+    }
+    return returnValue;
+
   }
 
   private runInputChecks() {
@@ -84,6 +95,8 @@ export class DropdownComponent implements OnChanges {
     if (this.dropdownOptions.isOptionDisabled && this.dropdownOptions.isOptionDisabled.length != this.dropdownOptions.optionArray.length) this.hasInputErrors = "array options != isOptionDisabled length\n";
     if (this.dropdownOptions.optionDescriptions && this.dropdownOptions.optionArray.length != this.dropdownOptions.optionDescriptions.length) this.hasInputErrors = "array options != optionDescriptions length\n";
     if (this.dropdownOptions.optionIcons && this.dropdownOptions.optionIcons.length != this.dropdownOptions.optionIcons.length) this.hasInputErrors = "array options != optionIcons length\n";
+    if (this.dropdownOptions.optionTooltips && this.dropdownOptions.optionTooltips.length != this.dropdownOptions.optionArray.length) this.hasInputErrors = "array options != optionTooltip length\n";
+
     if (!this.dropdownOptions.buttonVersion) this.dropdownOptions.buttonVersion = "default";
     if (this.dropdownOptions.isModelDownloaded && this.dropdownOptions.isModelDownloaded.length != this.dropdownOptions.optionArray.length) this.hasInputErrors = "array options != isModelDownloaded length\n";
 
