@@ -648,20 +648,28 @@ export class WeakSourceDetailsComponent
           }};
         } else {
           const resultDict = {};
-          record.calculatedLabels.forEach(e => {
-            const label = this.getLabelFromExtractionResult(e);
-            if (!resultDict[label])  {
-              resultDict[label] = {
-                label: label,
-                color: this.getColorForLabel(label),
-                count: 0
-              };
+          if(record.calculatedLabels.length > 0) {
+            record.calculatedLabels.forEach(e => {
+              const label = this.getLabelFromExtractionResult(e);
+              if (!resultDict[label])  {
+                resultDict[label] = {
+                  label: label,
+                  color: this.getColorForLabel(label),
+                  count: 0
+                };
+              }
+              resultDict[label].count++;
+            });          
+            const displayAmount = Object.keys(resultDict).length > 1;
+            for (const key in resultDict) { 
+              resultDict[key].displayAmount = displayAmount || resultDict[key].count > 1;
             }
-            resultDict[label].count++;
-          });
-          const displayAmount = Object.keys(resultDict).length > 1;
-          for (const key in resultDict) { 
-            resultDict[key].displayAmount = displayAmount || resultDict[key].count > 1;
+          } else {
+            resultDict['-'] = {
+              label: '-',
+              color: this.getColorForLabel('-'),
+              count: 1
+            };
           }
           record.calculatedLabelsResult = resultDict;
         }
