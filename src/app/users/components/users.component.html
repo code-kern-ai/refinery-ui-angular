@@ -16,10 +16,8 @@
 
                             <div class="space-y-5 sm:space-y-4">
                                 <h3 class="text-3xl font-bold tracking-tight sm:text-4xl">Engineering team</h3>
-                                <p class="text-gray-500">Have full access to all
-                                    parts of <span class="font-dmMono">refinery</span> to automate workflows and
-                                    identify critical data slices. </p>
-                                <p>They have access to the Python SDK.</p>
+                                <p class="text-gray-500">Administers the project and works on programmatic tasks such as labeling automation or filter settings.</p>
+                                <p>They have access to all features of the application, including the Python SDK.</p>
                             </div>
                             <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
                                 <div *ngFor="let user of engineers"
@@ -45,12 +43,8 @@
 
                             <div class="mt-4 space-y-5 sm:space-y-4">
                                 <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">Domain experts team</h2>
-                                <p class="text-gray-500">They help you define reference manual labels
-                                    you can use for estimating the data quality of the training data.
-                                </p>
-                                <p>They have access to the labeling view, and their labels will be considered as regular
-                                    manual labels.
-                                </p>
+                                <p class="text-gray-500">Working on reference manual labels, which can be used by the engineering team to estimate the data quality.</p>
+                                <p>They have access to the labeling view only.</p>
                             </div>
                             <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
                                 <div *ngFor="let user of experts"
@@ -86,12 +80,8 @@
 
                             <div class="mt-4 space-y-5 sm:space-y-4">
                                 <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">Annotator team</h2>
-                                <p class="text-gray-500">Annotators that you can assign only via crowd
-                                    labeling
-                                    heuristics.</p>
-                                <p>Their labeling will be viewed as heuristic labeling, i.e. as noisy
-                                    and
-                                    imperfect.</p>
+                                <p class="text-gray-500">Working on manual labels as if they were heuristics. They can be switched on/off by the engineering team, so that the engineers can in- or exclude them during weak supervision.</p>
+                                <p>They have access to a task-minimized labeling view only. Engineers can revoke their access to the labeling view.</p>
                             </div>
                             <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
                                 <div *ngFor="let user of annotators"
@@ -109,7 +99,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div *ngIf="annotators?.length == 0" class="text-center">
+                            <div *ngIf="annotators?.length == 0" class="text-center"> 
                                 <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor"
                                     viewBox="0 0 48 48" aria-hidden="true">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
