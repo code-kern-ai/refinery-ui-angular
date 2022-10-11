@@ -190,14 +190,15 @@
                                         <h1 class="text-lg text-gray-900 mb-2">View details</h1>
                                         <div class="text-sm text-gray-500 my-2"
                                             class="overflow-y-auto max-height-modal scrollable-size">
-                                            <div *ngFor="let att of recordData | keyvalue"
-                                                class="text-sm leading-5 text-left my-3">
-                                                <div class="text-gray-900 font-bold">{{att.key}}</div>
-                                                <div class="text-gray-500 font-normal">
-                                                    {{att.value}}
+                                            <div *ngFor="let att of attributes">
+                                                <div *ngIf="att.state == 'UPLOADED'" class="text-sm leading-5 text-left my-3">
+                                                    <div class="text-gray-900 font-bold">{{att.name}}</div>
+                                                    <div class="text-gray-500 font-normal">
+                                                        {{recordData[att.name]}}
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div class="text-sm leading-5 text-left text-gray-900 font-medium">
+                                            <div class="text-sm leading-5 text-left text-gray-900 font-bold">
                                                 Calculated value</div>
                                             <div class="text-sm leading-5 text-left text-gray-500 font-normal">
                                                 {{sampleRecords.calculatedAttributes[currentRecordIdx]}}</div>
