@@ -21,10 +21,12 @@
 
         <div class="grid gap-4 " [ngClass]="isHeaderNormal ? 'grid-cols-2' : 'grid-cols-1'">
             <div class="flex items-center mt-2" *ngIf="isHeaderNormal">
-                <button (click)="openName(true,projectId)" data-tip="Edit your lookup list name"
-                    class="tooltip tooltip-right flex-shrink-0 bg-white text-gray-700 text-xs font-semibold mr-3 px-4 py-2 rounded-md border border-gray-300 block float-left hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                    Edit name
-                </button>
+                <div class="tooltip tooltip-right" data-tip="Edit your lookup list name">
+                    <button (click)="openName(true,projectId)"
+                        class="flex-shrink-0 bg-white text-gray-700 text-xs font-semibold mr-3 px-4 py-2 rounded-md border border-gray-300 block float-left hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Edit name
+                    </button>
+                </div>
 
                 <div class="inline-block" (dblclick)="openName(true,projectId)" class="inline-flex w-full">
                     <ng-template [ngIf]="isNameOpen()" [ngIfElse]="displayName">
@@ -41,10 +43,12 @@
             </div>
 
             <div class="flex items-center mt-2">
-                <button (click)="openDescription(true,projectId)" data-tip="Edit your lookup list description"
-                    class="tooltip tooltip-right flex-shrink-0 bg-white text-gray-700 text-xs font-semibold mr-3 px-4 py-2 rounded-md border border-gray-300 block float-left hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                    Edit description
-                </button>
+                <div class="tooltip tooltip-right" data-tip="Edit your lookup list description">
+                    <button (click)="openDescription(true,projectId)"
+                        class="flex-shrink-0 bg-white text-gray-700 text-xs font-semibold mr-3 px-4 py-2 rounded-md border border-gray-300 block float-left hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Edit description
+                    </button>
+                </div>
                 <div class="inline-block" (dblclick)="openDescription(true,projectId)" class="inline-flex w-full">
                     <ng-template [ngIf]="isDescriptionOpen()" [ngIfElse]="displayDescription">
                         <input #descriptionArea type="text" class="p-2 flex-grow input input-sm"

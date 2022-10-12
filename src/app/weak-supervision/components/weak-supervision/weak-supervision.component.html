@@ -25,7 +25,7 @@
                             optionArray: ['Labeling function', 'Active learning', 'Zero-shot','Crowd labeling'],
                             optionIcons: ['labeling-function','active-learning','zero-shot','crowd-labeling'],
                             isOptionDisabled: [false, false, !(labelingTasksClassification && labelingTasksClassification.length > 0), !isManaged],
-                            optionTooltips: [null, null, null, 'Only available for managed projects'],
+                            optionTooltips: [null, null, null, isManaged?null:'Only available for managed projects'],
                             buttonTooltipPosition: 'right',
                             buttonCaption: 'New heuristic',
                             buttonTooltip: 'Heuristics are noisy label signals'

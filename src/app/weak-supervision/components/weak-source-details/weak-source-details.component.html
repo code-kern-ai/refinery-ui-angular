@@ -178,7 +178,8 @@
                     <div *ngIf="justClickedRun" class="flex items-center">
                         <kern-loading color="indigo"></kern-loading>
                     </div>
-                    <div class="flex items-center mr-2">
+                    <div class="flex items-center mr-2"
+                        *ngIf="informationSource.informationSourceType == 'LABELING_FUNCTION'">
                         <kern-dropdown [dropdownOptions]="{
                             optionArray: attributes,
                             buttonCaption:selectedAttribute ? selectedAttribute : 'Select display attribute'
@@ -186,9 +187,9 @@
                         </kern-dropdown>
                     </div>
                     <div [attr.data-tip]="hasUnsavedChanges() ? 'Unsaved Changes detected': selectedAttribute == '' ? 'Select an attribute' : 'Runs function on 10 records'"
-                        class="tooltip tooltip-left">
-                        <button *ngIf="informationSource.informationSourceType == 'LABELING_FUNCTION'"
-                            (click)="getLabelingFunctionOn10Records(project.id)"
+                        class="tooltip tooltip-left"
+                        *ngIf="informationSource.informationSourceType == 'LABELING_FUNCTION'">
+                        <button (click)="getLabelingFunctionOn10Records(project.id)"
                             [ngClass]="hasUnsavedChanges() || justClickedRun || selectedAttribute =='' ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
                             [disabled]="hasUnsavedChanges() || justClickedRun || selectedAttribute ==''"
                             class="bg-white text-gray-700 text-xs font-semibold px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none">
