@@ -2,9 +2,34 @@
     z-index: 50;
 }
 
-.line-clamp {
+@mixin line-clamp-style($lines) {
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: $lines;
     -webkit-box-orient: vertical;  
     overflow: hidden;
+}
+
+.line-clamp-wrapper {
+    width: calc(100vw - 50px);
+    .line-clamp {
+        @include line-clamp-style(1);
+    }
+}
+
+@media (min-width: 768px) {
+    .line-clamp-wrapper {
+        width: calc(50vw - 50px);
+        .line-clamp {
+            @include line-clamp-style(1);
+        }
+    }
+}
+
+@media (min-width: 1024px) {
+    .line-clamp-wrapper {
+        width: calc(33vw - 50px);
+        .line-clamp {
+            @include line-clamp-style(2);
+        }
+    }
 }
