@@ -10,7 +10,7 @@
                         class="text-sm leading-5 font-medium mr-10 cursor-pointer py-5">
                         {{labelingTask.name}}
                     </div>
-                    <div data-tip="Add new labeling task" class="tooltip tooltip-right">
+                    <div data-tip="Add new labeling task" class="tooltip tooltip-left">
                         <button (click)="navigateToSettings()"><svg xmlns="http://www.w3.org/2000/svg"
                                 class="h-5 w-5 text-gray-500 my-5 cursor-pointer" fill="none" viewBox="0 0 24 24"
                                 stroke="currentColor" stroke-width="2">
@@ -24,7 +24,9 @@
                         <kern-dropdown class="mr-3" [dropdownOptions]="{
                             optionArray: ['Labeling function', 'Active learning', 'Zero-shot','Crowd labeling'],
                             optionIcons: ['labeling-function','active-learning','zero-shot','crowd-labeling'],
-                            isOptionDisabled: [false, false, !(labelingTasksClassification && labelingTasksClassification.length > 0), false],
+                            isOptionDisabled: [false, false, !(labelingTasksClassification && labelingTasksClassification.length > 0), !isManaged],
+                            optionTooltips: [null, null, null, isManaged?null:'Only available for managed projects'],
+                            buttonTooltipPosition: 'right',
                             buttonCaption: 'New heuristic',
                             buttonTooltip: 'Heuristics are noisy label signals'
                         }" (optionClicked)="executeOption($event)">
@@ -32,7 +34,7 @@
                     </ng-template>
                     <ng-template #noTasks>
                         <div data-tip="At least one labeling task is needed to create Heuristics"
-                            class="tooltip tooltip-bottom">
+                            class="tooltip tooltip-right">
                             <button type="button"
                                 class="inline-flex items-center justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-1.5 bg-white text-xs font-medium text-gray-700 opacity-50 cursor-not-allowed focus:ring-offset-2 focus:ring-offset-gray-400"
                                 id="menu-button" aria-expanded="true" aria-haspopup="true">
@@ -51,6 +53,7 @@
                         <kern-dropdown class="mr-3" [dropdownOptions]="{
                             optionArray:['Select all','Deselect all', 'Run selected', 'Delete selected'],
                             optionIcons:['select-all','deselect-all', 'run', 'delete-selected'],
+                            buttonTooltipPosition: 'right',
                             buttonTooltip:'Multi-heuristic action',
                             buttonCaption: 'Actions',
                             isOptionDisabled: [false, false, this.selectedInformationSources.length == 0, this.selectedInformationSources.length == 0]
@@ -59,7 +62,7 @@
                     </ng-template>
                     <ng-template #noHeuristics>
                         <div data-tip="At least one heuristic is needed to enable actions"
-                            class="tooltip tooltip-bottom mx-3">
+                            class="tooltip tooltip-right mx-3">
                             <button type="button"
                                 class="inline-flex items-center justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-1.5 bg-white text-xs font-semibold text-gray-700 opacity-50 cursor-not-allowed focus:ring-offset-2 focus:ring-offset-gray-400"
                                 id="menu-button" aria-expanded="true" aria-haspopup="true">
@@ -104,7 +107,7 @@
                             <ng-template [ngIf]="areInformationSourcesSelected(informationSources,true)"
                                 [ngIfElse]="noValidSelected">
                                 <div data-tip="Calculation of denoised labels can take up to a few minutes!"
-                                    class="tooltip tooltip-bottom">
+                                    class="tooltip tooltip-right">
                                     <button
                                         class="bg-indigo-700 text-white text-xs font-semibold px-4 py-2 rounded-md border hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                                         (click)="startWeakSupervision(project.id)"
@@ -119,7 +122,7 @@
                             </ng-template>
 
                             <ng-template #noValidSelected>
-                                <div data-tip="At least one invalid heuristic selected!" class="tooltip tooltip-bottom">
+                                <div data-tip="At least one invalid heuristic selected!" class="tooltip tooltip-left">
                                     <button
                                         class="bg-indigo-700 text-white text-xs font-semibold px-4 py-2 rounded-md border opacity-50 cursor-not-allowed"
                                         [disabled]="true">
@@ -129,7 +132,7 @@
                             </ng-template>
                         </ng-template>
                         <ng-template #nothingSelected>
-                            <div data-tip="Please select at least one heuristic!" class="tooltip tooltip-bottom">
+                            <div data-tip="Please select at least one heuristic!" class="tooltip tooltip-right">
                                 <button
                                     class="bg-indigo-700 text-white text-xs font-semibold px-4 py-2 rounded-md border opacity-50 cursor-not-allowed"
                                     [disabled]="true">
@@ -222,13 +225,13 @@
                     </ng-template>
                     <div class="flex justify-center overflow-visible">
                         <button [routerLink]="['../model-callbacks']" data-tip="Go to the model callbacks"
-                            class="tooltip tooltip-bottom bg-white text-gray-700 text-xs font-medium mr-3 px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            class="tooltip tooltip-left bg-white text-gray-700 text-xs font-medium mr-3 px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                             Model callbacks
                         </button>
                     </div>
                     <div class="flex justify-center overflow-visible">
                         <button [routerLink]="['../knowledge-base']" data-tip="Go to the lookup lists"
-                            class="tooltip tooltip-bottom bg-white text-gray-700 text-xs font-medium mr-3 px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            class="tooltip tooltip-left bg-white text-gray-700 text-xs font-medium mr-3 px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                             Lookup lists
                         </button>
                     </div>

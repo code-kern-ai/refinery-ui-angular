@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { RouteService } from 'src/app/base/services/route.service';
 import { first } from 'rxjs/operators';
-import { combineLatest, forkJoin, Subscription, timer } from 'rxjs';
+import { forkJoin, Subscription, timer } from 'rxjs';
 import { FormControl } from '@angular/forms';
 import {
   debounceTime,
@@ -25,6 +25,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
   project: any;
   attribute$: any;
   isHeaderNormal: boolean = true;
+  intersectionTimeout: boolean = false;
   stickyObserver: IntersectionObserver;
   currentAttributeQuery$: any;
   @ViewChildren('stickyHeader', { read: ElementRef }) stickyHeader: QueryList<ElementRef>;
@@ -132,11 +133,20 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
     const toObserve = element;
     this.stickyObserver = new IntersectionObserver(
       ([e]) => {
+        if (this.intersectionTimeout) return;
         this.isHeaderNormal = e.isIntersecting;
+        if (this.isHeaderNormal) {
+          var el = document.getElementById("pageOutlet");
+          el.scrollTop = 0;
+        }
+        this.intersectionTimeout = true;
+        timer(500).subscribe(() => this.intersectionTimeout = false);
       },
-      { threshold: [1] }
+      { threshold: [1] },
+
     );
     this.stickyObserver.observe(toObserve)
+
   }
 
   prepareCurrentAttribute(projectId: string, attributeId: string) {

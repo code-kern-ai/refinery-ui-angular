@@ -5,6 +5,7 @@ import { Subscription, timer } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
 import { InformationSourceType, LabelingTask, LabelSource } from 'src/app/base/enum/graphql-enums';
+import { ConfigManager } from 'src/app/base/services/config-service';
 import { NotificationService } from 'src/app/base/services/notification.service';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { RouteService } from 'src/app/base/services/route.service';
@@ -70,6 +71,7 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
   embeddingQuery$: any;
   description: string;
   selectionList: string = "";
+  isManaged: boolean = false;
   @ViewChild("modalCreateLF") modalCreateLF: ElementRef;
   @ViewChild("modalCreateAL") modalCreateAL: ElementRef;
   @ViewChild("modalCreateZS") modalCreateZS: ElementRef;
@@ -130,6 +132,7 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
       func: this.handleWebsocketNotification
     });
     this.setUpCommentRequests(projectId);
+    this.checkIfManagedVersion();
   }
   private setUpCommentRequests(projectId: string) {
     const requests = [];
@@ -139,6 +142,14 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
     requests.push({ commentType: CommentType.EMBEDDING, projectId: projectId });
     requests.push({ commentType: CommentType.LABEL, projectId: projectId });
     CommentDataManager.registerCommentRequests(this, requests);
+  }
+
+  checkIfManagedVersion() {
+    if (!ConfigManager.isInit()) {
+      timer(250).subscribe(() => this.checkIfManagedVersion());
+      return;
+    }
+    this.isManaged = ConfigManager.getIsManaged();
   }
 
   prepareCurrentWeakSupervisionInfo(projectId: string) {

@@ -76,7 +76,7 @@
 
     <div>
         <dl class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            <div class="relative bg-white pt-5 px-4 pb-12 sm:pt-6 sm:px-6 shadow rounded-lg overflow-hidden">
+            <div class="relative bg-white pt-5 px-4 pb-12 sm:pt-6 sm:px-6 shadow rounded-lg">
                 <dt>
                     <div class="absolute bg-yellow-500 rounded-md p-3">
                         <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -92,10 +92,12 @@
                         <kern-loading></kern-loading>
                     </ng-template>
                     <ng-template #showStatsM>
-                        <p class="text-2xl font-semibold text-gray-900 tooltip"
-                            [attr.data-tip]="projectStats.general['MANUAL']">
-                            {{projectStats.generalStats["MANUAL"] | percentRound: 2}}
-                        </p>
+                        <div class="tooltip" [attr.data-tip]="projectStats.general['MANUAL']">
+                            <p class="text-2xl font-semibold text-gray-900">
+                                {{projectStats.generalStats["MANUAL"] | percentRound: 2}}
+                            </p>
+                        </div>
+
                     </ng-template>
                     <div class="absolute bottom-0 inset-x-0 bg-gray-50 px-4 py-4 sm:px-6">
                         <div class="text-sm">
@@ -106,7 +108,7 @@
                 </dd>
             </div>
 
-            <div class="relative bg-white pt-5 px-4 pb-12 sm:pt-6 sm:px-6 shadow rounded-lg overflow-hidden">
+            <div class="relative bg-white pt-5 px-4 pb-12 sm:pt-6 sm:px-6 shadow rounded-lg">
                 <dt>
                     <div class="absolute bg-green-500 rounded-md p-3">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none"
@@ -122,14 +124,15 @@
                         <kern-loading color="green"></kern-loading>
                     </ng-template>
                     <ng-template #showStatsWS>
-                        <p class="text-2xl font-semibold text-gray-900 tooltip"
-                            [attr.data-tip]="projectStats.general['WEAK_SUPERVISION']">
-                            {{projectStats.generalStats["WEAK_SUPERVISION"]| percentRound: 2}}
-                        </p>
+                        <div class="tooltip" [attr.data-tip]="projectStats.general['WEAK_SUPERVISION']">
+                            <p class="text-2xl font-semibold text-gray-900">
+                                {{projectStats.generalStats["WEAK_SUPERVISION"]| percentRound: 2}}
+                            </p>
+                        </div>
                     </ng-template>
                     <div class="absolute bottom-0 inset-x-0 bg-gray-50 px-4 py-4 sm:px-6">
                         <div class="text-sm">
-                            <a class="font-medium text-green-700 hover:text-green-500">Manage runs <span
+                            <a class="font-medium text-green-700">Manage runs <span
                                     class="bg-white text-gray-800 rounded-lg text-xs px-2.5 py-0.5 border border-gray-300">Coming
                                     soon!</span></a>
                         </div>
@@ -137,7 +140,7 @@
                 </dd>
             </div>
 
-            <div class="relative bg-white pt-5 px-4 pb-12 sm:pt-6 sm:px-6 shadow rounded-lg overflow-hidden">
+            <div class="relative bg-white pt-5 px-4 pb-12 sm:pt-6 sm:px-6 shadow rounded-lg">
                 <dt>
                     <div class="absolute bg-red-500 rounded-md p-3">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none"
@@ -153,11 +156,12 @@
                         <kern-loading color="red"></kern-loading>
                     </ng-template>
                     <ng-template #showStatsIS>
-                        <p class="text-2xl font-semibold text-gray-900 tooltip relative z-10"
-                            style="white-space: break-spaces;"
-                            [attr.data-tip]="projectStats.general['INFORMATION_SOURCE']">
-                            {{projectStats.generalPercent["INFORMATION_SOURCE"]}}
-                        </p>
+                        <div class="tooltip" [attr.data-tip]="projectStats.general['INFORMATION_SOURCE']"
+                            style="white-space: break-spaces;">
+                            <p class="text-2xl font-semibold text-gray-900 relative z-10">
+                                {{projectStats.generalPercent["INFORMATION_SOURCE"]}}
+                            </p>
+                        </div>
                     </ng-template>
                     <div class="absolute bottom-0 inset-x-0 bg-gray-50 px-4 py-4 sm:px-6">
                         <div class="text-sm">
@@ -168,7 +172,7 @@
                 </dd>
             </div>
 
-            <div class="relative bg-white pt-5 px-4 pb-12 sm:pt-6 sm:px-6 shadow rounded-lg overflow-hidden">
+            <div class="relative bg-white pt-5 px-4 pb-12 sm:pt-6 sm:px-6 shadow rounded-lg">
                 <dt>
                     <div class="absolute bg-blue-500 rounded-md p-3">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none"
@@ -184,10 +188,12 @@
                         <kern-loading color="blue"></kern-loading>
                     </ng-template>
                     <ng-template #showStatsIA>
-                        <p class="text-2xl font-semibold text-gray-900 tooltip"
-                            [attr.data-tip]="projectStats.interAnnotator">
-                            {{projectStats.interAnnotatorStat == -1 ? 'n/a' : interAnnotatorStat | percentRound: 2 }}
-                        </p>
+                        <div class="tooltip" [attr.data-tip]="projectStats.interAnnotator">
+                            <p class="text-2xl font-semibold text-gray-900">
+                                {{projectStats.interAnnotatorStat == -1 ? 'n/a' : interAnnotatorStat | percentRound: 2
+                                }}
+                            </p>
+                        </div>
                     </ng-template>
                     <div class="absolute bottom-0 inset-x-0 bg-gray-50 px-4 py-4 sm:px-6">
                         <div class="text-sm">
@@ -276,7 +282,7 @@
                     <ng-template #noData>
                         <div *ngIf="!isManaged" class="mt-2">
                             <div
-                                class="overflow-hidden rounded-lg bg-indigo-700 shadow-xl lg:grid lg:grid-cols-2 lg:gap-4">
+                                class="overflow-hidden h-80 rounded-lg bg-indigo-700 shadow-xl lg:grid lg:grid-cols-2 lg:gap-4">
                                 <div class="px-6 pt-10 pb-12 sm:px-12 sm:pt-12 lg:py-12 lg:pr-0 xl:py-16 xl:px-16">
                                     <div class="lg:self-center">
                                         <h2 class="text-3xl font-bold tracking-tight text-white sm:text-4xl">
@@ -292,8 +298,8 @@
                                             our options</a>
                                     </div>
                                 </div>
-                                <div class="aspect-w-5 aspect-h-3 -mt-6 md:aspect-w-2 md:aspect-h-1">
-                                    <img class="translate-x-6 translate-y-6 transform rounded-md object-cover object-left-top sm:translate-x-16 lg:translate-y-20"
+                                <div class="">
+                                    <img class=""
                                         src="https://images.unsplash.com/photo-1576502202167-791eca35a78d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2081&q=80"
                                         alt="App screenshot">
                                 </div>
