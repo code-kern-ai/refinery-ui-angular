@@ -120,13 +120,13 @@
                 </div>
             </div>
             <ng-template #knowledgeBasesList>
-                <div class="grid grid-cols-1 gap-6 mt-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3">
+                <div class="grid grid-cols-1 gap-6 mt-8 md:grid-cols-2 lg:grid-cols-3">
                     <div *ngFor="let base of knowledgeBases; let i = index"
-                        class="relative rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm flex items-center space-x-3 hover:border-gray-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
+                        class="relative rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm flex items-center space-x-3 hover:border-gray-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500 h-28">
                         <div class="h-full">
                             <input #checkboxes type="checkbox" class="cursor-pointer" (click)="toggleCheckbox(base)">
                         </div>
-                        <div class="flex-1 min-w-0 text-sm leading-5">
+                        <div class="h-full flex-1 min-w-0 text-sm leading-5">
                             <div class="flow-root font-medium">
                                 <div class="text-gray-900 float-left italic">
                                     {{base.name}}
@@ -142,8 +142,10 @@
                             </div>
                             <div class="flex-row gap-16 font-normal text-gray-500"
                                 [ngClass]="base.description ? 'flex' : 'block'">
-                                <div class="italic">
-                                    {{base.description}}
+                                <div class="line-clamp-wrapper">
+                                    <div class="italic line-clamp">
+                                        {{base.description}}
+                                    </div>
                                 </div>
                                 <div class="flex-grow flex-shrink-0">
                                     <span class="float-right">{{base.termCount + ' item' +

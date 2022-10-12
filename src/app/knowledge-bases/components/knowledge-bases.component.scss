@@ -1,3 +1,22 @@
 .tooltip::before {
     z-index: 50;
 }
+
+.line-clamp {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;  
+    overflow: hidden;
+}
+
+@media (min-width: 768px) {
+    .line-clamp-wrapper {
+        width: calc(50vw - 50px);
+    }
+}
+
+@media (min-width: 1024px) {
+    .line-clamp-wrapper {
+        width: calc(33vw - 50px);
+    }
+}
