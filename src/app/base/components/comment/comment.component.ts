@@ -77,11 +77,11 @@ export class CommentComponent implements OnInit, OnDestroy {
   }
 
   deleteComment(event: Event, commentId: string, projectId: string = null) {
-    this.preventEventPropagation(event);
+    // this.preventEventPropagation(event);
     this.dm.deleteComment(commentId, projectId);
   }
   updateComment(event: Event, commentId: string, toChangeKey: string, toChangeValue: any) {
-    this.preventEventPropagation(event);
+    // this.preventEventPropagation(event);
     const changes = {};
     changes[toChangeKey] = toChangeValue;
     const projectId = this.dm.currentData[commentId].project_id;
@@ -94,7 +94,7 @@ export class CommentComponent implements OnInit, OnDestroy {
     event.stopImmediatePropagation();
   }
   editComment(event: Event, commentData: any) {
-    this.preventEventPropagation(event);
+    // this.preventEventPropagation(event);
     if (commentData.edit) {
       commentData.edit = false;
       commentData.open = false;
@@ -118,10 +118,7 @@ export class CommentComponent implements OnInit, OnDestroy {
     this.allOpen = value;
   }
   toggleSlideOver(backgroundBackdrop: HTMLDivElement, slideOverPanel: HTMLDivElement,panelWrapper : HTMLDivElement) {
-    console.log('toggleSlideOver', this.isSlideOverOpen, backgroundBackdrop, slideOverPanel,panelWrapper);
     if(this.isSlideOverOpen) {
-      // backgroundBackdrop.classList.remove('opacity-100');
-      // backgroundBackdrop.classList.add('opacity-0');
       backgroundBackdrop.classList.remove('block');
       backgroundBackdrop.classList.add('hidden');
       panelWrapper.classList.remove('relative');
@@ -131,8 +128,6 @@ export class CommentComponent implements OnInit, OnDestroy {
       slideOverPanel.classList.remove('translate-x-0');
       slideOverPanel.classList.add('translate-x-full');
     } else {
-      // backgroundBackdrop.classList.remove('opacity-0');
-      // backgroundBackdrop.classList.add('opacity-100');
       backgroundBackdrop.classList.remove('hidden');
       backgroundBackdrop.classList.add('block');
       panelWrapper.classList.remove('absolute');
@@ -144,7 +139,18 @@ export class CommentComponent implements OnInit, OnDestroy {
     }
     this.isSlideOverOpen = !this.isSlideOverOpen;
   }
-  executeOption(option: any) {
-    
+  executeOption(option: any, cData: any) {
+    switch(option) {
+      case 'Edit':
+        this.editComment(null, cData);
+        break;
+      case 'Public':
+      case 'Private':
+        this.updateComment(null, cData.id, 'is_private', !cData.is_private);
+        break;
+      case 'Delete':
+        this.deleteComment(null, cData.id, cData.project_id);
+        break;
+    }
   }
 }
