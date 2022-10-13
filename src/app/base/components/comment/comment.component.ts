@@ -21,6 +21,7 @@ export class CommentComponent implements OnInit, OnDestroy {
   }
   commentIdOptions: any[];
   allOpen: boolean = false;
+  isSlideOverOpen: boolean = false;
 
   constructor() { }
   ngOnDestroy(): void {
@@ -115,5 +116,35 @@ export class CommentComponent implements OnInit, OnDestroy {
   openAllComments(value: boolean) {
     for (const key in this.dm.currentData) this.dm.currentData[key].open = value;
     this.allOpen = value;
+  }
+  toggleSlideOver(backgroundBackdrop: HTMLDivElement, slideOverPanel: HTMLDivElement,panelWrapper : HTMLDivElement) {
+    console.log('toggleSlideOver', this.isSlideOverOpen, backgroundBackdrop, slideOverPanel,panelWrapper);
+    if(this.isSlideOverOpen) {
+      // backgroundBackdrop.classList.remove('opacity-100');
+      // backgroundBackdrop.classList.add('opacity-0');
+      backgroundBackdrop.classList.remove('block');
+      backgroundBackdrop.classList.add('hidden');
+      panelWrapper.classList.remove('relative');
+      panelWrapper.classList.add('absolute');
+      slideOverPanel.classList.remove('block');
+      slideOverPanel.classList.add('hidden');
+      slideOverPanel.classList.remove('translate-x-0');
+      slideOverPanel.classList.add('translate-x-full');
+    } else {
+      // backgroundBackdrop.classList.remove('opacity-0');
+      // backgroundBackdrop.classList.add('opacity-100');
+      backgroundBackdrop.classList.remove('hidden');
+      backgroundBackdrop.classList.add('block');
+      panelWrapper.classList.remove('absolute');
+      panelWrapper.classList.add('relative');
+      slideOverPanel.classList.remove('hidden');
+      slideOverPanel.classList.add('block');
+      slideOverPanel.classList.remove('translate-x-full');
+      slideOverPanel.classList.add('translate-x-0');
+    }
+    this.isSlideOverOpen = !this.isSlideOverOpen;
+  }
+  executeOption(option: any) {
+    
   }
 }
