@@ -134,11 +134,11 @@
 <ng-template #displayComment let-cData="cData">
     <li>
         <div class="group relative flex items-center py-3">
-          <a class="block flex-1" (click)="cData.open=!cData.open;checkAllOpen()">
+          <a class="block flex-1 cursor-pointer" (click)="cData.open=!cData.open;checkAllOpen()">
             <div class="absolute inset-0 group-hover:bg-gray-50" aria-hidden="true"></div>
             <div class="relative flex min-w-0 flex-1 items-center">
-              <span class="relative inline-block flex-shrink-0">
-                <img class="h-10 w-10 rounded-full" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="">
+              <span class="relative inline-block flex-shrink-0 tooltip tooltip-bottom" [attr.data-tip]="cData.creationUser">
+                <img class="h-10 w-10 rounded-full" [src]="cData.avatarUri">
               </span>
               <div class="ml-4 truncate">
                 <p class="truncate text-sm font-medium text-gray-900">{{cData.xfkeyAdd}}</p>

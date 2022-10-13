@@ -340,6 +340,10 @@ export class CommentDataManager {
     private buildCurrentDataOrder() {
         this.currentDataOrder = [];
         for (var key in this.currentData) {
+            const findCurrentUser = this.allUsers.find(u => u.id == this.currentData[key].created_by);
+            const avatarSelector = (findCurrentUser.firstName[0].charCodeAt(0) + findCurrentUser.lastName[0].charCodeAt(0)) % 5;
+            const avatarUri = "assets/avatars/" + avatarSelector + ".png"
+            this.currentData[key].avatarUri = avatarUri;
             const e = { key: key, commentType: this.currentData[key].xftype, commentKeyName: this.currentData[key].xfkeyAddName, commentOrderKey: this.currentData[key].order_key };
             this.currentDataOrder.push(e);
         }
