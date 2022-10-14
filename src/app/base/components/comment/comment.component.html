@@ -151,7 +151,8 @@
                   optionArray:['Edit',cData.is_private ? 'Public' :'Private', 'Delete'],
                   optionIcons:['edit-term', cData.is_private ? 'public' : 'private', 'remove-term'],
                   buttonVersion: '...',
-                  isOptionDisabled: [!(myUser.id == cData.created_by), !(myUser.id == cData.created_by), !(myUser.id == cData.created_by || myUser.role=='ENGINEER')]
+                  isOptionDisabled: [!(myUser.id == cData.created_by), !(myUser.id == cData.created_by), !(myUser.id == cData.created_by || myUser.role=='ENGINEER')],
+                  emitEvent: true
               }" (optionClicked)="executeOption($event,cData)">
                   </kern-dropdown>
           </div>
@@ -226,12 +227,12 @@
 </ng-template>
 
 <div class="relative z-50" role="dialog" aria-modal="true">
-    <div #backgroundBackdrop class="fixed inset-0 bg-gray-500 bg-opacity-0 transition-opacity opacity-0 hidden"></div>
+    <div #backgroundBackdrop class="inset-0 bg-gray-500 bg-opacity-0 transition-opacity opacity-0 hidden"></div>
   
     <div #panelWrapper class="fixed inset-0 overflow-hidden absolute">
         <div class="absolute inset-0 overflow-hidden">
             <div class="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10">
-                <div #slideOverPanel class="pointer-events-auto relative w-96 translate-x-full hidden">
+                <div #slideOverPanel class="pointer-events-auto relative w-96 hidden">
 
                     <div class="h-full overflow-y-auto bg-white p-8" *ngIf="isSlideOverOpen">
                         <div class="space-y-3">
@@ -301,7 +302,7 @@
                             <div class="flex">
                                 <button [disabled]="commentBox.value =='' || newComment.commentId == ''"
                                     [ngClass]="commentBox.value =='' || newComment.commentId == '' ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
-                                    (click)="saveCommentToDb(commentBox.value,privateComment.checked);commentBox.value='';privateComment.checked=false;newComment.commentId == '';newComment.commentIdReadable == '';"
+                                    (click)="saveCommentToDb(commentBox.value,privateComment.checked);commentBox.value='';privateComment.checked=false;newComment.commentId = '';newComment.commentType='';"
                                     type="button" class="flex-1 bg-indigo-700 text-white text-xs font-semibold px-4 py-2 rounded-md border hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Create comment</button>
                                 <button (click)="toggleSlideOver(backgroundBackdrop, slideOverPanel, panelWrapper)"
                                     type="button" class="flex-1 ml-3 bg-white text-gray-700 text-xs font-semibold px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</button>

@@ -27,7 +27,8 @@ import { FormArray } from "@angular/forms";
  * @textSize {string, optional} - text size for the dropdown options
  * @isButtonSampleProjects {boolean, optional} - checks if the button is the specific one for sample project
  * @isModelDownloaded {boolean[], optional} - checks if the model is downloaded and if so the color of the text is green
- */
+ * @emitEvent {boolean, optional} - checks if the event should be emitted (used for stopPropagation)
+*/
 export type DropdownOptions = {
     optionArray: string[] | FormArray[] | any[];
     buttonCaption?: string;
@@ -54,5 +55,6 @@ export type DropdownOptions = {
     textSize?: string;
     isButtonSampleProjects?: boolean;
     isModelDownloaded: boolean[];
+    emitEvent: boolean;
 };
 

@@ -77,11 +77,11 @@ export class CommentComponent implements OnInit, OnDestroy {
   }
 
   deleteComment(event: Event, commentId: string, projectId: string = null) {
-    // this.preventEventPropagation(event);
+    this.preventEventPropagation(event);
     this.dm.deleteComment(commentId, projectId);
   }
   updateComment(event: Event, commentId: string, toChangeKey: string, toChangeValue: any) {
-    // this.preventEventPropagation(event);
+    this.preventEventPropagation(event);
     const changes = {};
     changes[toChangeKey] = toChangeValue;
     const projectId = this.dm.currentData[commentId].project_id;
@@ -94,7 +94,7 @@ export class CommentComponent implements OnInit, OnDestroy {
     event.stopImmediatePropagation();
   }
   editComment(event: Event, commentData: any) {
-    // this.preventEventPropagation(event);
+    this.preventEventPropagation(event);
     if (commentData.edit) {
       commentData.edit = false;
       commentData.open = false;
@@ -125,8 +125,6 @@ export class CommentComponent implements OnInit, OnDestroy {
       panelWrapper.classList.add('absolute');
       slideOverPanel.classList.remove('block');
       slideOverPanel.classList.add('hidden');
-      slideOverPanel.classList.remove('translate-x-0');
-      slideOverPanel.classList.add('translate-x-full');
     } else {
       backgroundBackdrop.classList.remove('hidden');
       backgroundBackdrop.classList.add('block');
@@ -134,22 +132,20 @@ export class CommentComponent implements OnInit, OnDestroy {
       panelWrapper.classList.add('relative');
       slideOverPanel.classList.remove('hidden');
       slideOverPanel.classList.add('block');
-      slideOverPanel.classList.remove('translate-x-full');
-      slideOverPanel.classList.add('translate-x-0');
     }
     this.isSlideOverOpen = !this.isSlideOverOpen;
   }
   executeOption(option: any, cData: any) {
-    switch(option) {
+    switch(option.value) {
       case 'Edit':
-        this.editComment(null, cData);
+        this.editComment(option.event, cData);
         break;
       case 'Public':
       case 'Private':
-        this.updateComment(null, cData.id, 'is_private', !cData.is_private);
+        this.updateComment(option.event, cData.id, 'is_private', !cData.is_private);
         break;
       case 'Delete':
-        this.deleteComment(null, cData.id, cData.project_id);
+        this.deleteComment(option.event, cData.id, cData.project_id);
         break;
     }
   }
