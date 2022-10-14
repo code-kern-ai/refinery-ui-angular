@@ -134,8 +134,8 @@
 <ng-template #displayComment let-cData="cData">
     <li>
         <div class="group relative flex items-center py-3">
-          <a class="block flex-1 cursor-pointer" (click)="cData.open=!cData.open;checkAllOpen()">
-            <div class="absolute inset-0 group-hover:bg-gray-50" aria-hidden="true"></div>
+          <a class="block flex-1 cursor-pointer" (click)="cData.open=!cData.open;checkAllOpen()" [ngClass]="cData.is_private ? 'opacity-50' : 'opacity-100'">
+            <div class="absolute inset-0" aria-hidden="true"></div>
             <div class="relative flex min-w-0 flex-1 items-center">
               <span class="relative inline-block flex-shrink-0 tooltip tooltip-bottom" [attr.data-tip]="cData.creationUser">
                 <img class="h-10 w-10 rounded-full" [src]="cData.avatarUri">
@@ -146,7 +146,7 @@
               </div>
             </div>
           </a>
-          <div class="relative ml-2 inline-block flex-shrink-0 text-left">
+          <div class="relative ml-2 inline-block flex-shrink-0 text-left flex items-center">
               <kern-dropdown class="mr-2" [dropdownOptions]="{
                   optionArray:['Edit',cData.is_private ? 'Public' :'Private', 'Delete'],
                   optionIcons:['edit-term', cData.is_private ? 'public' : 'private', 'remove-term'],
@@ -247,7 +247,7 @@
                                 </button>
                             </div>
                         
-                            <ul *ngIf="myUser && dm?.currentData && dm?.currentDataOrder" role="list" class="flex-1" style="height: 40vh;">
+                            <ul *ngIf="myUser && dm?.currentData && dm?.currentDataOrder" role="list" class="flex-1 overflow-y-auto" style="height: calc(50vh - 80px);">
                                 <div *ngFor="let cWrapper of dm.currentDataOrder;">
                                     <ng-container [ngTemplateOutlet]="displayComment"
                                         [ngTemplateOutletContext]="{cData:dm.currentData[cWrapper.key]}">
@@ -287,7 +287,7 @@
                                 </div>
                                 <div class="text-sm mt-3">
                                     <div class="flex flex-row items-start">
-                                        <label (click)="privateComment.checked=!privateComment.checked">
+                                        <label>
                                             <input #privateComment class="my-1" type="checkbox">
                                         </label>
                                         <div class="ml-2">
@@ -301,7 +301,7 @@
                             <div class="flex">
                                 <button [disabled]="commentBox.value =='' || newComment.commentId == ''"
                                     [ngClass]="commentBox.value =='' || newComment.commentId == '' ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
-                                    (click)="saveCommentToDb(commentBox.value,privateComment.checked);commentBox.value=''"
+                                    (click)="saveCommentToDb(commentBox.value,privateComment.checked);commentBox.value='';privateComment.checked=false;newComment.commentId == '';newComment.commentIdReadable == '';"
                                     type="button" class="flex-1 bg-indigo-700 text-white text-xs font-semibold px-4 py-2 rounded-md border hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Create comment</button>
                                 <button (click)="toggleSlideOver(backgroundBackdrop, slideOverPanel, panelWrapper)"
                                     type="button" class="flex-1 ml-3 bg-white text-gray-700 text-xs font-semibold px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</button>
