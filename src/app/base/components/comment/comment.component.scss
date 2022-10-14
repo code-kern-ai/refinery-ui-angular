@@ -13,3 +13,7 @@
 .rotate_transform svg {
     transform: rotate(180deg);
 }
+
+.tooltip-email::before {
+    margin-left: 70px;
+}

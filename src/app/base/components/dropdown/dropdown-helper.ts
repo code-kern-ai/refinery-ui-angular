@@ -28,6 +28,7 @@ import { FormArray } from "@angular/forms";
  * @isButtonSampleProjects {boolean, optional} - checks if the button is the specific one for sample project
  * @isModelDownloaded {boolean[], optional} - checks if the model is downloaded and if so the color of the text is green
  * @emitEvent {boolean, optional} - checks if the event should be emitted (used for stopPropagation)
+ * @addScrollXDropdownOptions {boolean, optional} - checks if the dropdown options should have a scrollX for longer texts with limitted space
 */
 export type DropdownOptions = {
     optionArray: string[] | FormArray[] | any[];
@@ -56,5 +57,6 @@ export type DropdownOptions = {
     isButtonSampleProjects?: boolean;
     isModelDownloaded: boolean[];
     emitEvent: boolean;
+    addScrollXDropdownOptions: boolean;
 };
 

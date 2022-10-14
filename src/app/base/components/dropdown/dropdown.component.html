@@ -38,7 +38,7 @@
 
     <div #dropdownOptionsDiv
         class="origin-top-right absolute mt-2 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none hidden"
-        [ngClass]="[dropdownClassList, dropdownOptions.isButtonSampleProjects ? 'width-sample-projects' : '', dropdownOptions.buttonVersion != '...' ? 'min-w-full': '']"
+        [ngClass]="[dropdownClassList, dropdownOptions.isButtonSampleProjects ? 'width-sample-projects' : '', dropdownOptions.buttonVersion != '...' ? 'min-w-full': '', dropdownOptions.addScrollXDropdownOptions ? 'overflow-x-scroll w-24' : '']"
         role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
         <div class="py-1 cursor-pointer" role="none">
             <div *ngFor="let caption of dropdownOptionCaptions;let i = index" (click)="performActionOnOption($event,i)"
