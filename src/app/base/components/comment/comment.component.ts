@@ -22,6 +22,7 @@ export class CommentComponent implements OnInit, OnDestroy {
   commentIdOptions: any[];
   allOpen: boolean = false;
   isSlideOverOpen: boolean = false;
+  positionComment: string = 'right';
 
   constructor() { }
   ngOnDestroy(): void {
@@ -29,6 +30,7 @@ export class CommentComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.initDataManger();
     UserManager.registerAfterInitActionOrRun(this, () => this.initUsers(), true);
+    localStorage.setItem('commentPosition', this.positionComment);
   }
 
   private initUsers() {
@@ -148,5 +150,9 @@ export class CommentComponent implements OnInit, OnDestroy {
         this.deleteComment(option.event, cData.id, cData.project_id);
         break;
     }
+  }
+  changeCommentPosition() {
+    this.positionComment = this.positionComment == 'right' ? 'left' : 'right';
+    localStorage.setItem('commentPosition', this.positionComment);
   }
 }

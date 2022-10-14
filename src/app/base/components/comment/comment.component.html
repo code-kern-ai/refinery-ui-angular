@@ -240,15 +240,34 @@
   
     <div #panelWrapper class="fixed inset-0 overflow-hidden absolute">
         <div class="absolute inset-0 overflow-hidden">
-            <div class="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10">
+            <div class="pointer-events-none fixed inset-y-0 flex max-w-full" [ngClass]="positionComment == 'right' ? 'right-0 pl-10' : 'left-0 pl-20' ">
                 <div #slideOverPanel class="pointer-events-auto relative w-96 hidden mt-16 border border-gray-300">
 
                     <div class="h-full overflow-y-auto bg-white p-4" *ngIf="isSlideOverOpen">
                         <div class="space-y-3">
                             <div class="flex flex-row items-center">
+                                <div *ngIf="positionComment =='right'" (click)="changeCommentPosition()" class="cursor-pointer">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-arrow-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                                        <line x1="5" y1="12" x2="11" y2="18"></line>
+                                        <line x1="5" y1="12" x2="11" y2="6"></line>
+                                     </svg>
+                                </div>
+
                                 <div class="tooltip tooltip-bottom" [attr.data-tip]="allOpen?'close all':'open all'">
                                     <h3 class="font-bold text-gray-900 cursor-pointer" (click)="openAllComments(!allOpen)">Comments</h3>
                                 </div>
+
+                                <div *ngIf="positionComment =='left'" (click)="changeCommentPosition()" class="cursor-pointer">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-arrow-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                                        <line x1="13" y1="18" x2="19" y2="12"></line>
+                                        <line x1="13" y1="6" x2="19" y2="12"></line>
+                                     </svg>
+                                </div>
+
                                 <button (click)="toggleSlideOver(backgroundBackdrop, slideOverPanel, panelWrapper)" type="button" class="rounded-md text-gray-500 ml-auto">
                                     <span class="sr-only">Close panel</span>
                                     <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
