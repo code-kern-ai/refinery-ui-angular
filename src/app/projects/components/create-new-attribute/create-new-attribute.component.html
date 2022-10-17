@@ -79,12 +79,16 @@
 
             <div class="flex flex-row items-center mt-2">
                 <div class="text-sm leading-5 font-medium text-gray-700 inline-block mr-2">Data types</div>
-                <kern-dropdown [dropdownOptions]="{
-                    optionArray: dataTypesArray,
-                    buttonCaption: attributeDataType,
-                    valuePropertyPath: 'value'
-                }" (optionClicked)="updateDataType($event)">
-                </kern-dropdown>
+                <div class="tooltip tooltip-right"
+                    [attr.data-tip]="currentAttribute.state == 'USABLE' || currentAttribute.state == 'RUNNING' ? 'Cannot edit data type' : 'Edit your data type'">
+                        <kern-dropdown [dropdownOptions]="{
+                            optionArray: dataTypesArray,
+                            buttonCaption: attributeDataType,
+                            valuePropertyPath: 'value',
+                            isDisabled: currentAttribute.state == 'USABLE' || currentAttribute.state == 'RUNNING'
+                        }" (optionClicked)="updateDataType($event)">
+                        </kern-dropdown>
+                </div>
             </div>
 
 
