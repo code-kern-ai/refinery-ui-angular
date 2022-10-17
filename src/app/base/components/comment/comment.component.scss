@@ -15,7 +15,11 @@
 }
 
 .tooltip-email::before {
-    margin-left: 80px;
+    transform: translateY(85%);
+    top: 50%;
+    left: -2px;
+    right: auto;
+    bottom: auto;
 }
 
 .border-slideover {
