@@ -14,6 +14,7 @@ import { WeakSourceApolloService } from 'src/app/base/services/weak-source/weak-
 import { ConfigManager } from 'src/app/base/services/config-service';
 import { UserManager } from 'src/app/util/user-manager';
 import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
+import { dataTypes } from 'src/app/util/data-types';
 
 @Component({
   selector: 'kern-project-settings',
@@ -33,14 +34,8 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     return LabelingTask;
   }
 
-  dataTypesArray = [
-    { name: 'Category', value: 'CATEGORY' },
-    { name: 'Text', value: 'TEXT' },
-    { name: 'Integer', value: 'INTEGER' },
-    { name: 'Float', value: 'FLOAT' },
-    { name: 'Boolean', value: 'BOOLEAN' },
-    { name: 'Unknown', value: 'UNKNOWN' },
-  ];
+  dataTypesArray = dataTypes;
+  
   granularityTypesArray = [
     { name: 'Attribute', value: 'ON_ATTRIBUTE' },
     { name: 'Token', value: 'ON_TOKEN' }

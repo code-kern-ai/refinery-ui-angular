@@ -14,6 +14,7 @@ import { NotificationService } from 'src/app/base/services/notification.service'
 import { AttributeCalculationExamples, AttributeCodeLookup } from './new-attribute-code-lookup';
 import { RecordApolloService } from 'src/app/base/services/record/record-apollo.service';
 import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
+import { dataTypes } from 'src/app/util/data-types';
 
 @Component({
   selector: 'kern-create-new-attribute',
@@ -56,6 +57,9 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
   isDeleting: boolean = false;
   duplicateNameExists: boolean = false;
   runOn10HasError: boolean = false;
+
+  dataTypesArray = dataTypes;
+  attributeDataType: string;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -154,6 +158,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
     this.subscriptions$.push(this.attribute$.subscribe((attribute) => {
       this.currentAttribute = attribute;
       this.attributeName = this.currentAttribute?.name;
+      this.attributeDataType = this.dataTypesArray.find((type) => type.value === this.currentAttribute?.dataType).name;
       this.code = this.currentAttribute?.sourceCode;
       if (this.currentAttribute?.sourceCode == null) {
         this.code = AttributeCodeLookup.getAttributeCalculationTemplate(AttributeCalculationExamples.AC_EMPTY_TEMPLATE).code;
@@ -391,5 +396,10 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
     this.projectApolloService.getProjectTokenization(projectId).pipe(first()).subscribe((v) => {
       this.tokenizationProgress = v?.progress;
     })
+  }
+
+  updateDataType(dataType: string) {
+    this.currentAttribute.dataType = dataType;
+    this.saveAttribute(this.project.id);
   }
 }

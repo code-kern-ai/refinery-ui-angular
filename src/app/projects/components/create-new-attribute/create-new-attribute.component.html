@@ -78,6 +78,17 @@
 
 
             <div class="flex flex-row items-center mt-2">
+                <div class="text-sm leading-5 font-medium text-gray-700 inline-block mr-2">Data types</div>
+                <kern-dropdown [dropdownOptions]="{
+                    optionArray: dataTypesArray,
+                    buttonCaption: attributeDataType,
+                    valuePropertyPath: 'value'
+                }" (optionClicked)="updateDataType($event)">
+                </kern-dropdown>
+            </div>
+
+
+            <div class="flex flex-row items-center mt-2">
                 <div class="text-sm leading-5 font-medium text-gray-700 inline-block mr-2">Editor</div>
                 <div class="ml-auto">
                     <a href="https://github.com/code-kern-ai/refinery-ac-exec-env/blob/release/requirements.txt"
