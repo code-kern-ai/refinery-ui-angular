@@ -12,7 +12,7 @@
     </label>
 </div>
 
-<input #commentCheckbox type="checkbox" id="comment-box" class="modal-toggle">
+<!-- <input #commentCheckbox type="checkbox" id="comment-box" class="modal-toggle">
 <div class="modal">
     <div class="modal-box text-black bg-white flex flex-col"
         style="max-width: 80%;min-width: 50%; width:fit-content;height:fit-content;max-height: 90%;">
@@ -49,9 +49,9 @@
             </div>
         </div>
     </div>
-</div>
+</div> -->
 
-<ng-template #displayCommentOld let-cData="cData">
+<!-- <ng-template #displayCommentOld let-cData="cData">
     <div class="flex flex-row pl-2 flex-nowrap items-center justify-between border border-gray-300 cursor-pointer"
         (click)="cData.open=!cData.open;checkAllOpen()">
         <div class="flex flex-row flex-nowrap whitespace-nowrap items-center mr-2">
@@ -129,7 +129,7 @@
         class="textarea placeholder-italic w-full p-2 leading-4 focus:outline-none border border-gray-300"
         style="line-height:1rem;border-radius: 0px;max-height:400px"
         [ngStyle]="{'background-color': !cData.edit?'#dedede':null,'height':(commentText.scrollHeight+2) + 'px','overflow-y':commentText.scrollHeight < 400 ? 'hidden':'auto'}">{{cData.comment}}</textarea>
-</ng-template>
+</ng-template> -->
 
 <ng-template #displayComment let-cData="cData">
     <li>
@@ -171,12 +171,12 @@
         (blur)="cData.edit?updateComment($event,cData.id,'comment',commentText.value):null"
         (change)="preventEventPropagation($event)" (keyup)="preventEventPropagation($event)"
         (keydown)="preventEventPropagation($event)"
-        [ngClass]="[cData.open?'null':'hidden',!cData.edit?'bg-gray-200':'']"
+        [ngClass]="[cData.open?'null':'hidden',!cData.edit?'bg-gray-50':'']"
         class="textarea placeholder-italic w-full p-2 leading-4 focus:outline-none border border-gray-300"
-        [ngStyle]="{'background-color': !cData.edit?'#dedede':null,'height':(commentText.scrollHeight+2) + 'px','overflow-y':commentText.scrollHeight < 400 ? 'hidden':'auto'}">{{cData.comment}}</textarea>
+        [ngStyle]="{'background-color': !cData.edit?'rgb(249 250 251)':null,'height':(commentText.scrollHeight+2) + 'px','overflow-y':commentText.scrollHeight < 400 ? 'hidden':'auto'}">{{cData.comment}}</textarea>
 </ng-template>
 
-<ng-template #addNewComment>
+<!-- <ng-template #addNewComment>
     <div class="p-2 bg-gray-50 border border-gray-300" [ngClass]="newComment.areaOpen?null:'hidden'">
         <div class="self-center flex flex-row flex-nowrap items-center justify-center">
             <p class="font-bold">New Comment</p>
@@ -233,19 +233,19 @@
             </div>
         </div>
     </div>
-</ng-template>
+</ng-template> -->
 
 <div class="relative z-30" role="dialog" aria-modal="true">
-    <div #backgroundBackdrop class="inset-0 bg-gray-500 bg-opacity-0 transition-opacity opacity-0 hidden"></div>
+    <div #backgroundBackdrop class="inset-0 bg-gray-500 bg-opacity-0 opacity-0"></div>
   
     <div #panelWrapper class="fixed inset-0 overflow-hidden absolute">
         <div class="absolute inset-0 overflow-hidden">
             <div class="pointer-events-none fixed inset-y-0 flex max-w-full" [ngClass]="positionComment == 'right' ? 'right-0 pl-10' : 'left-0 pl-20' ">
-                <div #slideOverPanel class="pointer-events-auto relative w-96 hidden mt-16 border border-gray-300">
+                <div #slideOverPanel class="pointer-events-auto relative w-96 hidden mt-16 border-slideover border-gray-300">
 
-                    <div class="h-full overflow-y-auto bg-white p-4" *ngIf="isSlideOverOpen">
+                    <div class="h-full overflow-y-auto bg-white" *ngIf="isSlideOverOpen">
                         <div class="space-y-3">
-                            <div class="flex flex-row items-center">
+                            <div class="flex flex-row items-center pt-4 px-4">
                                 <div *ngIf="positionComment =='right'" (click)="changeCommentPosition()" class="cursor-pointer">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-arrow-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                         <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
@@ -275,18 +275,23 @@
                                     </svg>
                                 </button>
                             </div>
+
+                            <div *ngIf="dm?.currentDataOrder.length == 0" class="text-gray-500 font-normal text-xs px-4 pt-4">No comments added</div>
                         
-                            <ul *ngIf="myUser && dm?.currentData && dm?.currentDataOrder" role="list" class="flex-1 overflow-y-auto" style="height: calc(50vh - 100px);">
-                                <div *ngFor="let cWrapper of dm.currentDataOrder;">
-                                    <ng-container [ngTemplateOutlet]="displayComment"
-                                        [ngTemplateOutletContext]="{cData:dm.currentData[cWrapper.key]}">
-                                    </ng-container>
+                            <ul *ngIf="myUser && dm?.currentData && dm?.currentDataOrder" role="list" class="flex-1 overflow-y-auto mt-0" style="height: calc(50vh - 100px);">
+                                <div class="overflow-visible p-4">
+                                    <div *ngFor="let cWrapper of dm.currentDataOrder;">
+                                        <ng-container [ngTemplateOutlet]="displayComment"
+                                            [ngTemplateOutletContext]="{cData:dm.currentData[cWrapper.key]}">
+                                        </ng-container>
+                                    </div>
                                 </div>
+                                
                             </ul>
 
                             <hr>
 
-                            <div class="mt-3 grid gap-x-4 gap-y-2 items-center text-sm font-medium text-gray-700" style="grid-template-columns: 40% 60%">
+                            <div class="mt-3 grid gap-x-4 gap-y-2 items-center text-sm font-medium text-gray-700 px-4" style="grid-template-columns: 40% 60%">
                                 <div class="font-normal">Type</div>
                                 <div class="font-normal">Instance</div>
                                 <kern-dropdown [dropdownOptions]="{
@@ -304,7 +309,7 @@
                                 </kern-dropdown>
                             </div>
 
-                            <div class="mt-3">
+                            <div class="mt-3 px-4">
                                 <label for="comment" class="block text-sm font-medium text-gray-700">Comment</label>
                                 <div class="mt-1">
                                     <textarea #commentBox
@@ -328,7 +333,7 @@
                                 </div>
                             </div>
                             
-                            <div class="flex">
+                            <div class="flex px-4 pb-4">
                                 <button [disabled]="commentBox.value =='' || newComment.commentId == ''"
                                     [ngClass]="commentBox.value =='' || newComment.commentId == '' ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
                                     (click)="saveCommentToDb(commentBox.value,privateComment.checked);commentBox.value='';privateComment.checked=false;newComment.commentId = ''"
