@@ -134,7 +134,7 @@
                             Upload records
                         </button>
                     </div>
-                    <div class="tooltip tooltip-bottom" data-tip="Download your labeled records">
+                    <!-- <div class="tooltip tooltip-bottom" data-tip="Download your labeled records">
                         <button (click)="requestFileExport(project.id)"
                             class="mr-1 inline-flex items-center px-2.5 border border-gray-300 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none cursor-pointer"
                             [ngClass]="downloadMessage == DownloadStateType.PREPARATION || downloadMessage == DownloadStateType.DOWNLOAD ? 'py-1' : 'py-2' ">
@@ -149,7 +149,11 @@
                                 <kern-loading color="gray"></kern-loading>
                             </span>
                         </button>
-                    </div>
+                    </div> -->
+                    <ng-template [ngIf]="attributes && labelingTasksArray">
+                        <kern-export [attributes]="attributes" [labelingTasks]="labelingTasksArray"></kern-export>
+                    </ng-template>
+
 
                     <label for="projectExportModal" class="modal-button cursor-pointer inline-block">
                         <div class="tooltip tooltip-bottom"
