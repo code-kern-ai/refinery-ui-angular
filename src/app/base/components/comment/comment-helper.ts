@@ -23,6 +23,7 @@ export class CommentDataManager {
     private allUsers: any;
     private addCommentRequests: {} = {};
     private updateCommentModule: () => void;
+    private lastRecordInfo: any;
 
     //needs to be called once from app (because of the http injection)
     public static initManager(orgApolloService: OrganizationApolloService) {
@@ -113,6 +114,11 @@ export class CommentDataManager {
             .subscribe((prjIds: any[]) => prjIds.forEach(idObj => this.subScribeToProjectNotifications(idObj.id)));
 
     }
+
+    public grabLastRecordInfo() {
+        return this.lastRecordInfo;
+    }
+
     public registerUpdateCommentModule(func: () => void) {
         this.updateCommentModule = func;
     }
@@ -484,6 +490,9 @@ export class CommentDataManager {
             // add data to structure
             if (data[key].add_info) {
                 const addInfoKey = keyParts.commentType + "@" + projectId;
+                if (keyParts.commentType == CommentType.RECORD) {
+                    this.lastRecordInfo = data[key].add_info[0];
+                }
                 if (!this.addInfo[addInfoKey]) this.addInfo[addInfoKey] = { values: data[key].add_info };
                 else {
                     for (const addInfo of data[key].add_info) {

@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { interval, timer } from 'rxjs';
 import { UserManager } from 'src/app/util/user-manager';
-import { CommentDataManager } from './comment-helper';
+import { CommentDataManager, CommentType } from './comment-helper';
 
 @Component({
   selector: 'kern-comment',
@@ -52,13 +52,27 @@ export class CommentComponent implements OnInit, OnDestroy {
 
   newIdOptions(keepExisting: boolean = false) {
     if (!this.newComment.commentType) return;
-    this.commentIdOptions = this.dm.getCommentKeyOptions(this.newComment.commentType);
+    this.commentIdOptions = [...this.dm.getCommentKeyOptions(this.newComment.commentType)];
+    if (this.newComment.commentType == CommentType.RECORD) {
+      this.setNewCommentsToLastElement();
+    }
     if (keepExisting) return;
     if (this.commentIdOptions.length == 1) this.switchCommentId(0);
     else {
-      this.newComment.commentId = "";
-      this.newComment.commentIdReadable = "";
+      if (this.newComment.commentType == CommentType.RECORD) {
+        this.setNewCommentsToLastElement();
+      } else {
+        this.newComment.commentId = "";
+        this.newComment.commentIdReadable = "";
+      }      
     }
+  }
+
+  setNewCommentsToLastElement() {
+    const lastElement = this.dm.grabLastRecordInfo();
+    if (!lastElement) return;
+    this.newComment.commentId = lastElement.id;
+    this.newComment.commentIdReadable = lastElement.name;
   }
 
   switchCommentType(index: number) {
