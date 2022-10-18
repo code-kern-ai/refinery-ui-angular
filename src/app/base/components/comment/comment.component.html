@@ -276,7 +276,7 @@
                                 </button>
                             </div>
 
-                            <div *ngIf="dm?.currentDataOrder.length == 0" class="text-gray-500 font-normal text-xs px-4 pt-4">No comments added</div>
+                            <div *ngIf="dm?.currentDataOrder?.length == 0" class="text-gray-500 font-normal text-xs px-4 pt-4">No comments added</div>
                         
                             <ul *ngIf="myUser && dm?.currentData && dm?.currentDataOrder" role="list" class="flex-1 overflow-y-auto mt-0" style="height: calc(50vh - 100px);">
                                 <div class="overflow-visible p-4">
