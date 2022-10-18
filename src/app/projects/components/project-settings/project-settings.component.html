@@ -70,13 +70,16 @@
                                             {{attributeContainer.get("name").value}}
                                         </td>
                                         <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                            <select formControlName="dataType"
-                                                class="select select-sm select-bordered pr-8 max-w-xs">
-                                                <option *ngFor="let type of dataTypesArray" [value]="type.value">
-                                                    {{type.name
-                                                    }}
-                                                </option>
-                                            </select>
+                                            <div class="tooltip tooltip-right"
+                                                [attr.data-tip]="attributeContainer.get('state').value == 'USABLE' || attributeContainer.get('state').value == 'RUNNING' ? 'Cannot edit data type' : 'Edit your data type'">
+                                                    <kern-dropdown [dropdownOptions]="{
+                                                        optionArray: dataTypesArray,
+                                                        buttonCaption: attributeContainer.get('dataTypeName').value,
+                                                        valuePropertyPath: 'value',
+                                                        isDisabled: attributeContainer.get('state').value == 'USABLE' || attributeContainer.get('state').value == 'RUNNING'
+                                                    }" (optionClicked)="updateDataType($event,attributeContainer.get('id').value)">
+                                                    </kern-dropdown>
+                                            </div>
                                         </td>
                                         <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
                                             <label class="cursor-pointer">

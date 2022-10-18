@@ -311,8 +311,10 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
           isPrimaryKey: att.isPrimaryKey,
           userCreated: att.userCreated,
           sourceCode: att.sourceCode,
-          state: att.state
+          state: att.state,
+          dataTypeName: this.dataTypesArray.find((type) => type.value === att?.dataType).name
         });
+
         if (att.state == 'INITIAL') {
           group.get('isPrimaryKey').disable();
         }
@@ -1038,5 +1040,11 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
             });
         }
       });
+  }
+
+  updateDataType(dataType: string, attributeId: string) {
+    this.projectApolloService.updateAttribute(this.project.id, attributeId, dataType)
+      .pipe(first())
+      .subscribe();
   }
 }
