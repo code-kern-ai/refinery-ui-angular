@@ -98,8 +98,7 @@ export class ModalComponent implements OnInit, OnChanges {
   }
 
   clickButton(button: ModalButton) {
-    console.log("clickModalButton", button);
-    if (button.emitFunction) button.emitFunction(button.type);
+    if (button.emitFunction) button.emitFunction.call(button.emitObject ? button.emitObject : button, button.type);
 
     if (this.optionClicked.observers.length > 0) this.optionClicked.emit(button.type);
 

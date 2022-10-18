@@ -441,7 +441,56 @@ export const queries = {
     }
   }`
   ,
+  GET_RECORD_EXPORT_FORM_DATA: gql`
+  query ($projectId: ID!) {
+    projectByProjectId(projectId: $projectId) {
+      id
+      name
+      labelingTasks {
+        edges {
+          node {
+            id
+            name
+            attribute {
+              relativePosition
+            }
+          }
+        }
+      }
+      informationSources {
+        edges {
+          node {
+            id
+            name
+          }
+        }
+      }
+      attributes {
+        edges {
+          node {
+            id
+            name
+          }
+        }
+      }
+      dataSlices {
+        edges {
+          node {
+            id
+            name
+            sliceType
+          }
+        }
+      }
+    }
+  }  
 
+`,
+  PREPARE_RECORD_EXPORT: gql`
+query ($projectId: ID!, $exportOptions: JSONString) {
+  prepareRecordExport(projectId: $projectId, exportOptions: $exportOptions)
+}
+`
 
 
 

@@ -81,3 +81,40 @@ export function isStringTrue(value: string): boolean {
     value = value.toLowerCase();
     return TRUE_VALUES.includes(value);
 }
+
+export enum caseType {
+    LOWER,
+    UPPER,
+    CAPITALIZE_FIRST
+}
+
+export type enumToArrayOptions = {
+    caseType?: caseType;
+    prefix?: string;
+    nameFunction?: (name: string) => string;
+}
+
+export function enumToArray(e: Object, options: enumToArrayOptions = null): any[] {
+    const arr = Object.values(e);
+    if (!options) return sortByEnumPos(e, arr.map(x => ({ name: x, value: x })));
+    let func;
+    if (options.caseType == caseType.LOWER) func = (x) => x.toLowerCase();
+    else if (options.caseType == caseType.UPPER) func = (x) => x.toUpperCase();
+    else if (options.caseType == caseType.CAPITALIZE_FIRST) func = (x) => x.charAt(0).toUpperCase() + x.slice(1).toLowerCase();
+
+    if (func) return enumToArray(e, { prefix: options.prefix, nameFunction: func });
+    if (!options.nameFunction) return sortByEnumPos(e, arr.map(x => ({ name: options.prefix + x, value: x })));
+    return sortByEnumPos(e, arr.map(x => ({ name: (options.prefix ? options.prefix : "") + options.nameFunction(x), value: x })));
+}
+
+function sortByEnumPos(e: Object, arr: any[]) {
+    const order = [];
+    for (let key in e) {
+        order.push(key);
+    }
+    return arr.sort((a, b) => {
+        const index1 = order.findIndex(key => e[key] === a.code);
+        const index2 = order.findIndex(key => e[key] === b.code);
+        return index1 - index2;
+    });
+}

@@ -1,5 +1,5 @@
 <input #testModal type="checkbox" id="test-modal" class="modal-toggle">
-<div class="tooltip tooltip-bottom" data-tip="Download your labeled records">
+<div class="tooltip tooltip-bottom" data-tip="Download your records">
     <button (click)="testModal.checked=true"
         [ngClass]="downloadState == DownloadStateType.PREPARATION || downloadState == DownloadStateType.DOWNLOAD ? 'py-1' : 'py-2' "
         class="mr-1 inline-flex items-center px-2.5 border border-gray-300 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none cursor-pointer">
@@ -16,21 +16,111 @@
     </button>
 </div>
 <kern-modal [isOpen]="testModal.checked" closeButton="X"
-    [acceptButton]="{closeAfterClick:false,buttonCaption:'Prepare Download',emitFunction:prepareDownload}"
-    (optionClicked)="testModal.checked = false">
-    <!-- <div>
-        <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
-            <svg class="h-6 w-6 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-            </svg>
+    [acceptButton]="{closeAfterClick:false,buttonCaption:'Prepare Download',emitFunction:prepareDownload,emitObject:this}"
+    (optionClicked)="$event == 'CLOSE' ?testModal.checked = false:null">
+    <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium mb-2">
+        Export record data </div>
+    <ng-template [ngIf]="formGroups">
+        <div class="flex flex-col gap-2 overflow-y-auto overflow-x-hidden" style="max-height:80%">
+            <!--Export Preset-->
+            <ng-container [ngTemplateOutlet]="groupDisplay" [ngTemplateOutletContext]="{
+                type:ExportEnumsType.ExportPreset,
+                hiddenCheckCtrl:null,
+                heading:'Export Presets',
+                subText:'Choose a preset to apply corresponding values',
+                isCheckbox:false}">
+            </ng-container>
+            <!--Export RowType-->
+            <ng-container [ngTemplateOutlet]="groupDisplay" [ngTemplateOutletContext]="{
+                type:ExportEnumsType.ExportRowType,
+                hiddenCheckCtrl:null,
+                heading:'Export Amount',
+                subText:'Choose what rows should be exported',
+                isCheckbox:false}">
+            </ng-container>
+            <!--Export DataSlices-->
+            <ng-container [ngTemplateOutlet]="groupDisplay" [ngTemplateOutletContext]="{
+                type:ExportEnumsType.DataSlices,
+                hiddenCheckCtrl:formGroups.get(ExportEnumsType.ExportRowType).get('Slice').get('active'),
+                heading:'Export Slice',
+                subText:null,
+                isCheckbox:false}">
+            </ng-container>
+            <!--Export FileType-->
+            <ng-container [ngTemplateOutlet]="groupDisplay" [ngTemplateOutletContext]="{
+                type:ExportEnumsType.ExportFileType,
+                hiddenCheckCtrl:null,
+                heading:'Export File',
+                subText:null,
+                isCheckbox:false}">
+            </ng-container>
+            <!--Export Format-->
+            <ng-container [ngTemplateOutlet]="groupDisplay" [ngTemplateOutletContext]="{
+                type:ExportEnumsType.ExportFormat,
+                hiddenCheckCtrl:null,
+                heading:'Export Format',
+                subText:null,
+                isCheckbox:false}">
+            </ng-container>
+            <!--Export Attriubtes-->
+            <ng-container [ngTemplateOutlet]="groupDisplay" [ngTemplateOutletContext]="{
+                type:ExportEnumsType.Attributes,
+                hiddenCheckCtrl:null,
+                heading:'Export Columns - Attributes',
+                subText:null,
+                isCheckbox:true}">
+            </ng-container>
+            <!--Export LabelingTasks-->
+            <ng-container [ngTemplateOutlet]="groupDisplay" [ngTemplateOutletContext]="{
+                type:ExportEnumsType.LabelingTasks,
+                hiddenCheckCtrl:null,
+                heading:'Export Columns - Labeling Tasks',
+                subText:null,
+                isCheckbox:true}">
+            </ng-container>
+            <!--Export LabelSource-->
+            <ng-container [ngTemplateOutlet]="groupDisplay" [ngTemplateOutletContext]="{
+                type:ExportEnumsType.LabelSource,
+                hiddenCheckCtrl:null,
+                heading:'Export Columns - Global',
+                subText:null,
+                isCheckbox:true}">
+            </ng-container>
+            <!--Export Heuristics-->
+            <ng-container [ngTemplateOutlet]="groupDisplay" [ngTemplateOutletContext]="{
+                type:ExportEnumsType.Heuristics,
+                hiddenCheckCtrl:formGroups.get(ExportEnumsType.LabelSource).get('Information Source').get('active'),
+                heading:'Export Columns - Heuristics',
+                subText:null,
+                isCheckbox:true}">
+            </ng-container>
+
         </div>
-        <div class="mt-3 text-center sm:mt-5">
-            <h3 class="text-lg font-medium leading-6 text-gray-900" id="modal-title">Payment successful</h3>
-            <div class="mt-2">
-                <p class="text-sm text-gray-500">Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Consequatur amet labore.</p>
-            </div>
-        </div>
-    </div> -->
+    </ng-template>
 </kern-modal>
+
+<ng-template #groupDisplay let-type="type" let-hiddenCheckCtrl="hiddenCheckCtrl" let-heading="heading"
+    let-subText="subText" let-isCheckbox="isCheckbox">
+    <!-- <button
+        (click)="logMe({hiddenCheckCtrl:hiddenCheckCtrl,v:hiddenCheckCtrl.value,negateCheckCtrl:negateCheckCtrl,condition:hiddenCheckCtrl?(!hiddenCheckCtrl.value?(negateCheckCtrl?null:'hidden'):(negateCheckCtrl?'hidden':null)):null})">test</button> -->
+    <div *ngIf="formGroups.get(type) as fGroup" [ngClass]="hiddenCheckCtrl?(!hiddenCheckCtrl.value?'hidden':null):null">
+        <label *ngIf="heading" class="text-base font-medium text-gray-900">{{heading}}</label>
+        <p *ngIf="subText" class="text-sm leading-5 text-gray-500">{{subText}}</p>
+        <form [formGroup]="fGroup" class="mt-2">
+            <div class="space-y-4 sm:flex sm:items-center sm:space-y-0 sm:space-x-10">
+                <ng-template ngFor let-v [ngForOf]="enumArrays.get(type)">
+                    <div *ngIf="fGroup.get(v.name) as fCtrl" class="flex items-center"
+                        [ngClass]="fGroup.disabled|| fCtrl.disabled? 'opacity-50 cursor-not-allowed ' : 'opacity-100 cursor-pointer '"
+                        (click)="fGroup.disabled|| fCtrl.disabled?null:flipControlValue(fCtrl,type)">
+                        <input type="{{isCheckbox?'checkbox':'radio'}}"
+                            class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-500 pointer-events-none"
+                            [checked]="fCtrl.get('active').value">
+                        <label
+                            class="ml-2 block text-sm font-medium text-gray-700 select-none pointer-events-none">{{v.name}}</label>
+                    </div>
+                </ng-template>
+
+            </div>
+        </form>
+    </div>
+</ng-template>

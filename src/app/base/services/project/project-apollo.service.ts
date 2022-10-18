@@ -373,6 +373,7 @@ export class ProjectApolloService {
   }
 
 
+
   private labelingTaskRelativePosition(
     relativePosition,
     rPos: { pos: number }
@@ -1134,6 +1135,59 @@ export class ProjectApolloService {
         },
       ],
     });
+  }
+
+  getRecordExportFormData(projectId: string) {
+    return this.apollo
+      .query({
+        query: queries.GET_RECORD_EXPORT_FORM_DATA,
+        variables: {
+          projectId: projectId,
+        },
+        fetchPolicy: 'no-cache'
+      }).pipe(
+        map((result) => {
+          const data = result['data']['projectByProjectId'];
+          let x: any = {
+            projectId: data.id,
+            name: data.name,
+            labelingTasks: data.labelingTasks.edges.map((edge) => {
+              return edge.node;
+            }),
+            informationSources: data.informationSources.edges.map((edge) => {
+              return edge.node;
+            }),
+            attributes: data.attributes.edges.map((edge) => {
+              return edge.node;
+            }),
+            dataSlices: data.dataSlices.edges.map((edge) => {
+              return edge.node;
+            }),
+          }
+          let rPos = { pos: 9990 };
+          x.labelingTasks.forEach((task) => {
+            task.relativePosition = this.labelingTaskRelativePosition(
+              task.attribute?.relativePosition,
+              rPos
+            )
+          });
+          x.labelingTasks.sort((a, b) => a.relativePosition - b.relativePosition || a.name.localeCompare(b.name));
+          return x;
+        }));
+  }
+
+  prepareRecordExport(projectId: string, exportOptions: string) {
+    return this.apollo
+      .query({
+        query: queries.PREPARE_RECORD_EXPORT,
+        variables: {
+          projectId: projectId,
+          exportOptions: exportOptions
+        },
+        fetchPolicy: 'no-cache'
+      }).pipe(
+        map((result) => result['data']['prepareRecordExport']));
+
   }
 
 }

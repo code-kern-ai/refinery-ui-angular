@@ -916,7 +916,7 @@
                     </div>
                 </div>
 
-                <div data-tip="Download the currently filtered records"
+                <!-- <div data-tip="Download the currently filtered records"
                     class="tooltip tooltip-left relative flex items-center"
                     [ngClass]="extendedRecords?.sessionId ? '' : 'cursor-not-allowed'">
                     <button (click)="requestFileExport(project.id)" [disabled]="extendedRecords?.sessionId ? null:true"
@@ -934,8 +934,9 @@
                             <kern-loading color="gray"></kern-loading>
                         </span>
                     </button>
-                </div>
+                </div> -->
 
+                <kern-export [sessionId]="extendedRecords?.sessionId"></kern-export>
             </div>
         </div>
         <div class="flex flex-row flex-wrap mt-4" *ngIf="!(activeSlice?.static)">

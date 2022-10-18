@@ -7,6 +7,7 @@ export type ModalButton = {
     disabled?: boolean;
     closeAfterClick?: boolean;
     emitFunction?: (type: ModalButtonType) => void;
+    emitObject?: Object; //if not set the button will emit the function (so 'this' points to the button)
 };
 export enum ModalButtonType {
     CLOSE = "CLOSE",
