@@ -1,10 +1,28 @@
+import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { interval, timer } from 'rxjs';
+import { timer } from 'rxjs';
 import { UserManager } from 'src/app/util/user-manager';
 import { CommentDataManager, CommentType } from './comment-helper';
 
 @Component({
   selector: 'kern-comment',
+  animations: [
+    trigger('popOverState', [
+      state('showRight', style({
+       transform: "translateX(0%)",
+      })),
+      state('showLeft', style({
+        transform: "translateX(0%)",
+       })),
+      state('hideRight',   style({
+        transform: "translateX(100%)"
+      })),
+      state('hideLeft',   style({
+        transform: "translateX(-100%)"
+      })),
+      transition('* => *', animate('500ms ease')),
+    ])
+  ],
   templateUrl: './comment.component.html',
   styleUrls: ['./comment.component.scss']
 })
@@ -133,7 +151,7 @@ export class CommentComponent implements OnInit, OnDestroy {
     for (const key in this.dm.currentData) this.dm.currentData[key].open = value;
     this.allOpen = value;
   }
-  toggleSlideOver(backgroundBackdrop: HTMLDivElement, slideOverPanel: HTMLDivElement,panelWrapper : HTMLDivElement) {
+  toggleSlideOverOld(backgroundBackdrop: HTMLDivElement, slideOverPanel: HTMLDivElement,panelWrapper : HTMLDivElement) {
     if(this.isSlideOverOpen) {
       backgroundBackdrop.classList.remove('block');
       backgroundBackdrop.classList.add('hidden');
@@ -168,5 +186,14 @@ export class CommentComponent implements OnInit, OnDestroy {
   changeCommentPosition() {
     this.positionComment = this.positionComment == 'right' ? 'left' : 'right';
     localStorage.setItem('commentPosition', this.positionComment);
+  }
+  get stateName() {
+    return this.isSlideOverOpen && this.positionComment == 'right' 
+      ? 'showRight' : this.isSlideOverOpen && this.positionComment == 'left' 
+      ? 'showLeft' : !this.isSlideOverOpen && this.positionComment == 'right'
+      ? 'hideRight' : 'hideLeft';
+  }
+  toggleSlideOver() {
+    this.isSlideOverOpen = !this.isSlideOverOpen;
   }
 }

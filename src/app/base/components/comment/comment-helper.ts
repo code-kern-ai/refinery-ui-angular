@@ -526,7 +526,7 @@ export class CommentDataManager {
         CommentDataManager.commentRequests.forEach((value, key) => {
             value.forEach((commentRequest) => {
                 const key = commentRequestToKey(commentRequest);
-                if (!(key in requestJSON) && !this.hasCommentDataAlready(commentRequest)) {
+                if ((!(key in requestJSON) && !this.hasCommentDataAlready(commentRequest)) || commentRequest.commentType == CommentType.RECORD ) {
                     requestJSON[key] = this.buildJsonEntryFromCommentRequest(commentRequest);
                 }
             });

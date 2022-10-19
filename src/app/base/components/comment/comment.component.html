@@ -1,5 +1,5 @@
 <div class=" mr-6 flex items-center" [ngClass]="dm?.canCommentOnPage?null:'hidden'">
-    <label class="tooltip tooltip-left modal-button cursor-pointer inline-block" data-tip="Comments" (click)="toggleSlideOver(backgroundBackdrop, slideOverPanel, panelWrapper)">
+    <label class="tooltip tooltip-left modal-button cursor-pointer inline-block" data-tip="Comments" (click)="toggleSlideOver()">
         <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-notes" width="24" height="24"
             viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
             stroke-linejoin="round">
@@ -240,10 +240,10 @@
   
     <div #panelWrapper class="fixed inset-0 overflow-hidden absolute">
         <div class="absolute inset-0 overflow-hidden">
-            <div class="pointer-events-none fixed inset-y-0 flex max-w-full" [ngClass]="positionComment == 'right' ? 'right-0 pl-10' : 'left-0 pl-20' ">
-                <div #slideOverPanel class="pointer-events-auto relative w-96 hidden mt-16 border-slideover border-gray-300">
+            <div class="pointer-events-none fixed inset-y-0 flex max-w-full" [ngClass]="positionComment == 'right' ? 'right-0 pl-10' : 'left-20' ">
+                <div #slideOverPanel class="pointer-events-auto relative w-96  mt-16" [@popOverState]="stateName">
 
-                    <div class="h-full overflow-y-auto bg-white" *ngIf="isSlideOverOpen">
+                    <div class="h-full overflow-y-auto bg-white border-slideover border-gray-300" *ngIf="isSlideOverOpen">
                         <div class="space-y-3">
                             <div class="flex flex-row items-center pt-4 px-4">
                                 <div *ngIf="positionComment =='right'" (click)="changeCommentPosition()" class="cursor-pointer">
@@ -268,7 +268,7 @@
                                      </svg>
                                 </div>
 
-                                <button (click)="toggleSlideOver(backgroundBackdrop, slideOverPanel, panelWrapper)" type="button" class="rounded-md text-gray-500 ml-auto">
+                                <button (click)="toggleSlideOver()" type="button" class="rounded-md text-gray-500 ml-auto">
                                     <span class="sr-only">Close panel</span>
                                     <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
