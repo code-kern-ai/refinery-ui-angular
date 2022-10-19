@@ -9,15 +9,15 @@ import { CommentDataManager, CommentType } from './comment-helper';
   animations: [
     trigger('popOverState', [
       state('showRight', style({
-       transform: "translateX(0%)",
+        transform: "translateX(0%)",
       })),
       state('showLeft', style({
         transform: "translateX(0%)",
-       })),
-      state('hideRight',   style({
+      })),
+      state('hideRight', style({
         transform: "translateX(100%)"
       })),
-      state('hideLeft',   style({
+      state('hideLeft', style({
         transform: "translateX(-100%)"
       })),
       transition('* => *', animate('500ms ease')),
@@ -78,7 +78,7 @@ export class CommentComponent implements OnInit, OnDestroy {
     if (this.commentIdOptions.length == 1) this.switchCommentId(0);
     else {
       this.newComment.commentId = "";
-      this.newComment.commentIdReadable = "";     
+      this.newComment.commentIdReadable = "";
     }
   }
 
@@ -148,7 +148,7 @@ export class CommentComponent implements OnInit, OnDestroy {
     this.allOpen = value;
   }
   executeOption(option: any, cData: any) {
-    switch(option.value) {
+    switch (option.value) {
       case 'Edit':
         this.editComment(option.event, cData);
         break;
@@ -166,10 +166,10 @@ export class CommentComponent implements OnInit, OnDestroy {
     localStorage.setItem('commentPosition', this.positionComment);
   }
   get stateName() {
-    return this.isSlideOverOpen && this.positionComment == 'right' 
-      ? 'showRight' : this.isSlideOverOpen && this.positionComment == 'left' 
-      ? 'showLeft' : !this.isSlideOverOpen && this.positionComment == 'right'
-      ? 'hideRight' : 'hideLeft';
+    return this.isSlideOverOpen && this.positionComment == 'right'
+      ? 'showRight' : this.isSlideOverOpen && this.positionComment == 'left'
+        ? 'showLeft' : !this.isSlideOverOpen && this.positionComment == 'right'
+          ? 'hideRight' : 'hideLeft';
   }
   toggleSlideOver() {
     this.isSlideOverOpen = !this.isSlideOverOpen;

@@ -169,7 +169,7 @@ export class DropdownComponent implements OnChanges {
       if (this.dropdownOptions.hasCheckboxes) this.optionClicked.emit(this.dropdownOptions.optionArray[clickIndex]);
       else {
         if (this.dropdownOptions.emitEvent) {
-          this.optionClicked.emit({value: this.dropdownOptionCaptions[clickIndex], event: event});
+          this.optionClicked.emit({ value: this.dropdownOptionCaptions[clickIndex], event: event });
           return;
         }
         this.optionClicked.emit(this.dropdownOptionCaptions[clickIndex])

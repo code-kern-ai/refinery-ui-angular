@@ -1,5 +1,6 @@
 <div class=" mr-6 flex items-center" [ngClass]="dm?.canCommentOnPage?null:'hidden'">
-    <label class="tooltip tooltip-left modal-button cursor-pointer inline-block" data-tip="Comments" (click)="toggleSlideOver()">
+    <label class="tooltip tooltip-left modal-button cursor-pointer inline-block" data-tip="Comments"
+        (click)="toggleSlideOver()">
         <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-notes" width="24" height="24"
             viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
             stroke-linejoin="round">
@@ -15,92 +16,115 @@
 <ng-template #displayComment let-cData="cData">
     <li>
         <div class="group relative flex items-center py-3">
-          <a class="block flex-1 cursor-pointer" (click)="cData.open=!cData.open;checkAllOpen()">
-            <div class="absolute inset-0" aria-hidden="true"></div>
-            <div class="relative flex min-w-0 flex-1 items-center" style="max-width:300px;">
-                <span class="relative inline-block flex-shrink-0 tooltip tooltip-bottom tooltip-email" [attr.data-tip]="cData.creationUser">
-                    <img *ngIf="!cData.is_private; else privateComment" class="h-10 w-10 p-1 rounded-full" [src]="cData.avatarUri" [ngClass]="myUser.id == cData.created_by ? 'border border-blue-400 rounded-full': null">
-                    <ng-template #privateComment>
-                        <svg xmlns="http://www.w3.org/2000/svg" [ngClass]="myUser.id == cData.created_by ? 'border border-blue-400 rounded-full': null" class="icon icon-tabler icon-tabler-eye-off p-1" width="40" height="40" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                            <line x1="3" y1="3" x2="21" y2="21"></line>
-                            <path d="M10.584 10.587a2 2 0 0 0 2.828 2.83"></path>
-                            <path d="M9.363 5.365a9.466 9.466 0 0 1 2.637 -.365c4 0 7.333 2.333 10 7c-.778 1.361 -1.612 2.524 -2.503 3.488m-2.14 1.861c-1.631 1.1 -3.415 1.651 -5.357 1.651c-4 0 -7.333 -2.333 -10 -7c1.369 -2.395 2.913 -4.175 4.632 -5.341"></path>
-                        </svg>
-                    </ng-template>
-                </span>
+            <a class="block flex-1 cursor-pointer" (click)="cData.open=!cData.open;checkAllOpen()">
+                <div class="absolute inset-0" aria-hidden="true"></div>
+                <div class="relative flex min-w-0 flex-1 items-center" style="max-width:300px;">
+                    <span class="relative inline-block flex-shrink-0 tooltip tooltip-bottom tooltip-email"
+                        [attr.data-tip]="cData.creationUser">
+                        <img *ngIf="!cData.is_private; else privateComment" class="h-10 w-10 p-1 rounded-full"
+                            [src]="cData.avatarUri"
+                            [ngClass]="myUser.id == cData.created_by ? 'border border-blue-400 rounded-full': null">
+                        <ng-template #privateComment>
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                [ngClass]="myUser.id == cData.created_by ? 'border border-blue-400 rounded-full': null"
+                                class="icon icon-tabler icon-tabler-eye-off p-1" width="40" height="40"
+                                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <line x1="3" y1="3" x2="21" y2="21"></line>
+                                <path d="M10.584 10.587a2 2 0 0 0 2.828 2.83"></path>
+                                <path
+                                    d="M9.363 5.365a9.466 9.466 0 0 1 2.637 -.365c4 0 7.333 2.333 10 7c-.778 1.361 -1.612 2.524 -2.503 3.488m-2.14 1.861c-1.631 1.1 -3.415 1.651 -5.357 1.651c-4 0 -7.333 -2.333 -10 -7c1.369 -2.395 2.913 -4.175 4.632 -5.341">
+                                </path>
+                            </svg>
+                        </ng-template>
+                    </span>
 
-              <div class="ml-4 truncate">
-                <p class="truncate text-sm font-medium text-gray-900">{{cData.xfkeyAdd}}</p>
-                <p class="truncate text-sm text-gray-500">{{cData.comment}}</p>
-              </div>
-            </div>
-          </a>
-          <div class="relative ml-2 inline-block flex-shrink-0 text-left flex items-center">
-              <kern-dropdown class="mr-2" [dropdownOptions]="{
+                    <div class="ml-4 truncate">
+                        <p class="truncate text-sm font-medium text-gray-900">{{cData.xfkeyAdd}}</p>
+                        <p class="truncate text-sm text-gray-500">{{cData.comment}}</p>
+                    </div>
+                </div>
+            </a>
+            <div class="relative ml-2 inline-block flex-shrink-0 text-left flex items-center">
+                <kern-dropdown class="mr-2" [dropdownOptions]="{
                   optionArray:['Edit',cData.is_private ? 'Public' :'Private', 'Delete'],
                   optionIcons:['edit-term', cData.is_private ? 'public' : 'private', 'remove-term'],
                   buttonVersion: '...',
                   isOptionDisabled: [!(myUser.id == cData.created_by), !(myUser.id == cData.created_by), !(myUser.id == cData.created_by || myUser.role=='ENGINEER')],
                   emitEvent: true
               }" (optionClicked)="executeOption($event,cData)">
-                  </kern-dropdown>
-          </div>
+                </kern-dropdown>
+            </div>
         </div>
     </li>
     <textarea #commentText [attr.disabled]="!cData.edit?true:null"
         (blur)="cData.edit?updateComment($event,cData.id,'comment',commentText.value):null"
         (change)="preventEventPropagation($event)" (keyup)="preventEventPropagation($event)"
-        (keydown)="preventEventPropagation($event)"
-        [ngClass]="[cData.open?'null':'hidden',!cData.edit?'bg-gray-50':'']"
+        (keydown)="preventEventPropagation($event)" [ngClass]="[cData.open?'null':'hidden',!cData.edit?'bg-gray-50':'']"
         class="textarea placeholder-italic w-full p-2 leading-4 focus:outline-none border border-gray-300"
         [ngStyle]="{'background-color': !cData.edit?'rgb(249 250 251)':null,'height':(commentText.scrollHeight+2) + 'px','overflow-y':commentText.scrollHeight < 400 ? 'hidden':'auto'}">{{cData.comment}}</textarea>
 </ng-template>
 
 <div class="relative z-30" role="dialog" aria-modal="true">
     <div #backgroundBackdrop class="inset-0 bg-gray-500 bg-opacity-0 opacity-0"></div>
-  
+
     <div #panelWrapper class="fixed inset-0 overflow-hidden absolute">
         <div class="absolute inset-0 overflow-hidden">
-            <div class="pointer-events-none fixed inset-y-0 flex max-w-full" [ngClass]="positionComment == 'right' ? 'right-0 pl-10' : 'left-20' ">
+            <div class="pointer-events-none fixed inset-y-0 flex max-w-full"
+                [ngClass]="positionComment == 'right' ? 'right-0 pl-10' : 'left-20' ">
                 <div #slideOverPanel class="pointer-events-auto relative w-96  mt-16" [@popOverState]="stateName">
 
-                    <div class="h-full overflow-y-auto bg-white border-slideover border-gray-300" *ngIf="isSlideOverOpen">
+                    <div class="h-full overflow-y-auto bg-white border-slideover border-gray-300"
+                        *ngIf="isSlideOverOpen">
                         <div class="space-y-3">
                             <div class="flex flex-row items-center pt-4 px-4">
-                                <div *ngIf="positionComment =='right'" (click)="changeCommentPosition()" class="cursor-pointer">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-arrow-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <div *ngIf="positionComment =='right'" (click)="changeCommentPosition()"
+                                    class="cursor-pointer">
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                        class="icon icon-tabler icon-tabler-arrow-left" width="24" height="24"
+                                        viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                        stroke-linecap="round" stroke-linejoin="round">
                                         <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                                         <line x1="5" y1="12" x2="19" y2="12"></line>
                                         <line x1="5" y1="12" x2="11" y2="18"></line>
                                         <line x1="5" y1="12" x2="11" y2="6"></line>
-                                     </svg>
+                                    </svg>
                                 </div>
 
                                 <div class="tooltip tooltip-bottom" [attr.data-tip]="allOpen?'close all':'open all'">
-                                    <h3 class="font-bold text-gray-900 cursor-pointer" (click)="openAllComments(!allOpen)">Comments</h3>
+                                    <h3 class="font-bold text-gray-900 cursor-pointer"
+                                        (click)="openAllComments(!allOpen)">Comments</h3>
                                 </div>
 
-                                <div *ngIf="positionComment =='left'" (click)="changeCommentPosition()" class="cursor-pointer">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-arrow-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <div *ngIf="positionComment =='left'" (click)="changeCommentPosition()"
+                                    class="cursor-pointer">
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                        class="icon icon-tabler icon-tabler-arrow-right" width="24" height="24"
+                                        viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                        stroke-linecap="round" stroke-linejoin="round">
                                         <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                                         <line x1="5" y1="12" x2="19" y2="12"></line>
                                         <line x1="13" y1="18" x2="19" y2="12"></line>
                                         <line x1="13" y1="6" x2="19" y2="12"></line>
-                                     </svg>
+                                    </svg>
                                 </div>
 
-                                <button (click)="toggleSlideOver()" type="button" class="rounded-md text-gray-500 ml-auto">
+                                <button (click)="toggleSlideOver()" type="button"
+                                    class="rounded-md text-gray-500 ml-auto">
                                     <span class="sr-only">Close panel</span>
-                                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                        viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                                     </svg>
                                 </button>
                             </div>
 
-                            <div *ngIf="dm?.currentDataOrder?.length == 0" class="text-gray-500 font-normal text-xs px-4 pt-4">No comments added</div>
-                        
-                            <ul *ngIf="myUser && dm?.currentData && dm?.currentDataOrder" role="list" class="flex-1 overflow-y-auto mt-0" style="height: calc(50vh - 100px);">
+                            <div *ngIf="dm?.currentDataOrder?.length == 0"
+                                class="text-gray-500 font-normal text-xs px-4 pt-4">No comments added</div>
+
+                            <ul *ngIf="myUser && dm?.currentData && dm?.currentDataOrder" role="list"
+                                class="flex-1 overflow-y-auto mt-0" style="height: calc(50vh - 100px);">
                                 <div class="overflow-visible p-4">
                                     <div *ngFor="let cWrapper of dm.currentDataOrder;">
                                         <ng-container [ngTemplateOutlet]="displayComment"
@@ -108,12 +132,13 @@
                                         </ng-container>
                                     </div>
                                 </div>
-                                
+
                             </ul>
 
                             <hr>
 
-                            <div class="mt-3 grid gap-x-4 gap-y-2 items-center text-sm font-medium text-gray-700 px-4" style="grid-template-columns: 40% 60%">
+                            <div class="mt-3 grid gap-x-4 gap-y-2 items-center text-sm font-medium text-gray-700 px-4"
+                                style="grid-template-columns: 40% 60%">
                                 <div class="font-normal">Type</div>
                                 <div class="font-normal">Instance</div>
                                 <kern-dropdown [dropdownOptions]="{
@@ -135,12 +160,15 @@
                                 <label for="comment" class="block text-sm font-medium text-gray-700">Comment</label>
                                 <div class="mt-1">
                                     <textarea #commentBox
-                                    class="textarea placeholder-italic w-full h-20 p-2 leading-4 border rounded-md border-gray-300 focus:outline-none focus:shadow-none"
-                                    (change)="preventEventPropagation($event)"
-                                    (keyup)="preventEventPropagation($event)" (keydown)="preventEventPropagation($event)"></textarea>
+                                        class="textarea placeholder-italic w-full h-20 p-2 leading-4 border rounded-md border-gray-300 focus:outline-none focus:shadow-none"
+                                        (change)="preventEventPropagation($event)"
+                                        (keyup)="preventEventPropagation($event)"
+                                        (keydown)="preventEventPropagation($event)"></textarea>
                                 </div>
                                 <div class="my-1 text-xs text-gray-500 font-normal text-justify">
-                                    The comment will be stored on project-level, so that your team members can look into it. Use this e.g. to help annotators better understand context of labels or labeling tasks.
+                                    The comment will be stored on project-level, so that your team members can look into
+                                    it. Use this e.g. to help annotators better understand context of labels or labeling
+                                    tasks.
                                 </div>
                                 <div class="mt-3">
                                     <div class="flex flex-row items-start">
@@ -149,19 +177,23 @@
                                         </label>
                                         <div class="ml-2">
                                             <label class="text-gray-900 text-sm font-medium">Private comment</label>
-                                            <div class="text-gray-500 text-xs font-normal">If ticked, this will not be shown to any other member in your team.</div>
+                                            <div class="text-gray-500 text-xs font-normal">If ticked, this will not be
+                                                shown to any other member in your team.</div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="flex px-4 pb-4">
                                 <button [disabled]="commentBox.value =='' || newComment.commentId == ''"
                                     [ngClass]="commentBox.value =='' || newComment.commentId == '' ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
                                     (click)="saveCommentToDb(commentBox.value,privateComment.checked);commentBox.value='';privateComment.checked=false;newComment.commentId = ''"
-                                    type="button" class="flex-1 bg-indigo-700 text-white text-xs font-semibold px-4 py-2 rounded-md border hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Create comment</button>
+                                    type="button"
+                                    class="flex-1 bg-indigo-700 text-white text-xs font-semibold px-4 py-2 rounded-md border hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Create
+                                    comment</button>
                                 <button (click)="toggleSlideOver(backgroundBackdrop, slideOverPanel, panelWrapper)"
-                                    type="button" class="flex-1 ml-3 bg-white text-gray-700 text-xs font-semibold px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</button>
+                                    type="button"
+                                    class="flex-1 ml-3 bg-white text-gray-700 text-xs font-semibold px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</button>
                             </div>
                         </div>
                     </div>
