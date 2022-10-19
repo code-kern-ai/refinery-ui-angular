@@ -117,7 +117,7 @@
                             Add new attibute
                         </label>
 
-                        <input type="checkbox" id="new-attribute-modal" class="modal-toggle">
+                        <input #newAttributeModal type="checkbox" id="new-attribute-modal" class="modal-toggle">
 
                         <div class="modal">
                             <div class="modal-box text-black bg-white justify-center" style="overflow: initial;">
@@ -133,8 +133,17 @@
                                             style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Attribute
                                             name</span></span>
                                     <input [(ngModel)]="attributeName" placeholder="Enter an attribute name..."
+                                        (input)="changeAttributeName($event)"
                                         class="input input-sm input-bordered placeholder-italic" />
 
+                                </div>
+
+                                <div class="text-red-700 text-xs mt-2" *ngIf="duplicateNameExists">
+                                    Attribute name exists
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-2 items-center"
+                                    style="grid-template-columns: max-content auto;">
                                     <span data-tip="Select an attribute type"
                                         class="cursor-help tooltip tooltip-right card-title mb-0 label-text"><span
                                             class="underline"
@@ -146,10 +155,14 @@
                                     }" (optionClicked)="updateDataType($event)"></kern-dropdown>
                                 </div>
                                 <div class="modal-action text-center mt-4">
-                                    <label for="new-attribute-modal"
-                                        [ngClass]="attributeName == '' || attributeType == '' ? 'cursor-not-allowed opacity-50':'cursor-pointer opacity-100'"
-                                        class="bg-green-100 text-green-700 border border-green-400 text-white text-xs font-semibold mr-2 px-4 py-2 rounded-md cursor-pointer hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block"
-                                        (click)="createUserAttribute()">Create</label>
+                                    <div
+                                        [ngClass]="attributeName == '' || attributeType == '' || duplicateNameExists? 'cursor-not-allowed' : ''">
+                                        <label
+                                            [ngClass]="attributeName == '' || attributeType == '' || duplicateNameExists ? 'opacity-50 cursor-not-allowed pointer-events-none':'cursor-pointer opacity-100'"
+                                            class="bg-green-100 text-green-700 border border-green-400 text-white text-xs font-semibold mr-2 px-4 py-2 rounded-md cursor-pointer hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block"
+                                            (click)="createUserAttribute()">Create</label>
+                                    </div>
+
                                     <label for="new-attribute-modal"
                                         class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded-md border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
                                 </div>

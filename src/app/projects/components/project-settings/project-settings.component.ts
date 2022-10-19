@@ -116,12 +116,14 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
   }
   labelMap: Map<string, []> = new Map<string, []>();
   @ViewChild('modalInput', { read: ElementRef }) myModalnewRecordTask: ElementRef;
+  @ViewChild('newAttributeModal', { read: ElementRef }) newAttributeModal: ElementRef;
   downloadedModelsList$: any;
   downloadedModelsQuery$: any;
   downloadedModels: any[];
   isManaged: boolean = true;
   attributeName: string = '';
   attributeType: string = 'Text';
+  duplicateNameExists: boolean = false;
 
   constructor(
     private routeService: RouteService,
@@ -1030,10 +1032,14 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
 
   createUserAttribute() {
     const attributeType = this.dataTypesArray.find((type) => type.name === this.attributeType).value;
+
+    if (this.duplicateNameExists) return;
+
     this.projectApolloService
       .createUserAttribute(this.project.id, this.attributeName, attributeType)
       .pipe(first())
       .subscribe((res) => {
+        this.newAttributeModal.nativeElement.checked = true;
         const id = res?.data?.createUserAttribute.attributeId;
         if (id) {
           localStorage.setItem("isNewAttribute", "true");
@@ -1046,5 +1052,9 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
   }
   updateDataType(dataType: string) {
     this.attributeType = dataType;
+  }
+  changeAttributeName(event: any) {
+    const findDuplicate = this.attributes.find(att => att.name == event.target.value);
+    this.duplicateNameExists = findDuplicate != undefined ? true : false;
   }
 }
