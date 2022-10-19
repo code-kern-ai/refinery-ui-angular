@@ -7,6 +7,7 @@ import { distinctUntilChanged, first, pairwise, startWith } from 'rxjs/operators
 import { DownloadState } from 'src/app/import/services/s3.enums';
 import { caseType, enumToArray, isStringTrue } from 'src/app/util/helper-functions';
 import { LabelSource, labelSourceToString } from '../../enum/graphql-enums';
+import { NotificationService } from '../../services/notification.service';
 import { ProjectApolloService } from '../../services/project/project-apollo.service';
 import { ModalButton, ModalButtonType } from '../modal/modal-helper';
 import { ExportEnums, ExportFileType, ExportFormat, ExportHelper, ExportPreset, ExportRowType } from './export-helper';
@@ -46,8 +47,34 @@ export class ExportComponent implements OnInit, OnChanges {
     private formBuilder: FormBuilder,
   ) { }
   ngOnInit(): void {
+
     this.prepareModule();
+    NotificationService.subscribeToNotification(this, {
+      projectId: this.projectId,
+      whitelist: this.getWhiteListNotificationService(),
+      func: this.handleWebsocketNotification
+    });
   }
+
+  private getWhiteListNotificationService(): string[] {
+    let toReturn = [];
+    toReturn.push(...['calculate_attribute']);
+    toReturn.push(...['labeling_task_deleted', 'labeling_task_created']);
+    toReturn.push(...['data_slice_created', 'data_slice_deleted']);
+    toReturn.push(...['information_source_created', 'information_source_deleted']);
+    return toReturn;
+  }
+  private handleWebsocketNotification(msgParts: string[]) {
+    let somethingToRerequest = false;
+    if ('calculate_attribute' == msgParts[1] && ['deleted', 'finished'].includes(msgParts[2])) {
+      somethingToRerequest = true;
+    } else if (['labeling_task_deleted', 'labeling_task_created', 'data_slice_created', 'data_slice_deleted', 'labeling_task_deleted', 'labeling_task_created'].includes(msgParts[1])) {
+      somethingToRerequest = true;
+    }
+    if (somethingToRerequest) this.fetchSetupData(this.projectId, true);
+  }
+
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.sessionId && Object.keys(changes).length == 1) this.setSessionEnabled();
     else this.prepareModule(true);
@@ -88,7 +115,7 @@ export class ExportComponent implements OnInit, OnChanges {
       this.enumArrays.set(ExportEnums.LabelingTasks, v.labelingTasks);
       this.enumArrays.set(ExportEnums.Attributes, v.attributes);
       this.enumArrays.set(ExportEnums.DataSlices, v.dataSlices);
-      this.buildForms();
+      this.buildForms(force);
     });
   }
 
@@ -192,8 +219,8 @@ export class ExportComponent implements OnInit, OnChanges {
     }
   }
 
-  private buildForms() {
-    if (this.formGroups) return;
+  private buildForms(force: boolean = false) {
+    if (this.formGroups && !force) return;
     this.formGroups = new Map<ExportEnums, FormGroup>();
     for (let [key, value] of this.enumArrays) {
       const group = this.buildForm(value);
