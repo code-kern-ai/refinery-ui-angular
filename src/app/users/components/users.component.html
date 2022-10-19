@@ -6,7 +6,236 @@
         <kern-header [user]="user$ | async" [organizationName]="organizationName"
             [organizationInactive]="organizationInactive" [avatarUri]="avatarUri" page="projects"></kern-header>
 
-        <div class="bg-white h-full overflow-y-auto">
+        <div class="bg-slate-50 h-full overflow-y-auto">
+
+            <!-- show pricing and options -->
+            <ng-container *ngIf="!isManaged">
+                <!-- This example requires Tailwind CSS v2.0+ -->
+                <div>
+                    <div class="mt-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                        <div class="mx-auto">
+                            <div class="max-w-2xl md:mx-auto md:text-center xl:max-w-none">
+                                <h2 class="font-display text-3xl tracking-tight sm:text-4xl md:text-5xl">
+                                    Tailored pricing,
+                                    fitting your requirements.
+                                </h2>
+                                <p class="mt-6 text-lg tracking-tight text-gray-900">
+                                    refinery comes both via managed cloud or as an on-prem enterprise solution. Also,
+                                    you can let us manage your crowdlabeling tasks in the managed cloud.
+                                </p>
+                            </div>
+
+                        </div>
+
+                        <div
+                            class="mt-12 space-y-4 sm:mt-16 sm:grid sm:grid-cols-2 sm:gap-6 sm:space-y-0 lg:mx-auto lg:max-w-4xl xl:mx-0 xl:max-w-none xl:grid-cols-3">
+                            <div
+                                class="bg-white divide-y divide-gray-200 rounded-lg shadow-sm border border-gray-200 shadow-sm">
+                                <div class="p-6">
+                                    <h2 class="text-lg font-medium leading-6 text-gray-900">Open-source</h2>
+                                    <p class="mt-4 text-sm text-gray-500">Designed for single-user workflows.</p>
+                                    <div class='md:h-44'>
+                                        <div>
+                                            <p class="mt-8">
+                                                <span class="text-4xl font-bold tracking-tight text-gray-900">For
+                                                    free</span>
+                                            </p>
+                                            <p class="mt-2">
+                                                <span class="font-small text-gray-500">Install it on your local
+                                                    machine.</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <a href="https://github.com/code-kern-ai/refinery" target="_blank"
+                                        class="mt-4 block w-full rounded-md border border-gray-800 bg-gray-800 py-2 text-center text-sm font-semibold text-white hover:bg-gray-900">
+                                        Go to GitHub
+                                    </a>
+                                </div>
+                                <div class="px-6 pt-6 pb-8">
+                                    <h3 class="text-sm font-medium text-gray-900">What's included</h3>
+                                    <ul role="list" class="mt-6 space-y-4">
+                                        <li class="flex space-x-3">
+                                            <svg class="h-5 w-5 flex-shrink-0 text-green-500"
+                                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                                fill="currentColor" aria-hidden="true">
+                                                <path fill-rule="evenodd"
+                                                    d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                            <span class="text-sm text-gray-500">Free forever.</span>
+                                        </li>
+                                        <li class="flex space-x-3">
+                                            <svg class="h-5 w-5 flex-shrink-0 text-green-500"
+                                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                                fill="currentColor" aria-hidden="true">
+                                                <path fill-rule="evenodd"
+                                                    d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                            <span class="text-sm text-gray-500">Ideal for smaller projects, e.g.
+                                                side-projects or Proof-of-Concepts.</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div
+                                class="bg-white divide-y divide-gray-200 rounded-lg shadow-sm border border-gray-200 shadow-sm">
+                                <div class="p-6">
+                                    <h2 class="text-lg font-medium leading-6 text-gray-900">Managed cloud</h2>
+                                    <p class="mt-4 text-sm text-gray-500">We do all the heavy-lifting for you.</p>
+                                    <div class='md:h-44'>
+                                        <div>
+                                            <p class="mt-8">
+                                                <span class="text-base font-medium text-gray-500">Starting at</span>
+                                                <span class="text-4xl font-bold tracking-tight text-gray-900"> 300€
+                                                </span>
+                                                <span class="text-base font-medium text-gray-500">/mo.</span>
+                                            </p>
+                                            <p class="mt-2">
+                                                <span class="font-small text-gray-500">Depending on workload, dedicated
+                                                    vs. shared instances, and labeling services.</span>
+                                            </p>
+                                            <span
+                                                class="mt-4 inline-flex items-center rounded-full bg-blue-100 px-3 py-0.5 text-sm font-medium text-blue-800">
+                                                14-day trial
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <a href="https://www.kern.ai/contact" target="_blank"
+                                        class="mt-4 block w-full rounded-md border border-gray-800 bg-gray-800 py-2 text-center text-sm font-semibold text-white hover:bg-gray-900">
+                                        Talk to sales
+                                    </a>
+                                </div>
+                                <div class="px-6 pt-6 pb-8">
+                                    <h3 class="text-sm font-medium text-gray-900">What's included</h3>
+                                    <ul role="list" class="mt-6 space-y-4">
+                                        <li class="flex space-x-3">
+                                            <svg class="h-5 w-5 flex-shrink-0 text-green-500"
+                                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                                fill="currentColor" aria-hidden="true">
+                                                <path fill-rule="evenodd"
+                                                    d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                            <span class="text-sm text-gray-500">Managed and monitored by us.</span>
+                                        </li>
+                                        <li class="flex space-x-3">
+                                            <svg class="h-5 w-5 flex-shrink-0 text-green-500"
+                                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                                fill="currentColor" aria-hidden="true">
+                                                <path fill-rule="evenodd"
+                                                    d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                            <span class="text-sm text-gray-500">Work together with your team.</span>
+                                        </li>
+                                        <li class="flex space-x-3">
+                                            <svg class="h-5 w-5 flex-shrink-0 text-green-500"
+                                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                                fill="currentColor" aria-hidden="true">
+                                                <path fill-rule="evenodd"
+                                                    d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                            <span class="text-sm text-gray-500">GPU-acceleration of large language model
+                                                (LLM)-services.</span>
+                                        </li>
+                                        <li class="flex space-x-3">
+                                            <svg class="h-5 w-5 flex-shrink-0 text-green-500"
+                                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                                fill="currentColor" aria-hidden="true">
+                                                <path fill-rule="evenodd"
+                                                    d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                            <span class="text-sm text-gray-500">On-demand managed labeling
+                                                services.</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div
+                                class="bg-white divide-y divide-gray-200 rounded-lg shadow-sm border border-gray-200 shadow-sm">
+                                <div class="p-6">
+                                    <h2 class="text-lg font-medium leading-6 text-gray-900">On-premise deployment
+                                    </h2>
+                                    <p class="mt-4 text-sm text-gray-500">You run refinery, we help you make it a
+                                        success.</p>
+                                    <div class='md:h-44'>
+                                        <div>
+                                            <p class="mt-8">
+                                                <span class="text-4xl font-bold tracking-tight text-gray-900">3000€
+                                                </span>
+                                                <span class="text-base font-medium text-gray-500">/mo.</span>
+                                            </p>
+                                            <p class="mt-2">
+                                                <span class="font-small text-gray-500">Running on your own
+                                                    infrastructure.</span>
+                                            </p>
+                                            <span
+                                                class="mt-4 inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
+                                                Early bird offer
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <a href="https://www.kern.ai/contact" target="_blank"
+                                        class="mt-4 block w-full rounded-md border border-gray-800 bg-gray-800 py-2 text-center text-sm font-semibold text-white hover:bg-gray-900">
+                                        Talk to sales
+                                    </a>
+                                </div>
+                                <div class="px-6 pt-6 pb-8">
+                                    <h3 class="text-sm font-medium text-gray-900">What's included</h3>
+                                    <ul role="list" class="mt-6 space-y-4">
+                                        <li class="flex space-x-3">
+                                            <svg class="h-5 w-5 flex-shrink-0 text-green-500"
+                                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                                fill="currentColor" aria-hidden="true">
+                                                <path fill-rule="evenodd"
+                                                    d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                            <span class="text-sm text-gray-500">Deployed on your own
+                                                infrastructure.</span>
+                                        </li>
+                                        <li class="flex space-x-3">
+                                            <svg class="h-5 w-5 flex-shrink-0 text-green-500"
+                                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                                fill="currentColor" aria-hidden="true">
+                                                <path fill-rule="evenodd"
+                                                    d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                            <span class="text-sm text-gray-500">Work together with your team.</span>
+                                        </li>
+                                        <li class="flex space-x-3">
+                                            <svg class="h-5 w-5 flex-shrink-0 text-green-500"
+                                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                                fill="currentColor" aria-hidden="true">
+                                                <path fill-rule="evenodd"
+                                                    d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                            <span class="text-sm text-gray-500">Custom API.</span>
+                                        </li>
+                                        <li class="flex space-x-3">
+                                            <svg class="h-5 w-5 flex-shrink-0 text-green-500"
+                                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                                fill="currentColor" aria-hidden="true">
+                                                <path fill-rule="evenodd"
+                                                    d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                            <span class="text-sm text-gray-500">Dedicated engineer support.</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ng-container>
 
             <!-- show team -->
             <ng-container *ngIf="!organizationInactive && isManaged">
@@ -16,7 +245,8 @@
 
                             <div class="space-y-5 sm:space-y-4">
                                 <h3 class="text-3xl font-bold tracking-tight sm:text-4xl">Engineering team</h3>
-                                <p class="text-gray-500">Administers the project and works on programmatic tasks such as labeling automation or filter settings.</p>
+                                <p class="text-gray-500">Administers the project and works on programmatic tasks such as
+                                    labeling automation or filter settings.</p>
                                 <p>They have access to all features of the application, including the Python SDK.</p>
                             </div>
                             <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -43,7 +273,8 @@
 
                             <div class="mt-4 space-y-5 sm:space-y-4">
                                 <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">Domain experts team</h2>
-                                <p class="text-gray-500">Working on reference manual labels, which can be used by the engineering team to estimate the data quality.</p>
+                                <p class="text-gray-500">Working on reference manual labels, which can be used by the
+                                    engineering team to estimate the data quality.</p>
                                 <p>They have access to the labeling view only.</p>
                             </div>
                             <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -80,8 +311,11 @@
 
                             <div class="mt-4 space-y-5 sm:space-y-4">
                                 <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">Annotator team</h2>
-                                <p class="text-gray-500">Working on manual labels as if they were heuristics. They can be switched on/off by the engineering team, so that the engineers can in- or exclude them during weak supervision.</p>
-                                <p>They have access to a task-minimized labeling view only. Engineers can revoke their access to the labeling view.</p>
+                                <p class="text-gray-500">Working on manual labels as if they were heuristics. They can
+                                    be switched on/off by the engineering team, so that the engineers can in- or exclude
+                                    them during weak supervision.</p>
+                                <p>They have access to a task-minimized labeling view only. Engineers can revoke their
+                                    access to the labeling view.</p>
                             </div>
                             <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
                                 <div *ngFor="let user of annotators"
@@ -99,7 +333,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div *ngIf="annotators?.length == 0" class="text-center"> 
+                            <div *ngIf="annotators?.length == 0" class="text-center">
                                 <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor"
                                     viewBox="0 0 48 48" aria-hidden="true">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -112,171 +346,6 @@
                         </div>
                     </div>
                 </div>
-            </ng-container>
-
-            <!-- show pricing and options -->
-            <ng-container *ngIf="!organizationInactive && !isManaged">
-                <!-- This example requires Tailwind CSS v2.0+ -->
-                <div class="bg-white h-full">
-                    <div class="mx-auto max-w-7xl py-8 px-4 sm:px-6">
-                        <div class="sm:align-center sm:flex sm:flex-col">
-                            <h1 class="text-5xl font-bold tracking-tight text-gray-900 sm:text-center"><span
-                                    class="font-dmMono">refinery</span> options
-                            </h1>
-                            <p class="mt-5 text-xl text-gray-500 sm:text-center">Other than our open-source version you
-                                are using right now, we offer the following options.</p>
-
-                        </div>
-                        <div class="mt-12 space-y-4 sm:mt-16 sm:grid sm:grid-cols-2 sm:gap-6 sm:space-y-0">
-
-                            <div class="divide-y divide-gray-200 rounded-lg border border-gray-200 shadow-sm">
-                                <div class="p-6">
-                                    <h2 class="text-lg font-medium leading-6 text-gray-900">Managed cloud</h2>
-                                    <p class="mt-4 text-sm text-gray-500">Use <span class="font-dmMono">refinery</span>
-                                        online with your team.</p>
-                                    <a href="https://www.kern.ai/pricing/options"
-                                        class="mt-8 block w-full rounded-md border border-gray-800 bg-gray-800 py-2 text-center text-sm font-semibold text-white hover:bg-gray-900">Check
-                                        our options</a>
-                                </div>
-                                <div class="px-6 pt-6 pb-8">
-                                    <h3 class="text-sm font-medium text-gray-900">What's included</h3>
-                                    <ul role="list" class="mt-6 space-y-4">
-                                        <li class="flex space-x-3">
-                                            <!-- Heroicon name: mini/check -->
-                                            <svg class="h-5 w-5 flex-shrink-0 text-green-500"
-                                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
-                                                fill="currentColor" aria-hidden="true">
-                                                <path fill-rule="evenodd"
-                                                    d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
-                                                    clip-rule="evenodd" />
-                                            </svg>
-                                            <span class="text-sm text-gray-500">Managed for you on our scalable cloud,
-                                                accelerated via GPU. </span>
-                                        </li>
-                                        <li class="flex space-x-3">
-                                            <!-- Heroicon name: mini/check -->
-                                            <svg class="h-5 w-5 flex-shrink-0 text-green-500"
-                                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
-                                                fill="currentColor" aria-hidden="true">
-                                                <path fill-rule="evenodd"
-                                                    d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
-                                                    clip-rule="evenodd" />
-                                            </svg>
-                                            <span class="text-sm text-gray-500">Multi-user capabilities.</span>
-                                        </li>
-                                        <li class="flex space-x-3">
-                                            <!-- Heroicon name: mini/check -->
-                                            <svg class="h-5 w-5 flex-shrink-0 text-green-500"
-                                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
-                                                fill="currentColor" aria-hidden="true">
-                                                <path fill-rule="evenodd"
-                                                    d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
-                                                    clip-rule="evenodd" />
-                                            </svg>
-                                            <span class="text-sm text-gray-500">Expert support.
-                                            </span>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-
-                            <div class="divide-y divide-gray-200 rounded-lg border border-gray-200 shadow-sm">
-                                <div class="p-6">
-                                    <h2 class="text-lg font-medium leading-6 text-gray-900">Enterprise</h2>
-                                    <p class="mt-4 text-sm text-gray-500">On-prem deployment and consultation by our
-                                        experts.</p>
-                                    <a href="https://www.kern.ai/pricing/options"
-                                        class="mt-8 block w-full rounded-md border border-gray-800 bg-gray-800 py-2 text-center text-sm font-semibold text-white hover:bg-gray-900">Check
-                                        our options</a>
-                                </div>
-                                <div class="px-6 pt-6 pb-8">
-                                    <h3 class="text-sm font-medium text-gray-900">What's included</h3>
-                                    <ul role="list" class="mt-6 space-y-4">
-                                        <li class="flex space-x-3">
-                                            <!-- Heroicon name: mini/check -->
-                                            <svg class="h-5 w-5 flex-shrink-0 text-green-500"
-                                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
-                                                fill="currentColor" aria-hidden="true">
-                                                <path fill-rule="evenodd"
-                                                    d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
-                                                    clip-rule="evenodd" />
-                                            </svg>
-                                            <span class="text-sm text-gray-500">Multi-user capabilities.
-                                            </span>
-                                        </li>
-
-                                        <li class="flex space-x-3">
-                                            <!-- Heroicon name: mini/check -->
-                                            <svg class="h-5 w-5 flex-shrink-0 text-green-500"
-                                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
-                                                fill="currentColor" aria-hidden="true">
-                                                <path fill-rule="evenodd"
-                                                    d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
-                                                    clip-rule="evenodd" />
-                                            </svg>
-                                            <span class="text-sm text-gray-500">Dedicated support.</span>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-
-                            <div class="divide-y divide-gray-200 rounded-lg border border-gray-200 shadow-sm">
-                                <div class="p-6">
-                                    <h2 class="text-lg font-medium leading-6 text-gray-900">Labeling services</h2>
-                                    <p class="mt-4 text-sm text-gray-500">For the managed cloud and
-                                        enterprise solution.</p>
-                                    <a href="https://www.kern.ai/pricing/options"
-                                        class="mt-8 block w-full rounded-md border border-gray-800 bg-gray-800 py-2 text-center text-sm font-semibold text-white hover:bg-gray-900">Check
-                                        our options</a>
-                                </div>
-                                <div class="px-6 pt-6 pb-8">
-                                    <h3 class="text-sm font-medium text-gray-900">What's included</h3>
-                                    <ul role="list" class="mt-6 space-y-4">
-                                        <li class="flex space-x-3">
-                                            <!-- Heroicon name: mini/check -->
-                                            <svg class="h-5 w-5 flex-shrink-0 text-green-500"
-                                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
-                                                fill="currentColor" aria-hidden="true">
-                                                <path fill-rule="evenodd"
-                                                    d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
-                                                    clip-rule="evenodd" />
-                                            </svg>
-                                            <span class="text-sm text-gray-500">Integrated directly in <span
-                                                    class="font-dmMono">refinery</span></span>
-                                        </li>
-
-                                        <li class="flex space-x-3">
-                                            <!-- Heroicon name: mini/check -->
-                                            <svg class="h-5 w-5 flex-shrink-0 text-green-500"
-                                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
-                                                fill="currentColor" aria-hidden="true">
-                                                <path fill-rule="evenodd"
-                                                    d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
-                                                    clip-rule="evenodd" />
-                                            </svg>
-                                            <span class="text-sm text-gray-500">Full insight into labeling quality and
-                                                coverage.</span>
-                                        </li>
-
-                                        <li class="flex space-x-3">
-                                            <!-- Heroicon name: mini/check -->
-                                            <svg class="h-5 w-5 flex-shrink-0 text-green-500"
-                                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
-                                                fill="currentColor" aria-hidden="true">
-                                                <path fill-rule="evenodd"
-                                                    d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
-                                                    clip-rule="evenodd" />
-                                            </svg>
-                                            <span class="text-sm text-gray-500">For all available labeling tasks in
-                                                <span class="font-dmMono">refinery</span>.</span>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
             </ng-container>
 
             <!-- show waiting zone -->
@@ -351,6 +420,5 @@
             </ng-container>
 
         </div>
-
     </div>
 </div>
