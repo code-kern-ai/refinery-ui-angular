@@ -115,7 +115,7 @@ export class ExportComponent implements OnInit, OnChanges {
       this.enumArrays.set(ExportEnums.LabelingTasks, v.labelingTasks);
       this.enumArrays.set(ExportEnums.Attributes, v.attributes);
       this.enumArrays.set(ExportEnums.DataSlices, v.dataSlices);
-      this.buildForms(force);
+      this.refreshForms();
     });
   }
 
@@ -219,8 +219,8 @@ export class ExportComponent implements OnInit, OnChanges {
     }
   }
 
-  private buildForms(force: boolean = false) {
-    if (this.formGroups && !force) return;
+  private buildForms() {
+    if (this.formGroups) return;
     this.formGroups = new Map<ExportEnums, FormGroup>();
     for (let [key, value] of this.enumArrays) {
       const group = this.buildForm(value);
@@ -229,9 +229,38 @@ export class ExportComponent implements OnInit, OnChanges {
     this.setPresetValues(ExportPreset.CURRENT);
 
   }
+  private refreshForms() {
+    if (!this.formGroups) {
+      this.buildForms();
+      return;
+    }
+    for (let [key, value] of this.enumArrays) {
+      const group = this.formGroups.get(key);
+      this.refreshFromGroup(value, group);
+    }
+    const preset = this.exportHelper.firstActiveInGroup(ExportEnums.ExportPreset, 'value') as ExportPreset;
+    this.setOptionFormDisableState(preset);
+  }
 
   logMe(me) {
     console.log(me)
+  }
+
+  private refreshFromGroup(arr: any[], group: FormGroup) {
+    if (!group) return;
+    arr.forEach((v, i) => {
+      if (!group.get(v.name)) {
+        group.addControl(v.name, this.formBuilder.group({
+          active: i == 0,
+          name: v.name,
+          id: v.id,
+          value: v.value
+        }));
+      }
+    });
+    for (let key in group.controls) {
+      if (!arr.find(v => v.name == key)) group.removeControl(key);
+    }
   }
 
 

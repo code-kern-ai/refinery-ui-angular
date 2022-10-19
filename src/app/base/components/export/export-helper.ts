@@ -86,7 +86,7 @@ export class ExportHelper {
         return { type: type, id: id };
     }
 
-    private firstActiveInGroup(group: ExportEnums, returnAttribute: string = null): string {
+    public firstActiveInGroup(group: ExportEnums, returnAttribute: string = null): string {
         const values = this.baseComponent.formGroups.get(group).getRawValue();
         for (let key in values) {
             if (values[key].active) {
