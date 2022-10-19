@@ -41,7 +41,7 @@ export enum ExportFormat {
 /** Example Export dict
 {
     "rows": {
-        "type": "STATIC,DYNAMIC,SESSION or ALL",
+        "type": "SLICE,SESSION or ALL",
         "id": "id-of-type, all would have no id"
     }, 
     "columns": {
@@ -60,11 +60,13 @@ export enum ExportFormat {
  */
 export class ExportHelper {
     private baseComponent: ExportComponent;
+    public error: string[] = [];
     constructor(baseComponent: ExportComponent) {
         this.baseComponent = baseComponent;
     }
 
     public buildExportData(): string {
+        this.error = [];
         const exportData = {
             rows: this.buildExportDataRows(),
             columns: this.buildExportDataColumns(),
@@ -80,7 +82,6 @@ export class ExportHelper {
         if (type == ExportRowType.ALL) id = null;
         else if (type == ExportRowType.SLICE) {
             id = this.firstActiveInGroup(ExportEnums.DataSlices, "id");
-            type = this.baseComponent.enumArrays.get(ExportEnums.DataSlices).find(v => v.id == id).sliceType;
         } else if (type == ExportRowType.SESSION) id = this.baseComponent.sessionId;
         return { type: type, id: id };
     }
@@ -88,9 +89,15 @@ export class ExportHelper {
     private firstActiveInGroup(group: ExportEnums, returnAttribute: string = null): string {
         const values = this.baseComponent.formGroups.get(group).getRawValue();
         for (let key in values) {
-            if (values[key].active) return returnAttribute ? values[key][returnAttribute] : key;
+            if (values[key].active) {
+                if (values[key].id == ExportComponent.NONE_IN_PROJECT) {
+                    this.error.push("No active value found in group - " + group);
+                    return null;
+                }
+                return returnAttribute ? values[key][returnAttribute] : key;
+            }
         }
-        console.log("no active value found in group - shouldn't happen", group)
+        this.error.push("No active value found in group - " + group);
         return null;
     }
     private allActive(group: ExportEnums, returnAttribute: string = "id"): any[] {

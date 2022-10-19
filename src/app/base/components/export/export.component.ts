@@ -20,7 +20,7 @@ import { ExportEnums, ExportFileType, ExportFormat, ExportHelper, ExportPreset, 
 
 })
 export class ExportComponent implements OnInit, OnChanges {
-
+  static NONE_IN_PROJECT: string = "NONE_IN_PROJECT";
   get DownloadStateType(): typeof DownloadState {
     return DownloadState;
   }
@@ -80,13 +80,16 @@ export class ExportComponent implements OnInit, OnChanges {
     }
     if (!force && this.enumArrays?.get(ExportEnums.Heuristics)) return;
     this.projectApolloService.getRecordExportFormData(projectId).pipe(first()).subscribe(v => {
+      if (v.informationSources.length == 0) v.informationSources.push({ id: ExportComponent.NONE_IN_PROJECT, name: "None in project" });
+      if (v.labelingTasks.length == 0) v.labelingTasks.push({ id: ExportComponent.NONE_IN_PROJECT, name: "None in project" });
+      if (v.attributes.length == 0) v.attributes.push({ id: ExportComponent.NONE_IN_PROJECT, name: "None in project" });
+      if (v.dataSlices.length == 0) v.dataSlices.push({ id: ExportComponent.NONE_IN_PROJECT, name: "None in project" });
       this.enumArrays.set(ExportEnums.Heuristics, v.informationSources);
       this.enumArrays.set(ExportEnums.LabelingTasks, v.labelingTasks);
       this.enumArrays.set(ExportEnums.Attributes, v.attributes);
       this.enumArrays.set(ExportEnums.DataSlices, v.dataSlices);
       this.buildForms();
     });
-
   }
 
   private setPresetValues(preset: ExportPreset) {
@@ -102,26 +105,21 @@ export class ExportComponent implements OnInit, OnChanges {
         this.setPresetValuesLabelstudio();
         break;
       case ExportPreset.CUSTOM:
-        //nothing to do
+        //nothing else to do
         break;
     }
   }
 
   private setPresetValuesLabelstudio() {
     this.formGroups.get(ExportEnums.ExportPreset).get("Labelstudio").get('active').setValue(true);
-    this.formGroups.get(ExportEnums.ExportRowType).get("All").get('active').setValue(true);
-    this.formGroups.get(ExportEnums.ExportFileType).get("json").get('active').setValue(true);
     this.formGroups.get(ExportEnums.ExportFormat).get("Labelstudio").get('active').setValue(true);
     this.formGroups.get(ExportEnums.LabelSource).get("Manual").get('active').setValue(true);
-    // this.formGroups.get(ExportEnums.LabelSource).get("Weak Supervision").get('active').setValue(true);
     this.setActiveForAllInGroup(this.formGroups.get(ExportEnums.Attributes), true);
     this.setActiveForAllInGroup(this.formGroups.get(ExportEnums.LabelingTasks), true);
 
   }
   private setPresetValuesCurrent() {
     this.formGroups.get(ExportEnums.ExportPreset).get("Current").get('active').setValue(true);
-    this.formGroups.get(ExportEnums.ExportRowType).get("All").get('active').setValue(true);
-    this.formGroups.get(ExportEnums.ExportFileType).get("json").get('active').setValue(true);
     this.formGroups.get(ExportEnums.ExportFormat).get("Current").get('active').setValue(true);
     this.formGroups.get(ExportEnums.LabelSource).get("Manual").get('active').setValue(true);
     this.formGroups.get(ExportEnums.LabelSource).get("Weak Supervision").get('active').setValue(true);
@@ -144,7 +142,7 @@ export class ExportComponent implements OnInit, OnChanges {
       }
     } else if (type == ExportPreset.LABELSTUDIO) {
       for (let [key, value] of this.formGroups) {
-        if ([ExportEnums.ExportFormat].includes(key)) value.disable();
+        if ([ExportEnums.ExportFormat, ExportEnums.Attributes].includes(key)) value.disable();
         else value.enable();
       }
     } else if (type == ExportPreset.CUSTOM) {
@@ -153,6 +151,19 @@ export class ExportComponent implements OnInit, OnChanges {
       }
     }
     this.setSessionEnabled();
+    this.setNoneInProjectDisable();
+  }
+
+  private setNoneInProjectDisable() {
+    if (!this.formGroups) return;
+    for (let [key, value] of this.formGroups) {
+      for (const key in value.controls) {
+        //only check first control :)
+        const ctrl = value.get(key);
+        if (ctrl.get('id').value == ExportComponent.NONE_IN_PROJECT) ctrl.disable();
+        break;
+      }
+    }
   }
 
   private setSessionEnabled() {
@@ -164,7 +175,7 @@ export class ExportComponent implements OnInit, OnChanges {
 
   private initForms() {
     for (let [key, group] of this.formGroups) {
-      this.setActiveForAllInGroup(group, false);
+      if (![ExportEnums.ExportRowType, ExportEnums.ExportFileType].includes(key)) this.setActiveForAllInGroup(group, false);
     }
   }
 
@@ -201,7 +212,7 @@ export class ExportComponent implements OnInit, OnChanges {
     const formGroup = this.formBuilder.group({});
     arr.forEach((v, i) => {
       formGroup.addControl(v.name, this.formBuilder.group({
-        active: false,
+        active: i == 0,
         name: v.name,
         id: v.id,
         value: v.value
@@ -223,6 +234,9 @@ export class ExportComponent implements OnInit, OnChanges {
         if (value != control) value.get("active").setValue(false);
       }
     }
+    if (this.exportHelper?.error.length > 0) {
+      this.exportHelper.error = [];
+    }
   }
 
   private findProjectIdFromRoute(route: ActivatedRoute) {
@@ -236,8 +250,12 @@ export class ExportComponent implements OnInit, OnChanges {
 
   prepareDownload(type: ModalButtonType) {
     if (type != ModalButtonType.ACCEPT) return;
-    // this.exportHelper.buildExportData();
-    this.projectApolloService.prepareRecordExport(this.projectId, this.exportHelper.buildExportData()).pipe(first()).subscribe();
+    const jsonString = this.exportHelper.buildExportData();
+    if (this.exportHelper.error.length == 0) {
+      this.projectApolloService.prepareRecordExport(this.projectId, jsonString).pipe(first()).subscribe((x) => {
+        if (!x) this.exportHelper.error.push("Something went wrong in the backend");
+      });
+    }
   }
 
 

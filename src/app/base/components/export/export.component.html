@@ -21,7 +21,7 @@
     <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium mb-2">
         Export record data </div>
     <ng-template [ngIf]="formGroups">
-        <div class="flex flex-col gap-2 overflow-y-auto overflow-x-hidden" style="max-height:80%">
+        <div class="grid grid-cols-3 gap-2 items-center overflow-y-auto overflow-x-hidden" style="max-height:80%">
             <!--Export Preset-->
             <ng-container [ngTemplateOutlet]="groupDisplay" [ngTemplateOutletContext]="{
                 type:ExportEnumsType.ExportPreset,
@@ -94,7 +94,12 @@
                 subText:null,
                 isCheckbox:true}">
             </ng-container>
-
+        </div>
+    </ng-template>
+    <ng-template [ngIf]="exportHelper?.error.length>0">
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mt-2" role="alert">
+            <strong class="font-bold">Errors Detected!</strong>
+            <pre class="text-sm">{{exportHelper.error.join("\n")}}</pre>
         </div>
     </ng-template>
 </kern-modal>
@@ -103,24 +108,20 @@
     let-subText="subText" let-isCheckbox="isCheckbox">
     <!-- <button
         (click)="logMe({hiddenCheckCtrl:hiddenCheckCtrl,v:hiddenCheckCtrl.value,negateCheckCtrl:negateCheckCtrl,condition:hiddenCheckCtrl?(!hiddenCheckCtrl.value?(negateCheckCtrl?null:'hidden'):(negateCheckCtrl?'hidden':null)):null})">test</button> -->
-    <div *ngIf="formGroups.get(type) as fGroup" [ngClass]="hiddenCheckCtrl?(!hiddenCheckCtrl.value?'hidden':null):null">
-        <label *ngIf="heading" class="text-base font-medium text-gray-900">{{heading}}</label>
-        <p *ngIf="subText" class="text-sm leading-5 text-gray-500">{{subText}}</p>
-        <form [formGroup]="fGroup" class="mt-2">
-            <div class="space-y-4 sm:flex sm:items-center sm:space-y-0 sm:space-x-10">
-                <ng-template ngFor let-v [ngForOf]="enumArrays.get(type)">
-                    <div *ngIf="fGroup.get(v.name) as fCtrl" class="flex items-center"
-                        [ngClass]="fGroup.disabled|| fCtrl.disabled? 'opacity-50 cursor-not-allowed ' : 'opacity-100 cursor-pointer '"
-                        (click)="fGroup.disabled|| fCtrl.disabled?null:flipControlValue(fCtrl,type)">
-                        <input type="{{isCheckbox?'checkbox':'radio'}}"
-                            class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-500 pointer-events-none"
-                            [checked]="fCtrl.get('active').value">
-                        <label
-                            class="ml-2 block text-sm font-medium text-gray-700 select-none pointer-events-none">{{v.name}}</label>
-                    </div>
-                </ng-template>
-
+    <div *ngIf="formGroups.get(type) as fGroup" [ngClass]="hiddenCheckCtrl?(!hiddenCheckCtrl.value?'hidden':null):null"
+        class="contents">
+        <label *ngIf="heading" class="text-base font-medium text-gray-900 col-start-1 col-span-full">{{heading}}</label>
+        <p *ngIf="subText" class="text-sm leading-5 text-gray-500 col-start-1 col-span-full -mt-3">{{subText}}</p>
+        <ng-template ngFor let-v [ngForOf]="enumArrays.get(type)">
+            <div *ngIf="fGroup.get(v.name) as fCtrl" class="flex items-center col-span-1"
+                [ngClass]="fGroup.disabled|| fCtrl.disabled? 'opacity-50 cursor-not-allowed ' : 'opacity-100 cursor-pointer '"
+                (click)="fGroup.disabled|| fCtrl.disabled?null:flipControlValue(fCtrl,type)">
+                <input *ngIf="v.name!='None in project'" type="{{isCheckbox?'checkbox':'radio'}}"
+                    class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-500 pointer-events-none mr-2"
+                    [checked]="fCtrl.get('active').value">
+                <label
+                    class="block text-sm font-medium text-gray-700 select-none pointer-events-none">{{v.name}}</label>
             </div>
-        </form>
+        </ng-template>
     </div>
 </ng-template>
