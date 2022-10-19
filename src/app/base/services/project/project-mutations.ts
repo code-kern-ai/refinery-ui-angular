@@ -193,8 +193,8 @@ export const mutations = {
   }
   `,
   CREATE_USER_ATTRIBUTE: gql`
-  mutation($projectId: ID!){
-    createUserAttribute(projectId: $projectId) {
+  mutation($projectId: ID!, $name: String!, $dataType: String!){
+    createUserAttribute(projectId: $projectId, name: $name, dataType: $dataType) {
       ok
       attributeId
     } 

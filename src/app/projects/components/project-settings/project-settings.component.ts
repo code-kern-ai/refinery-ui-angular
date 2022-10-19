@@ -35,7 +35,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
   }
 
   dataTypesArray = dataTypes;
-  
+
   granularityTypesArray = [
     { name: 'Attribute', value: 'ON_ATTRIBUTE' },
     { name: 'Token', value: 'ON_TOKEN' }
@@ -120,6 +120,8 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
   downloadedModelsQuery$: any;
   downloadedModels: any[];
   isManaged: boolean = true;
+  attributeName: string = '';
+  attributeType: string = 'Text';
 
   constructor(
     private routeService: RouteService,
@@ -315,7 +317,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
           dataTypeName: this.dataTypesArray.find((type) => type.value === att?.dataType).name
         });
 
-        if (att.state == 'INITIAL') {
+        if (att.state == 'INITIAL' || att.state == 'FAILED') {
           group.get('isPrimaryKey').disable();
         }
         group.valueChanges.pipe(distinctUntilChanged()).subscribe(() => {
@@ -1027,8 +1029,9 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
   }
 
   createUserAttribute() {
+    const attributeType = this.dataTypesArray.find((type) => type.name === this.attributeType).value;
     this.projectApolloService
-      .createUserAttribute(this.project.id)
+      .createUserAttribute(this.project.id, this.attributeName, attributeType)
       .pipe(first())
       .subscribe((res) => {
         const id = res?.data?.createUserAttribute.attributeId;
@@ -1041,10 +1044,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
         }
       });
   }
-
-  updateDataType(dataType: string, attributeId: string) {
-    this.projectApolloService.updateAttribute(this.project.id, attributeId, dataType)
-      .pipe(first())
-      .subscribe();
+  updateDataType(dataType: string) {
+    this.attributeType = dataType;
   }
 }
