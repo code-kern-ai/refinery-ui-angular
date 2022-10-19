@@ -151,24 +151,6 @@ export class CommentComponent implements OnInit, OnDestroy {
     for (const key in this.dm.currentData) this.dm.currentData[key].open = value;
     this.allOpen = value;
   }
-  toggleSlideOverOld(backgroundBackdrop: HTMLDivElement, slideOverPanel: HTMLDivElement,panelWrapper : HTMLDivElement) {
-    if(this.isSlideOverOpen) {
-      backgroundBackdrop.classList.remove('block');
-      backgroundBackdrop.classList.add('hidden');
-      panelWrapper.classList.remove('relative');
-      panelWrapper.classList.add('absolute');
-      slideOverPanel.classList.remove('block');
-      slideOverPanel.classList.add('hidden');
-    } else {
-      backgroundBackdrop.classList.remove('hidden');
-      backgroundBackdrop.classList.add('block');
-      panelWrapper.classList.remove('absolute');
-      panelWrapper.classList.add('relative');
-      slideOverPanel.classList.remove('hidden');
-      slideOverPanel.classList.add('block');
-    }
-    this.isSlideOverOpen = !this.isSlideOverOpen;
-  }
   executeOption(option: any, cData: any) {
     switch(option.value) {
       case 'Edit':
