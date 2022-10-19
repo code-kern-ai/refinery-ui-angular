@@ -113,7 +113,6 @@ export class ExportComponent implements OnInit, OnChanges {
       this.enumArrays.set(ExportEnums.Attributes, v.attributes);
       this.enumArrays.set(ExportEnums.DataSlices, v.dataSlices);
       this.refreshForms();
-      console.log(this.enumArrays, this.formGroups)
     });
   }
 
