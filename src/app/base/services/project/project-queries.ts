@@ -490,7 +490,11 @@ export const queries = {
 query ($projectId: ID!, $exportOptions: JSONString) {
   prepareRecordExport(projectId: $projectId, exportOptions: $exportOptions)
 }
-`
+`,
+  GET_LABELSTUDIO_TEMPLATE: gql`
+  query ($projectId: ID!, $labelingTaskIds: [ID]!, $attributeIds: [ID]!) {
+    labelstudioTemplate(projectId: $projectId, labelingTaskIds: $labelingTaskIds, attributeIds: $attributeIds)
+  }  `
 
 
 

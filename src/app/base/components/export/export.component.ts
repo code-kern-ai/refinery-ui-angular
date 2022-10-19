@@ -5,7 +5,7 @@ import { ActivatedRoute } from '@angular/router';
 import { timer } from 'rxjs';
 import { distinctUntilChanged, first, pairwise, startWith } from 'rxjs/operators';
 import { DownloadState } from 'src/app/import/services/s3.enums';
-import { caseType, enumToArray, isStringTrue } from 'src/app/util/helper-functions';
+import { caseType, copyToClipboard, enumToArray, findProjectIdFromRoute, isStringTrue } from 'src/app/util/helper-functions';
 import { LabelSource, labelSourceToString } from '../../enum/graphql-enums';
 import { NotificationService } from '../../services/notification.service';
 import { ProjectApolloService } from '../../services/project/project-apollo.service';
@@ -21,6 +21,9 @@ import { ExportEnums, ExportFileType, ExportFormat, ExportHelper, ExportPreset, 
 
 })
 export class ExportComponent implements OnInit, OnChanges {
+  //if given, export option is enabled
+  @Input() sessionId: string;
+
   static NONE_IN_PROJECT: string = "NONE_IN_PROJECT";
   get DownloadStateType(): typeof DownloadState {
     return DownloadState;
@@ -28,17 +31,11 @@ export class ExportComponent implements OnInit, OnChanges {
   get ExportEnumsType(): typeof ExportEnums {
     return ExportEnums;
   }
-  //if given, export option is enabled
-  @Input() sessionId: string;
 
   projectId: string;
-
-
   enumArrays: Map<ExportEnums, any[]>;
   formGroups: Map<ExportEnums, FormGroup>;
-
   downloadState: DownloadState = DownloadState.NONE;
-
   exportHelper: ExportHelper;
 
   constructor(
@@ -82,7 +79,7 @@ export class ExportComponent implements OnInit, OnChanges {
 
   private prepareModule(forceNew: boolean = false) {
     this.exportHelper = new ExportHelper(this);
-    if (!this.projectId) this.projectId = this.findProjectIdFromRoute(this.activatedRoute);
+    if (!this.projectId) this.projectId = findProjectIdFromRoute(this.activatedRoute);
     this.initEnumArrays();
     this.fetchSetupData(this.projectId, forceNew);
 
@@ -92,10 +89,10 @@ export class ExportComponent implements OnInit, OnChanges {
     if (this.enumArrays) return;
 
     this.enumArrays = new Map<ExportEnums, any[]>();
-    this.enumArrays.set(ExportEnums.ExportPreset, enumToArray(ExportPreset, { caseType: caseType.CAPITALIZE_FIRST }));
-    this.enumArrays.set(ExportEnums.ExportRowType, enumToArray(ExportRowType, { caseType: caseType.CAPITALIZE_FIRST }));
+    this.enumArrays.set(ExportEnums.ExportPreset, enumToArray(ExportPreset, { caseType: caseType.CAPITALIZE_FIRST_PER_WORD }));
+    this.enumArrays.set(ExportEnums.ExportRowType, enumToArray(ExportRowType, { caseType: caseType.CAPITALIZE_FIRST_PER_WORD }));
     this.enumArrays.set(ExportEnums.ExportFileType, enumToArray(ExportFileType, { caseType: caseType.LOWER }));
-    this.enumArrays.set(ExportEnums.ExportFormat, enumToArray(ExportFormat, { caseType: caseType.CAPITALIZE_FIRST }));
+    this.enumArrays.set(ExportEnums.ExportFormat, enumToArray(ExportFormat, { caseType: caseType.CAPITALIZE_FIRST_PER_WORD }));
     this.enumArrays.set(ExportEnums.LabelSource, enumToArray(LabelSource, { nameFunction: labelSourceToString }));
   }
 
@@ -116,6 +113,7 @@ export class ExportComponent implements OnInit, OnChanges {
       this.enumArrays.set(ExportEnums.Attributes, v.attributes);
       this.enumArrays.set(ExportEnums.DataSlices, v.dataSlices);
       this.refreshForms();
+      console.log(this.enumArrays, this.formGroups)
     });
   }
 
@@ -127,7 +125,7 @@ export class ExportComponent implements OnInit, OnChanges {
         this.initForms();
         this.setPresetValuesCurrent();
         break;
-      case ExportPreset.LABELSTUDIO:
+      case ExportPreset.LABEL_STUDIO:
         this.initForms();
         this.setPresetValuesLabelstudio();
         break;
@@ -138,18 +136,18 @@ export class ExportComponent implements OnInit, OnChanges {
   }
 
   private setPresetValuesLabelstudio() {
-    this.formGroups.get(ExportEnums.ExportPreset).get("Labelstudio").get('active').setValue(true);
-    this.formGroups.get(ExportEnums.ExportFormat).get("Labelstudio").get('active').setValue(true);
-    this.formGroups.get(ExportEnums.LabelSource).get("Manual").get('active').setValue(true);
+    this.formGroups.get(ExportEnums.ExportPreset).get(ExportPreset.LABEL_STUDIO).get('active').setValue(true);
+    this.formGroups.get(ExportEnums.ExportFormat).get(ExportFormat.LABEL_STUDIO).get('active').setValue(true);
+    this.formGroups.get(ExportEnums.LabelSource).get(LabelSource.MANUAL).get('active').setValue(true);
     this.setActiveForAllInGroup(this.formGroups.get(ExportEnums.Attributes), true);
     this.setActiveForAllInGroup(this.formGroups.get(ExportEnums.LabelingTasks), true);
 
   }
   private setPresetValuesCurrent() {
-    this.formGroups.get(ExportEnums.ExportPreset).get("Current").get('active').setValue(true);
-    this.formGroups.get(ExportEnums.ExportFormat).get("Current").get('active').setValue(true);
-    this.formGroups.get(ExportEnums.LabelSource).get("Manual").get('active').setValue(true);
-    this.formGroups.get(ExportEnums.LabelSource).get("Weak Supervision").get('active').setValue(true);
+    this.formGroups.get(ExportEnums.ExportPreset).get(ExportPreset.CURRENT).get('active').setValue(true);
+    this.formGroups.get(ExportEnums.ExportFormat).get(ExportFormat.CURRENT).get('active').setValue(true);
+    this.formGroups.get(ExportEnums.LabelSource).get(LabelSource.MANUAL).get('active').setValue(true);
+    this.formGroups.get(ExportEnums.LabelSource).get(LabelSource.WEAK_SUPERVISION).get('active').setValue(true);
     this.setActiveForAllInGroup(this.formGroups.get(ExportEnums.Attributes), true);
     this.setActiveForAllInGroup(this.formGroups.get(ExportEnums.LabelingTasks), true);
   }
@@ -167,7 +165,7 @@ export class ExportComponent implements OnInit, OnChanges {
         if (![ExportEnums.ExportPreset, ExportEnums.ExportFileType, ExportEnums.ExportRowType, ExportEnums.DataSlices].includes(key)) value.disable();
         else value.enable();
       }
-    } else if (type == ExportPreset.LABELSTUDIO) {
+    } else if (type == ExportPreset.LABEL_STUDIO) {
       for (let [key, value] of this.formGroups) {
         if ([ExportEnums.ExportFormat, ExportEnums.Attributes].includes(key)) value.disable();
         else value.enable();
@@ -195,7 +193,7 @@ export class ExportComponent implements OnInit, OnChanges {
 
   private setSessionEnabled() {
     if (!this.formGroups) return;
-    const session = this.formGroups.get(ExportEnums.ExportRowType).get("Session");
+    const session = this.formGroups.get(ExportEnums.ExportRowType).get(ExportRowType.SESSION);
     if (!this.sessionId) session.disable();
     else session.enable();
   }
@@ -249,8 +247,9 @@ export class ExportComponent implements OnInit, OnChanges {
   private refreshFromGroup(arr: any[], group: FormGroup) {
     if (!group) return;
     arr.forEach((v, i) => {
-      if (!group.get(v.name)) {
-        group.addControl(v.name, this.formBuilder.group({
+      const ctrlName = v.value ? v.value : v.name;
+      if (!group.get(ctrlName)) {
+        group.addControl(ctrlName, this.formBuilder.group({
           active: i == 0,
           name: v.name,
           id: v.id,
@@ -259,7 +258,7 @@ export class ExportComponent implements OnInit, OnChanges {
       }
     });
     for (let key in group.controls) {
-      if (!arr.find(v => v.name == key)) group.removeControl(key);
+      if (!arr.find(v => v.name == key || v.value == key)) group.removeControl(key);
     }
   }
 
@@ -267,7 +266,8 @@ export class ExportComponent implements OnInit, OnChanges {
   private buildForm(arr: any[]): FormGroup {
     const formGroup = this.formBuilder.group({});
     arr.forEach((v, i) => {
-      formGroup.addControl(v.name, this.formBuilder.group({
+      const ctrlName = v.value ? v.value : v.name;
+      formGroup.addControl(ctrlName, this.formBuilder.group({
         active: i == 0,
         name: v.name,
         id: v.id,
@@ -295,23 +295,25 @@ export class ExportComponent implements OnInit, OnChanges {
     }
   }
 
-  private findProjectIdFromRoute(route: ActivatedRoute) {
-    while (route.parent) {
-      route = route.parent;
-      if (route.snapshot.params.projectId) {
-        return route.snapshot.params.projectId;
-      }
-    }
-  }
-
   prepareDownload(type: ModalButtonType) {
     if (type != ModalButtonType.ACCEPT) return;
     const jsonString = this.exportHelper.buildExportData();
-    if (this.exportHelper.error.length == 0) {
-      this.projectApolloService.prepareRecordExport(this.projectId, jsonString).pipe(first()).subscribe((x) => {
-        if (!x) this.exportHelper.error.push("Something went wrong in the backend");
-      });
-    }
+    if (this.exportHelper.error.length != 0) return
+    this.projectApolloService.prepareRecordExport(this.projectId, jsonString).pipe(first()).subscribe((x) => {
+      if (!x) this.exportHelper.error.push("Something went wrong in the backend");
+    });
+
+  }
+
+  getLabelStudioTemplate() {
+    let tasks, attributes;
+    [tasks, attributes] = this.exportHelper.getLabelStudioTemplateExportData();
+
+    if (this.exportHelper.error.length != 0) return
+    this.projectApolloService.getLabelstudioTemplate(this.projectId, tasks, attributes).subscribe((res) => {
+      console.log(res);
+      copyToClipboard(res);
+    });
   }
 
 

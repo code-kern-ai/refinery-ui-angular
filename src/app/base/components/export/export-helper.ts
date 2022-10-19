@@ -17,7 +17,7 @@ export enum ExportEnums {
 
 export enum ExportPreset {
     CURRENT = "CURRENT",
-    LABELSTUDIO = "LABELSTUDIO",
+    LABEL_STUDIO = "LABEL_STUDIO",
     CUSTOM = "CUSTOM"
 }
 
@@ -34,7 +34,7 @@ export enum ExportFileType {
 }
 export enum ExportFormat {
     CURRENT = "CURRENT",
-    LABELSTUDIO = "LABELSTUDIO"
+    LABEL_STUDIO = "LABEL_STUDIO"
 }
 
 
@@ -76,6 +76,14 @@ export class ExportHelper {
         console.log(exportData);
         return JSON.stringify(exportData);
     }
+    public getLabelStudioTemplateExportData(): [string[], string[]] {
+        const tasks = this.allActive(ExportEnums.LabelingTasks);
+        const attributes = this.allActive(ExportEnums.Attributes);
+        if (tasks.length == 0) this.error.push("No tasks selected");
+        if (attributes.length == 0) this.error.push("No attributes selected");
+        return [tasks, attributes];
+    }
+
     private buildExportDataRows(): any {
         let type = this.firstActiveInGroup(ExportEnums.ExportRowType, 'value');
         let id;

@@ -1189,5 +1189,19 @@ export class ProjectApolloService {
         map((result) => result['data']['prepareRecordExport']));
 
   }
+  getLabelstudioTemplate(projectId: string, labelingTaskIds: string[], attributeIds: string[]) {
+    return this.apollo
+      .query({
+        query: queries.GET_LABELSTUDIO_TEMPLATE,
+        variables: {
+          projectId: projectId,
+          labelingTaskIds: labelingTaskIds,
+          attributeIds: attributeIds
+        },
+        fetchPolicy: 'no-cache'
+      }).pipe(
+        map((result) => result['data']['labelstudioTemplate']));
+
+  }
 
 }

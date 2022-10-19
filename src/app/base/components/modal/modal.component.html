@@ -8,7 +8,7 @@
                 <div>
                     <ng-content></ng-content>
                     <div *ngIf="closeButton?.useButton || acceptButton?.useButton|| abortButton?.useButton"
-                        class="mt-6 flex flex-row-reverse justify-start">
+                        class="mt-2 flex flex-row-reverse justify-start">
                         <!--close button-->
                         <button *ngIf="closeButton.useButton" (click)="clickButton(closeButton)"
                             [attr.disabled]="closeButton.disabled?true:null"

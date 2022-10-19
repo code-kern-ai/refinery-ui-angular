@@ -41,7 +41,7 @@
             <!--Export DataSlices-->
             <ng-container [ngTemplateOutlet]="groupDisplay" [ngTemplateOutletContext]="{
                 type:ExportEnumsType.DataSlices,
-                hiddenCheckCtrl:formGroups.get(ExportEnumsType.ExportRowType).get('Slice').get('active'),
+                hiddenCheckCtrl:formGroups.get(ExportEnumsType.ExportRowType).get('SLICE').get('active'),
                 heading:'Export Slice',
                 subText:null,
                 isCheckbox:false}">
@@ -89,11 +89,31 @@
             <!--Export Heuristics-->
             <ng-container [ngTemplateOutlet]="groupDisplay" [ngTemplateOutletContext]="{
                 type:ExportEnumsType.Heuristics,
-                hiddenCheckCtrl:formGroups.get(ExportEnumsType.LabelSource).get('Information Source').get('active'),
+                hiddenCheckCtrl:formGroups.get(ExportEnumsType.LabelSource).get('INFORMATION_SOURCE').get('active'),
                 heading:'Export Columns - Heuristics',
                 subText:null,
                 isCheckbox:true}">
             </ng-container>
+            <!--Label Studio helper-->
+            <ng-template [ngIf]="formGroups.get(ExportEnumsType.ExportPreset).get('LABEL_STUDIO').get('active').value">
+                <label class="text-base font-medium text-gray-900 col-start-1 col-span-full">Label Studio helper</label>
+
+                <div class="flex items-center mb-2">
+                    <div class="tooltip tooltip-right"
+                        data-tip="Copy a Label Studio settings template to your clipboard">
+                        <button (click)="getLabelStudioTemplate()"
+                            class="bg-indigo-700 text-white text-xs leading-4 px-2 py-2 rounded-md cursor-pointer hover:bg-indigo-800 focus:outline-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 cursor-pointer inline-block"
+                                viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
+                                <path
+                                    d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </ng-template>
+
         </div>
     </ng-template>
     <ng-template [ngIf]="exportHelper?.error.length>0">
@@ -102,6 +122,8 @@
             <pre class="text-sm">{{exportHelper.error.join("\n")}}</pre>
         </div>
     </ng-template>
+
+
 </kern-modal>
 
 <ng-template #groupDisplay let-type="type" let-hiddenCheckCtrl="hiddenCheckCtrl" let-heading="heading"
@@ -113,14 +135,17 @@
         <label *ngIf="heading" class="text-base font-medium text-gray-900 col-start-1 col-span-full">{{heading}}</label>
         <p *ngIf="subText" class="text-sm leading-5 text-gray-500 col-start-1 col-span-full -mt-3">{{subText}}</p>
         <ng-template ngFor let-v [ngForOf]="enumArrays.get(type)">
-            <div *ngIf="fGroup.get(v.name) as fCtrl" class="flex items-center col-span-1"
-                [ngClass]="fGroup.disabled|| fCtrl.disabled? 'opacity-50 cursor-not-allowed ' : 'opacity-100 cursor-pointer '"
-                (click)="fGroup.disabled|| fCtrl.disabled?null:flipControlValue(fCtrl,type)">
-                <input *ngIf="v.name!='None in project'" type="{{isCheckbox?'checkbox':'radio'}}"
-                    class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-500 pointer-events-none mr-2"
-                    [checked]="fCtrl.get('active').value">
-                <label
-                    class="block text-sm font-medium text-gray-700 select-none pointer-events-none">{{v.name}}</label>
+            <div class="contents" *ngIf="(v.value?v.value:v.name) as key">
+                <!-- <div>this is it-{{key}}</div> -->
+                <div *ngIf="fGroup.get(key) as fCtrl" class="flex items-center"
+                    [ngClass]="fGroup.disabled|| fCtrl.disabled? 'opacity-50 cursor-not-allowed ' : 'opacity-100 cursor-pointer '"
+                    (click)="fGroup.disabled|| fCtrl.disabled?null:flipControlValue(fCtrl,type)">
+                    <input *ngIf="key!='NONE_IN_PROJECT'" type="{{isCheckbox?'checkbox':'radio'}}"
+                        class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-500 pointer-events-none mr-2"
+                        [checked]="fCtrl.get('active').value">
+                    <label
+                        class="block text-sm font-medium text-gray-700 select-none pointer-events-none">{{v.name}}</label>
+                </div>
             </div>
         </ng-template>
     </div>

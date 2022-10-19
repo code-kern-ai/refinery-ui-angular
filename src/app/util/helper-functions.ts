@@ -1,3 +1,4 @@
+import { ActivatedRoute } from "@angular/router";
 import { InformationSourceType, informationSourceTypeToString } from "../base/enum/graphql-enums";
 
 
@@ -85,7 +86,8 @@ export function isStringTrue(value: string): boolean {
 export enum caseType {
     LOWER,
     UPPER,
-    CAPITALIZE_FIRST
+    CAPITALIZE_FIRST,
+    CAPITALIZE_FIRST_PER_WORD
 }
 
 export type enumToArrayOptions = {
@@ -100,7 +102,8 @@ export function enumToArray(e: Object, options: enumToArrayOptions = null): any[
     let func;
     if (options.caseType == caseType.LOWER) func = (x) => x.toLowerCase();
     else if (options.caseType == caseType.UPPER) func = (x) => x.toUpperCase();
-    else if (options.caseType == caseType.CAPITALIZE_FIRST) func = (x) => x.charAt(0).toUpperCase() + x.slice(1).toLowerCase();
+    else if (options.caseType == caseType.CAPITALIZE_FIRST) func = capitalizeFirst;
+    else if (options.caseType == caseType.CAPITALIZE_FIRST_PER_WORD) func = capitalizeFirstPerWord;
 
     if (func) return enumToArray(e, { prefix: options.prefix, nameFunction: func });
     if (!options.nameFunction) return sortByEnumPos(e, arr.map(x => ({ name: options.prefix + x, value: x })));
@@ -117,4 +120,31 @@ function sortByEnumPos(e: Object, arr: any[]) {
         const index2 = order.findIndex(key => e[key] === b.code);
         return index1 - index2;
     });
+}
+
+function capitalizeFirstPerWord(str: string) {
+    str = str.replace("_", " ");
+    const parts = str.split(" ");
+    for (let i = 0; i < parts.length; i++) {
+        parts[i] = capitalizeFirst(parts[i]);
+    }
+    return parts.join(" ");
+}
+
+function capitalizeFirst(str: string) {
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
+}
+
+
+export function findProjectIdFromRoute(route: ActivatedRoute) {
+    while (route.parent) {
+        route = route.parent;
+        if (route.snapshot.params.projectId) {
+            return route.snapshot.params.projectId;
+        }
+    }
+}
+
+export function copyToClipboard(textToCopy: string) {
+    navigator.clipboard.writeText(textToCopy);
 }
