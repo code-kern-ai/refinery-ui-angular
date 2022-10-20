@@ -1057,4 +1057,24 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     const findDuplicate = this.attributes.find(att => att.name == event.target.value);
     this.duplicateNameExists = findDuplicate != undefined ? true : false;
   }
+
+  openModalAttribute() {
+    this.newAttributeModal.nativeElement.checked = true;
+    this.attributeName = this.findFreeAttributeName();
+  }
+
+  findFreeAttributeName(): string {
+    const regEx = "^attribute_([0-9]+)$"
+    let counterList = [];
+    for (const item of this.attributes) {
+      const match = item.name.match(regEx);
+      if (match) counterList.push(parseInt(match[1]));
+    }
+    if (counterList.length > 0) {
+      const max = Math.max(...counterList) + 1;
+      return "attribute_" + max;
+    } else {
+      return "attribute_" + (this.attributes.length + 1);
+    }
+  }
 }
