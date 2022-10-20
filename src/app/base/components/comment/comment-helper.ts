@@ -639,3 +639,8 @@ function commentTypeOrder(type: CommentType): number {
     console.log("unknown comment type", type);
     return -1
 }
+
+export enum CommnetPosition {
+    RIGHT = "RIGHT",
+    LEFT = "LEFT"
+}

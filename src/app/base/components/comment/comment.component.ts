@@ -2,7 +2,7 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { timer } from 'rxjs';
 import { UserManager } from 'src/app/util/user-manager';
-import { CommentDataManager, CommentType } from './comment-helper';
+import { CommentDataManager, CommentType, CommnetPosition } from './comment-helper';
 
 @Component({
   selector: 'kern-comment',
@@ -40,7 +40,7 @@ export class CommentComponent implements OnInit, OnDestroy {
   commentIdOptions: any[];
   allOpen: boolean = false;
   isSlideOverOpen: boolean = false;
-  positionComment: string = 'right';
+  positionComment: string = CommnetPosition.RIGHT;
 
   constructor() { }
   ngOnDestroy(): void {
@@ -48,7 +48,7 @@ export class CommentComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.initDataManger();
     UserManager.registerAfterInitActionOrRun(this, () => this.initUsers(), true);
-    localStorage.setItem('commentPosition', this.positionComment);
+    this.positionComment = localStorage.getItem('commentPosition') || CommnetPosition.RIGHT;
   }
 
   private initUsers() {
@@ -162,13 +162,13 @@ export class CommentComponent implements OnInit, OnDestroy {
     }
   }
   changeCommentPosition() {
-    this.positionComment = this.positionComment == 'right' ? 'left' : 'right';
+    this.positionComment = this.positionComment == CommnetPosition.RIGHT ? CommnetPosition.LEFT : CommnetPosition.RIGHT;
     localStorage.setItem('commentPosition', this.positionComment);
   }
   get stateName() {
-    return this.isSlideOverOpen && this.positionComment == 'right'
-      ? 'showRight' : this.isSlideOverOpen && this.positionComment == 'left'
-        ? 'showLeft' : !this.isSlideOverOpen && this.positionComment == 'right'
+    return this.isSlideOverOpen && this.positionComment == CommnetPosition.RIGHT
+      ? 'showRight' : this.isSlideOverOpen && this.positionComment == CommnetPosition.LEFT
+        ? 'showLeft' : !this.isSlideOverOpen && this.positionComment == CommnetPosition.RIGHT
           ? 'hideRight' : 'hideLeft';
   }
   toggleSlideOver() {
