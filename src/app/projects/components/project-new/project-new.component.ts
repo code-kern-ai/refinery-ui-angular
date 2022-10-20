@@ -13,6 +13,7 @@ import { UploadComponent } from 'src/app/import/components/upload/upload.compone
 import { Subscription, timer } from 'rxjs';
 import { UploadRecordsComponent } from 'src/app/import/components/upload-records/upload-records.component';
 import { ConfigManager } from 'src/app/base/services/config-service';
+import { getUserAvatarUri } from 'src/app/util/helper-functions';
 
 @Component({
   selector: 'kern-project-new',
@@ -65,8 +66,7 @@ export class ProjectNewComponent implements OnInit {
 
     this.organizationApolloService.getUserInfo().pipe(first())
       .subscribe((user) => {
-        const avatarSelector = (user.firstName[0].charCodeAt(0) + user.lastName[0].charCodeAt(0)) % 5;
-        this.avatarUri = "assets/avatars/" + avatarSelector + ".png"
+        this.avatarUri = getUserAvatarUri(user);
       });
 
     this.createNewProject = this.formBuilder.group({

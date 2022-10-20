@@ -3,7 +3,7 @@ import { NotificationApolloService } from 'src/app/base/services/notification/no
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { Router } from '@angular/router';
 import { interval, Subscription } from 'rxjs';
-import { dateAsUTCDate } from '../../util/helper-functions';
+import { dateAsUTCDate, getUserAvatarUri } from '../../util/helper-functions';
 import { first } from 'rxjs/operators';
 import { NotificationService } from 'src/app/base/services/notification.service';
 import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
@@ -57,8 +57,7 @@ export class NotificationCenterComponent implements OnInit, OnDestroy {
     this.organizationService.getUserInfo().pipe(first())
       .subscribe((user) => {
         this.loggedInUser = user
-        const avatarSelector = (user.firstName[0].charCodeAt(0) + user.lastName[0].charCodeAt(0)) % 5;
-        this.avatarUri = "assets/avatars/" + avatarSelector + ".png"
+        this.avatarUri = getUserAvatarUri(this.loggedInUser)
       });
     this.refreshProjectNames();
     let vc;

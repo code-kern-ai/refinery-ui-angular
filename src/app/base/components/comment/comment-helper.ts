@@ -3,6 +3,7 @@ import { OrganizationApolloService } from "../../services/organization/organizat
 import { UserManager } from 'src/app/util/user-manager';
 import { first } from "rxjs/operators";
 import { NotificationService } from "../../services/notification.service";
+import { getUserAvatarUri } from "src/app/util/helper-functions";
 
 export class CommentDataManager {
 
@@ -347,9 +348,7 @@ export class CommentDataManager {
         this.currentDataOrder = [];
         for (var key in this.currentData) {
             const findCurrentUser = this.allUsers.find(u => u.id == this.currentData[key].created_by);
-            const avatarSelector = (findCurrentUser.firstName[0].charCodeAt(0) + findCurrentUser.lastName[0].charCodeAt(0)) % 5;
-            const avatarUri = "assets/avatars/" + avatarSelector + ".png"
-            this.currentData[key].avatarUri = avatarUri;
+            this.currentData[key].avatarUri = getUserAvatarUri(findCurrentUser);
             const e = { key: key, commentType: this.currentData[key].xftype, commentKeyName: this.currentData[key].xfkeyAddName, commentOrderKey: this.currentData[key].order_key };
             this.currentDataOrder.push(e);
         }

@@ -74,3 +74,8 @@ export function parseLogData(logs: string[], isType: InformationSourceType = nul
         );
     });
 }
+
+export function getUserAvatarUri(user) {
+    const avatarSelector = (user.firstName[0].charCodeAt(0) + user.lastName[0].charCodeAt(0)) % 5;
+    return "assets/avatars/" + avatarSelector + ".png";
+}
