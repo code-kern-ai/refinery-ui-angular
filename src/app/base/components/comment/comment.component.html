@@ -151,7 +151,9 @@
                                     optionArray:commentIdOptions,
                                     buttonCaption:newComment.commentId?newComment.commentIdReadable:'Select Instance',
                                     emitIndex:true,
-                                    addScrollXDropdownOptions: true
+                                    addScrollXDropdownOptions: true,
+                                    maxHeight: '200px',
+                                    maxWidth: '192px'
                                 }" (optionClicked)="switchCommentId($event)">
                                 </kern-dropdown>
                             </div>

@@ -5,7 +5,7 @@
         <button #dropdownOpenButton type="button" *ngIf="dropdownOptions.buttonVersion == 'default'"
             class="inline-flex rounded-md border shadow-sm px-4 items-center text-xs font-semibold cursor-pointer focus:ring-offset-2 focus:ring-offset-gray-400"
             id="menu-button" aria-expanded="true" aria-haspopup="true" [disabled]="dropdownOptions.isDisabled"
-            [ngStyle]="dropdownOptions.addScrollXDropdownOptions ? { 'max-width': '192px' } : {}"
+            [ngStyle]="dropdownOptions.maxWidth? { 'max-width': dropdownOptions.maxWidth } : {}"
             [ngClass]="buttonClassList" (isMenuOpen)="toggleVisible($event, dropdownOptionsDiv)" appDropdown>
             {{ dropdownOptions.hasCheckboxes?'':dropdownOptions.buttonCaption }}
             <ng-template [ngIf]="dropdownOptions.hasCheckboxes">
@@ -40,7 +40,7 @@
     <div #dropdownOptionsDiv
         class="origin-top-right absolute mt-2 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none hidden overflow-y-auto"
         [ngClass]="[dropdownClassList, dropdownOptions.isButtonSampleProjects ? 'width-sample-projects' : '', dropdownOptions.buttonVersion != '...' ? 'min-w-full': '', dropdownOptions.addScrollXDropdownOptions ? 'overflow-x-scroll w-24' : '']"
-        [ngStyle]="dropdownOptions.addScrollXDropdownOptions ? { 'max-height': '200px' } : {}" role="menu"
+        [ngStyle]="dropdownOptions.maxHeight ? { 'max-height': dropdownOptions.maxHeight} : {}" role="menu"
         aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
         <div class="py-1 cursor-pointer" role="none">
             <div *ngFor="let caption of dropdownOptionCaptions;let i = index" (click)="performActionOnOption($event,i)"
