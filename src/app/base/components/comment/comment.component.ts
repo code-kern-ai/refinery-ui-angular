@@ -174,4 +174,8 @@ export class CommentComponent implements OnInit, OnDestroy {
   toggleSlideOver() {
     this.isSlideOverOpen = !this.isSlideOverOpen;
   }
+
+  markAsPrivateComment(privateComment: any) {
+    privateComment.checked = !privateComment.checked;
+  }
 }

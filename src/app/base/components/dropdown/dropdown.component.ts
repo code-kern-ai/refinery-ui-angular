@@ -87,7 +87,6 @@ export class DropdownComponent implements OnChanges {
   private runInputChecks() {
     this.hasInputErrors = "";
     if (!this.dropdownOptions) this.hasInputErrors = "no dropdown options provided\n";
-    if (!this.dropdownOptions.optionArray || this.dropdownOptions.optionArray.length == 0) this.hasInputErrors = "no text provided\n";
     if (!this.dropdownOptions.buttonCaption && this.dropdownOptionCaptions.length > 0) {
       this.dropdownOptions.buttonCaption = this.dropdownOptionCaptions[0];
       this.useValueAsCaption = true;

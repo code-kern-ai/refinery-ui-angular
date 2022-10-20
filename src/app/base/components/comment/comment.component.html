@@ -62,7 +62,7 @@
         (blur)="cData.edit?updateComment($event,cData.id,'comment',commentText.value):null"
         (change)="preventEventPropagation($event)" (keyup)="preventEventPropagation($event)"
         (keydown)="preventEventPropagation($event)" [ngClass]="[cData.open?'null':'hidden',!cData.edit?'bg-gray-50':'']"
-        class="textarea placeholder-italic w-full p-2 leading-4 focus:outline-none border border-gray-300"
+        class="textarea placeholder-italic w-full p-2 line-height-textarea focus:outline-none border border-gray-300"
         [ngStyle]="{'background-color': !cData.edit?'rgb(249 250 251)':null,'height':(commentText.scrollHeight+2) + 'px','overflow-y':commentText.scrollHeight < 400 ? 'hidden':'auto'}">{{cData.comment}}</textarea>
 </ng-template>
 
@@ -92,11 +92,6 @@
                                     </svg>
                                 </div>
 
-                                <div class="tooltip tooltip-bottom" [attr.data-tip]="allOpen?'close all':'open all'">
-                                    <h3 class="font-bold text-gray-900 cursor-pointer"
-                                        (click)="openAllComments(!allOpen)">Comments</h3>
-                                </div>
-
                                 <div *ngIf="positionComment =='LEFT'" (click)="changeCommentPosition()"
                                     class="cursor-pointer tooltip tooltip-right" data-tip="Move comment window right">
                                     <svg xmlns="http://www.w3.org/2000/svg"
@@ -110,8 +105,13 @@
                                     </svg>
                                 </div>
 
-                                <button (click)="toggleSlideOver()" type="button"
-                                    class="rounded-md text-gray-500 ml-auto">
+                                <div class="tooltip tooltip-bottom m-auto"
+                                    [attr.data-tip]="allOpen?'close all':'open all'">
+                                    <h3 class="font-bold text-gray-900 cursor-pointer"
+                                        (click)="openAllComments(!allOpen)">Comments</h3>
+                                </div>
+
+                                <button (click)="toggleSlideOver()" type="button" class="rounded-md text-gray-500">
                                     <span class="sr-only">Close panel</span>
                                     <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none"
                                         viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
@@ -160,7 +160,7 @@
                                 <label for="comment" class="block text-sm font-medium text-gray-700">Comment</label>
                                 <div class="mt-1">
                                     <textarea #commentBox
-                                        class="textarea placeholder-italic w-full h-20 p-2 leading-4 border rounded-md border-gray-300 focus:outline-none focus:shadow-none"
+                                        class="textarea placeholder-italic w-full h-20 p-2 line-height-textarea border rounded-md border-gray-300 focus:outline-none focus:shadow-none"
                                         (change)="preventEventPropagation($event)"
                                         (keyup)="preventEventPropagation($event)"
                                         (keydown)="preventEventPropagation($event)"></textarea>
@@ -175,8 +175,9 @@
                                         <label>
                                             <input #privateComment class="mt-1.5" type="checkbox">
                                         </label>
-                                        <div class="ml-2">
-                                            <label class="text-gray-900 text-sm font-medium">Private comment</label>
+                                        <div class="ml-2 cursor-pointer" (click)="markAsPrivateComment(privateComment)">
+                                            <label class="text-gray-900 text-sm font-medium cursor-pointer">Private
+                                                comment</label>
                                             <div class="text-gray-500 text-xs font-normal">If ticked, this will not be
                                                 shown to any other member in your team.</div>
                                         </div>
