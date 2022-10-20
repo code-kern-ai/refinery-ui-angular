@@ -1,5 +1,5 @@
 <div class="h-screen bg-gray-100 flex overflow-hidden">
-    <kern-sidebar-pm (firstName)="getFirstName($event)">
+    <kern-sidebar-pm (firstName)="getFirstName($event)" style="z-index: 9999;">
     </kern-sidebar-pm>
     <div class="h-full w-full flex flex-col">
         <ng-container *ngIf="project$ | async as project">
