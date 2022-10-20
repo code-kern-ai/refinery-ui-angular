@@ -73,7 +73,8 @@
         <div class="absolute inset-0 overflow-hidden">
             <div class="pointer-events-none fixed inset-y-0 flex max-w-full"
                 [ngClass]="positionComment == 'RIGHT' ? 'right-0 pl-10' : 'left-20' ">
-                <div #slideOverPanel class="pointer-events-auto relative w-96  mt-16" [@popOverState]="stateName">
+                <div #slideOverPanel class="relative w-96  mt-16" [@popOverState]="stateName"
+                    [ngClass]="isSlideOverOpen ? 'pointer-events-auto' :''">
 
                     <div class="h-full overflow-y-auto bg-white border-slideover border-gray-300"
                         *ngIf="isSlideOverOpen">
@@ -120,11 +121,11 @@
                                 </button>
                             </div>
 
-                            <div *ngIf="dm?.currentDataOrder?.length == 0"
-                                class="text-gray-500 font-normal text-xs px-4 pt-4">No comments added</div>
 
                             <ul *ngIf="myUser && dm?.currentData && dm?.currentDataOrder" role="list"
                                 class="flex-1 overflow-y-auto mt-0" style="height: calc(50vh - 100px);">
+                                <div *ngIf="dm?.currentDataOrder?.length == 0"
+                                    class="text-gray-500 font-normal text-xs px-4 pt-4">No comments added</div>
                                 <div class="overflow-visible p-4">
                                     <div *ngFor="let cWrapper of dm.currentDataOrder;">
                                         <ng-container [ngTemplateOutlet]="displayComment"
