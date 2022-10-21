@@ -74,3 +74,7 @@ export function parseLogData(logs: string[], isType: InformationSourceType = nul
         );
     });
 }
+
+export function toPythonFunctionName(str: string) {
+    return str.replace(/\s+/g, '_').replace(/[^\w]/gi, '').trim();
+}

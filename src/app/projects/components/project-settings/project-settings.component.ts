@@ -15,6 +15,7 @@ import { ConfigManager } from 'src/app/base/services/config-service';
 import { UserManager } from 'src/app/util/user-manager';
 import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
 import { dataTypes } from 'src/app/util/data-types';
+import { toPythonFunctionName } from 'src/app/util/helper-functions';
 
 @Component({
   selector: 'kern-project-settings',
@@ -1054,6 +1055,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     this.attributeType = dataType;
   }
   changeAttributeName(event: any) {
+    this.attributeName = toPythonFunctionName(event.target.value);
     const findDuplicate = this.attributes.find(att => att.name == event.target.value);
     this.duplicateNameExists = findDuplicate != undefined ? true : false;
   }

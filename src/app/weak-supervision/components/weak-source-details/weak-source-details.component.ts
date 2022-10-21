@@ -21,7 +21,7 @@ import {
 import { combineLatest, forkJoin, Subscription, timer } from 'rxjs';
 import { InformationSourceType, informationSourceTypeToString, LabelingTask, LabelSource } from 'src/app/base/enum/graphql-enums';
 import { InformationSourceCodeLookup, InformationSourceExamples } from '../information-sources-code-lookup';
-import { dateAsUTCDate } from 'src/app/util/helper-functions';
+import { dateAsUTCDate, toPythonFunctionName } from 'src/app/util/helper-functions';
 import { NotificationService } from 'src/app/base/services/notification.service';
 import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
 import { schemeCategory24 } from 'src/app/util/colors';
@@ -528,7 +528,7 @@ export class WeakSourceDetailsComponent
 
   changeInformationSourceName(event) {
     // if (this.informationSource.informationSourceType != InformationSourceType.LABELING_FUNCTION) return;
-    this.informationSourceName = this.toPythonFunctionName(event.target.value);
+    this.informationSourceName = toPythonFunctionName(event.target.value);
     if (this.informationSourceName != event.target.value) {
       event.target.value = this.informationSourceName;
     }
@@ -586,12 +586,6 @@ export class WeakSourceDetailsComponent
     return /class ([\w]+)\([^)]+\):/.exec(codeToCheck);
   }
 
-  toPythonFunctionName(str: string) {
-    //spaces will be _ everything else will be removed
-
-    return str.replace(/\s+/g, '_').replace(/[^\w]/gi, '').trim();
-  }
-
   getInformationSourceTypeString(type: InformationSourceType) {
     return informationSourceTypeToString(type, false, true);
   }
@@ -641,17 +635,18 @@ export class WeakSourceDetailsComponent
           const label = record.calculatedLabels.length > 0 ? record.calculatedLabels[1] : '-';
           record.calculatedLabelsResult = {
             label: {
-            label: label,
-            color: this.getColorForLabel(label),
-            count: 1,
-            displayAmount: false
-          }};
+              label: label,
+              color: this.getColorForLabel(label),
+              count: 1,
+              displayAmount: false
+            }
+          };
         } else {
           const resultDict = {};
-          if(record.calculatedLabels.length > 0) {
+          if (record.calculatedLabels.length > 0) {
             record.calculatedLabels.forEach(e => {
               const label = this.getLabelFromExtractionResult(e);
-              if (!resultDict[label])  {
+              if (!resultDict[label]) {
                 resultDict[label] = {
                   label: label,
                   color: this.getColorForLabel(label),
@@ -659,9 +654,9 @@ export class WeakSourceDetailsComponent
                 };
               }
               resultDict[label].count++;
-            });          
+            });
             const displayAmount = Object.keys(resultDict).length > 1;
-            for (const key in resultDict) { 
+            for (const key in resultDict) {
               resultDict[key].displayAmount = displayAmount || resultDict[key].count > 1;
             }
           } else {

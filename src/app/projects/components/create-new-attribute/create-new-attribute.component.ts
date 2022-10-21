@@ -15,6 +15,7 @@ import { AttributeCalculationExamples, AttributeCodeLookup } from './new-attribu
 import { RecordApolloService } from 'src/app/base/services/record/record-apollo.service';
 import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
 import { dataTypes } from 'src/app/util/data-types';
+import { toPythonFunctionName } from 'src/app/util/helper-functions';
 
 @Component({
   selector: 'kern-create-new-attribute',
@@ -211,10 +212,6 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
     }
   }
 
-  toPythonFunctionName(str: string) {
-    return str.replace(/\s+/g, '_').replace(/[^\w]/gi, '').trim();
-  }
-
   saveAttribute(projectId: string) {
     if (this.updatedThroughWebsocket) return;
     const getCodeToSave = this.getPythonFunctionToSave(this.code);
@@ -225,7 +222,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
   }
 
   changeAttributeName(event) {
-    this.attributeName = this.toPythonFunctionName(event.target.value);
+    this.attributeName = toPythonFunctionName(event.target.value);
     if (this.attributeName != event.target.value) {
       event.target.value = this.attributeName;
     }
