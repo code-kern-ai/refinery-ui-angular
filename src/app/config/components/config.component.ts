@@ -8,6 +8,7 @@ import { first } from 'rxjs/operators';
 import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { UserManager } from 'src/app/util/user-manager';
+import { getUserAvatarUri } from 'src/app/util/helper-functions';
 
 @Component({
   selector: 'kern-config',
@@ -38,8 +39,7 @@ export class ConfigComponent implements OnInit, OnDestroy {
     this.initComponent();
     this.organizationApolloService.getUserInfo().pipe(first())
       .subscribe((user) => {
-        const avatarSelector = (user.firstName[0].charCodeAt(0) + user.lastName[0].charCodeAt(0)) % 5;
-        this.avatarUri = "assets/avatars/" + avatarSelector + ".png"
+        this.avatarUri = getUserAvatarUri(user);
       });
     this.projectApolloService
       .getAllTokenizerOptions()
