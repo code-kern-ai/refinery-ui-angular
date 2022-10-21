@@ -1,10 +1,28 @@
+import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { interval, timer } from 'rxjs';
+import { timer } from 'rxjs';
 import { UserManager } from 'src/app/util/user-manager';
-import { CommentDataManager } from './comment-helper';
+import { CommentDataManager, CommentType, CommnetPosition } from './comment-helper';
 
 @Component({
   selector: 'kern-comment',
+  animations: [
+    trigger('popOverState', [
+      state('showRight', style({
+        transform: "translateX(0%)",
+      })),
+      state('showLeft', style({
+        transform: "translateX(0%)",
+      })),
+      state('hideRight', style({
+        transform: "translateX(100%)"
+      })),
+      state('hideLeft', style({
+        transform: "translateX(-100%)"
+      })),
+      transition('* => *', animate('500ms ease')),
+    ])
+  ],
   templateUrl: './comment.component.html',
   styleUrls: ['./comment.component.scss']
 })
@@ -21,6 +39,8 @@ export class CommentComponent implements OnInit, OnDestroy {
   }
   commentIdOptions: any[];
   allOpen: boolean = false;
+  isSlideOverOpen: boolean = false;
+  positionComment: string = CommnetPosition.RIGHT;
 
   constructor() { }
   ngOnDestroy(): void {
@@ -28,6 +48,7 @@ export class CommentComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.initDataManger();
     UserManager.registerAfterInitActionOrRun(this, () => this.initUsers(), true);
+    this.positionComment = localStorage.getItem('commentPosition') || CommnetPosition.RIGHT;
   }
 
   private initUsers() {
@@ -49,13 +70,23 @@ export class CommentComponent implements OnInit, OnDestroy {
 
   newIdOptions(keepExisting: boolean = false) {
     if (!this.newComment.commentType) return;
-    this.commentIdOptions = this.dm.getCommentKeyOptions(this.newComment.commentType);
+    this.commentIdOptions = [...this.dm.getCommentKeyOptions(this.newComment.commentType)];
+    if (this.newComment.commentType == CommentType.RECORD) {
+      this.setNewCommentsToLastElement();
+    }
     if (keepExisting) return;
     if (this.commentIdOptions.length == 1) this.switchCommentId(0);
     else {
       this.newComment.commentId = "";
       this.newComment.commentIdReadable = "";
     }
+  }
+
+  setNewCommentsToLastElement() {
+    const lastElement = this.dm.grabLastRecordInfo();
+    if (!lastElement) return;
+    this.newComment.commentId = lastElement.id;
+    this.newComment.commentIdReadable = lastElement.name;
   }
 
   switchCommentType(index: number) {
@@ -115,5 +146,36 @@ export class CommentComponent implements OnInit, OnDestroy {
   openAllComments(value: boolean) {
     for (const key in this.dm.currentData) this.dm.currentData[key].open = value;
     this.allOpen = value;
+  }
+  executeOption(option: any, cData: any) {
+    switch (option.value) {
+      case 'Edit':
+        this.editComment(option.event, cData);
+        break;
+      case 'Public':
+      case 'Private':
+        this.updateComment(option.event, cData.id, 'is_private', !cData.is_private);
+        break;
+      case 'Delete':
+        this.deleteComment(option.event, cData.id, cData.project_id);
+        break;
+    }
+  }
+  changeCommentPosition() {
+    this.positionComment = this.positionComment == CommnetPosition.RIGHT ? CommnetPosition.LEFT : CommnetPosition.RIGHT;
+    localStorage.setItem('commentPosition', this.positionComment);
+  }
+  get stateName() {
+    return this.isSlideOverOpen && this.positionComment == CommnetPosition.RIGHT
+      ? 'showRight' : this.isSlideOverOpen && this.positionComment == CommnetPosition.LEFT
+        ? 'showLeft' : !this.isSlideOverOpen && this.positionComment == CommnetPosition.RIGHT
+          ? 'hideRight' : 'hideLeft';
+  }
+  toggleSlideOver() {
+    this.isSlideOverOpen = !this.isSlideOverOpen;
+  }
+
+  markAsPrivateComment(privateComment: any) {
+    privateComment.checked = !privateComment.checked;
   }
 }

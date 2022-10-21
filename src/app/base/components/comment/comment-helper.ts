@@ -3,6 +3,7 @@ import { OrganizationApolloService } from "../../services/organization/organizat
 import { UserManager } from 'src/app/util/user-manager';
 import { first } from "rxjs/operators";
 import { NotificationService } from "../../services/notification.service";
+import { getUserAvatarUri } from "src/app/util/helper-functions";
 
 export class CommentDataManager {
 
@@ -23,6 +24,7 @@ export class CommentDataManager {
     private allUsers: any;
     private addCommentRequests: {} = {};
     private updateCommentModule: () => void;
+    private lastRecordInfo: any;
 
     //needs to be called once from app (because of the http injection)
     public static initManager(orgApolloService: OrganizationApolloService) {
@@ -113,6 +115,11 @@ export class CommentDataManager {
             .subscribe((prjIds: any[]) => prjIds.forEach(idObj => this.subScribeToProjectNotifications(idObj.id)));
 
     }
+
+    public grabLastRecordInfo() {
+        return this.lastRecordInfo;
+    }
+
     public registerUpdateCommentModule(func: () => void) {
         this.updateCommentModule = func;
     }
@@ -340,6 +347,8 @@ export class CommentDataManager {
     private buildCurrentDataOrder() {
         this.currentDataOrder = [];
         for (var key in this.currentData) {
+            const findCurrentUser = this.allUsers.find(u => u.id == this.currentData[key].created_by);
+            this.currentData[key].avatarUri = getUserAvatarUri(findCurrentUser);
             const e = { key: key, commentType: this.currentData[key].xftype, commentKeyName: this.currentData[key].xfkeyAddName, commentOrderKey: this.currentData[key].order_key };
             this.currentDataOrder.push(e);
         }
@@ -480,6 +489,9 @@ export class CommentDataManager {
             // add data to structure
             if (data[key].add_info) {
                 const addInfoKey = keyParts.commentType + "@" + projectId;
+                if (keyParts.commentType == CommentType.RECORD) {
+                    this.lastRecordInfo = data[key].add_info[0];
+                }
                 if (!this.addInfo[addInfoKey]) this.addInfo[addInfoKey] = { values: data[key].add_info };
                 else {
                     for (const addInfo of data[key].add_info) {
@@ -513,7 +525,7 @@ export class CommentDataManager {
         CommentDataManager.commentRequests.forEach((value, key) => {
             value.forEach((commentRequest) => {
                 const key = commentRequestToKey(commentRequest);
-                if (!(key in requestJSON) && !this.hasCommentDataAlready(commentRequest)) {
+                if ((!(key in requestJSON) && !this.hasCommentDataAlready(commentRequest)) || commentRequest.commentType == CommentType.RECORD) {
                     requestJSON[key] = this.buildJsonEntryFromCommentRequest(commentRequest);
                 }
             });
@@ -626,4 +638,9 @@ function commentTypeOrder(type: CommentType): number {
     }
     console.log("unknown comment type", type);
     return -1
+}
+
+export enum CommnetPosition {
+    RIGHT = "RIGHT",
+    LEFT = "LEFT"
 }

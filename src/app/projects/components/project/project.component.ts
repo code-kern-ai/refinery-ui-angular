@@ -7,6 +7,7 @@ import { ProjectApolloService } from 'src/app/base/services/project/project-apol
 import { RouteService } from 'src/app/base/services/route.service';
 import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
 import { Subscription } from 'rxjs';
+import { getUserAvatarUri } from 'src/app/util/helper-functions';
 
 
 @Component({
@@ -49,9 +50,8 @@ export class ProjectComponent implements OnInit, OnDestroy {
     });
     this.organizationService.getUserInfo().pipe(first())
       .subscribe((user) => {
-        this.user = user
-        const avatarSelector = (user.firstName[0].charCodeAt(0) + user.lastName[0].charCodeAt(0)) % 5;
-        this.avatarUri = "assets/avatars/" + avatarSelector + ".png"
+        this.user = user;
+        this.avatarUri = getUserAvatarUri(this.user);
       });
 
     this.collectHasRecords(this.projectId);
