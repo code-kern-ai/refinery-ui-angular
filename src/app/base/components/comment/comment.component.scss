@@ -13,3 +13,20 @@
 .rotate_transform svg {
     transform: rotate(180deg);
 }
+
+.tooltip-email::before {
+    transform: translateY(85%);
+    top: 50%;
+    left: -2px;
+    right: auto;
+    bottom: auto;
+}
+
+.border-slideover {
+    border-left-width: 1px !important;
+    border-right-width: 1px !important;
+}
+
+.line-height-textarea {
+    line-height: 16px;
+}

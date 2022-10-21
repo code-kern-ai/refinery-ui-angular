@@ -148,3 +148,10 @@ export function findProjectIdFromRoute(route: ActivatedRoute) {
 export function copyToClipboard(textToCopy: string) {
     navigator.clipboard.writeText(textToCopy);
 }
+export function getUserAvatarUri(user) {
+    let avatarId = 0;
+    if (user && user.firstName && user.lastName) {
+        avatarId = (user.firstName[0].charCodeAt(0) + user.lastName[0].charCodeAt(0)) % 5;
+    }
+    return "assets/avatars/" + avatarId + ".png";
+}

@@ -27,7 +27,7 @@ import {
   labelSourceToString,
 } from 'src/app/base/enum/graphql-enums';
 import { NotificationApolloService } from 'src/app/base/services/notification/notification-apollo.service';
-import { dateAsUTCDate, parseLinkFromText } from 'src/app/util/helper-functions';
+import { dateAsUTCDate, getUserAvatarUri, parseLinkFromText } from 'src/app/util/helper-functions';
 import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
 import { NotificationService } from 'src/app/base/services/notification.service';
 import { assumeUserRole, guessLinkType, labelingHuddle, labelingLinkData, labelingLinkType, parseLabelingLinkData, userRoles } from './helper/labeling-helper';
@@ -1449,13 +1449,12 @@ export class LabelingComponent implements OnInit, OnDestroy {
       }
     }
     if (!loggedInUserHasRlas) {
-      const avatarSelector = (this.user.firstName[0].charCodeAt(0) + this.user.lastName[0].charCodeAt(0)) % 5;
       this.userIcons.push({
         id: this.user.id,
         order: 1,
         initials: this.user.firstName[0] + this.user.lastName[0],
         name: this.user.firstName + ' ' + this.user.lastName,
-        avatarUri: "assets/avatars/" + avatarSelector + ".png"
+        avatarUri: getUserAvatarUri(this.user)
       });
 
     }

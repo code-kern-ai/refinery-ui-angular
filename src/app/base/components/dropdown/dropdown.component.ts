@@ -87,7 +87,6 @@ export class DropdownComponent implements OnChanges {
   private runInputChecks() {
     this.hasInputErrors = "";
     if (!this.dropdownOptions) this.hasInputErrors = "no dropdown options provided\n";
-    if (!this.dropdownOptions.optionArray || this.dropdownOptions.optionArray.length == 0) this.hasInputErrors = "no text provided\n";
     if (!this.dropdownOptions.buttonCaption && this.dropdownOptionCaptions.length > 0) {
       this.dropdownOptions.buttonCaption = this.dropdownOptionCaptions[0];
       this.useValueAsCaption = true;
@@ -167,7 +166,13 @@ export class DropdownComponent implements OnChanges {
       if (this.dropdownOptions.isButtonSampleProjects && clickIndex % 2 != 0) this.isInitialProject.emit({ flagInitial: true, value: this.dropdownOptionCaptions[clickIndex - 1] });
 
       if (this.dropdownOptions.hasCheckboxes) this.optionClicked.emit(this.dropdownOptions.optionArray[clickIndex]);
-      else this.optionClicked.emit(this.dropdownOptionCaptions[clickIndex]);
+      else {
+        if (this.dropdownOptions.emitEvent) {
+          this.optionClicked.emit({ value: this.dropdownOptionCaptions[clickIndex], event: event });
+          return;
+        }
+        this.optionClicked.emit(this.dropdownOptionCaptions[clickIndex])
+      };
       return;
     }
 

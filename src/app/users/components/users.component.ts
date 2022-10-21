@@ -4,6 +4,7 @@ import { timer } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { ConfigManager } from 'src/app/base/services/config-service';
 import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
+import { getUserAvatarUri } from 'src/app/util/helper-functions';
 import { UserManager } from 'src/app/util/user-manager';
 
 @Component({
@@ -51,12 +52,12 @@ export class UsersComponent implements OnInit, OnDestroy {
 
 
     this.organizationApolloService.getUserInfo().pipe(first())
-      .subscribe((user) => this.avatarUri = this.getAvatarUri(user));
+      .subscribe((user) => this.avatarUri = getUserAvatarUri(user));
     this.checkIfDemoUser();
   }
 
   private moveAnnotatorsToArr(users: any[]) {
-    users.forEach(user => user.avatarUri = this.getAvatarUri(user));
+    users.forEach(user => user.avatarUri = getUserAvatarUri(user));
     this.engineers = users.filter(u => u.role == "ENGINEER");
     this.experts = users.filter(u => u.role == "EXPERT");
     this.annotators = users.filter(u => u.role == "ANNOTATOR");
@@ -68,11 +69,6 @@ export class UsersComponent implements OnInit, OnDestroy {
 
   startPlayback() {
     this.saveUrl = this.urlSanatizer.bypassSecurityTrustResourceUrl(UsersComponent.youtubeUrl);
-  }
-
-  getAvatarUri(user) {
-    const avatarSelector = (user.firstName[0].charCodeAt(0) + user.lastName[0].charCodeAt(0)) % 5;
-    return "assets/avatars/" + avatarSelector + ".png"
   }
 
   checkIfDemoUser() {

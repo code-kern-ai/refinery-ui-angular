@@ -19,7 +19,7 @@ import { OrganizationApolloService } from 'src/app/base/services/organization/or
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { UploadComponent } from 'src/app/import/components/upload/upload.component';
 import { ProjectStatus } from 'src/app/projects/enums/project-status.enum';
-import { dateAsUTCDate } from 'src/app/util/helper-functions';
+import { dateAsUTCDate, getUserAvatarUri } from 'src/app/util/helper-functions';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 @Component({
@@ -122,8 +122,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     this.organizationApolloService.getUserInfo().pipe(first())
       .subscribe((user) => {
         this.user = user;
-        const avatarSelector = (user.firstName[0].charCodeAt(0) + user.lastName[0].charCodeAt(0)) % 5;
-        this.avatarUri = "assets/avatars/" + avatarSelector + ".png"
+        this.avatarUri = getUserAvatarUri(this.user);
         if (this.organizationInactive) {
           this.createDefaultOrg(user);
         }
