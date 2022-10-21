@@ -1070,11 +1070,6 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
       const match = item.name.match(regEx);
       if (match) counterList.push(parseInt(match[1]));
     }
-    if (counterList.length > 0) {
-      const max = Math.max(...counterList) + 1;
-      return "attribute_" + max;
-    } else {
-      return "attribute_" + (this.attributes.length + 1);
-    }
+    return "attribute_" + (counterList.length > 0 ? (Math.max(...counterList) + 1) : (this.attributes.length + 1));
   }
 }
