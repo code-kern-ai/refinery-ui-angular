@@ -64,6 +64,7 @@ export class DropdownComponent implements OnChanges {
     this.dropdownClassList = this.dropdownOptions.hasCheckboxes ? ' w-80 ' : '';
     this.dropdownClassList += this.dropdownOptions.buttonVersion != 'default' ? 'right-0 width-icon-menues' : '';
     this.buttonClassList += this.dropdownOptions.isButtonSampleProjects ? 'py-2' : 'border-gray-300 py-1.5';
+    this.buttonClassList += this.dropdownOptions.hasFullWidth ? ' w-full ' : '';
     this.buttonClassList += this.dropdownClassList;
     this.tooltipClassList = this.getTooltipClasses();
   }

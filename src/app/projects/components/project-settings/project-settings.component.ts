@@ -14,6 +14,8 @@ import { WeakSourceApolloService } from 'src/app/base/services/weak-source/weak-
 import { ConfigManager } from 'src/app/base/services/config-service';
 import { UserManager } from 'src/app/util/user-manager';
 import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
+import { dataTypes } from 'src/app/util/data-types';
+import { toPythonFunctionName } from 'src/app/util/helper-functions';
 
 @Component({
   selector: 'kern-project-settings',
@@ -33,14 +35,8 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     return LabelingTask;
   }
 
-  dataTypesArray = [
-    { name: 'Category', value: 'CATEGORY' },
-    { name: 'Text', value: 'TEXT' },
-    { name: 'Integer', value: 'INTEGER' },
-    { name: 'Float', value: 'FLOAT' },
-    { name: 'Boolean', value: 'BOOLEAN' },
-    { name: 'Unknown', value: 'UNKNOWN' },
-  ];
+  dataTypesArray = dataTypes;
+
   granularityTypesArray = [
     { name: 'Attribute', value: 'ON_ATTRIBUTE' },
     { name: 'Token', value: 'ON_TOKEN' }
@@ -121,10 +117,14 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
   }
   labelMap: Map<string, []> = new Map<string, []>();
   @ViewChild('modalInput', { read: ElementRef }) myModalnewRecordTask: ElementRef;
+  @ViewChild('newAttributeModal', { read: ElementRef }) newAttributeModal: ElementRef;
   downloadedModelsList$: any;
   downloadedModelsQuery$: any;
   downloadedModels: any[];
   isManaged: boolean = true;
+  attributeName: string = '';
+  attributeType: string = 'Text';
+  duplicateNameExists: boolean = false;
 
   constructor(
     private routeService: RouteService,
@@ -316,9 +316,11 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
           isPrimaryKey: att.isPrimaryKey,
           userCreated: att.userCreated,
           sourceCode: att.sourceCode,
-          state: att.state
+          state: att.state,
+          dataTypeName: this.dataTypesArray.find((type) => type.value === att?.dataType).name
         });
-        if (att.state == 'INITIAL') {
+
+        if (att.state == 'INITIAL' || att.state == 'FAILED') {
           group.get('isPrimaryKey').disable();
         }
         group.valueChanges.pipe(distinctUntilChanged()).subscribe(() => {
@@ -1030,10 +1032,15 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
   }
 
   createUserAttribute() {
+    const attributeType = this.dataTypesArray.find((type) => type.name === this.attributeType).value;
+
+    if (this.duplicateNameExists) return;
+
     this.projectApolloService
-      .createUserAttribute(this.project.id)
+      .createUserAttribute(this.project.id, this.attributeName, attributeType)
       .pipe(first())
       .subscribe((res) => {
+        this.newAttributeModal.nativeElement.checked = true;
         const id = res?.data?.createUserAttribute.attributeId;
         if (id) {
           localStorage.setItem("isNewAttribute", "true");
@@ -1043,5 +1050,28 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
             });
         }
       });
+  }
+  updateDataType(dataType: string) {
+    this.attributeType = dataType;
+  }
+  changeAttributeName(event: any) {
+    this.attributeName = toPythonFunctionName(event.target.value);
+    const findDuplicate = this.attributes.find(att => att.name == event.target.value);
+    this.duplicateNameExists = findDuplicate != undefined ? true : false;
+  }
+
+  openModalAttribute() {
+    this.newAttributeModal.nativeElement.checked = true;
+    this.attributeName = this.findFreeAttributeName();
+  }
+
+  findFreeAttributeName(): string {
+    const regEx = "^attribute_([0-9]+)$"
+    let counterList = [];
+    for (const item of this.attributes) {
+      const match = item.name.match(regEx);
+      if (match) counterList.push(parseInt(match[1]));
+    }
+    return "attribute_" + (counterList.length > 0 ? (Math.max(...counterList) + 1) : (this.attributes.length + 1));
   }
 }

@@ -75,10 +75,25 @@ export function parseLogData(logs: string[], isType: InformationSourceType = nul
     });
 }
 
+export function toPythonFunctionName(str: string) {
+    return str.replace(/\s+/g, '_').replace(/[^\w]/gi, '').trim();
+}
+
 export function getUserAvatarUri(user) {
     let avatarId = 0;
     if (user && user.firstName && user.lastName) {
         avatarId = (user.firstName[0].charCodeAt(0) + user.lastName[0].charCodeAt(0)) % 5;
     }
     return "assets/avatars/" + avatarId + ".png";
+}
+
+export function getColorForDataType(dataType): string {
+    switch (dataType) {
+        case 'CATEGORY': return 'amber';
+        case 'TEXT': return 'lime';
+        case 'BOOLEAN': return 'cyan';
+        case 'INTEGER': return 'indigo';
+        case 'FLOAT': return 'purple';
+        default: return 'gray';
+    }
 }

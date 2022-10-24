@@ -14,6 +14,8 @@ import { NotificationService } from 'src/app/base/services/notification.service'
 import { AttributeCalculationExamples, AttributeCodeLookup } from './new-attribute-code-lookup';
 import { RecordApolloService } from 'src/app/base/services/record/record-apollo.service';
 import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
+import { dataTypes } from 'src/app/util/data-types';
+import { getColorForDataType, toPythonFunctionName } from 'src/app/util/helper-functions';
 
 @Component({
   selector: 'kern-create-new-attribute',
@@ -56,6 +58,9 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
   isDeleting: boolean = false;
   duplicateNameExists: boolean = false;
   runOn10HasError: boolean = false;
+
+  dataTypesArray = dataTypes;
+  attributeDataType: string;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -154,9 +159,10 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
     this.subscriptions$.push(this.attribute$.subscribe((attribute) => {
       this.currentAttribute = attribute;
       this.attributeName = this.currentAttribute?.name;
+      this.attributeDataType = this.dataTypesArray.find((type) => type.value === this.currentAttribute?.dataType).name;
       this.code = this.currentAttribute?.sourceCode;
       if (this.currentAttribute?.sourceCode == null) {
-        this.code = AttributeCodeLookup.getAttributeCalculationTemplate(AttributeCalculationExamples.AC_EMPTY_TEMPLATE).code;
+        this.code = AttributeCodeLookup.getAttributeCalculationTemplate(AttributeCalculationExamples.AC_EMPTY_TEMPLATE, this.currentAttribute.dataType).code;
       } else {
         this.code = this.code.replace(
           'def ac(record):',
@@ -206,10 +212,6 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
     }
   }
 
-  toPythonFunctionName(str: string) {
-    return str.replace(/\s+/g, '_').replace(/[^\w]/gi, '').trim();
-  }
-
   saveAttribute(projectId: string) {
     if (this.updatedThroughWebsocket) return;
     const getCodeToSave = this.getPythonFunctionToSave(this.code);
@@ -220,7 +222,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
   }
 
   changeAttributeName(event) {
-    this.attributeName = this.toPythonFunctionName(event.target.value);
+    this.attributeName = toPythonFunctionName(event.target.value);
     if (this.attributeName != event.target.value) {
       event.target.value = this.attributeName;
     }
@@ -371,6 +373,10 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
       attributes.sort((a, b) => a.relativePosition - b.relativePosition);
       this.attributes = attributes;
       this.attributesUsableUploaded = this.attributes.filter((attribute) => attribute.state == 'UPLOADED' || attribute.state == 'USABLE' || attribute.state == 'AUTOMATICALLY_CREATED');
+      this.attributesUsableUploaded.forEach(attribute => {
+        attribute.color = getColorForDataType(attribute.dataType);
+        attribute.dataTypeName = this.dataTypesArray.find((type) => type.value === attribute.dataType).name;
+      });
       this.checkIfAtLeastRunning = this.checkIfSomethingRunning();
     }));
     return attributes$.pipe(first());
@@ -391,5 +397,10 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
     this.projectApolloService.getProjectTokenization(projectId).pipe(first()).subscribe((v) => {
       this.tokenizationProgress = v?.progress;
     })
+  }
+
+  updateDataType(dataType: string) {
+    this.currentAttribute.dataType = dataType;
+    this.saveAttribute(this.project.id);
   }
 }

@@ -10,7 +10,7 @@ import { NotificationService } from 'src/app/base/services/notification.service'
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { RouteService } from 'src/app/base/services/route.service';
 import { WeakSourceApolloService } from 'src/app/base/services/weak-source/weak-source-apollo.service';
-import { dateAsUTCDate } from 'src/app/util/helper-functions';
+import { dateAsUTCDate, toPythonFunctionName } from 'src/app/util/helper-functions';
 import { UserManager } from 'src/app/util/user-manager';
 import { InformationSourceCodeLookup, InformationSourceExamples } from '../information-sources-code-lookup';
 
@@ -528,14 +528,10 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
   }
 
   changeInformationSourceName(event) {
-    this.functionName = this.toPythonFunctionName(event.target.value);
+    this.functionName = toPythonFunctionName(event.target.value);
     if (this.functionName != event.target.value) {
       event.target.value = this.functionName;
     }
-  }
-
-  toPythonFunctionName(str: string) {
-    return str.replace(/\s+/g, '_').replace(/[^\w]/gi, '').trim();
   }
 
   prepareSelectionList() {
