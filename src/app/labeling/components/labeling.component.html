@@ -132,8 +132,24 @@
                                         </label>
                                     </div>
                                     <div class="col-span-3 self-start">
-                                        <ng-template ngFor let-task [ngForOf]="fullRecordData.tasks[order.key]"
-                                            let-taskIndex="index">
+                                        <span *ngIf="fullRecordData.tasks[order.key] == null;else displayData"
+                                            class="ml-8">
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="icon icon-tabler icon-tabler-alert-circle text-yellow-700 inline-block"
+                                                width="20" height="20" viewBox="0 0 24 24" stroke-width="2"
+                                                stroke="currentColor" fill="none" stroke-linecap="round"
+                                                stroke-linejoin="round">
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                                <circle cx="12" cy="12" r="9"></circle>
+                                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                            </svg>
+                                            <span class="text-gray-500 text-sm font-normal italic">Not present in the
+                                                record</span>
+                                        </span>
+
+                                        <ng-template #displayData ngFor let-task
+                                            [ngForOf]="fullRecordData.tasks[order.key]" let-taskIndex="index">
                                             <div class="self-start grid gap-2 mb-2"
                                                 style="grid-template-columns:30px auto;">
                                                 <div class="h-full">
