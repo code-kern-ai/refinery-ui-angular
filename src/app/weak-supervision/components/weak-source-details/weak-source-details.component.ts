@@ -21,13 +21,14 @@ import {
 import { combineLatest, forkJoin, Subscription, timer } from 'rxjs';
 import { InformationSourceType, informationSourceTypeToString, LabelingTask, LabelSource } from 'src/app/base/enum/graphql-enums';
 import { InformationSourceCodeLookup, InformationSourceExamples } from '../information-sources-code-lookup';
-import { dateAsUTCDate, toPythonFunctionName } from 'src/app/util/helper-functions';
+import { dateAsUTCDate, getColorForDataType, toPythonFunctionName } from 'src/app/util/helper-functions';
 import { NotificationService } from 'src/app/base/services/notification.service';
 import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
 import { schemeCategory24 } from 'src/app/util/colors';
 import { UserManager } from 'src/app/util/user-manager';
 import { RecordApolloService } from 'src/app/base/services/record/record-apollo.service';
 import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
+import { dataTypes } from 'src/app/util/data-types';
 
 @Component({
   selector: 'kern-weak-source-details',
@@ -90,6 +91,7 @@ export class WeakSourceDetailsComponent
   currentRecordIdx: number = -1;
   sampleRecords: any;
   selectedAttribute: string = '';
+  dataTypesArray = dataTypes;
 
   constructor(
     private router: Router,
@@ -616,6 +618,10 @@ export class WeakSourceDetailsComponent
     this.subscriptions$.push(attributes$.subscribe((attributes) => {
       attributes.sort((a, b) => a.relativePosition - b.relativePosition);
       this.attributes = attributes;
+      this.attributes.forEach(attribute => {
+        attribute.color = getColorForDataType(attribute.dataType);
+        attribute.dataTypeName = this.dataTypesArray.find((type) => type.value === attribute.dataType).name;
+      });
     }));
     return attributes$.pipe(first());
   }

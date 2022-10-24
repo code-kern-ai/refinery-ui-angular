@@ -15,7 +15,7 @@ import { AttributeCalculationExamples, AttributeCodeLookup } from './new-attribu
 import { RecordApolloService } from 'src/app/base/services/record/record-apollo.service';
 import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
 import { dataTypes } from 'src/app/util/data-types';
-import { toPythonFunctionName } from 'src/app/util/helper-functions';
+import { getColorForDataType, toPythonFunctionName } from 'src/app/util/helper-functions';
 
 @Component({
   selector: 'kern-create-new-attribute',
@@ -373,6 +373,10 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
       attributes.sort((a, b) => a.relativePosition - b.relativePosition);
       this.attributes = attributes;
       this.attributesUsableUploaded = this.attributes.filter((attribute) => attribute.state == 'UPLOADED' || attribute.state == 'USABLE' || attribute.state == 'AUTOMATICALLY_CREATED');
+      this.attributesUsableUploaded.forEach(attribute => {
+        attribute.color = getColorForDataType(attribute.dataType);
+        attribute.dataTypeName = this.dataTypesArray.find((type) => type.value === attribute.dataType).name;
+      });
       this.checkIfAtLeastRunning = this.checkIfSomethingRunning();
     }));
     return attributes$.pipe(first());

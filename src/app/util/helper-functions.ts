@@ -86,3 +86,14 @@ export function getUserAvatarUri(user) {
     }
     return "assets/avatars/" + avatarId + ".png";
 }
+
+export function getColorForDataType(dataType): string {
+    switch (dataType) {
+        case 'CATEGORY': return 'amber';
+        case 'TEXT': return 'lime';
+        case 'BOOLEAN': return 'cyan';
+        case 'INTEGER': return 'indigo';
+        case 'FLOAT': return 'purple';
+        default: return 'gray';
+    }
+}
