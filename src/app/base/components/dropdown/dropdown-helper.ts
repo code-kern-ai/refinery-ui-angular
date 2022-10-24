@@ -31,6 +31,7 @@ import { FormArray } from "@angular/forms";
  * @addScrollXDropdownOptions {boolean, optional} - checks if the dropdown options should have a scrollX for longer texts with limitted space
  * @maxHeight {string, optional} - sets the max height of the dropdown options
  * @maxWidth {string, optional} - sets the max width of the dropdown options
+ * @hasFullWidth {string, optional} - sets the width of the dropdown options and the button to 100%
 */
 export type DropdownOptions = {
     optionArray: string[] | FormArray[] | any[];
@@ -62,5 +63,6 @@ export type DropdownOptions = {
     addScrollXDropdownOptions: boolean;
     maxHeight?: string;
     maxWidth?: string;
+    hasFullWidth?: boolean;
 };
 

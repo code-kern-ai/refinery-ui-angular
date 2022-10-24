@@ -116,59 +116,63 @@
                             </svg>
                             Add new attibute
                         </label>
+                    </div>
+                    <input #newAttributeModal type="checkbox" id="new-attribute-modal" class="modal-toggle">
+                    <div class="modal">
+                        <div class="modal-box modal_content text-black bg-white justify-center"
+                            style="overflow-y:visible;overflow-x:unset">
+                            <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
+                                Add new attribute </div>
+                            <div class="mb-2 flex flex-grow justify-center text-sm text-gray-500">
+                                Pick from the below solutions to build a vector representation</div>
 
-                        <input #newAttributeModal type="checkbox" id="new-attribute-modal" class="modal-toggle">
+                            <div class="grid grid-cols-2  gap-2 items-center"
+                                style="grid-template-columns: max-content auto;">
 
-                        <div class="modal">
-                            <div class="modal-box text-black bg-white justify-center" style="overflow: initial;">
-                                <h1 class="text-lg text-gray-900 mb-2 text-center mb-4">Add new attribute
-                                </h1>
+                                <span data-tip="Enter an attribute name"
+                                    class="cursor-help tooltip tooltip-right card-title mb-0 label-text font-normal"><span
+                                        class="underline"
+                                        style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Attribute
+                                        name</span></span>
+                                <input [(ngModel)]="attributeName" placeholder="Enter an attribute name..."
+                                    (input)="changeAttributeName($event)"
+                                    class="input input-sm input-bordered placeholder-italic" />
 
-                                <div class="grid grid-cols-2 gap-2 items-center"
-                                    style="grid-template-columns: max-content auto;">
+                                <ng-template [ngIf]="duplicateNameExists">
+                                    <span></span>
+                                    <span class="text-red-700 text-xs mt-2">
+                                        Attribute name exists
+                                    </span>
+                                </ng-template>
 
-                                    <span data-tip="Enter an attribute name"
-                                        class="cursor-help tooltip tooltip-right card-title mb-0 label-text"><span
-                                            class="underline"
-                                            style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Attribute
-                                            name</span></span>
-                                    <input [(ngModel)]="attributeName" placeholder="Enter an attribute name..."
-                                        (input)="changeAttributeName($event)"
-                                        class="input input-sm input-bordered placeholder-italic" />
-
-                                </div>
-
-                                <div class="text-red-700 text-xs mt-2" *ngIf="duplicateNameExists">
-                                    Attribute name exists
-                                </div>
-
-                                <div class="grid grid-cols-2 gap-2 items-center mt-3"
-                                    style="grid-template-columns: max-content auto;">
-                                    <span data-tip="Select an attribute type"
-                                        class="cursor-help tooltip tooltip-right card-title mb-0 label-text"><span
-                                            class="underline"
-                                            style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Attribute
-                                            type</span></span>
-                                    <kern-dropdown class="ml-1.5" [dropdownOptions]="{
+                                <span data-tip="Select an attribute type"
+                                    class="cursor-help tooltip tooltip-right card-title mb-0 label-text font-normal"><span
+                                        class="underline"
+                                        style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Attribute
+                                        type</span></span>
+                                <kern-dropdown [dropdownOptions]="{
                                         optionArray: dataTypesArray,
-                                        buttonCaption: attributeType
+                                        buttonCaption: attributeType,
+                                        hasFullWidth: true
                                     }" (optionClicked)="updateDataType($event)"></kern-dropdown>
-                                </div>
-                                <div class="modal-action text-center mt-4">
-                                    <div
-                                        [ngClass]="attributeName == '' || attributeType == '' || duplicateNameExists? 'cursor-not-allowed' : ''">
-                                        <label
-                                            [ngClass]="attributeName == '' || attributeType == '' || duplicateNameExists ? 'opacity-50 cursor-not-allowed pointer-events-none':'cursor-pointer opacity-100'"
-                                            class="bg-green-100 text-green-700 border border-green-400 text-white text-xs font-semibold mr-2 px-4 py-2 rounded-md cursor-pointer hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block"
-                                            (click)="createUserAttribute()">Create</label>
-                                    </div>
+                            </div>
 
-                                    <label for="new-attribute-modal"
-                                        class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded-md border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
+                            <div class="modal-action">
+                                <div
+                                    [ngClass]="attributeName == '' || attributeType == '' || duplicateNameExists? 'cursor-not-allowed' : ''">
+                                    <label
+                                        [ngClass]="attributeName == '' || attributeType == '' || duplicateNameExists ? 'opacity-50 cursor-not-allowed pointer-events-none':'cursor-pointer opacity-100'"
+                                        class="bg-green-100 text-green-700 border border-green-400 text-white text-xs font-semibold mr-2 px-4 py-2 rounded-md cursor-pointer hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block"
+                                        (click)="createUserAttribute()">Add attribute</label>
                                 </div>
+
+                                <label for="new-attribute-modal"
+                                    class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded-md border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
                             </div>
                         </div>
                     </div>
+
+
                     <div class="tooltip tooltip-bottom" data-tip="Upload more records to the project">
                         <button [routerLink]="['../add']"
                             class="mr-1 inline-flex items-center px-2.5 py-2 border border-gray-300 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none cursor-pointer">
