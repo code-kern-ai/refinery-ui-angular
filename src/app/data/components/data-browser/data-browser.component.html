@@ -584,8 +584,7 @@
                     style="grid-template-columns: max-content max-content max-content max-content max-content;">
                     <div *ngIf="fullSearch?.get('DRILL_DOWN')" class="contents">
                         <form [formGroup]="fullSearch.get('DRILL_DOWN')" class="contents flex items-center">
-                            <div data-tip="Connection within atomic filters"
-                                class="tooltip tooltip-right relative">
+                            <div data-tip="Connection within atomic filters" class="tooltip tooltip-right relative">
                                 <div class="cursor-help mr-2 underline"
                                     style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">
                                     Connect by
@@ -991,7 +990,7 @@
                             <div class="font-semibold text-sm text-gray-800 font-dmMono">
                                 {{attributes.get(attribute.key).name}}
                             </div>
-                            <div class="text-gray-800 text-sm mb-4 overflow-anywhere">
+                            <div class="text-gray-800 text-sm mb-4 overflow-anywhere flex">
                                 <ng-template [ngIf]=" highlightText && isTextHighlightNeeded &&
                                     isTextHighlightNeeded.get(attribute.key) &&
                                     record.data[attributes.get(attribute.key).name]" [ngIfElse]="noHighlight">
@@ -1002,7 +1001,24 @@
                                     </ngx-highlight-words>
                                 </ng-template>
                                 <ng-template #noHighlight>
-                                    {{record.data[attributes.get(attribute.key).name]}}
+                                    <span
+                                        *ngIf="record.data[attributes.get(attribute.key).name] != null && record.data[attributes.get(attribute.key).name] != ''; else notPresent">
+                                        {{record.data[attributes.get(attribute.key).name]}}
+                                    </span>
+                                    <ng-template #notPresent>
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                            class="icon icon-tabler icon-tabler-alert-circle text-yellow-700 inline-block"
+                                            width="20" height="20" viewBox="0 0 24 24" stroke-width="2"
+                                            stroke="currentColor" fill="none" stroke-linecap="round"
+                                            stroke-linejoin="round">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                            <circle cx="12" cy="12" r="9"></circle>
+                                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                        </svg>
+                                        <span class="text-gray-500 text-sm font-normal italic">Not present in the
+                                            record</span>
+                                    </ng-template>
                                 </ng-template>
                             </div>
                         </div>
