@@ -401,11 +401,6 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
 
   updateDataType(dataType: string) {
     this.currentAttribute.dataType = dataType;
-    this.code = AttributeCodeLookup.getAttributeCalculationTemplate(AttributeCalculationExamples.AC_EMPTY_TEMPLATE, this.currentAttribute.dataType).code;
-    this.code = this.code.replace(
-      'def ac(record):',
-      'def ' + this.currentAttribute.name + '(record):'
-    );
     this.saveAttribute(this.project.id);
   }
 }
