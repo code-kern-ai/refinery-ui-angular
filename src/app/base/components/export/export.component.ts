@@ -175,6 +175,7 @@ export class ExportComponent implements OnInit, OnChanges {
       }
     }
     this.setSessionEnabled();
+    this.setFileTypeEnabled(type);
     this.setNoneInProjectDisable();
   }
 
@@ -187,6 +188,19 @@ export class ExportComponent implements OnInit, OnChanges {
         if (ctrl.get('id').value == ExportComponent.NONE_IN_PROJECT) ctrl.disable();
         break;
       }
+    }
+  }
+
+  private setFileTypeEnabled(type: ExportPreset) {
+    if (!this.formGroups) return;
+    const csv = this.formGroups.get(ExportEnums.ExportFileType).get(ExportFileType.CSV);
+    const xlsx = this.formGroups.get(ExportEnums.ExportFileType).get(ExportFileType.XLSX);
+    if (type == ExportPreset.LABEL_STUDIO) {
+      csv.disable();
+      xlsx.disable();
+    } else {
+      csv.enable();
+      xlsx.enable();
     }
   }
 
@@ -310,7 +324,6 @@ export class ExportComponent implements OnInit, OnChanges {
 
     if (this.exportHelper.error.length != 0) return
     this.projectApolloService.getLabelstudioTemplate(this.projectId, tasks, attributes).subscribe((res) => {
-      console.log(res);
       copyToClipboard(res);
     });
   }
