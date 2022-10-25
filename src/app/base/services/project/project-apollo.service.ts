@@ -1058,11 +1058,13 @@ export class ProjectApolloService {
 
   }
 
-  createUserAttribute(projectId: string): Observable<any> {
+  createUserAttribute(projectId: string, name: string, dataType: string): Observable<any> {
     return this.apollo.mutate({
       mutation: mutations.CREATE_USER_ATTRIBUTE,
       variables: {
-        projectId: projectId
+        projectId: projectId,
+        name: name,
+        dataType: dataType
       },
     });
   }

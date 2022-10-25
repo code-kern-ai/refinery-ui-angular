@@ -1,4 +1,5 @@
-<div class="relative" [ngClass]="dropdownOptions.buttonVersion == 'default' ? ' w-max' : '' ">
+<div class="relative"
+    [ngClass]="[dropdownOptions.buttonVersion == 'default' && !dropdownOptions.hasFullWidth ? ' w-max' : '', dropdownOptions.hasFullWidth ? 'w-full' : '']">
     <div [ngClass]="dropdownOptions.buttonTooltip? tooltipClassList: ''"
         [attr.data-tip]="dropdownOptions.buttonTooltip">
 
