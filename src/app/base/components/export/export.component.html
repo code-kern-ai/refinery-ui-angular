@@ -102,13 +102,22 @@
                     <div class="tooltip tooltip-right"
                         data-tip="Copy a Label Studio settings template to your clipboard">
                         <button (click)="getLabelStudioTemplate()"
-                            class="bg-indigo-700 text-white text-xs leading-4 px-2 py-2 rounded-md cursor-pointer hover:bg-indigo-800 focus:outline-none">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 cursor-pointer inline-block"
-                                viewBox="0 0 20 20" fill="currentColor">
+                            class="bg-indigo-700 text-white text-xs leading-4 px-2 py-2 rounded-md cursor-pointer hover:bg-indigo-800 focus:outline-none relative">
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                class="transition-all duration-500 ease-in-out h-6 w-6 cursor-pointer inline-block"
+                                [ngClass]="copyClicked ? 'opacity-0' : null" viewBox="0 0 20 20" fill="currentColor">
                                 <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
                                 <path
                                     d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
                             </svg>
+                            <div class="absolute top-0 left-0 w-full h-full flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="currentColor"
+                                    class="transition-all duration-500 ease-in-out opacity-0 h-6 w-6 inline-block"
+                                    fill="none" [ngClass]="copyClicked ? 'opacity-100' : null">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7" />
+                                </svg>
+                            </div>
                         </button>
                     </div>
                 </div>
@@ -128,15 +137,12 @@
 
 <ng-template #groupDisplay let-type="type" let-hiddenCheckCtrl="hiddenCheckCtrl" let-heading="heading"
     let-subText="subText" let-isCheckbox="isCheckbox">
-    <!-- <button
-        (click)="logMe({hiddenCheckCtrl:hiddenCheckCtrl,v:hiddenCheckCtrl.value,negateCheckCtrl:negateCheckCtrl,condition:hiddenCheckCtrl?(!hiddenCheckCtrl.value?(negateCheckCtrl?null:'hidden'):(negateCheckCtrl?'hidden':null)):null})">test</button> -->
     <div *ngIf="formGroups.get(type) as fGroup" [ngClass]="hiddenCheckCtrl?(!hiddenCheckCtrl.value?'hidden':null):null"
         class="contents">
         <label *ngIf="heading" class="text-base font-medium text-gray-900 col-start-1 col-span-full">{{heading}}</label>
         <p *ngIf="subText" class="text-sm leading-5 text-gray-500 col-start-1 col-span-full -mt-3">{{subText}}</p>
         <ng-template ngFor let-v [ngForOf]="enumArrays.get(type)">
             <div class="contents" *ngIf="(v.value?v.value:v.name) as key">
-                <!-- <div>this is it-{{key}}</div> -->
                 <div *ngIf="fGroup.get(key) as fCtrl" class="flex items-center"
                     [ngClass]="fGroup.disabled|| fCtrl.disabled? 'opacity-50 cursor-not-allowed ' : 'opacity-100 cursor-pointer '"
                     (click)="fGroup.disabled|| fCtrl.disabled?null:flipControlValue(fCtrl,type)">

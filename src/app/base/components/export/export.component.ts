@@ -37,6 +37,7 @@ export class ExportComponent implements OnInit, OnChanges {
   formGroups: Map<ExportEnums, FormGroup>;
   downloadState: DownloadState = DownloadState.NONE;
   exportHelper: ExportHelper;
+  copyClicked: boolean = false;
 
   constructor(
     private projectApolloService: ProjectApolloService,
@@ -325,6 +326,8 @@ export class ExportComponent implements OnInit, OnChanges {
     if (this.exportHelper.error.length != 0) return
     this.projectApolloService.getLabelstudioTemplate(this.projectId, tasks, attributes).subscribe((res) => {
       copyToClipboard(res);
+      this.copyClicked = true;
+      timer(1000).pipe(first()).subscribe(() => this.copyClicked = false);
     });
   }
 
