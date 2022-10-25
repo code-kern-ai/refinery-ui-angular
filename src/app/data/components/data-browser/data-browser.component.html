@@ -1001,7 +1001,7 @@
                                 </ng-template>
                                 <ng-template #noHighlight>
                                     <span
-                                        *ngIf="record.data[attributes.get(attribute.key).name] != null && record.data[attributes.get(attribute.key).name] != ''; else notPresent">
+                                        *ngIf="record.data[attributes.get(attribute.key).name] != null; else notPresent">
                                         {{record.data[attributes.get(attribute.key).name]}}
                                     </span>
                                     <ng-template #notPresent>
