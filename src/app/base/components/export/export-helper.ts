@@ -76,6 +76,9 @@ export class ExportHelper {
         if (exportData.format == ExportFormat.LABEL_STUDIO && exportData.file_type != ExportFileType.JSON) {
             this.error.push("Label Studio export only supports JSON");
         }
+        if (exportData.columns.labeling_tasks.length == 0 && exportData.columns.sources.length == 0 && exportData.columns.attributes.length == 0) {
+            this.error.push("Nothing to export");
+        }
         return JSON.stringify(exportData);
     }
     public getLabelStudioTemplateExportData(): [string[], string[]] {
@@ -118,7 +121,8 @@ export class ExportHelper {
         }
         return result;
     }
-    private buildExportDataColumns(): any {
+    //no return type to make use of the implicit typing
+    private buildExportDataColumns() {
         return {
             labeling_tasks: this.allActive(ExportEnums.LabelingTasks),
             attributes: this.allActive(ExportEnums.Attributes),

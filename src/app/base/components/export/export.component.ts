@@ -1,16 +1,17 @@
 
-import { Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { timer } from 'rxjs';
-import { distinctUntilChanged, first, pairwise, startWith } from 'rxjs/operators';
+import { first } from 'rxjs/operators';
 import { DownloadState } from 'src/app/import/services/s3.enums';
-import { caseType, copyToClipboard, enumToArray, findProjectIdFromRoute, isStringTrue } from 'src/app/util/helper-functions';
+import { S3Service } from 'src/app/import/services/s3.service';
+import { caseType, copyToClipboard, enumToArray, findProjectIdFromRoute } from 'src/app/util/helper-functions';
 import { LabelSource, labelSourceToString } from '../../enum/graphql-enums';
 import { NotificationService } from '../../services/notification.service';
 import { ProjectApolloService } from '../../services/project/project-apollo.service';
-import { ModalButton, ModalButtonType } from '../modal/modal-helper';
 import { ExportEnums, ExportFileType, ExportFormat, ExportHelper, ExportPreset, ExportRowType } from './export-helper';
+import { UserManager } from 'src/app/util/user-manager';
 
 
 
@@ -33,19 +34,23 @@ export class ExportComponent implements OnInit, OnChanges {
   }
 
   projectId: string;
+  user: any;
   enumArrays: Map<ExportEnums, any[]>;
   formGroups: Map<ExportEnums, FormGroup>;
   downloadState: DownloadState = DownloadState.NONE;
   exportHelper: ExportHelper;
   copyClicked: boolean = false;
+  recordExportCredentials: any;
 
   constructor(
     private projectApolloService: ProjectApolloService,
     private activatedRoute: ActivatedRoute,
     private formBuilder: FormBuilder,
+    private s3Service: S3Service,
   ) { }
   ngOnInit(): void {
 
+    UserManager.registerAfterInitActionOrRun(this, () => this.initUsers(), true);
     this.prepareModule();
     NotificationService.subscribeToNotification(this, {
       projectId: this.projectId,
@@ -55,7 +60,7 @@ export class ExportComponent implements OnInit, OnChanges {
   }
 
   private getWhiteListNotificationService(): string[] {
-    let toReturn = [];
+    let toReturn = ['record_export'];
     toReturn.push(...['calculate_attribute']);
     toReturn.push(...['labeling_task_deleted', 'labeling_task_created']);
     toReturn.push(...['data_slice_created', 'data_slice_deleted']);
@@ -68,10 +73,16 @@ export class ExportComponent implements OnInit, OnChanges {
       somethingToRerequest = true;
     } else if (['labeling_task_deleted', 'labeling_task_created', 'data_slice_created', 'data_slice_deleted', 'labeling_task_deleted', 'labeling_task_created'].includes(msgParts[1])) {
       somethingToRerequest = true;
+    } else if (msgParts[1] == 'record_export' && this.user?.id == msgParts[2]) {
+      this.recordExportCredentials = null;
+      this.requestRecordExportCredentials();
     }
     if (somethingToRerequest) this.fetchSetupData(this.projectId, true);
   }
 
+  private initUsers() {
+    this.user = UserManager.getUser(false);
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.sessionId && Object.keys(changes).length == 1) this.setSessionEnabled();
@@ -80,7 +91,10 @@ export class ExportComponent implements OnInit, OnChanges {
 
   private prepareModule(forceNew: boolean = false) {
     this.exportHelper = new ExportHelper(this);
-    if (!this.projectId) this.projectId = findProjectIdFromRoute(this.activatedRoute);
+    if (!this.projectId) {
+      this.projectId = findProjectIdFromRoute(this.activatedRoute);
+      this.requestRecordExportCredentials();
+    }
     this.initEnumArrays();
     this.fetchSetupData(this.projectId, forceNew);
 
@@ -308,13 +322,13 @@ export class ExportComponent implements OnInit, OnChanges {
     }
   }
 
-  prepareDownload(type: ModalButtonType) {
-    if (type != ModalButtonType.ACCEPT) return;
+  prepareDownload() {
     const jsonString = this.exportHelper.buildExportData();
     if (this.exportHelper.error.length != 0) return
     this.projectApolloService.prepareRecordExport(this.projectId, jsonString).pipe(first()).subscribe((x) => {
       if (!x) this.exportHelper.error.push("Something went wrong in the backend");
     });
+    this.recordExportCredentials = null;
 
   }
 
@@ -330,7 +344,51 @@ export class ExportComponent implements OnInit, OnChanges {
     });
   }
 
+  requestRecordExportCredentials() {
+    this.projectApolloService.getLastRecordExportCredentials(this.projectId).pipe(first()).subscribe((c) => {
+      if (!c) this.recordExportCredentials = null;
+      else {
+        this.recordExportCredentials = JSON.parse(c);
+        const parts = this.recordExportCredentials.objectName.split("/");
+        //without record_export_
+        this.recordExportCredentials.downloadFileName = parts[parts.length - 1].substring(14);
+      }
+    });
+  }
 
+  exportViaFile() {
+    if (!this.recordExportCredentials) return;
+    this.downloadState = DownloadState.DOWNLOAD;
+    const fileName = this.recordExportCredentials.downloadFileName;
+    this.s3Service.downloadFile(this.recordExportCredentials, false).subscribe((data) => {
+      this.downloadBlob(data, fileName);
+      timer(3000).subscribe(
+        () => (this.downloadState = DownloadState.NONE)
+      );
+    });
+  }
+
+  private downloadBlob(byteData: any, filename = 'file.zip') {
+    const blob = new Blob([byteData], {
+      type: "application/octet-stream"
+    })
+    const blobUrl = URL.createObjectURL(blob);
+
+    // Create a link element
+    const link = document.createElement("a");
+    link.href = blobUrl;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.dispatchEvent(
+      new MouseEvent('click', {
+        bubbles: true,
+        cancelable: true,
+        view: window
+      })
+    );
+
+    document.body.removeChild(link);
+  }
 
   // requestFileExport(projectId: string): void {
   //   this.downloadState = DownloadState.PREPARATION;

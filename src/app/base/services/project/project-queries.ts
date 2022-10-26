@@ -273,6 +273,10 @@ export const queries = {
   query ($projectId: ID!) {
     lastProjectExportCredentials(projectId:$projectId)
   }`,
+  LAST_RECORD_EXPORT_CREDENTIALS: gql`
+  query ($projectId: ID!) {
+    lastRecordExportCredentials(projectId:$projectId)
+  }`,
 
   GET_UPLOAD_LINK: gql`
     query ($projectId: ID!, $fileType: String!, $recordType: String!) {

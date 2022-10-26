@@ -727,12 +727,23 @@ export class ProjectApolloService {
     return this.apollo
       .query({
         query: queries.LAST_PROJECT_EXPORT_CREDENTIALS,
-        fetchPolicy: 'network-only',
+        fetchPolicy: 'no-cache',
         variables: {
           projectId: projectId
         },
       })
       .pipe(map((result) => result['data']['lastProjectExportCredentials']));
+  }
+  getLastRecordExportCredentials(projectId: string) {
+    return this.apollo
+      .query({
+        query: queries.LAST_RECORD_EXPORT_CREDENTIALS,
+        fetchPolicy: 'no-cache',
+        variables: {
+          projectId: projectId
+        },
+      })
+      .pipe(map((result) => result['data']['lastRecordExportCredentials']));
   }
 
   getUploadLink(

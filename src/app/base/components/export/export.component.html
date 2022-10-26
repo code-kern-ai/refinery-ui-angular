@@ -15,9 +15,7 @@
         </span>
     </button>
 </div>
-<kern-modal [isOpen]="testModal.checked" closeButton="X"
-    [acceptButton]="{closeAfterClick:false,buttonCaption:'Prepare Download',emitFunction:prepareDownload,emitObject:this}"
-    (optionClicked)="$event == 'CLOSE' ?testModal.checked = false:null">
+<kern-modal [isOpen]="testModal.checked">
     <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium mb-2">
         Export record data </div>
     <ng-template [ngIf]="formGroups">
@@ -132,7 +130,43 @@
         </div>
     </ng-template>
 
+    <div class="mt-2 flex flex-row justify-between">
+        <div class="h-9">
+            <div class="tooltip" data-tip="Latest prepared export file"
+                *ngIf="recordExportCredentials?.downloadFileName as fileName">
 
+                <button (click)="exportViaFile(false)"
+                    class="bg-white text-gray-700 border border-gray-300 text-xs font-semibold px-4 py-2 rounded cursor-pointer hover:bg-gray-50 focus:outline-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 h-4 w-4 inline-block" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    {{fileName}}
+                </button>
+            </div>
+        </div>
+        <div class="flex flex-row-reverse justify-start">
+
+            <!--close button-->
+            <button (click)="testModal.checked = false" [attr.disabled]="false?true:null"
+                [ngClass]="false ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
+                class="ml-2 bg-white text-gray-700 border border-gray-300 text-xs font-semibold px-4 py-2 rounded cursor-pointer hover:bg-gray-50 focus:outline-none">Close</button>
+            <!--accept button-->
+            <button (click)="prepareDownload()" [attr.disabled]="exportHelper?.error.length>0?true:null"
+                [ngClass]="exportHelper?.error.length>0 ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
+                class="ml-2 bg-green-100 text-green-700 border border-green-400 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer inline-flex items-center hover:bg-green-200 focus:outline-none">Prepare
+                Download
+                <div class="relative w-4 h-px ml-2"
+                    *ngIf="downloadState == DownloadStateType.PREPARATION || downloadState == DownloadStateType.DOWNLOAD">
+
+                    <kern-loading color="green" class="absolute" style="left: 75%;transform: translate(-50%, -50%);">
+                    </kern-loading>
+                </div>
+            </button>
+
+        </div>
+    </div>
 </kern-modal>
 
 <ng-template #groupDisplay let-type="type" let-hiddenCheckCtrl="hiddenCheckCtrl" let-heading="heading"
