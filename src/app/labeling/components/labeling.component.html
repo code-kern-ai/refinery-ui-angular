@@ -132,21 +132,10 @@
                                         </label>
                                     </div>
                                     <div class="col-span-3 self-start">
-                                        <span
-                                            *ngIf="fullRecordData.tasks[order.key] == null || fullRecordData.tasks[order.key] == '';else displayData"
-                                            class="ml-8">
-                                            <svg xmlns="http://www.w3.org/2000/svg"
-                                                class="icon icon-tabler icon-tabler-alert-circle text-yellow-700 inline-block"
-                                                width="20" height="20" viewBox="0 0 24 24" stroke-width="2"
-                                                stroke="currentColor" fill="none" stroke-linecap="round"
-                                                stroke-linejoin="round">
-                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                                <circle cx="12" cy="12" r="9"></circle>
-                                                <line x1="12" y1="8" x2="12" y2="12"></line>
-                                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                                            </svg>
-                                            <span class="text-gray-500 text-sm font-normal italic">Not present in the
-                                                record</span>
+                                        <span *ngIf="fullRecordData.tasks[order.key] == null;else displayData"
+                                            class="ml-10">
+                                            <ng-container [ngTemplateOutlet]="notPresentInRecord">
+                                            </ng-container>
                                         </span>
 
                                         <ng-template #displayData ngFor let-task
@@ -169,6 +158,7 @@
                                                     <ng-template ngSwitchDefault>
                                                         <ng-template [ngIf]="task.showText ">
                                                             <p class="break-words text-sm leading-5 font-normal text-gray-500"
+                                                                *ngIf="fullRecordData.data[order.key] !== '';else notPresentInRecord"
                                                                 [id]="order.key + '_value'">
                                                                 {{fullRecordData.data[order.key]}}
                                                             </p>
@@ -177,6 +167,7 @@
                                                     <ng-template [ngSwitchCase]="LabelingTaskType.NOT_SET">
                                                         <ng-template [ngIf]="task.showText ">
                                                             <p class="break-words text-sm leading-5 font-normal text-gray-500"
+                                                                *ngIf="fullRecordData.data[order.key] !== '';else notPresentInRecord"
                                                                 [id]="order.key + '_value'">
                                                                 {{fullRecordData.data[order.key]}}
                                                             </p>
@@ -189,75 +180,82 @@
 
                                                             <kern-loading></kern-loading>
                                                         </ng-template>
-                                                        <div class="flex flex-wrap text-sm leading-5 text-gray-500"
-                                                            [id]="order.key + '_value'"
-                                                            *ngIf="task.tokenizedAttribute;else noTokenYet">
-                                                            <ng-template ngFor let-token
-                                                                [ngForOf]="task.tokenizedAttribute.token">
+                                                        <div
+                                                            *ngIf="fullRecordData.data[order.key] !== '';else notPresentInRecord">
+                                                            <div class="flex flex-wrap text-sm leading-5 text-gray-500"
+                                                                [id]="order.key + '_value'"
+                                                                *ngIf="task.tokenizedAttribute;else noTokenYet">
+                                                                <ng-template ngFor let-token
+                                                                    [ngForOf]="task.tokenizedAttribute.token">
 
-                                                                <!-- extended by label (right side display) -->
-                                                                <ng-template
-                                                                    [ngIf]="token.extendDisplay && extendedDisplay[task.id + '_' + token.idx +'_SD']">
-                                                                    <ng-container [ngTemplateOutlet]="exDisplay"
-                                                                        [ngTemplateOutletContext]="{exData:extendedDisplay[task.id + '_' + token.idx +'_SD']}">
-                                                                    </ng-container>
-                                                                </ng-template>
+                                                                    <!-- extended by label (right side display) -->
+                                                                    <ng-template
+                                                                        [ngIf]="token.extendDisplay && extendedDisplay[task.id + '_' + token.idx +'_SD']">
+                                                                        <ng-container [ngTemplateOutlet]="exDisplay"
+                                                                            [ngTemplateOutletContext]="{exData:extendedDisplay[task.id + '_' + token.idx +'_SD']}">
+                                                                        </ng-container>
+                                                                    </ng-template>
 
-                                                                <!--normal data display-->
-                                                                <ng-template [ngIf]="!token.extendDisplay">
-                                                                    <div class="self-start flex flex-row flex-nowrap"
-                                                                        [ngClass]="token.value == '\n'? 'w-full':null"
-                                                                        style="margin-top:2px;word-break: break-word;">
-                                                                        <!--simple overlay -->
-                                                                        <ng-template
-                                                                            [ngIf]="tokenOverlayData[token.addInfoKey]">
-                                                                            <ng-template ngFor let-ovPart
-                                                                                [ngForOf]="tokenOverlayData[token.addInfoKey]">
-                                                                                <ng-template [ngIf]="ovPart.isFirst">
+                                                                    <!--normal data display-->
+                                                                    <ng-template [ngIf]="!token.extendDisplay">
+                                                                        <div class="self-start flex flex-row flex-nowrap"
+                                                                            [ngClass]="token.value == '\n'? 'w-full':null"
+                                                                            style="margin-top:2px;word-break: break-word;">
+                                                                            <!--simple overlay -->
+                                                                            <ng-template
+                                                                                [ngIf]="tokenOverlayData[token.addInfoKey]">
+                                                                                <ng-template ngFor let-ovPart
+                                                                                    [ngForOf]="tokenOverlayData[token.addInfoKey]">
+                                                                                    <ng-template
+                                                                                        [ngIf]="ovPart.isFirst">
+                                                                                        <ng-container
+                                                                                            [ngTemplateOutlet]="tokenOverlayLabelBox"
+                                                                                            [ngTemplateOutletContext]="{overlayData:ovPart}">
+                                                                                        </ng-container>
+                                                                                    </ng-template>
                                                                                     <ng-container
-                                                                                        [ngTemplateOutlet]="tokenOverlayLabelBox"
-                                                                                        [ngTemplateOutletContext]="{overlayData:ovPart}">
+                                                                                        [ngTemplateOutlet]="tokenOverlay"
+                                                                                        [ngTemplateOutletContext]="{overlayData:ovPart,isInner:false,isFirstInner:false}">
                                                                                     </ng-container>
                                                                                 </ng-template>
-                                                                                <ng-container
-                                                                                    [ngTemplateOutlet]="tokenOverlay"
-                                                                                    [ngTemplateOutletContext]="{overlayData:ovPart,isInner:false,isFirstInner:false}">
-                                                                                </ng-container>
                                                                             </ng-template>
-                                                                        </ng-template>
 
-                                                                        <!--normal display-->
-                                                                        <ng-template
-                                                                            [ngIf]="token.type && user.role !='ANNOTATOR'"
-                                                                            [ngIfElse]="tokenValue">
-                                                                            <div [attr.data-tip]="'type: ' + token.type"
-                                                                                class="tooltip self-start">
+                                                                            <!--normal display-->
+                                                                            <ng-template
+                                                                                [ngIf]="token.type && user.role !='ANNOTATOR'"
+                                                                                [ngIfElse]="tokenValue">
+                                                                                <div [attr.data-tip]="'type: ' + token.type"
+                                                                                    class="tooltip self-start">
+                                                                                    <ng-template
+                                                                                        *ngTemplateOutlet="tokenValue;">
+                                                                                    </ng-template>
+                                                                                </div>
+                                                                            </ng-template>
+                                                                            <ng-template #tokenValue>
                                                                                 <ng-template
-                                                                                    *ngTemplateOutlet="tokenValue;">
+                                                                                    [ngIf]="token.value != '\n'">
+                                                                                    <label
+                                                                                        [id]="task.id+'@@idx_'+token.idx"
+                                                                                        (mouseup)="tokenMouseUp($event,task.id)"
+                                                                                        class="self-start rounded-lg hover:bg-gray-200 text-sm text-gray-500 leading-5 font-normal"
+                                                                                        [ngClass]="{'ml-1':token.diffToLastPos > 0,'px-1':showTokenFlag}"
+                                                                                        [ngStyle]="showTokenFlag?{'outline': '2px solid gray'  } : null">{{token.value}}</label>
                                                                                 </ng-template>
-                                                                            </div>
-                                                                        </ng-template>
-                                                                        <ng-template #tokenValue>
-                                                                            <ng-template [ngIf]="token.value != '\n'">
-                                                                                <label [id]="task.id+'@@idx_'+token.idx"
-                                                                                    (mouseup)="tokenMouseUp($event,task.id)"
-                                                                                    class="self-start rounded-lg hover:bg-gray-200 text-sm text-gray-500 leading-5 font-normal"
-                                                                                    [ngClass]="{'ml-1':token.diffToLastPos > 0,'px-1':showTokenFlag}"
-                                                                                    [ngStyle]="showTokenFlag?{'outline': '2px solid gray'  } : null">{{token.value}}</label>
                                                                             </ng-template>
-                                                                        </ng-template>
-                                                                    </div>
-                                                                </ng-template>
+                                                                        </div>
+                                                                    </ng-template>
 
-                                                            </ng-template>
+                                                                </ng-template>
+                                                            </div>
                                                         </div>
+
                                                     </ng-template>
                                                     <ng-template
                                                         [ngSwitchCase]="LabelingTaskType.MULTICLASS_CLASSIFICATION">
 
                                                         <div *ngIf="getTaskLabels(task.id) as taskLabels">
                                                             <ng-template [ngIf]="task.showText ">
-                                                                <p *ngIf="fullRecordData.data[order.key]"
+                                                                <p *ngIf="fullRecordData.data[order.key] === ''; else notPresentInRecord"
                                                                     class="mb-2 break-words text-sm leading-5 text-gray-500"
                                                                     [id]="order.key + '_value'">
                                                                     {{fullRecordData.data[order.key]}}
@@ -978,4 +976,18 @@
             </div>
         </div>
     </div>
+</ng-template>
+
+<ng-template #notPresentInRecord>
+    <svg xmlns="http://www.w3.org/2000/svg"
+        class="icon icon-tabler icon-tabler-alert-circle text-yellow-700 inline-block" width="20" height="20"
+        viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
+        stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <circle cx="12" cy="12" r="9"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+    </svg>
+    <span class="text-gray-500 text-sm font-normal italic">Not present in the
+        record</span>
 </ng-template>
