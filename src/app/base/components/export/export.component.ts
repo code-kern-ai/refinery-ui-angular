@@ -389,35 +389,4 @@ export class ExportComponent implements OnInit, OnChanges {
 
     document.body.removeChild(link);
   }
-
-  // requestFileExport(projectId: string): void {
-  //   this.downloadState = DownloadState.PREPARATION;
-  //   this.projectApolloService.exportRecords(projectId).subscribe((e) => {
-  //     this.downloadState = DownloadState.DOWNLOAD;
-  //     const downloadContent = JSON.parse(e);
-  //     this.downloadText('export.json', downloadContent);
-  //     const timerTime = Math.max(2000, e.length * 0.0001);
-  //     timer(timerTime).subscribe(
-  //       () => (this.downloadState = DownloadState.NONE)
-  //     );
-  //   });
-  // }
-
-  // private downloadText(filename, text) {
-  //   if (!text) return;
-  //   const element = document.createElement('a');
-
-  //   element.setAttribute(
-  //     'href',
-  //     'data:text/plain;charset=utf-8,' + encodeURIComponent(text)
-  //   );
-  //   element.setAttribute('download', filename);
-
-  //   element.style.display = 'none';
-  //   document.body.appendChild(element);
-
-  //   element.click();
-
-  //   document.body.removeChild(element);
-  // }
 }
