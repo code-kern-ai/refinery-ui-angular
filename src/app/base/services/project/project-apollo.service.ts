@@ -1153,18 +1153,10 @@ export class ProjectApolloService {
           let x: any = {
             projectId: data.id,
             name: data.name,
-            labelingTasks: data.labelingTasks.edges.map((edge) => {
-              return edge.node;
-            }),
-            informationSources: data.informationSources.edges.map((edge) => {
-              return edge.node;
-            }),
-            attributes: data.attributes.edges.map((edge) => {
-              return edge.node;
-            }),
-            dataSlices: data.dataSlices.edges.map((edge) => {
-              return edge.node;
-            }),
+            labelingTasks: data.labelingTasks.edges.map((edge) => edge.node),
+            informationSources: data.informationSources.edges.map((edge) => edge.node),
+            attributes: data.attributes.edges.map((edge) => edge.node).filter((att) => ['UPLOADED', 'USABLE', 'AUTOMATICALLY_CREATED'].includes(att.state)),
+            dataSlices: data.dataSlices.edges.map((edge) => edge.node),
           }
           let rPos = { pos: 9990 };
           x.labelingTasks.forEach((task) => {
@@ -1177,7 +1169,6 @@ export class ProjectApolloService {
           return x;
         }));
   }
-
   prepareRecordExport(projectId: string, exportOptions: string) {
     return this.apollo
       .query({

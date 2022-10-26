@@ -121,7 +121,7 @@ export class ExportComponent implements OnInit, OnChanges {
     this.setOptionFormDisableState(preset);
 
     switch (preset) {
-      case ExportPreset.CURRENT:
+      case ExportPreset.DEFAULT:
         this.initForms();
         this.setPresetValuesCurrent();
         break;
@@ -144,8 +144,8 @@ export class ExportComponent implements OnInit, OnChanges {
 
   }
   private setPresetValuesCurrent() {
-    this.formGroups.get(ExportEnums.ExportPreset).get(ExportPreset.CURRENT).get('active').setValue(true);
-    this.formGroups.get(ExportEnums.ExportFormat).get(ExportFormat.CURRENT).get('active').setValue(true);
+    this.formGroups.get(ExportEnums.ExportPreset).get(ExportPreset.DEFAULT).get('active').setValue(true);
+    this.formGroups.get(ExportEnums.ExportFormat).get(ExportFormat.DEFAULT).get('active').setValue(true);
     this.formGroups.get(ExportEnums.LabelSource).get(LabelSource.MANUAL).get('active').setValue(true);
     this.formGroups.get(ExportEnums.LabelSource).get(LabelSource.WEAK_SUPERVISION).get('active').setValue(true);
     this.setActiveForAllInGroup(this.formGroups.get(ExportEnums.Attributes), true);
@@ -160,7 +160,7 @@ export class ExportComponent implements OnInit, OnChanges {
   }
 
   private setOptionFormDisableState(type: ExportPreset) {
-    if (type == ExportPreset.CURRENT) {
+    if (type == ExportPreset.DEFAULT) {
       for (let [key, value] of this.formGroups) {
         if (![ExportEnums.ExportPreset, ExportEnums.ExportFileType, ExportEnums.ExportRowType, ExportEnums.DataSlices].includes(key)) value.disable();
         else value.enable();
@@ -238,7 +238,7 @@ export class ExportComponent implements OnInit, OnChanges {
       const group = this.buildForm(value);
       this.formGroups.set(key, group);
     }
-    this.setPresetValues(ExportPreset.CURRENT);
+    this.setPresetValues(ExportPreset.DEFAULT);
 
   }
   private refreshForms() {
@@ -291,10 +291,9 @@ export class ExportComponent implements OnInit, OnChanges {
     return formGroup;
   }
 
-  public flipControlValue(control: AbstractControl, type: ExportEnums) {
+  public flipControlValue(control: AbstractControl, type: ExportEnums, isCheckBox: boolean) {
     const activeStateCtrl = control.get("active");
-
-    activeStateCtrl.setValue(!activeStateCtrl.value);
+    if (isCheckBox || !activeStateCtrl.value) activeStateCtrl.setValue(!activeStateCtrl.value);
     if (type == ExportEnums.ExportPreset && activeStateCtrl.value) {
       this.setPresetValues(control.get("value").value);
     }

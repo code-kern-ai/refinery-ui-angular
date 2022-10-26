@@ -470,6 +470,7 @@ export const queries = {
           node {
             id
             name
+            state
           }
         }
       }

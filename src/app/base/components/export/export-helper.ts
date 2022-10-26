@@ -16,7 +16,7 @@ export enum ExportEnums {
 }
 
 export enum ExportPreset {
-    CURRENT = "CURRENT",
+    DEFAULT = "DEFAULT",
     LABEL_STUDIO = "LABEL_STUDIO",
     CUSTOM = "CUSTOM"
 }
@@ -33,7 +33,7 @@ export enum ExportFileType {
     XLSX = "XLSX"
 }
 export enum ExportFormat {
-    CURRENT = "CURRENT",
+    DEFAULT = "DEFAULT",
     LABEL_STUDIO = "LABEL_STUDIO"
 }
 
@@ -73,7 +73,9 @@ export class ExportHelper {
             file_type: this.firstActiveInGroup(ExportEnums.ExportFileType, 'value'),
             format: this.firstActiveInGroup(ExportEnums.ExportFormat, 'value'),
         };
-        console.log(exportData);
+        if (exportData.format == ExportFormat.LABEL_STUDIO && exportData.file_type != ExportFileType.JSON) {
+            this.error.push("Label Studio export only supports JSON");
+        }
         return JSON.stringify(exportData);
     }
     public getLabelStudioTemplateExportData(): [string[], string[]] {
