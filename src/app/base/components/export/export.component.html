@@ -1,0 +1,192 @@
+<input #testModal type="checkbox" id="test-modal" class="modal-toggle">
+<div class="tooltip tooltip-bottom" data-tip="Download your records">
+    <button (click)="testModal.checked=true"
+        [ngClass]="downloadState == DownloadStateType.PREPARATION || downloadState == DownloadStateType.DOWNLOAD ? 'py-1' : 'py-2' "
+        class="mr-1 inline-flex items-center px-2.5 border border-gray-300 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none cursor-pointer">
+        <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 h-4 w-4" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+        </svg>
+        Download records
+
+        <span *ngIf="downloadState == DownloadStateType.PREPARATION || downloadState == DownloadStateType.DOWNLOAD">
+            <kern-loading color="gray"></kern-loading>
+        </span>
+    </button>
+</div>
+<kern-modal [isOpen]="testModal.checked">
+    <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium mb-2">
+        Export record data </div>
+    <ng-template [ngIf]="formGroups">
+        <div class="grid grid-cols-3 gap-2 items-center overflow-y-auto overflow-x-hidden" style="max-height:80%">
+            <!--Export Preset-->
+            <ng-container [ngTemplateOutlet]="groupDisplay" [ngTemplateOutletContext]="{
+                type:ExportEnumsType.ExportPreset,
+                hiddenCheckCtrl:null,
+                heading:'Export Presets',
+                subText:'Choose a preset to apply corresponding values',
+                isCheckbox:false}">
+            </ng-container>
+            <!--Export RowType-->
+            <ng-container [ngTemplateOutlet]="groupDisplay" [ngTemplateOutletContext]="{
+                type:ExportEnumsType.ExportRowType,
+                hiddenCheckCtrl:null,
+                heading:'Export Amount',
+                subText:'Choose what rows should be exported',
+                isCheckbox:false}">
+            </ng-container>
+            <!--Export DataSlices-->
+            <ng-container [ngTemplateOutlet]="groupDisplay" [ngTemplateOutletContext]="{
+                type:ExportEnumsType.DataSlices,
+                hiddenCheckCtrl:formGroups.get(ExportEnumsType.ExportRowType).get('SLICE').get('active'),
+                heading:'Export Slice',
+                subText:null,
+                isCheckbox:false}">
+            </ng-container>
+            <!--Export FileType-->
+            <ng-container [ngTemplateOutlet]="groupDisplay" [ngTemplateOutletContext]="{
+                type:ExportEnumsType.ExportFileType,
+                hiddenCheckCtrl:null,
+                heading:'Export File',
+                subText:null,
+                isCheckbox:false}">
+            </ng-container>
+            <!--Export Format-->
+            <ng-container [ngTemplateOutlet]="groupDisplay" [ngTemplateOutletContext]="{
+                type:ExportEnumsType.ExportFormat,
+                hiddenCheckCtrl:null,
+                heading:'Export Format',
+                subText:null,
+                isCheckbox:false}">
+            </ng-container>
+            <!--Export Attriubtes-->
+            <ng-container [ngTemplateOutlet]="groupDisplay" [ngTemplateOutletContext]="{
+                type:ExportEnumsType.Attributes,
+                hiddenCheckCtrl:null,
+                heading:'Export Columns - Attributes',
+                subText:null,
+                isCheckbox:true}">
+            </ng-container>
+            <!--Export LabelingTasks-->
+            <ng-container [ngTemplateOutlet]="groupDisplay" [ngTemplateOutletContext]="{
+                type:ExportEnumsType.LabelingTasks,
+                hiddenCheckCtrl:null,
+                heading:'Export Columns - Labeling Tasks',
+                subText:null,
+                isCheckbox:true}">
+            </ng-container>
+            <!--Export LabelSource-->
+            <ng-container [ngTemplateOutlet]="groupDisplay" [ngTemplateOutletContext]="{
+                type:ExportEnumsType.LabelSource,
+                hiddenCheckCtrl:null,
+                heading:'Export Columns - Global',
+                subText:null,
+                isCheckbox:true}">
+            </ng-container>
+            <!--Export Heuristics-->
+            <ng-container [ngTemplateOutlet]="groupDisplay" [ngTemplateOutletContext]="{
+                type:ExportEnumsType.Heuristics,
+                hiddenCheckCtrl:formGroups.get(ExportEnumsType.LabelSource).get('INFORMATION_SOURCE').get('active'),
+                heading:'Export Columns - Heuristics',
+                subText:null,
+                isCheckbox:true}">
+            </ng-container>
+            <!--Label Studio helper-->
+            <ng-template [ngIf]="formGroups.get(ExportEnumsType.ExportPreset).get('LABEL_STUDIO').get('active').value">
+                <label class="text-base font-medium text-gray-900 col-start-1 col-span-full">Label Studio helper</label>
+
+                <div class="flex items-center mb-2">
+                    <div class="tooltip tooltip-right"
+                        data-tip="Copy a Label Studio settings template to your clipboard">
+                        <button (click)="getLabelStudioTemplate()"
+                            class="bg-indigo-700 text-white text-xs leading-4 px-2 py-2 rounded-md cursor-pointer hover:bg-indigo-800 focus:outline-none relative">
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                class="transition-all duration-500 ease-in-out h-6 w-6 cursor-pointer inline-block"
+                                [ngClass]="copyClicked ? 'opacity-0' : null" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
+                                <path
+                                    d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
+                            </svg>
+                            <div class="absolute top-0 left-0 w-full h-full flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="currentColor"
+                                    class="transition-all duration-500 ease-in-out opacity-0 h-6 w-6 inline-block"
+                                    fill="none" [ngClass]="copyClicked ? 'opacity-100' : null">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7" />
+                                </svg>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </ng-template>
+
+        </div>
+    </ng-template>
+    <ng-template [ngIf]="exportHelper?.error.length>0">
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mt-2" role="alert">
+            <strong class="font-bold">Errors Detected!</strong>
+            <pre class="text-sm">{{exportHelper.error.join("\n")}}</pre>
+        </div>
+    </ng-template>
+
+    <div class="mt-2 flex flex-row justify-between">
+        <div class="h-9">
+            <div class="tooltip" data-tip="Latest prepared export file"
+                *ngIf="recordExportCredentials?.downloadFileName as fileName">
+
+                <button (click)="exportViaFile(false)"
+                    class="bg-white text-gray-700 border border-gray-300 text-xs font-semibold px-4 py-2 rounded cursor-pointer hover:bg-gray-50 focus:outline-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 h-4 w-4 inline-block" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    {{fileName}}
+                </button>
+            </div>
+        </div>
+        <div class="flex flex-row-reverse justify-start">
+
+            <!--close button-->
+            <button (click)="testModal.checked = false" [attr.disabled]="false?true:null"
+                [ngClass]="false ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
+                class="ml-2 bg-white text-gray-700 border border-gray-300 text-xs font-semibold px-4 py-2 rounded cursor-pointer hover:bg-gray-50 focus:outline-none">Close</button>
+            <!--accept button-->
+            <button (click)="prepareDownload()" [attr.disabled]="exportHelper?.error.length>0?true:null"
+                [ngClass]="exportHelper?.error.length>0 ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
+                class="ml-2 bg-green-100 text-green-700 border border-green-400 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer inline-flex items-center hover:bg-green-200 focus:outline-none">Prepare
+                Download
+                <div class="relative w-4 h-px ml-2"
+                    *ngIf="downloadState == DownloadStateType.PREPARATION || downloadState == DownloadStateType.DOWNLOAD">
+
+                    <kern-loading color="green" class="absolute" style="left: 75%;transform: translate(-50%, -50%);">
+                    </kern-loading>
+                </div>
+            </button>
+
+        </div>
+    </div>
+</kern-modal>
+
+<ng-template #groupDisplay let-type="type" let-hiddenCheckCtrl="hiddenCheckCtrl" let-heading="heading"
+    let-subText="subText" let-isCheckbox="isCheckbox">
+    <div *ngIf="formGroups.get(type) as fGroup" [ngClass]="hiddenCheckCtrl?(!hiddenCheckCtrl.value?'hidden':null):null"
+        class="contents">
+        <label *ngIf="heading" class="text-base font-medium text-gray-900 col-start-1 col-span-full">{{heading}}</label>
+        <p *ngIf="subText" class="text-sm leading-5 text-gray-500 col-start-1 col-span-full -mt-3">{{subText}}</p>
+        <ng-template ngFor let-v [ngForOf]="enumArrays.get(type)">
+            <div class="contents" *ngIf="(v.value?v.value:v.name) as key">
+                <div *ngIf="fGroup.get(key) as fCtrl" class="flex items-center"
+                    [ngClass]="fGroup.disabled|| fCtrl.disabled? 'opacity-50 cursor-not-allowed ' : 'opacity-100 cursor-pointer '"
+                    (click)="fGroup.disabled|| fCtrl.disabled?null:flipControlValue(fCtrl,type,isCheckbox)">
+                    <input *ngIf="key!='NONE_IN_PROJECT'" type="{{isCheckbox?'checkbox':'radio'}}"
+                        class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-500 pointer-events-none mr-2"
+                        [checked]="fCtrl.get('active').value">
+                    <label
+                        class="block text-sm font-medium text-gray-700 select-none pointer-events-none">{{v.name}}</label>
+                </div>
+            </div>
+        </ng-template>
+    </div>
+</ng-template>

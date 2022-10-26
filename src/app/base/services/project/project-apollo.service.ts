@@ -373,6 +373,7 @@ export class ProjectApolloService {
   }
 
 
+
   private labelingTaskRelativePosition(
     relativePosition,
     rPos: { pos: number }
@@ -726,12 +727,23 @@ export class ProjectApolloService {
     return this.apollo
       .query({
         query: queries.LAST_PROJECT_EXPORT_CREDENTIALS,
-        fetchPolicy: 'network-only',
+        fetchPolicy: 'no-cache',
         variables: {
           projectId: projectId
         },
       })
       .pipe(map((result) => result['data']['lastProjectExportCredentials']));
+  }
+  getLastRecordExportCredentials(projectId: string) {
+    return this.apollo
+      .query({
+        query: queries.LAST_RECORD_EXPORT_CREDENTIALS,
+        fetchPolicy: 'no-cache',
+        variables: {
+          projectId: projectId
+        },
+      })
+      .pipe(map((result) => result['data']['lastRecordExportCredentials']));
   }
 
   getUploadLink(
@@ -1136,6 +1148,64 @@ export class ProjectApolloService {
         },
       ],
     });
+  }
+
+  getRecordExportFormData(projectId: string) {
+    return this.apollo
+      .query({
+        query: queries.GET_RECORD_EXPORT_FORM_DATA,
+        variables: {
+          projectId: projectId,
+        },
+        fetchPolicy: 'no-cache'
+      }).pipe(
+        map((result) => {
+          const data = result['data']['projectByProjectId'];
+          let x: any = {
+            projectId: data.id,
+            name: data.name,
+            labelingTasks: data.labelingTasks.edges.map((edge) => edge.node),
+            informationSources: data.informationSources.edges.map((edge) => edge.node),
+            attributes: data.attributes.edges.map((edge) => edge.node).filter((att) => ['UPLOADED', 'USABLE', 'AUTOMATICALLY_CREATED'].includes(att.state)),
+            dataSlices: data.dataSlices.edges.map((edge) => edge.node),
+          }
+          let rPos = { pos: 9990 };
+          x.labelingTasks.forEach((task) => {
+            task.relativePosition = this.labelingTaskRelativePosition(
+              task.attribute?.relativePosition,
+              rPos
+            )
+          });
+          x.labelingTasks.sort((a, b) => a.relativePosition - b.relativePosition || a.name.localeCompare(b.name));
+          return x;
+        }));
+  }
+  prepareRecordExport(projectId: string, exportOptions: string) {
+    return this.apollo
+      .query({
+        query: queries.PREPARE_RECORD_EXPORT,
+        variables: {
+          projectId: projectId,
+          exportOptions: exportOptions
+        },
+        fetchPolicy: 'no-cache'
+      }).pipe(
+        map((result) => result['data']['prepareRecordExport']));
+
+  }
+  getLabelstudioTemplate(projectId: string, labelingTaskIds: string[], attributeIds: string[]) {
+    return this.apollo
+      .query({
+        query: queries.GET_LABELSTUDIO_TEMPLATE,
+        variables: {
+          projectId: projectId,
+          labelingTaskIds: labelingTaskIds,
+          attributeIds: attributeIds
+        },
+        fetchPolicy: 'no-cache'
+      }).pipe(
+        map((result) => result['data']['labelstudioTemplate']));
+
   }
 
 }
