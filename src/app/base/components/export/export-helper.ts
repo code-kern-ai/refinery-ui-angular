@@ -1,4 +1,5 @@
 
+import { getDescriptionForSliceType, Slice } from "src/app/data/components/data-browser/helper-classes/search-parameters";
 import { LabelSource } from "../../enum/graphql-enums";
 import { ExportComponent } from "./export.component";
 
@@ -10,7 +11,7 @@ export enum ExportEnums {
     LabelSource = "LabelSource",
 
     Heuristics = "Heuristics",
-    Attributes = "Attriubtes",
+    Attributes = "Attributes",
     LabelingTasks = "LabelingTasks",
     DataSlices = "DataSlices"
 }
@@ -35,6 +36,22 @@ export enum ExportFileType {
 export enum ExportFormat {
     DEFAULT = "DEFAULT",
     LABEL_STUDIO = "LABEL_STUDIO"
+}
+
+export function getExportTooltipFor(exportEnum: ExportEnums, element: any): string {
+    switch (exportEnum) {
+        case ExportEnums.ExportRowType:
+            const key = (element.value ? element.value : element.name)
+            switch (key) {
+                case "ALL": return "Export all records in your project";
+                case "SESSION": return "Export all records with your current data browser filter";
+            }
+            break;
+        case ExportEnums.DataSlices:
+            return getDescriptionForSliceType(element.sliceType);
+    }
+
+    return null;
 }
 
 

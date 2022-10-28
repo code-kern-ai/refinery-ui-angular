@@ -10,7 +10,7 @@ import { caseType, copyToClipboard, enumToArray, findProjectIdFromRoute } from '
 import { LabelSource, labelSourceToString } from '../../enum/graphql-enums';
 import { NotificationService } from '../../services/notification.service';
 import { ProjectApolloService } from '../../services/project/project-apollo.service';
-import { ExportEnums, ExportFileType, ExportFormat, ExportHelper, ExportPreset, ExportRowType } from './export-helper';
+import { ExportEnums, ExportFileType, ExportFormat, ExportHelper, ExportPreset, ExportRowType, getExportTooltipFor } from './export-helper';
 import { UserManager } from 'src/app/util/user-manager';
 
 
@@ -127,9 +127,21 @@ export class ExportComponent implements OnInit, OnChanges {
       this.enumArrays.set(ExportEnums.LabelingTasks, v.labelingTasks);
       this.enumArrays.set(ExportEnums.Attributes, v.attributes);
       this.enumArrays.set(ExportEnums.DataSlices, v.dataSlices);
+      this.collectTooltips();
       this.refreshForms();
     });
   }
+
+  private collectTooltips() {
+    //loop enumArrays and collect tooltips
+    this.enumArrays.forEach((v, k) => {
+      v.forEach((v2: any) => {
+        const tooltip = getExportTooltipFor(k, v2);
+        if (tooltip) v2.tooltip = tooltip;
+      });
+    });
+  }
+
 
   private setPresetValues(preset: ExportPreset) {
     this.setOptionFormDisableState(preset);

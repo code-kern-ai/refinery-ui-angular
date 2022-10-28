@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { Apollo } from 'apollo-angular';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { parseLogData } from 'src/app/util/helper-functions';
+import { Slice } from 'src/app/data/components/data-browser/helper-classes/search-parameters';
+import { dateAsUTCDate, parseLogData } from 'src/app/util/helper-functions';
 import { Project } from '../../entities/project';
 import { ApolloChecker } from '../base/apollo-checker';
 import { mutations } from './project-mutations';
@@ -1169,6 +1170,11 @@ export class ProjectApolloService {
             attributes: data.attributes.edges.map((edge) => edge.node).filter((att) => ['UPLOADED', 'USABLE', 'AUTOMATICALLY_CREATED'].includes(att.state)),
             dataSlices: data.dataSlices.edges.map((edge) => edge.node),
           }
+          x.dataSlices.forEach(element => {
+            if (element.sliceType == Slice.STATIC_OUTLIER) {
+              element.name = dateAsUTCDate(new Date(element.createdAt)).toLocaleString();
+            }
+          });
           let rPos = { pos: 9990 };
           x.labelingTasks.forEach((task) => {
             task.relativePosition = this.labelingTaskRelativePosition(
