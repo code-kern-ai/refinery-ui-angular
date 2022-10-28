@@ -60,8 +60,10 @@
     </li>
     <textarea #commentText [attr.disabled]="!cData.edit?true:null"
         (blur)="cData.edit?updateComment($event,cData.id,'comment',commentText.value):null"
-        (change)="preventEventPropagation($event)" (keyup)="preventEventPropagation($event)"
-        (keydown)="preventEventPropagation($event)" [ngClass]="[cData.open?'null':'hidden',!cData.edit?'bg-gray-50':'']"
+        (change)="checkIfKeyShiftEnter($event,cData.id,commentText.value)"
+        (keyup)="checkIfKeyShiftEnter($event,cData.id,commentText.value)"
+        (keydown)="checkIfKeyShiftEnter($event, cData.id,commentText.value)"
+        [ngClass]="[cData.open?'null':'hidden',!cData.edit?'bg-gray-50':'']"
         class="textarea placeholder-italic w-full p-2 line-height-textarea focus:outline-none border border-gray-300"
         [ngStyle]="{'background-color': !cData.edit?'rgb(249 250 251)':null,'height':(commentText.scrollHeight+2) + 'px','overflow-y':commentText.scrollHeight < 400 ? 'hidden':'auto'}">{{cData.comment}}</textarea>
 </ng-template>

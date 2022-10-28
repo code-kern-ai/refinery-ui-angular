@@ -178,4 +178,10 @@ export class CommentComponent implements OnInit, OnDestroy {
   markAsPrivateComment(privateComment: any) {
     privateComment.checked = !privateComment.checked;
   }
+
+  checkIfKeyShiftEnter(event: KeyboardEvent, id: string, commetText) {
+    if (event.shiftKey && event.key === "Enter") {
+      this.updateComment(event, id, 'comment', commetText);
+    }
+  }
 }
