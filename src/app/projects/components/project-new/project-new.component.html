@@ -3,12 +3,8 @@
     </kern-sidebar-pm>
     <!-- Content area -->
     <div class="h-full w-full flex-1 flex flex-col overflow-auto">
-        <kern-header 
-            [user]="user$ | async"
-            [organizationName]="organizationName"
-            [avatarUri]="avatarUri"
-            page="project-new"
-        ></kern-header>
+        <kern-header [user]="user$ | async" [organizationName]="organizationName" [avatarUri]="avatarUri"
+            page="project-new"></kern-header>
         <section class="p-4">
             <form [formGroup]="createNewProject">
                 <div class="form-control">
@@ -17,7 +13,7 @@
                     <div class="flex flex-row">
                         <input name="projectTitle" formControlName="projectTitle" type="submit"
                             (keydown.enter)="initializeProject(true,$event)" type="text"
-                            placeholder="Enter some title here ..." required
+                            placeholder="Enter some title here ..." required autocomplete="off"
                             class="input input-sm input-bordered w-full placeholder-italic mr-3">
 
                         <button [routerLink]="['/projects']"
@@ -41,8 +37,9 @@
 
                 <div class="form-control mt-6">
                     <label class="text-gray-500 text-sm font-normal">
-                        Please choose a tokenizer for your project. See our <a href="https://docs.kern.ai/docs/project-creation-and-data-upload"
-                            target="_blank"><span class="underline cursor-pointer">documentation</span></a> for further
+                        Please choose a tokenizer for your project. See our <a
+                            href="https://docs.kern.ai/docs/project-creation-and-data-upload" target="_blank"><span
+                                class="underline cursor-pointer">documentation</span></a> for further
                         details.
                     </label>
                     <select formControlName="tokenizerForm"
@@ -55,8 +52,7 @@
                     </select>
                 </div>
 
-                <kern-upload-records
-                    [selectedTokenizer]="selectedTokenizer"
+                <kern-upload-records [selectedTokenizer]="selectedTokenizer"
                     (hasFileUploaded)="checkIfFileUploaded($event)"></kern-upload-records>
 
                 <div class="mt-4 flex flex-row">
