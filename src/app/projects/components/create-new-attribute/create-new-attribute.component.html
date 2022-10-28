@@ -18,7 +18,7 @@
                         {{currentAttribute.name}}</div>
 
                     <kern-heuristic-statuses [status]="currentAttribute.state" page="attributes"
-                        initialCaption="Needs execution">
+                        initialCaption="Registered">
                     </kern-heuristic-statuses>
 
                 </div>
@@ -97,7 +97,7 @@
                 <div class="text-sm leading-5 font-medium text-gray-700 inline-block mr-2">Editor</div>
                 <div class="tooltip tooltip-left" data-tip="See available libraries for this attribute calculation">
 
-                    <a href="https://github.com/code-kern-ai/refinery-ac-exec-env/blob/release/requirements.txt"
+                    <a href="https://github.com/code-kern-ai/refinery-ac-exec-env/blob/dev/requirements.txt"
                         target="_blank"
                         class="ml-2 bg-white text-gray-700 text-xs font-semibold  px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none">
                         See installed libraries
@@ -157,10 +157,10 @@
                             <div class="modal-box">
                                 <h1 class="text-lg text-gray-900 mb-2">Attribute calculation</h1>
                                 <div class="text-sm text-gray-500 my-2">
-                                    Running this action computes the attribute, but also makes it immutable. To change
-                                    the logic, you need to compute a new currentAttribute. If you run into errors, you
-                                    will see
-                                    a detailed log in the attribute function.
+                                    This action calculates the attribute for all records.
+                                    Be aware that calculated records are immutable.
+                                    If you want to change the attribute calculation afterwards, you need to create a new
+                                    attribute.
                                 </div>
 
                                 <div class="modal-action text-center mt-0">

@@ -10,7 +10,7 @@ import { caseType, copyToClipboard, enumToArray, findProjectIdFromRoute } from '
 import { LabelSource, labelSourceToString } from '../../enum/graphql-enums';
 import { NotificationService } from '../../services/notification.service';
 import { ProjectApolloService } from '../../services/project/project-apollo.service';
-import { ExportEnums, ExportFileType, ExportFormat, ExportHelper, ExportPreset, ExportRowType } from './export-helper';
+import { ExportEnums, ExportFileType, ExportFormat, ExportHelper, ExportPreset, ExportRowType, getExportTooltipFor } from './export-helper';
 import { UserManager } from 'src/app/util/user-manager';
 
 
@@ -41,6 +41,11 @@ export class ExportComponent implements OnInit, OnChanges {
   exportHelper: ExportHelper;
   copyClicked: boolean = false;
   recordExportCredentials: any;
+  labelStudioHelper = {
+    code: "",
+    open: false,
+    copied: false,
+  }
 
   constructor(
     private projectApolloService: ProjectApolloService,
@@ -127,9 +132,21 @@ export class ExportComponent implements OnInit, OnChanges {
       this.enumArrays.set(ExportEnums.LabelingTasks, v.labelingTasks);
       this.enumArrays.set(ExportEnums.Attributes, v.attributes);
       this.enumArrays.set(ExportEnums.DataSlices, v.dataSlices);
+      this.collectTooltips();
       this.refreshForms();
     });
   }
+
+  private collectTooltips() {
+    //loop enumArrays and collect tooltips
+    this.enumArrays.forEach((v, k) => {
+      v.forEach((v2: any) => {
+        const tooltip = getExportTooltipFor(k, v2);
+        if (tooltip) v2.tooltip = tooltip;
+      });
+    });
+  }
+
 
   private setPresetValues(preset: ExportPreset) {
     this.setOptionFormDisableState(preset);
@@ -320,6 +337,14 @@ export class ExportComponent implements OnInit, OnChanges {
     if (this.exportHelper?.error.length > 0) {
       this.exportHelper.error = [];
     }
+    if (this.labelStudioHelper.open && [ExportEnums.LabelingTasks, ExportEnums.Attributes].includes(type)) {
+      if (this.formGroups.get(ExportEnums.ExportFormat).get('LABEL_STUDIO').get('active').value) {
+        this.getLabelStudioTemplate();
+
+      }
+
+    }
+
   }
 
   prepareDownload() {
@@ -343,10 +368,15 @@ export class ExportComponent implements OnInit, OnChanges {
 
     if (this.exportHelper.error.length != 0) return
     this.projectApolloService.getLabelstudioTemplate(this.projectId, tasks, attributes).subscribe((res) => {
-      copyToClipboard(res);
-      this.copyClicked = true;
-      timer(1000).pipe(first()).subscribe(() => this.copyClicked = false);
+      this.labelStudioHelper.code = res;
     });
+  }
+
+  copyMe(text: string) {
+    this.labelStudioHelper.copied = true;
+    copyToClipboard(text);
+    timer(1000).subscribe(() => this.labelStudioHelper.copied = false);
+
   }
 
   requestRecordExportCredentials() {

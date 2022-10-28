@@ -219,6 +219,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
     requests.push({ commentType: CommentType.LABELING_TASK, projectId: projectId });
     requests.push({ commentType: CommentType.ATTRIBUTE, projectId: projectId });
     requests.push({ commentType: CommentType.LABEL, projectId: projectId });
+    requests.push({ commentType: CommentType.HEURISTIC, projectId: projectId });
     CommentDataManager.registerCommentRequests(this, requests);
 
   }

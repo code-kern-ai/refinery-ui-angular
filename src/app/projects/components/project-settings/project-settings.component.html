@@ -4,8 +4,10 @@
             Data schema
         </div>
         <div class="mt-1">
-            <div class="text-sm leading-5 font-medium text-gray-700 inline-block">This schema is automatically derived
-                from your uploaded data. You can change the data types and the composite primary key.</div>
+            <div class="text-sm leading-5 font-medium text-gray-700 inline-block">
+                This schema holds the data structure of your project.
+                It contains the attributes uploaded on project creation and the added calculated attributes.
+            </div>
             <div class="">
                 <div class="">
                     <div class="inline-block min-w-full align-middle">
@@ -79,7 +81,7 @@
                                         </td>
                                         <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
                                             <kern-heuristic-statuses [status]="attributeContainer.get('state').value"
-                                                page="attributes" initialCaption="Needs execution">
+                                                page="attributes" initialCaption="Registered">
                                             </kern-heuristic-statuses>
                                         </td>
                                         <td class="text-center px-3 py-2 text-sm text-gray-500">

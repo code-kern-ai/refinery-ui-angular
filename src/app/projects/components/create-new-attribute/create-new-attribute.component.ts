@@ -195,6 +195,10 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
     this.nameOpen = open;
     this.duplicateNameExists = false;
     if (!open && this.attributeName != this.currentAttribute.name) {
+      if (this.attributeName.trim().length == 0) {
+        this.attributeName = this.currentAttribute.name;
+        return;
+      }
       const findDuplicate = this.attributes.find(att => att.name == this.attributeName && att.id != this.currentAttribute.id);
       this.duplicateNameExists = findDuplicate != undefined ? true : false;
       if (this.duplicateNameExists) {
