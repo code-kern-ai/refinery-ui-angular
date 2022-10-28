@@ -41,6 +41,11 @@ export class ExportComponent implements OnInit, OnChanges {
   exportHelper: ExportHelper;
   copyClicked: boolean = false;
   recordExportCredentials: any;
+  labelStudioHelper = {
+    code: "",
+    open: false,
+    copied: false,
+  }
 
   constructor(
     private projectApolloService: ProjectApolloService,
@@ -332,6 +337,14 @@ export class ExportComponent implements OnInit, OnChanges {
     if (this.exportHelper?.error.length > 0) {
       this.exportHelper.error = [];
     }
+    if (this.labelStudioHelper.open && [ExportEnums.LabelingTasks, ExportEnums.Attributes].includes(type)) {
+      if (this.formGroups.get(ExportEnums.ExportFormat).get('LABEL_STUDIO').get('active').value) {
+        this.getLabelStudioTemplate();
+
+      }
+
+    }
+
   }
 
   prepareDownload() {
@@ -355,10 +368,15 @@ export class ExportComponent implements OnInit, OnChanges {
 
     if (this.exportHelper.error.length != 0) return
     this.projectApolloService.getLabelstudioTemplate(this.projectId, tasks, attributes).subscribe((res) => {
-      copyToClipboard(res);
-      this.copyClicked = true;
-      timer(1000).pipe(first()).subscribe(() => this.copyClicked = false);
+      this.labelStudioHelper.code = res;
     });
+  }
+
+  copyMe(text: string) {
+    this.labelStudioHelper.copied = true;
+    copyToClipboard(text);
+    timer(1000).subscribe(() => this.labelStudioHelper.copied = false);
+
   }
 
   requestRecordExportCredentials() {

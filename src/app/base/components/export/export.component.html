@@ -94,32 +94,52 @@
                 isCheckbox:true}">
             </ng-container>
             <!--Label Studio helper-->
-            <ng-template [ngIf]="formGroups.get(ExportEnumsType.ExportPreset).get('LABEL_STUDIO').get('active').value">
-                <label class="text-base font-medium text-gray-900 col-start-1 col-span-full">Label Studio helper</label>
+            <ng-template [ngIf]="formGroups.get(ExportEnumsType.ExportFormat).get('LABEL_STUDIO').get('active').value">
 
-                <div class="flex items-center mb-2">
-                    <div class="tooltip tooltip-right"
-                        data-tip="Copy a Label Studio settings template to your clipboard">
-                        <button (click)="getLabelStudioTemplate()"
-                            class="bg-indigo-700 text-white text-xs leading-4 px-2 py-2 rounded-md cursor-pointer hover:bg-indigo-800 focus:outline-none relative">
-                            <svg xmlns="http://www.w3.org/2000/svg"
-                                class="transition-all duration-500 ease-in-out h-6 w-6 cursor-pointer inline-block"
-                                [ngClass]="copyClicked ? 'opacity-0' : null" viewBox="0 0 20 20" fill="currentColor">
-                                <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
-                                <path
-                                    d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
+                <div class="w-full flex flex-col col-start-1 col-span-full" style="max-width: 750px;">
+                    <div class="flex flex-row justify-between cursor-pointer items-center"
+                        (click)="labelStudioHelper.open=!labelStudioHelper.open;getLabelStudioTemplate()">
+
+                        <label class="text-base font-medium text-gray-900 cursor-pointer">Labelstudio
+                            label viewer</label>
+                        <div [ngClass]="labelStudioHelper.open?'rotate_transform':null">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevrons-down"
+                                width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+                                fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <polyline points="7 7 12 12 17 7"></polyline>
+                                <polyline points="7 13 12 18 17 13"></polyline>
                             </svg>
-                            <div class="absolute top-0 left-0 w-full h-full flex items-center justify-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="currentColor"
-                                    class="transition-all duration-500 ease-in-out opacity-0 h-6 w-6 inline-block"
-                                    fill="none" [ngClass]="copyClicked ? 'opacity-100' : null">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M5 13l4 4L19 7" />
-                                </svg>
-                            </div>
-                        </button>
+                        </div>
                     </div>
+                    <div class="flex flex-col" [ngClass]="labelStudioHelper.open?'':'hidden'">
+                        <div class="flex flex-row justify-between items-center mb-2">
+                            <div class="text-gray-500 text-xs font-normal">In Labelstudio, you can configure
+                                your own
+                                label views. The code below can be copied and used to create a
+                                refinery-like view.</div>
+                            <div class="flex items-center" data-tip="Copied"
+                                [ngClass]="labelStudioHelper.copied?'tooltip tooltip-left':''">
+                                <button (click)="copyMe(labelStudioHelper.code)"
+                                    class="whitespace-nowrap bg-white text-gray-700 border border-gray-300 text-xs font-semibold px-4 py-2 rounded cursor-pointer hover:bg-gray-50 focus:outline-none">
+                                    Copy into clipboard
+                                </button>
+                            </div>
+
+                        </div>
+                        <div class="overflow-auto" style="max-height:500px;" *ngIf="exportHelper?.error.length==0">
+
+                            <pre class="editor-pre">{{labelStudioHelper.code}}</pre>
+                        </div>
+                        <div class="mt-1 text-gray-500 text-xs font-normal">
+                            This view is automatically generated from your project configurations.</div>
+                        <div class="mt-2 text-gray-500 text-sm font-normal">
+                            Keep in mind that the email used in refinery needs to match the one in Label Studio. If not
+                            Label Studio will notify you about a missing email on import.</div>
+                    </div>
+
                 </div>
+
             </ng-template>
 
         </div>
