@@ -1,7 +1,6 @@
 <div class="flex flex-col ">
   <div class="flex items-center justify-between">
     <div class="flex flex-grow items-center overflow-x-hidden">
-      <button (click)="resetMe()">reset</button>
       <div kernDragAndDrop (fileDropped)="onFileDropped($event)" (click)="fileInput.click()"
         class="w-full border-4 border-dashed rounded-lg h-36 my-6 cursor-pointer"
         [ngClass]="file || uploadStarted ? 'bg-white' : 'border-slate-400' "

@@ -213,6 +213,7 @@ export class UploadComponent implements OnDestroy, OnInit, AfterViewInit {
     if (msgParts[2] != this.uploadTask.id) return;
     if (msgParts[3] == 'state') {
       if (msgParts[4] == UploadStates.DONE) this.uploadTaskQuery$.refetch();
+      else if (msgParts[4] == UploadStates.ERROR) this.resetUpload();
       else this.uploadTask.state = UploadStates[msgParts[4]];
     }
     else if (msgParts[3] == 'progress') this.uploadTask.progress = Number(msgParts[4]);
@@ -240,12 +241,11 @@ export class UploadComponent implements OnDestroy, OnInit, AfterViewInit {
     this.fileAttached.emit(this.file);
   }
 
-  resetMe() {
-    console.log("resetMe");
-    this.file = null; this.clearUploadTask();
+  resetUpload() {
+    this.file = null;
+    this.clearUploadTask();
     this.upload$ = null;
     this.uploadStarted = false;
     this.fileAttached.emit(null);
-
   }
 }
