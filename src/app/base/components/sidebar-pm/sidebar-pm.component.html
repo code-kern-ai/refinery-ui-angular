@@ -90,7 +90,7 @@
                                         [ngClass]="project.numDataScaleUploaded == 0 ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer'">
                                         <a [routerLink]="['./heuristics']" rel="noopener noreferrer"
                                             class="circle text-white"
-                                            [ngClass]="matchRouteAndMenu((activatedRoute$ | async), 'heuristics') || matchRouteAndMenu((activatedRoute$ | async), 'knowledge-base') ||matchRouteAndMenu((activatedRoute$ | async), 'model-callbacks') ? 'text-kerngreen': 'text-white'">
+                                            [ngClass]="matchRouteAndMenu((activatedRoute$ | async), 'heuristics') || matchRouteAndMenu((activatedRoute$ | async), 'lookup-lists') ||matchRouteAndMenu((activatedRoute$ | async), 'model-callbacks') ? 'text-kerngreen': 'text-white'">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
                                                 fill="currentColor">
                                                 <path

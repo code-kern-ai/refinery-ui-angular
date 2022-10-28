@@ -59,9 +59,9 @@ const routes: Routes = [
       { path: 'labeling', component: LabelingComponent, data: { name: 'LabelingComponent' } },
       { path: 'labeling/:id', component: LabelingComponent, data: { name: 'LabelingComponent' } },
       { path: 'record-ide/:id', component: RecordIDEComponent, data: { name: 'RecordIDEComponent' } },
-      { path: 'knowledge-base', component: KnowledgeBasesComponent, data: { name: 'KnowledgeBasesComponent' } },
+      { path: 'lookup-lists', component: KnowledgeBasesComponent, data: { name: 'KnowledgeBasesComponent' } },
       {
-        path: 'knowledge-base/:knowledgeBaseId',
+        path: 'lookup-lists/:knowledgeBaseId',
         component: KnowledgeBaseDetailsComponent, data: { name: 'KnowledgeBaseDetailsComponent' }
       },
       { path: 'model-callbacks', component: ModelCallbackComponent, data: { name: 'ModelCallbackComponent' } },
