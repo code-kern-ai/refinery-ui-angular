@@ -239,4 +239,13 @@ export class UploadComponent implements OnDestroy, OnInit, AfterViewInit {
     this.file = files[0];
     this.fileAttached.emit(this.file);
   }
+
+  resetMe() {
+    console.log("resetMe");
+    this.file = null; this.clearUploadTask();
+    this.upload$ = null;
+    this.uploadStarted = false;
+    this.fileAttached.emit(null);
+
+  }
 }
