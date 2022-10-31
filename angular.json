@@ -62,14 +62,14 @@
               ],
               "optimization": false,
               "outputHashing": "none",
-              "sourceMap": false,
+              "sourceMap": true,
               "namedChunks": false,
               "showCircularDependencies": false,
               "aot": true,
               "extractLicenses": false,
               "statsJson": false,
               "progress": false,
-              "vendorChunk": true,
+              "vendorChunk": false,
               "buildOptimizer": false,
               "subresourceIntegrity": false,
               "budgets": [
@@ -92,21 +92,37 @@
               "extractLicenses": false,
               "statsJson": false,
               "progress": true,
-              "vendorChunk": true,
+              "vendorChunk": false,
               "buildOptimizer": false,
               "sourceMap": true,
-              "namedChunks": false
+              "namedChunks": false,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "6mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kb",
+                  "maximumError": "4kb"
+                }
+              ]
             }
           }
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
+          "defaultConfiguration": "development",
           "options": {
             "browserTarget": "kern-frontspine:build"
           },
           "configurations": {
             "production": {
               "browserTarget": "kern-frontspine:build:production"
+            },
+            "development": {
+              "browserTarget": "kern-frontspine:build:development"
             }
           }
         },
