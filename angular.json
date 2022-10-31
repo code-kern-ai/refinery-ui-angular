@@ -71,6 +71,7 @@
               "progress": false,
               "vendorChunk": true,
               "buildOptimizer": false,
+              "subresourceIntegrity": false,
               "budgets": [
                 {
                   "type": "initial",
@@ -83,6 +84,18 @@
                   "maximumError": "4kb"
                 }
               ]
+            },
+            "development": {
+              "optimization": false,
+              "outputHashing": "none",
+              "aot": true,
+              "extractLicenses": false,
+              "statsJson": false,
+              "progress": true,
+              "vendorChunk": true,
+              "buildOptimizer": false,
+              "sourceMap": true,
+              "namedChunks": false
             }
           }
         },
