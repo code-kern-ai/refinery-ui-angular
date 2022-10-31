@@ -273,6 +273,10 @@ export const queries = {
   query ($projectId: ID!) {
     lastProjectExportCredentials(projectId:$projectId)
   }`,
+  LAST_RECORD_EXPORT_CREDENTIALS: gql`
+  query ($projectId: ID!) {
+    lastRecordExportCredentials(projectId:$projectId)
+  }`,
 
   GET_UPLOAD_LINK: gql`
     query ($projectId: ID!, $fileType: String!, $recordType: String!) {
@@ -441,7 +445,61 @@ export const queries = {
     }
   }`
   ,
+  GET_RECORD_EXPORT_FORM_DATA: gql`
+  query ($projectId: ID!) {
+    projectByProjectId(projectId: $projectId) {
+      id
+      name
+      labelingTasks {
+        edges {
+          node {
+            id
+            name
+            attribute {
+              relativePosition
+            }
+          }
+        }
+      }
+      informationSources {
+        edges {
+          node {
+            id
+            name
+          }
+        }
+      }
+      attributes {
+        edges {
+          node {
+            id
+            name
+            state
+          }
+        }
+      }
+      dataSlices {
+        edges {
+          node {
+            id
+            name
+            sliceType
+          }
+        }
+      }
+    }
+  }  
 
+`,
+  PREPARE_RECORD_EXPORT: gql`
+query ($projectId: ID!, $exportOptions: JSONString) {
+  prepareRecordExport(projectId: $projectId, exportOptions: $exportOptions)
+}
+`,
+  GET_LABELSTUDIO_TEMPLATE: gql`
+  query ($projectId: ID!, $labelingTaskIds: [ID]!, $attributeIds: [ID]!) {
+    labelstudioTemplate(projectId: $projectId, labelingTaskIds: $labelingTaskIds, attributeIds: $attributeIds)
+  }  `
 
 
 
