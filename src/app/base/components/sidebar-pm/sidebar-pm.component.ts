@@ -16,7 +16,6 @@ import { ProjectApolloService } from '../../services/project/project-apollo.serv
 import { ConfigApolloService } from '../../services/config/config-apollo.service';
 import { dateAsUTCDate } from 'src/app/util/helper-functions';
 import { ConfigManager } from '../../services/config-service';
-import { camelCaseToDashCase } from 'src/app/util/helper-functions';
 
 
 @Component({
@@ -68,18 +67,15 @@ export class SidebarPmComponent implements OnInit, OnDestroy {
   isManaged: boolean = true;
   hasUpdates: boolean;
   private static initialConfigRequest: boolean = false;
-  private routeColor = {
-    overview: false,
-    data: false,
-    labeling: false,
-    recordIde: false,
-    heuristics: false,
-    lookupLists: false,
-    modelCallbacks: false,
-    settings: false,
-    attributes: false,
-    add: false,
-    zeroShot: false
+
+  // model-download isn't checked for since the page is accessed from different routes
+  // e.g. lastPage=settings => settings is checked for so settings is highlighted
+  routeColor = {
+    overview: { active: false, checkFor: ['overview'] },
+    data: { active: false, checkFor: ['data'] },
+    labeling: { active: false, checkFor: ['labeling', 'record-ide'] },
+    heuristics: { active: false, checkFor: ['heuristics', 'lookup-lists', 'model-callbacks', 'zero-shot', 'crowd-labeler'] },
+    settings: { active: false, checkFor: ['settings', 'attributes', 'add'] },
   }
 
 
@@ -138,8 +134,7 @@ export class SidebarPmComponent implements OnInit, OnDestroy {
 
   checkRouteHighlight(url: string) {
     for (const key in this.routeColor) {
-      const routeName = camelCaseToDashCase(key);
-      this.routeColor[key] = url.includes(routeName);
+      this.routeColor[key].active = this.routeColor[key].checkFor.some(s => url.includes(s));
     }
   }
 
