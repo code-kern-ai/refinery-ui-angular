@@ -13,6 +13,7 @@ export class CommentDataManager {
     private static commentRequests: Map<Object, CommentRequest[]> = new Map<Object, CommentRequest[]>();
     private static requestQueued: boolean = false;
     private static globalProjectId: string = "GLOBAL";
+    private static timer = { register: null };
     private data: {};
     private addInfo: {};
     public currentData: {};
@@ -51,9 +52,14 @@ export class CommentDataManager {
         if (CommentDataManager.commentRequests.has(caller)) comments.push(...CommentDataManager.commentRequests.get(caller));
         CommentDataManager.commentRequests.set(caller, comments);
         if (CommentDataManager.isInit()) {
-            CommentDataManager.singleTon.requestMissingData(200);
-            CommentDataManager.singleTon.buildCommentTypeOptions();
-            CommentDataManager.singleTon.checkCanCommentOnPage();
+            if (CommentDataManager.timer.register) return;
+            CommentDataManager.timer.register = timer(250).subscribe(() => {
+                CommentDataManager.singleTon.requestMissingData(200);
+                CommentDataManager.singleTon.buildCommentTypeOptions();
+                CommentDataManager.singleTon.checkCanCommentOnPage();
+                if (CommentDataManager.singleTon.updateCommentModule) CommentDataManager.singleTon.updateCommentModule();
+                CommentDataManager.timer.register = null;
+            });
         }
         else CommentDataManager.requestQueued = true;
 

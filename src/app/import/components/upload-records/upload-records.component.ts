@@ -15,6 +15,7 @@ export class UploadRecordsComponent implements OnInit {
   @Input() projectId: string;
   @Input() selectedTokenizer: string;
   @Input() submitted: boolean;
+  @Input() deleteProjectOnFail: boolean = false;
   @Output() hasFileUploaded = new EventEmitter<boolean>();
 
   file: File;

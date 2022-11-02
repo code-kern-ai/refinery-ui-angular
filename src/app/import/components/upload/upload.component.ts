@@ -23,6 +23,7 @@ export class UploadComponent implements OnDestroy, OnInit, AfterViewInit {
   @Input() reloadOnFinish: boolean = true;
   @Input() unique;
   @Input() init = false;
+  @Input() deleteProjectOnFail = false;
   file: File | null = null;
   @Output() fileAttached = new EventEmitter<File>();
 
@@ -153,8 +154,8 @@ export class UploadComponent implements OnDestroy, OnInit, AfterViewInit {
         tap((progress) => {
           if (progress.state === UploadStates.DONE || progress.state === UploadStates.ERROR) {
             timer(500).subscribe(() => this.file = null);
-            if (this.init && progress.state === UploadStates.ERROR) {
-              //create created project if not sucessfull
+            if (this.init && progress.state === UploadStates.ERROR && this.deleteProjectOnFail) {
+              //create created project if not successful -- only s3 upload errors not general import errors
               this.projectApolloService.deleteProjectById(this.projectId).pipe(first()).subscribe();
             }
           }
@@ -215,7 +216,7 @@ export class UploadComponent implements OnDestroy, OnInit, AfterViewInit {
       if (msgParts[4] == UploadStates.DONE) this.uploadTaskQuery$.refetch();
       else if (msgParts[4] == UploadStates.ERROR) {
         this.resetUpload();
-        this.projectApolloService.deleteProjectById(this.projectId).pipe(first()).subscribe();
+        if (this.deleteProjectOnFail) this.projectApolloService.deleteProjectById(this.projectId).pipe(first()).subscribe();
       }
       else this.uploadTask.state = UploadStates[msgParts[4]];
     }

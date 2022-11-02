@@ -74,7 +74,16 @@ export class CommentComponent implements OnInit, OnDestroy {
     if (this.newComment.commentType == CommentType.RECORD) {
       this.setNewCommentsToLastElement();
     }
-    if (keepExisting) return;
+    if (keepExisting) {
+      if (this.commentIdOptions.some((option) => option.id == this.newComment.commentId)) {
+        return;
+      }
+
+    }
+    this.initNewCommentData();
+  }
+
+  initNewCommentData() {
     if (this.commentIdOptions.length == 1) this.switchCommentId(0);
     else {
       this.newComment.commentId = "";

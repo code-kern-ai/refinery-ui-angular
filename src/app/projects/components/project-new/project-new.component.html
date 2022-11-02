@@ -52,7 +52,7 @@
                     </select>
                 </div>
 
-                <kern-upload-records [selectedTokenizer]="selectedTokenizer"
+                <kern-upload-records [selectedTokenizer]="selectedTokenizer" [deleteProjectOnFail]="true"
                     (hasFileUploaded)="checkIfFileUploaded($event)"></kern-upload-records>
 
                 <div class="mt-4 flex flex-row">
