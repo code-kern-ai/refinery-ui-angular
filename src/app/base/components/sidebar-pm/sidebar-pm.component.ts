@@ -5,19 +5,18 @@ import {
   transition,
   trigger,
 } from '@angular/animations';
-import { Component, Inject, EventEmitter, OnInit, Output, Input, HostListener, ViewChild, ElementRef } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, Inject, EventEmitter, OnInit, Output, Input, HostListener, ViewChild, ElementRef, OnDestroy } from '@angular/core';
+import { ActivatedRoute, Router, RoutesRecognized } from '@angular/router';
 import { Observable, Subscription, timer } from 'rxjs';
 import { first, tap } from 'rxjs/operators';
 import { AuthApiService } from '../../services/auth-api.service';
 import { OrganizationApolloService } from '../../services/organization/organization-apollo.service';
-import { RouteService } from '../../services/route.service';
 import { DOCUMENT } from '@angular/common';
 import { ProjectApolloService } from '../../services/project/project-apollo.service';
 import { ConfigApolloService } from '../../services/config/config-apollo.service';
 import { dateAsUTCDate } from 'src/app/util/helper-functions';
 import { ConfigManager } from '../../services/config-service';
-import { ConfigService } from 'aws-sdk';
+import { camelCaseToDashCase } from 'src/app/util/helper-functions';
 
 
 @Component({
@@ -50,10 +49,8 @@ import { ConfigService } from 'aws-sdk';
     ]),
   ],
 })
-export class SidebarPmComponent implements OnInit {
+export class SidebarPmComponent implements OnInit, OnDestroy {
   menuOpen = false;
-  url: string;
-  activatedRoute$: Observable<ActivatedRoute>;
   logoutUrl$: Observable<Object>;
   user$: any;
   organizationInactive: boolean;
@@ -71,16 +68,33 @@ export class SidebarPmComponent implements OnInit {
   isManaged: boolean = true;
   hasUpdates: boolean;
   private static initialConfigRequest: boolean = false;
+  private routeColor = {
+    overview: false,
+    data: false,
+    labeling: false,
+    recordIde: false,
+    heuristics: false,
+    lookupLists: false,
+    modelCallbacks: false,
+    settings: false,
+    attributes: false,
+    add: false,
+    zeroShot: false
+  }
+
 
   constructor(
     private organizationService: OrganizationApolloService,
-    private routeService: RouteService,
     private activatedRoute: ActivatedRoute,
     private auth: AuthApiService,
+    private router: Router,
     private projectApolloService: ProjectApolloService,
     private configService: ConfigApolloService,
     @Inject(DOCUMENT) private document: any
   ) { }
+  ngOnDestroy(): void {
+    this.subscriptions$.forEach((subscription) => subscription.unsubscribe());
+  }
 
   ngOnInit(): void {
     this.user$ = this.organizationService.getUserInfo();
@@ -90,8 +104,7 @@ export class SidebarPmComponent implements OnInit {
     }
 
     this.firstName.emit(this.user$);
-    this.activatedRoute$ = this.routeService.getActivatedRoute();
-    this.url = this.activatedRoute.snapshot.toString();
+    this.checkRouteHighlight(this.router.url);
     this.logoutUrl$ = this.auth.getLogoutOut();
     this.subscriptions$.push(this.organizationService
       .getUserOrganization()
@@ -107,6 +120,28 @@ export class SidebarPmComponent implements OnInit {
       SidebarPmComponent.initialConfigRequest = true;
     }
     this.checkIfManagedVersion();
+    this.initRouterListener();
+
+  }
+
+  initRouterListener() {
+    this.subscriptions$.push(this.router.events.subscribe((val) => {
+      if (val instanceof RoutesRecognized) {
+        const values = { old: this.router.url, new: val.url };
+        if (values.old != values.new) {
+          this.checkRouteHighlight(val.url);
+        }
+      }
+    }));
+
+  }
+
+  checkRouteHighlight(url: string) {
+    for (const key in this.routeColor) {
+      const routeName = camelCaseToDashCase(key);
+      this.routeColor[key] = url.includes(routeName);
+    }
+    console.log(url, this.routeColor);
   }
 
   requestVersionOverview() {
@@ -129,10 +164,6 @@ export class SidebarPmComponent implements OnInit {
 
   onDestroy() {
     this.subscriptions$.forEach((subscription) => subscription.unsubscribe());
-  }
-
-  matchRouteAndMenu(route, menuItem: string) {
-    return route.url.value.toString().includes(menuItem);
   }
 
 

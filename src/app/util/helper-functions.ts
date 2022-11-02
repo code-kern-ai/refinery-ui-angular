@@ -122,7 +122,7 @@ function sortByEnumPos(e: Object, arr: any[]) {
     });
 }
 
-function capitalizeFirstPerWord(str: string) {
+export function capitalizeFirstPerWord(str: string) {
     str = str.replace("_", " ");
     const parts = str.split(" ");
     for (let i = 0; i < parts.length; i++) {
@@ -131,7 +131,11 @@ function capitalizeFirstPerWord(str: string) {
     return parts.join(" ");
 }
 
-function capitalizeFirst(str: string) {
+export function camelCaseToDashCase(str: string) {
+    return str.replace(/[A-Z]/g, m => "-" + m.toLowerCase());
+}
+
+export function capitalizeFirst(str: string) {
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
 }
 
