@@ -179,9 +179,18 @@ export class CommentComponent implements OnInit, OnDestroy {
     privateComment.checked = !privateComment.checked;
   }
 
-  checkIfKeyShiftEnter(event: KeyboardEvent, id: string, commetText) {
+  checkIfKeyShiftEnterUpdate(event: KeyboardEvent, id: string, commentText) {
     if (event.shiftKey && event.key === "Enter") {
-      this.updateComment(event, id, 'comment', commetText);
+      this.updateComment(event, id, 'comment', commentText);
     }
   }
+
+  checkIfKeyShiftEnterSave(event: KeyboardEvent, commentBox: HTMLInputElement, isPrivate: HTMLInputElement) {
+    if (commentBox.value != '' && this.newComment.commentId != '' && event.shiftKey && event.key === "Enter") {
+      this.saveCommentToDb(commentBox.value, isPrivate.checked);
+      commentBox.value = '';
+      isPrivate.checked = false;
+    }
+  }
+
 }

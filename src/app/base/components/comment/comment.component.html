@@ -60,9 +60,7 @@
     </li>
     <textarea #commentText [attr.disabled]="!cData.edit?true:null"
         (blur)="cData.edit?updateComment($event,cData.id,'comment',commentText.value):null"
-        (change)="checkIfKeyShiftEnter($event,cData.id,commentText.value)"
-        (keyup)="checkIfKeyShiftEnter($event,cData.id,commentText.value)"
-        (keydown)="checkIfKeyShiftEnter($event, cData.id,commentText.value)"
+        (keyup)="checkIfKeyShiftEnterUpdate($event,cData.id,commentText.value)"
         [ngClass]="[cData.open?'null':'hidden',!cData.edit?'bg-gray-50':'']"
         class="textarea placeholder-italic w-full p-2 line-height-textarea focus:outline-none border border-gray-300"
         [ngStyle]="{'background-color': !cData.edit?'rgb(249 250 251)':null,'height':(commentText.scrollHeight+2) + 'px','overflow-y':commentText.scrollHeight < 400 ? 'hidden':'auto'}">{{cData.comment}}</textarea>
@@ -166,9 +164,7 @@
                                 <div class="mt-1">
                                     <textarea #commentBox
                                         class="textarea placeholder-italic w-full h-20 p-2 line-height-textarea border rounded-md border-gray-300 focus:outline-none focus:shadow-none"
-                                        (change)="preventEventPropagation($event)"
-                                        (keyup)="preventEventPropagation($event)"
-                                        (keydown)="preventEventPropagation($event)"></textarea>
+                                        (keyup)="checkIfKeyShiftEnterSave($event, commentBox, privateComment)"></textarea>
                                 </div>
                                 <div class="my-1 text-xs text-gray-500 font-normal text-justify">
                                     The comment will be stored on project-level, so that your team members can look into
@@ -194,7 +190,7 @@
                             <div class="flex px-4 pb-4">
                                 <button [disabled]="commentBox.value =='' || newComment.commentId == ''"
                                     [ngClass]="commentBox.value =='' || newComment.commentId == '' ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
-                                    (click)="saveCommentToDb(commentBox.value,privateComment.checked);commentBox.value='';privateComment.checked=false;newComment.commentId = ''"
+                                    (click)="saveCommentToDb(commentBox.value,privateComment.checked);commentBox.value='';privateComment.checked=false;"
                                     type="button"
                                     class="flex-1 bg-indigo-700 text-white text-xs font-semibold px-4 py-2 rounded-md border hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Create
                                     comment</button>
