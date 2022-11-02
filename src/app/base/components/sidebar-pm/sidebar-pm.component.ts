@@ -141,7 +141,6 @@ export class SidebarPmComponent implements OnInit, OnDestroy {
       const routeName = camelCaseToDashCase(key);
       this.routeColor[key] = url.includes(routeName);
     }
-    console.log(url, this.routeColor);
   }
 
   requestVersionOverview() {
