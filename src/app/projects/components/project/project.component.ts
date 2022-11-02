@@ -64,23 +64,6 @@ export class ProjectComponent implements OnInit, OnDestroy {
   }
 
 
-  matchRouteAndMenu(route, menuItem: string) {
-    return route.url?.value.toString().includes(menuItem);
-  }
-
-  getNgClasses(route, menuItem: string) {
-
-    if (this.matchRouteAndMenu(route, menuItem)) {
-      return 'border-kern text-gray-900'
-    } else {
-      if (!this.hasRecords) {
-        return 'border-transparent pointer-events-none text-gray-200'
-      } else {
-        return 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-      }
-    }
-  }
-
   handleWebsocketNotification(msgParts) {
     if ('project_update' == msgParts[1]) {
       this.projectQuery$.refetch();
