@@ -43,7 +43,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
   canRunProject: boolean = false;
   sampleRecords: any;
   code: string = '';
-  @ViewChild('calculateAttribite', { read: ElementRef }) calculateAttribite: ElementRef;
+  @ViewChild('calculateAttribute', { read: ElementRef }) calculateAttribute: ElementRef;
   @ViewChild('deleteAttribute', { read: ElementRef }) deleteAttribute: ElementRef;
   updatedThroughWebsocket: boolean = false;
   checkIfNewAttribute: string;
@@ -309,7 +309,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
       .calculateUserAttributeAllRecords(this.project.id, this.currentAttribute.id)
       .pipe(first())
       .subscribe(() => {
-        this.calculateAttribite.nativeElement.checked = false;
+        this.calculateAttribute.nativeElement.checked = false;
         this.duplicateNameExists = false;
       });
   }

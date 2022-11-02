@@ -2,7 +2,7 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { timer } from 'rxjs';
 import { UserManager } from 'src/app/util/user-manager';
-import { CommentDataManager, CommentType, CommnetPosition } from './comment-helper';
+import { CommentDataManager, CommentType, CommentPosition } from './comment-helper';
 
 @Component({
   selector: 'kern-comment',
@@ -40,7 +40,7 @@ export class CommentComponent implements OnInit, OnDestroy {
   commentIdOptions: any[];
   allOpen: boolean = false;
   isSlideOverOpen: boolean = false;
-  positionComment: string = CommnetPosition.RIGHT;
+  positionComment: string = CommentPosition.RIGHT;
 
   constructor() { }
   ngOnDestroy(): void {
@@ -48,7 +48,7 @@ export class CommentComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.initDataManger();
     UserManager.registerAfterInitActionOrRun(this, () => this.initUsers(), true);
-    this.positionComment = localStorage.getItem('commentPosition') || CommnetPosition.RIGHT;
+    this.positionComment = localStorage.getItem('commentPosition') || CommentPosition.RIGHT;
   }
 
   private initUsers() {
@@ -74,13 +74,19 @@ export class CommentComponent implements OnInit, OnDestroy {
     if (this.newComment.commentType == CommentType.RECORD) {
       this.setNewCommentsToLastElement();
     }
-    if (keepExisting) {
-      if (this.commentIdOptions.some((option) => option.id == this.newComment.commentId)) {
-        return;
-      }
-
-    }
+    this.checkNewValues();
+    if (keepExisting) return;
     this.initNewCommentData();
+  }
+  checkNewValues() {
+    if (!this.dm.currentCommentTypeOptions.some((option) => option.key == this.newComment.commentType)) {
+      this.newComment.commentType = "";
+      this.newComment.commentTypeReadable = "";
+    }
+    if (!this.commentIdOptions.some((option) => option.id == this.newComment.commentId)) {
+      this.newComment.commentId = "";
+      this.newComment.commentIdReadable = "";
+    }
   }
 
   initNewCommentData() {
@@ -171,13 +177,13 @@ export class CommentComponent implements OnInit, OnDestroy {
     }
   }
   changeCommentPosition() {
-    this.positionComment = this.positionComment == CommnetPosition.RIGHT ? CommnetPosition.LEFT : CommnetPosition.RIGHT;
+    this.positionComment = this.positionComment == CommentPosition.RIGHT ? CommentPosition.LEFT : CommentPosition.RIGHT;
     localStorage.setItem('commentPosition', this.positionComment);
   }
   get stateName() {
-    return this.isSlideOverOpen && this.positionComment == CommnetPosition.RIGHT
-      ? 'showRight' : this.isSlideOverOpen && this.positionComment == CommnetPosition.LEFT
-        ? 'showLeft' : !this.isSlideOverOpen && this.positionComment == CommnetPosition.RIGHT
+    return this.isSlideOverOpen && this.positionComment == CommentPosition.RIGHT
+      ? 'showRight' : this.isSlideOverOpen && this.positionComment == CommentPosition.LEFT
+        ? 'showLeft' : !this.isSlideOverOpen && this.positionComment == CommentPosition.RIGHT
           ? 'hideRight' : 'hideLeft';
   }
   toggleSlideOver() {

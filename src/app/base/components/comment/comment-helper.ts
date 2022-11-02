@@ -13,7 +13,6 @@ export class CommentDataManager {
     private static commentRequests: Map<Object, CommentRequest[]> = new Map<Object, CommentRequest[]>();
     private static requestQueued: boolean = false;
     private static globalProjectId: string = "GLOBAL";
-    private static timer = { register: null };
     private data: {};
     private addInfo: {};
     public currentData: {};
@@ -52,14 +51,10 @@ export class CommentDataManager {
         if (CommentDataManager.commentRequests.has(caller)) comments.push(...CommentDataManager.commentRequests.get(caller));
         CommentDataManager.commentRequests.set(caller, comments);
         if (CommentDataManager.isInit()) {
-            if (CommentDataManager.timer.register) return;
-            CommentDataManager.timer.register = timer(250).subscribe(() => {
-                CommentDataManager.singleTon.requestMissingData(200);
-                CommentDataManager.singleTon.buildCommentTypeOptions();
-                CommentDataManager.singleTon.checkCanCommentOnPage();
-                if (CommentDataManager.singleTon.updateCommentModule) CommentDataManager.singleTon.updateCommentModule();
-                CommentDataManager.timer.register = null;
-            });
+            CommentDataManager.singleTon.requestMissingData(200);
+            CommentDataManager.singleTon.buildCommentTypeOptions();
+            CommentDataManager.singleTon.checkCanCommentOnPage();
+            if (CommentDataManager.singleTon.updateCommentModule) CommentDataManager.singleTon.updateCommentModule();
         }
         else CommentDataManager.requestQueued = true;
 
@@ -292,7 +287,10 @@ export class CommentDataManager {
         let projectId = this.getProjectIdFromCommentType(key);
         key += "@" + projectId;
         const list = this.addInfo?.[key]?.values
-        if (!list) console.log("Can't find addInfo for key", key);
+        if (!list) {
+            console.log("Can't find addInfo for key", key);
+            return [];
+        }
         return list;
     }
 
@@ -470,7 +468,7 @@ export class CommentDataManager {
     }
 
     private getProjectIdFromCommentType(commentType: string): string {
-        //only works if there aren't multiple projects in the reqeusts (need to register & unregister corretly)
+        //only works if there aren't multiple projects in the requests (need to register & unregister correctly)
         for (const kv of CommentDataManager.commentRequests) {
             for (const comment of kv[1]) {
                 if (comment.commentType == commentType) return comment.projectId;
@@ -646,7 +644,7 @@ function commentTypeOrder(type: CommentType): number {
     return -1
 }
 
-export enum CommnetPosition {
+export enum CommentPosition {
     RIGHT = "RIGHT",
     LEFT = "LEFT"
 }
