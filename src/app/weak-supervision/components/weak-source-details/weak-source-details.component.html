@@ -107,16 +107,22 @@
                     <div class="flex flex-row flex-nowrap items-center">
                         <div class="flex items-center justify-center"
                             *ngIf="informationSource.informationSourceType == 'LABELING_FUNCTION'">
-                            <a href="https://github.com/code-kern-ai/template-functions" target="_blank"
-                                data-tip="Go to GitHub repository"
-                                class="tooltip tooltip-left bg-white text-gray-700 text-xs font-semibold  px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none">
-                                See function templates
-                            </a>
-                            <a href="https://github.com/code-kern-ai/refinery-lf-exec-env/blob/dev/requirements.txt"
-                                target="_blank" data-tip="See available libraries for this labeling function"
-                                class="ml-2 tooltip tooltip-left bg-white text-gray-700 text-xs font-semibold  px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none">
-                                See installed libraries
-                            </a>
+                            <div class="tooltip tooltip-left" data-tip="Go to GitHub repository">
+
+                                <a href="https://github.com/code-kern-ai/template-functions" target="_blank"
+                                    class="bg-white text-gray-700 text-xs font-semibold  px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none">
+                                    See function templates
+                                </a>
+                            </div>
+                            <div data-tip="See available libraries for this labeling function"
+                                class="tooltip tooltip-left">
+
+                                <a href="https://github.com/code-kern-ai/refinery-lf-exec-env/blob/dev/requirements.txt"
+                                    target="_blank"
+                                    class="ml-2 bg-white text-gray-700 text-xs font-semibold  px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none">
+                                    See installed libraries
+                                </a>
+                            </div>
                         </div>
                         <div class="flex items-center justify-center"
                             *ngIf="informationSource.informationSourceType == 'ACTIVE_LEARNING'">

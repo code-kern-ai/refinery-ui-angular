@@ -15,6 +15,7 @@ export class UploadRecordsComponent implements OnInit {
   @Input() projectId: string;
   @Input() selectedTokenizer: string;
   @Input() submitted: boolean;
+  @Input() deleteProjectOnFail: boolean = false;
   @Output() hasFileUploaded = new EventEmitter<boolean>();
 
   file: File;
@@ -30,6 +31,11 @@ export class UploadRecordsComponent implements OnInit {
   }
 
   getFile(file: File) {
+    if (!file) {
+      this.submitted = false;
+      this.isFileUploaded = false;
+      return;
+    }
     this.file = file ? file : null;
     this.isFileUploaded = file ? true : false;
     this.hasFileUploaded.emit(this.isFileUploaded);

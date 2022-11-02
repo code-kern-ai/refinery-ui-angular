@@ -43,7 +43,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
   canRunProject: boolean = false;
   sampleRecords: any;
   code: string = '';
-  @ViewChild('calculateAttribite', { read: ElementRef }) calculateAttribite: ElementRef;
+  @ViewChild('calculateAttribute', { read: ElementRef }) calculateAttribute: ElementRef;
   @ViewChild('deleteAttribute', { read: ElementRef }) deleteAttribute: ElementRef;
   updatedThroughWebsocket: boolean = false;
   checkIfNewAttribute: string;
@@ -195,6 +195,10 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
     this.nameOpen = open;
     this.duplicateNameExists = false;
     if (!open && this.attributeName != this.currentAttribute.name) {
+      if (this.attributeName.trim().length == 0) {
+        this.attributeName = this.currentAttribute.name;
+        return;
+      }
       const findDuplicate = this.attributes.find(att => att.name == this.attributeName && att.id != this.currentAttribute.id);
       this.duplicateNameExists = findDuplicate != undefined ? true : false;
       if (this.duplicateNameExists) {
@@ -305,7 +309,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
       .calculateUserAttributeAllRecords(this.project.id, this.currentAttribute.id)
       .pipe(first())
       .subscribe(() => {
-        this.calculateAttribite.nativeElement.checked = false;
+        this.calculateAttribute.nativeElement.checked = false;
         this.duplicateNameExists = false;
       });
   }
