@@ -60,7 +60,7 @@
                   "with": "src/environments/environment.prod.ts"
                 }
               ],
-              "optimization": false,
+              "optimization": true,
               "outputHashing": "none",
               "sourceMap": true,
               "namedChunks": false,
@@ -75,13 +75,8 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "2MB",
-                  "maximumError": "12MB"
-                },
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "2MB",
-                  "maximumError": "12MB"
+                  "maximumWarning": "5mb",
+                  "maximumError": "8mb"
                 }
               ]
             },
