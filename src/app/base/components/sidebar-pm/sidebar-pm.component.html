@@ -39,7 +39,7 @@
                                         [ngClass]="project.numDataScaleUploaded == 0 ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer'">
                                         <a [routerLink]="['./overview']" rel="noopener noreferrer"
                                             class="circle text-white"
-                                            [ngClass]="matchRouteAndMenu((activatedRoute$ | async), 'overview') ? 'text-kerngreen': 'text-white'">
+                                            [ngClass]="routeColor.overview.active ? 'text-kerngreen': 'text-white'">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
                                                 fill="currentColor">
                                                 <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z" />
@@ -53,7 +53,7 @@
                                     <div data-tip="Data Browser" class="tooltip tooltip-right relative z-50"
                                         [ngClass]="project.numDataScaleUploaded == 0 ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer'">
                                         <a [routerLink]="['./data']" rel="noopener noreferrer" class="circle text-white"
-                                            [ngClass]="matchRouteAndMenu((activatedRoute$ | async), 'data') ? 'text-kerngreen': 'text-white'">
+                                            [ngClass]="routeColor.data.active ? 'text-kerngreen': 'text-white'">
                                             <svg xmlns="http://www.w3.org/2000/svg"
                                                 class="icon icon-tabler icon-tabler-icons" width="24" height="24"
                                                 viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
@@ -74,7 +74,7 @@
                                         [ngClass]="project.numDataScaleUploaded == 0 ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer'">
                                         <a [routerLink]="['./labeling']" rel="noopener noreferrer"
                                             class="circle text-white"
-                                            [ngClass]="matchRouteAndMenu((activatedRoute$ | async), 'labeling') ? 'text-kerngreen': 'text-white'">
+                                            [ngClass]="routeColor.labeling.active ? 'text-kerngreen': 'text-white'">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
                                                 fill="currentColor">
                                                 <path fill-rule="evenodd"
@@ -90,7 +90,7 @@
                                         [ngClass]="project.numDataScaleUploaded == 0 ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer'">
                                         <a [routerLink]="['./heuristics']" rel="noopener noreferrer"
                                             class="circle text-white"
-                                            [ngClass]="matchRouteAndMenu((activatedRoute$ | async), 'heuristics') ? 'text-kerngreen': 'text-white'">
+                                            [ngClass]="routeColor.heuristics.active ? 'text-kerngreen': 'text-white'">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
                                                 fill="currentColor">
                                                 <path
@@ -104,7 +104,7 @@
                                     <div data-tip="Settings" class="tooltip tooltip-right relative z-50">
                                         <a [routerLink]="['./settings']" rel="noopener noreferrer"
                                             class="circle text-white"
-                                            [ngClass]="matchRouteAndMenu((activatedRoute$ | async), 'settings') ? 'text-kerngreen': 'text-white'">
+                                            [ngClass]="routeColor.settings.active ? 'text-kerngreen': 'text-white'">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
                                                 fill="currentColor">
                                                 <path fill-rule="evenodd"
@@ -215,7 +215,7 @@
                 </div>
                 <div class="flex-shrink-0 flex py-6 justify-center">
                     <label data-tip="Version overview" for="version-overview" (click)="requestVersionOverview()"
-                        class="z-50 tooltip tooltip-right cursor-pointer select-none text-white flex items-center">v1.4.0
+                        class="z-50 tooltip tooltip-right cursor-pointer select-none text-white flex items-center">v1.5.0
                         <svg *ngIf="hasUpdates" xmlns="http://www.w3.org/2000/svg" data-tip="Newer version available"
                             class="icon icon-tabler icon-tabler-alert-circle inline-block text-yellow-700 tooltip tooltip-right align-top ml-1"
                             width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"

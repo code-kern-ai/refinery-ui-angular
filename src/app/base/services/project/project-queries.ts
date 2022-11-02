@@ -484,6 +484,7 @@ export const queries = {
             id
             name
             sliceType
+            createdAt
           }
         }
       }

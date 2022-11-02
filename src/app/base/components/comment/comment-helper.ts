@@ -54,6 +54,7 @@ export class CommentDataManager {
             CommentDataManager.singleTon.requestMissingData(200);
             CommentDataManager.singleTon.buildCommentTypeOptions();
             CommentDataManager.singleTon.checkCanCommentOnPage();
+            if (CommentDataManager.singleTon.updateCommentModule) CommentDataManager.singleTon.updateCommentModule();
         }
         else CommentDataManager.requestQueued = true;
 
@@ -286,7 +287,10 @@ export class CommentDataManager {
         let projectId = this.getProjectIdFromCommentType(key);
         key += "@" + projectId;
         const list = this.addInfo?.[key]?.values
-        if (!list) console.log("Can't find addInfo for key", key);
+        if (!list) {
+            console.log("Can't find addInfo for key", key);
+            return [];
+        }
         return list;
     }
 
@@ -464,7 +468,7 @@ export class CommentDataManager {
     }
 
     private getProjectIdFromCommentType(commentType: string): string {
-        //only works if there aren't multiple projects in the reqeusts (need to register & unregister corretly)
+        //only works if there aren't multiple projects in the requests (need to register & unregister correctly)
         for (const kv of CommentDataManager.commentRequests) {
             for (const comment of kv[1]) {
                 if (comment.commentType == commentType) return comment.projectId;
@@ -640,7 +644,7 @@ function commentTypeOrder(type: CommentType): number {
     return -1
 }
 
-export enum CommnetPosition {
+export enum CommentPosition {
     RIGHT = "RIGHT",
     LEFT = "LEFT"
 }

@@ -102,22 +102,25 @@
                     <div class="font-normal">Input attribute</div>
                     <div *ngIf="!isModelDownloading" class="font-normal flex items-center" style="height: 24px;">
                         Model
-                        <button
-                            class="ml-1 tooltip tooltip-right inline-block items-center border border-gray-300 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none cursor-pointer"
-                            [routerLink]="['../../model-download']"
-                            [queryParams]="{lastPage: 'zero-shot/'+informationSource.id}" [disabled]="!isManaged"
-                            [ngClass]="!isManaged ? 'tooltip tooltip-right cursor-not-allowed' : 'opacity-100 cursor-pointer'"
-                            [attr.data-tip]="!isManaged ? 'Check out our hosted version to use this function' : 'See which models are downloaded'">
-                            <svg xmlns="http://www.w3.org/2000/svg"
-                                class="inline-block icon icon-tabler icon-tabler-arrow-autofit-down" width="20"
-                                height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                                stroke-linecap="round" stroke-linejoin="round">
-                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                <path d="M12 20h-6a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h8"></path>
-                                <path d="M18 4v17"></path>
-                                <path d="M15 18l3 3l3 -3"></path>
-                            </svg>
-                        </button>
+                        <div [attr.data-tip]="!isManaged ? 'Check out our hosted version to use this function' : 'See which models are downloaded'"
+                            class="tooltip tooltip-right">
+
+                            <button
+                                class="ml-1 inline-block items-center border border-gray-300 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none cursor-pointer"
+                                [routerLink]="['../../model-download']"
+                                [queryParams]="{lastPage: 'zero-shot/'+informationSource.id}" [disabled]="!isManaged"
+                                [ngClass]="!isManaged ? 'cursor-not-allowed' : 'opacity-100 cursor-pointer'">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="inline-block icon icon-tabler icon-tabler-arrow-autofit-down" width="20"
+                                    height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M12 20h-6a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h8"></path>
+                                    <path d="M18 4v17"></path>
+                                    <path d="M15 18l3 3l3 -3"></path>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                     <div *ngIf="isModelDownloading" class="font-normal inline-flex items-center">Model Downloading
                         <kern-loading color="yellow"></kern-loading>

@@ -5,19 +5,17 @@ import {
   transition,
   trigger,
 } from '@angular/animations';
-import { Component, Inject, EventEmitter, OnInit, Output, Input, HostListener, ViewChild, ElementRef } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, Inject, EventEmitter, OnInit, Output, Input, HostListener, ViewChild, ElementRef, OnDestroy } from '@angular/core';
+import { ActivatedRoute, Router, RoutesRecognized } from '@angular/router';
 import { Observable, Subscription, timer } from 'rxjs';
 import { first, tap } from 'rxjs/operators';
 import { AuthApiService } from '../../services/auth-api.service';
 import { OrganizationApolloService } from '../../services/organization/organization-apollo.service';
-import { RouteService } from '../../services/route.service';
 import { DOCUMENT } from '@angular/common';
 import { ProjectApolloService } from '../../services/project/project-apollo.service';
 import { ConfigApolloService } from '../../services/config/config-apollo.service';
 import { dateAsUTCDate } from 'src/app/util/helper-functions';
 import { ConfigManager } from '../../services/config-service';
-import { ConfigService } from 'aws-sdk';
 
 
 @Component({
@@ -50,10 +48,8 @@ import { ConfigService } from 'aws-sdk';
     ]),
   ],
 })
-export class SidebarPmComponent implements OnInit {
+export class SidebarPmComponent implements OnInit, OnDestroy {
   menuOpen = false;
-  url: string;
-  activatedRoute$: Observable<ActivatedRoute>;
   logoutUrl$: Observable<Object>;
   user$: any;
   organizationInactive: boolean;
@@ -72,15 +68,29 @@ export class SidebarPmComponent implements OnInit {
   hasUpdates: boolean;
   private static initialConfigRequest: boolean = false;
 
+  // model-download isn't checked for since the page is accessed from different routes
+  // e.g. lastPage=settings => settings is checked for so settings is highlighted
+  routeColor = {
+    overview: { active: false, checkFor: ['overview'] },
+    data: { active: false, checkFor: ['data'] },
+    labeling: { active: false, checkFor: ['labeling', 'record-ide'] },
+    heuristics: { active: false, checkFor: ['heuristics', 'lookup-lists', 'model-callbacks', 'zero-shot', 'crowd-labeler'] },
+    settings: { active: false, checkFor: ['settings', 'attributes', 'add'] },
+  }
+
+
   constructor(
     private organizationService: OrganizationApolloService,
-    private routeService: RouteService,
     private activatedRoute: ActivatedRoute,
     private auth: AuthApiService,
+    private router: Router,
     private projectApolloService: ProjectApolloService,
     private configService: ConfigApolloService,
     @Inject(DOCUMENT) private document: any
   ) { }
+  ngOnDestroy(): void {
+    this.subscriptions$.forEach((subscription) => subscription.unsubscribe());
+  }
 
   ngOnInit(): void {
     this.user$ = this.organizationService.getUserInfo();
@@ -90,8 +100,7 @@ export class SidebarPmComponent implements OnInit {
     }
 
     this.firstName.emit(this.user$);
-    this.activatedRoute$ = this.routeService.getActivatedRoute();
-    this.url = this.activatedRoute.snapshot.toString();
+    this.checkRouteHighlight(this.router.url);
     this.logoutUrl$ = this.auth.getLogoutOut();
     this.subscriptions$.push(this.organizationService
       .getUserOrganization()
@@ -107,6 +116,26 @@ export class SidebarPmComponent implements OnInit {
       SidebarPmComponent.initialConfigRequest = true;
     }
     this.checkIfManagedVersion();
+    this.initRouterListener();
+
+  }
+
+  initRouterListener() {
+    this.subscriptions$.push(this.router.events.subscribe((val) => {
+      if (val instanceof RoutesRecognized) {
+        const values = { old: this.router.url, new: val.url };
+        if (values.old != values.new) {
+          this.checkRouteHighlight(val.url);
+        }
+      }
+    }));
+
+  }
+
+  checkRouteHighlight(url: string) {
+    for (const key in this.routeColor) {
+      this.routeColor[key].active = this.routeColor[key].checkFor.some(s => url.includes(s));
+    }
   }
 
   requestVersionOverview() {
@@ -129,10 +158,6 @@ export class SidebarPmComponent implements OnInit {
 
   onDestroy() {
     this.subscriptions$.forEach((subscription) => subscription.unsubscribe());
-  }
-
-  matchRouteAndMenu(route, menuItem: string) {
-    return route.url.value.toString().includes(menuItem);
   }
 
 
