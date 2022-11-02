@@ -1,8 +1,4 @@
-.seperator_bottom {
-    border-bottom: 1px solid #ddd;
-}
-
-.rotate_transform svg {
+.rotate-transform svg {
     transition: transform 0.15s ease-in-out;
     transform: rotate(180deg);
 }
@@ -18,12 +14,4 @@
     outline: none;
     resize: none;
     overflow: auto;
-}
-
-.max-w-500 {
-    max-width: 500px;
-}
-
-.max-w-450 {
-    max-width: 450px;
 }
