@@ -83,6 +83,7 @@ export class NotificationCenterComponent implements OnInit, OnDestroy {
     this.notifications = []
     notifications.forEach(notification => {
 
+      notification = { ...notification };
       notification.createdAtDate = new Date(notification.createdAt);
       const convertDateAsUTCDate = dateAsUTCDate(notification.createdAtDate);
       notification.date = convertDateAsUTCDate.toLocaleString();

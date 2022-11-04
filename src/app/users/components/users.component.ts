@@ -57,11 +57,13 @@ export class UsersComponent implements OnInit, OnDestroy {
   }
 
   private moveAnnotatorsToArr(users: any[]) {
-    users.forEach(user => user.avatarUri = getUserAvatarUri(user));
-    this.engineers = users.filter(u => u.role == "ENGINEER");
-    this.experts = users.filter(u => u.role == "EXPERT");
-    this.annotators = users.filter(u => u.role == "ANNOTATOR");
+    const usersWithUri = users.map(user => {
+      return { ...user, avatarUri: getUserAvatarUri(user) };
+    })
 
+    this.engineers = usersWithUri.filter(u => u.role == "ENGINEER");
+    this.experts = usersWithUri.filter(u => u.role == "EXPERT");
+    this.annotators = usersWithUri.filter(u => u.role == "ANNOTATOR");
   }
 
 

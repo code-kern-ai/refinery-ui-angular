@@ -106,7 +106,7 @@
             </div>
 
             <div class="border mt-1">
-                <ngx-monaco-editor class="w-full" style="height: 400px;" [options]="editorOptions" [(ngModel)]="code"
+                <ngx-monaco-editor class="w-full" style="height: 400px;" [options]="editorOptions"
                     (onInit)="initEditor($event,project.id)" [formControl]="codeFormCtrl">
                 </ngx-monaco-editor>
             </div>

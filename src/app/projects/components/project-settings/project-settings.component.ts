@@ -266,6 +266,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     encoderSuggestions = encoderSuggestions.filter(e => e.tokenizers.includes("all") || e.tokenizers.includes(this.project.tokenizer))
     if (!encoderSuggestions.length) return;
     if (encoderSuggestions) encoderSuggestions.forEach(element => {
+      element = { ...element };
       element.hidden = false;
       element.forceHidden = false;
       if (typeof element.applicability === 'string' || element.applicability instanceof String) {
