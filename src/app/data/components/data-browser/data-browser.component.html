@@ -191,7 +191,7 @@
                             <!-- Group items -->
                             <div #searchGroupItems class="transition_all ml-4"
                                 [ngClass]="!searchGroups.get(group.key).isOpen || searchGroups.get(group.key).inOpenTransition?'overflow-hidden':null"
-                                [style.max-height]="searchGroups.get(group.key).isOpen?searchGroupItems.scrollHeight +'px':'0px'">
+                                [ngStyle]="searchGroups.get(group.key).isOpen?{'max-height':searchGroupItems.scrollHeight +'px'}:{'max-height':'0px'}">
                                 <form [formGroup]="fullSearch.get(group.key)">
                                     <div formArrayName="groupElements">
 
