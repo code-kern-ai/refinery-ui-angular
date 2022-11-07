@@ -284,6 +284,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
 
     const suggestionList = this.embeddingHandlesMap.get(attId)
     for (let element of suggestionList) {
+      element = { ...element };
       element.forceHidden = true;
       if ((granularity == 'ON_ATTRIBUTE' && element.applicability?.attribute)
         || (granularity == 'ON_TOKEN' && element.applicability?.token)) {
