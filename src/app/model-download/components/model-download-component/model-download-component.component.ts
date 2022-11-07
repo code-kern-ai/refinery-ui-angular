@@ -55,11 +55,12 @@ export class ModelDownloadComponentComponent implements OnInit {
       this.downloadedModelsList$.subscribe((downloadedModels) => {
         this.downloadedModels = downloadedModels;
         this.downloadedModels.forEach(model => {
+          model = { ...model };
           model.sizeFormatted = formatBytes(model.size);
           model.parseDate = this.parseUTC(model.date);
         })
       }));
-    
+
     this.checkIfManagedVersion();
 
     NotificationService.subscribeToNotification(this, {
@@ -104,12 +105,18 @@ export class ModelDownloadComponentComponent implements OnInit {
     tasks$.push(this.projectApolloService.getRecomendedEncodersForEmbeddings(this.projectId));
     tasks$.push(vc);
     combineLatest(tasks$).subscribe((models: any) => {
-      models[0].forEach(model => model.isZeroShot = false);
+      models[0].forEach(model => {
+        model = { ...model };
+        model.isZeroShot = false;
+      });
       this.models = models[0].filter(el =>
         el.configString != 'bag-of-characters' && el.configString != 'bag-of-words' && el.configString != 'tf-idf');
-      models[1].forEach(model => model.isZeroShot = true);
+      models[1].forEach(model => {
+        model = { ...model };
+        model.isZeroShot = true;
+      });
       models[1].sort((a, b) => a.prio - b.prio);
-      this.indexSeparator = this.models.length-1;
+      this.indexSeparator = this.models.length - 1;
       this.models.push(...models[1]);
     });
 
@@ -171,7 +178,7 @@ export class ModelDownloadComponentComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(["../"+this.lastPage], { relativeTo: this.activatedRoute });
+    this.router.navigate(["../" + this.lastPage], { relativeTo: this.activatedRoute });
   }
 
   checkIfManagedVersion() {
