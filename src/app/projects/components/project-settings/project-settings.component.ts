@@ -722,6 +722,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     if (!suggestionList || suggestionList.length == 0) return;
     const lowerEventValue = eventTarget.value.toLowerCase();
     for (let embeddingHandle of suggestionList) {
+      embeddingHandle = { ...embeddingHandle };
       embeddingHandle.hidden = !embeddingHandle.configString.toLowerCase().includes(lowerEventValue)
     }
 
