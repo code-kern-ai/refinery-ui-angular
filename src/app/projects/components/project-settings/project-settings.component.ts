@@ -760,6 +760,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
         return;
       }
       for (let e of this.embeddings) {
+        e = { ...e };
         if (e.id == msgParts[2]) {
           if (msgParts[3] == "state") {
             if (msgParts[4] == "FINISHED") this.embeddingQuery$.refetch();
