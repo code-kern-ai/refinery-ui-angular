@@ -945,21 +945,23 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     });
   }
 
-  updateLabelColor(projectId: string, labelingTaskId: string, labelId: string, oldLabelColor: string, newLabelColor: string) {
+  updateLabelColor(projectId: string, labelingTaskId: string, labelId: string, oldLabelColor: string, newLabelColor: any) {
     let colorsInTask = this.labelingTaskColors.get(labelingTaskId);
     const index = colorsInTask.indexOf(oldLabelColor);
     if (index > -1) {
       colorsInTask.splice(index, 1); // 2nd parameter means remove one item only
     }
-    colorsInTask.push(newLabelColor);
+    colorsInTask.push(newLabelColor.name);
     this.labelingTaskColors.set(labelingTaskId, colorsInTask);
 
     this.projectApolloService
-      .updateLabelColor(projectId, labelId, newLabelColor).pipe(first())
+      .updateLabelColor(projectId, labelId, newLabelColor.name).pipe(first())
       .subscribe();
+    this.currentLabel = { ...this.currentLabel, color: newLabelColor.name };
   }
   checkAndSetLabelHotkey(event: KeyboardEvent) {
     this.labelHotkeyError = null;
+    this.currentLabel = { ...this.currentLabel };
     if (event.key == this.currentLabel.hotkey) return;
     const usedHotkeys = this.getUsedHotkey();
     if (event.key == 'ArrowRight' || event.key == 'ArrowLeft') {
