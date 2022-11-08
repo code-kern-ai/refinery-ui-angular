@@ -14,6 +14,7 @@ import { Subscription, timer } from 'rxjs';
 import { UploadRecordsComponent } from 'src/app/import/components/upload-records/upload-records.component';
 import { ConfigManager } from 'src/app/base/services/config-service';
 import { getUserAvatarUri } from 'src/app/util/helper-functions';
+import { UploadType } from 'src/app/import/components/upload/upload-helper';
 
 @Component({
   selector: 'kern-project-new',
@@ -35,12 +36,13 @@ export class ProjectNewComponent implements OnInit {
   hasFileUploaded: boolean = false;
   submitted: boolean = false;
   file: File;
-  @ViewChild(UploadComponent) uploadComponent;
+  // @ViewChild(UploadComponent) uploadComponent;
   @ViewChild(UploadRecordsComponent) uploadRecordsComponent;
   openTab: number = 0;
   organizationName: string;
   organizationInactive: boolean;
   avatarUri: string;
+  disableInput: boolean = false;
 
 
   constructor(
@@ -118,15 +120,15 @@ export class ProjectNewComponent implements OnInit {
     for (const p of this.projectNameList) if (p.name == this.createNewProject.get('projectTitle').value) return false;
     return true;
   }
-
-  initializeProject(isInput: boolean, event?: Event) {
-    if (isInput) {
-      event.preventDefault();
-    }
-
+  initProjectEvent(event: Event) {
+    event.preventDefault();
+    this.initializeProject();
+  }
+  initializeProject(uploadType: UploadType = UploadType.DEFAULT): boolean {
+    this.uploadRecordsComponent.uploadComponent.uploadType = uploadType;
     this.uploadRecordsComponent.submitted = true;
     this.submitted = true;
-    if (this.createNewProject.invalid) return;
+    if (this.createNewProject.invalid) return false;
     this.createNewProject.setValue({
       projectTitle: (this.createNewProject.get('projectTitle').value).trim(),
       description: (this.createNewProject.get('description').value).trim(),
@@ -143,6 +145,7 @@ export class ProjectNewComponent implements OnInit {
           this.uploadRecordsComponent.submitUploadRecords();
         });
     }
+    return true;
   }
 
   checkWhitelistTokenizer(tokenizer) {

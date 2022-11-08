@@ -15,7 +15,6 @@ import { ModalButton, modalButtonCaption, ModalButtonType } from './modal-helper
 export class ModalComponent implements OnInit, OnChanges {
 
   @Input() isOpen: boolean = false;
-
   //only set if you want to use the default button
   //set to true if you want to use the default button
   @Input() closeButton: ModalButton;

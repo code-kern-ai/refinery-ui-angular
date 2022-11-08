@@ -769,7 +769,8 @@ export class ProjectApolloService {
     projectId: string,
     fileName: string,
     fileType: string,
-    fileImportOptions: string
+    fileImportOptions: string,
+    uploadType: string = null
 
   ): Observable<string> {
     return this.apollo
@@ -780,7 +781,8 @@ export class ProjectApolloService {
           projectId: projectId,
           fileName: fileName,
           fileType: fileType,
-          fileImportOptions: fileImportOptions
+          fileImportOptions: fileImportOptions,
+          uploadType: uploadType
         },
       })
       .pipe(map((result) => result['data']['uploadCredentialsAndId']));
