@@ -54,11 +54,12 @@ export class ModelDownloadComponentComponent implements OnInit {
     this.subscriptions$.push(
       this.downloadedModelsList$.subscribe((downloadedModels) => {
         this.downloadedModels = downloadedModels;
+        let saveDownloadedModels = [];
         this.downloadedModels.forEach(model => {
-          model = { ...model };
-          model.sizeFormatted = formatBytes(model.size);
-          model.parseDate = this.parseUTC(model.date);
+          model = { ...model, sizeFormatted: formatBytes(model.size), parseDate: this.parseUTC(model.date) };
+          saveDownloadedModels.push(model);
         })
+        this.downloadedModels = saveDownloadedModels;
       }));
 
     this.checkIfManagedVersion();
@@ -105,22 +106,12 @@ export class ModelDownloadComponentComponent implements OnInit {
     tasks$.push(this.projectApolloService.getRecomendedEncodersForEmbeddings(this.projectId));
     tasks$.push(vc);
     combineLatest(tasks$).subscribe((models: any) => {
-      models[0].forEach(model => {
-        model = { ...model };
-        model.isZeroShot = false;
-      });
       this.models = models[0].filter(el =>
         el.configString != 'bag-of-characters' && el.configString != 'bag-of-words' && el.configString != 'tf-idf');
-      models[1].forEach(model => {
-        model = { ...model };
-        model.isZeroShot = true;
-      });
       models[1].sort((a, b) => a.prio - b.prio);
       this.indexSeparator = this.models.length - 1;
       this.models.push(...models[1]);
     });
-
-
   }
 
   selectFirstUnhiddenEmbeddingHandle(inputElement: HTMLInputElement) {

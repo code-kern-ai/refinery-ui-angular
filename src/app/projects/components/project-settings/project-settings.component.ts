@@ -709,24 +709,26 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
 
   }
 
-  selectEmbeddingHandle(embeddingHandle, inputElement: HTMLInputElement) {
+  selectEmbeddingHandle(embeddingHandle, inputElement: HTMLInputElement, hoverBox?: any) {
     inputElement.value = embeddingHandle.configString;
+    hoverBox.style.display = 'none';
     if (document.activeElement instanceof HTMLElement) {
       document.activeElement.blur();
     }
     this.checkEmbeddingHandles(inputElement);
   }
 
-  checkEmbeddingHandles(eventTarget: HTMLInputElement) {
+  checkEmbeddingHandles(eventTarget: HTMLInputElement,) {
     this.embeddingCreationFormGroup.get('embeddingHandle').setValue(eventTarget.value);
-    const suggestionList = this.embeddingHandlesMap.get(this.embeddingCreationFormGroup.get("targetAttribute").value)
+    const suggestionList = this.embeddingHandlesMap.get(this.embeddingCreationFormGroup.get("targetAttribute").value);
     if (!suggestionList || suggestionList.length == 0) return;
     const lowerEventValue = eventTarget.value.toLowerCase();
+    let suggestionsSave = [];
     for (let embeddingHandle of suggestionList) {
-      embeddingHandle = { ...embeddingHandle };
-      embeddingHandle.hidden = !embeddingHandle.configString.toLowerCase().includes(lowerEventValue)
+      embeddingHandle = { ...embeddingHandle, hidden: !embeddingHandle.configString.toLowerCase().includes(lowerEventValue) };
+      suggestionsSave.push(embeddingHandle)
     }
-
+    this.embeddingHandlesMap.set(this.embeddingCreationFormGroup.get("targetAttribute").value, suggestionsSave);
   }
 
   checkLabelingTaskName(eventTarget: HTMLInputElement) {
