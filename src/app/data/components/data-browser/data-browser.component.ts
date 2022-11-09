@@ -1335,9 +1335,8 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
 
   getOperatorDropdownValues(i?: number, value?: any) {
     if (this.searchOperatorDropdownArray.length == 0) {
-      const attributeType = this.attributesSortOrder.find(att => att.name == this.saveDropdonwAttribute)?.type;
 
-      if (attributeType !== 'BOOLEAN') {
+      if (this.getAttributeType(this.saveDropdonwAttribute) !== 'BOOLEAN') {
         for (let t of Object.values(SearchOperator)) {
           this.searchOperatorDropdownArray.push({
             value: t,
@@ -2128,5 +2127,9 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     this.searchOperatorDropdownArray = [];
     this.tooltipsArray = [];
     this.getOperatorDropdownValues(i, value);
+  }
+
+  getAttributeType(attributeName: string) {
+    return this.attributesSortOrder.find(att => att.name == attributeName)?.type;
   }
 }
