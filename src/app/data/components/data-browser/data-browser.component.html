@@ -235,7 +235,7 @@
                                                                         optionArray: attributesSortOrder,
                                                                         buttonCaption: groupItem.get('name').value
                                                                     }"
-                                                                        (optionClicked)="selectValueDropdown($event, 'name', group.key)">
+                                                                        (optionClicked)="selectValueDropdown($event, i, 'name', group.key)">
                                                                     </kern-dropdown>
 
                                                                     <!-- <select formControlName="name"
@@ -256,17 +256,29 @@
                                                                             {{dropdown.value }}
                                                                         </option>
                                                                     </select> -->
-                                                                    <kern-dropdown [dropdownOptions]="{
+                                                                    <kern-dropdown
+                                                                        *ngIf="groupItem.get('operator').value != ''"
+                                                                        [dropdownOptions]="{
                                                                         optionArray: searchOperatorDropdownArray,
                                                                         buttonCaption: groupItem.get('operator').value,
                                                                         optionTooltips: tooltipsArray
                                                                     }"
-                                                                        (optionClicked)="selectValueDropdown($event, 'operator', group.key)">
+                                                                        (optionClicked)="selectValueDropdown($event, i, 'operator', group.key)">
                                                                     </kern-dropdown>
                                                                 </div>
 
                                                                 <div class="my-2 flex-grow">
-                                                                    <input formControlName="searchValue" type="text"
+                                                                    <input *ngIf="groupItem.get('operator').value != ''"
+                                                                        formControlName="searchValue" type="text"
+                                                                        [placeholder]="groupItem.get('addText').value"
+                                                                        class="w-full input input-sm input-bordered">
+
+                                                                    <span class="text-sm text-gray-500"
+                                                                        *ngIf="groupItem.get('operator').value == 'BETWEEN'">AND</span>
+
+                                                                    <input
+                                                                        *ngIf="groupItem.get('operator').value == 'BETWEEN'"
+                                                                        formControlName="searchValueBetween" type="text"
                                                                         [placeholder]="groupItem.get('addText').value"
                                                                         class="w-full input input-sm input-bordered">
                                                                 </div>
@@ -980,9 +992,10 @@
                     <div class="px-4 py-5 sm:p-6">
                         <div *ngFor="let attribute of attributesSortOrder">
                             <div class="font-semibold text-sm text-gray-800 font-dmMono">
-                                {{attributes.get(attribute.key).name}}
+                                {{attributes.get(attribute.key)?.name}}
                             </div>
-                            <div class="text-gray-800 text-sm mb-4 overflow-anywhere flex">
+                            <div *ngIf="attributes.get(attribute.key)"
+                                class="text-gray-800 text-sm mb-4 overflow-anywhere flex">
                                 <ng-template [ngIf]=" highlightText && isTextHighlightNeeded &&
                                     isTextHighlightNeeded.get(attribute.key) &&
                                     record.data[attributes.get(attribute.key).name]" [ngIfElse]="noHighlight">

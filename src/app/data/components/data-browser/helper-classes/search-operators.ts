@@ -20,10 +20,6 @@ export function getSearchOperatorTooltip(operator: SearchOperator): string {
             return '< {value}';
         case SearchOperator.LESS_EQUAL:
             return '<= {value}';
-        case SearchOperator.TRUE:
-            return 'IS TRUE';
-        case SearchOperator.FALSE:
-            return 'IS FALSE';
     }
     return 'UNKNOWN';
 }
@@ -39,6 +35,4 @@ export enum SearchOperator {
     GREATER_EQUAL = 'GREATER_EQUAL',
     LESS = 'LESS',
     LESS_EQUAL = 'LESS_EQUAL',
-    TRUE = 'TRUE',
-    FALSE = 'FALSE'
 }

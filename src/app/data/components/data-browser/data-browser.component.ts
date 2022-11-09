@@ -189,6 +189,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
 
   alertLastVisible: number;
   tooltipsArray: string[] = [];
+  saveDropdonwAttribute: string = "";
 
   getSearchFormArray(groupKey: string): FormArray {
     return this.fullSearch.get(groupKey).get('groupElements') as FormArray;
@@ -300,13 +301,20 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       this.attributes.clear();
       this.attributesSortOrder = [];
 
+      this.attributesSortOrder.push({
+        name: 'Any Attribute',
+        key: null,
+        order: 0,
+        type: 'TEXT'
+      });
+
       attributes.forEach((att) => {
         this.attributes.set(att.id, att);
         this.attributesSortOrder.push({
           name: att.name,
           key: att.id,
           order: att.relativePosition,
-          type: att.type,
+          type: att.dataType,
         });
       });
       this.attributeWait.isWaiting = false;
@@ -614,7 +622,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
 
   _orderByFormArray(): FormArray {
     let array = this.formBuilder.array([]);
-    for (let i = 0; i < this.attributesSortOrder.length; i++) {
+    for (let i = 1; i < this.attributesSortOrder.length; i++) {
       array.push(this.getOrderByGroup(this.attributes.get(this.attributesSortOrder[i].key).name, true, -1)) //1, //-1 desc, 1 asc     
     }
     array.push(this.getOrderByGroup(StaticOrderByKeys.WEAK_SUPERVISION_CONFIDENCE, false, -1));
@@ -950,6 +958,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       addText: item.addText,
       operator: item.operator,
       searchValue: 'x',
+      searchValueBetween: ''
     });
 
     this.groupValueChangesSubscribtion$.push(group.valueChanges
@@ -958,6 +967,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
 
     //change once so pairwise works as intended
     group.get('searchValue').setValue('');
+    group.get('searchValueBetween').setValue('');
     return group;
   }
 
@@ -1008,13 +1018,25 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
 
   updateSearchParamText(searchElement) {
     if (searchElement.values.type == SearchItemType.ATTRIBUTE) {
-      searchElement.searchText =
-        searchElement.values.name +
-        ' ' +
-        searchElement.values.operator +
-        " '" +
-        searchElement.values.searchValue +
-        "'";
+      if (searchElement.values.operator == SearchOperator.BETWEEN) {
+        searchElement.searchText =
+          searchElement.values.name +
+          ' ' +
+          searchElement.values.operator +
+          " '" +
+          searchElement.values.searchValue +
+          "'" + " AND " + searchElement.values.searchValueBetween + "'";
+      } else if (searchElement.values.operator == '') {
+        searchElement.searchText = searchElement.values.name;
+      } else {
+        searchElement.searchText =
+          searchElement.values.name +
+          ' ' +
+          searchElement.values.operator +
+          " '" +
+          searchElement.values.searchValue +
+          "'";
+      }
       if (searchElement.values.negate)
         searchElement.searchText = 'NOT (' + searchElement.searchText + ')';
     } else if (searchElement.values.type == SearchItemType.LABELING_TASK) {
@@ -1152,9 +1174,9 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
 
 
   refreshHighlightModule() {
-    for (let e of this.attributesSortOrder) {
-      this.refreshTextHighlightNeeded(e.key);
-      this.refreshHighlightArray(e.key);
+    for (let i = 1; i < this.attributesSortOrder.length; i++) {
+      this.refreshTextHighlightNeeded(this.attributesSortOrder[i].key);
+      this.refreshHighlightArray(this.attributesSortOrder[i].key);
     }
   }
 
@@ -1308,20 +1330,23 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     return searchGroupItems.scrollHeight + 'px';
   }
 
-  getOperatorDropdownValues() {
+  getOperatorDropdownValues(i?: number, value?: any) {
     if (this.searchOperatorDropdownArray.length == 0) {
-      // const attributeName = this.getSearchFormArray(SearchGroup.ATTRIBUTES).controls[0].get('name').value;
-      // const attributeType = this.attributesSortOrder.find(att => att.name == attributeName)?.type;
+      const attributeType = this.attributesSortOrder.find(att => att.name == this.saveDropdonwAttribute)?.type;
 
-
-      // console.log(attributeType)
-
-      for (let t of Object.values(SearchOperator)) {
-        this.searchOperatorDropdownArray.push({
-          value: t,
-          dataTip: getSearchOperatorTooltip(t)
-        });
-        this.tooltipsArray.push(getSearchOperatorTooltip(t));
+      if (attributeType !== 'BOOLEAN') {
+        for (let t of Object.values(SearchOperator)) {
+          this.searchOperatorDropdownArray.push({
+            value: t,
+            dataTip: getSearchOperatorTooltip(t)
+          });
+          this.tooltipsArray.push(getSearchOperatorTooltip(t));
+        }
+        if (this.getSearchFormArray(SearchGroup.ATTRIBUTES).controls[i] && this.getSearchFormArray(SearchGroup.ATTRIBUTES).controls[i].get("operator").value == '') {
+          this.getSearchFormArray(SearchGroup.ATTRIBUTES).controls[i].get("operator").setValue("CONTAINS");
+        }
+      } else {
+        this.getSearchFormArray(SearchGroup.ATTRIBUTES).controls[i].get("operator").setValue("");
       }
     }
     return this.searchOperatorDropdownArray;
@@ -1363,7 +1388,9 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   }
   private getRegexFromFilter(searchElement): string {
     let searchValue = searchElement.values.searchValue;
+    let searchValueBetween = searchElement.values.searchValueBetween;
     searchValue = searchValue.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+    searchValueBetween = searchValueBetween.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
     if (searchElement.values.negate) return ''; //would hightlight everything
     switch (searchElement.values.operator) {
       case SearchOperator.EQUAL:
@@ -1372,6 +1399,8 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
         return '^' + searchValue;
       case SearchOperator.ENDS_WITH:
         return searchValue + '$';
+      case SearchOperator.BETWEEN:
+        return searchValue + ' AND ' + searchValueBetween;
       case SearchOperator.CONTAINS:
         return searchValue;
     }
@@ -1964,7 +1993,8 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     "active": false,
     "negate": false,
     "operator": SearchOperator.CONTAINS,
-    "searchValue": ""
+    "searchValue": "",
+    "searchValueBetween": "",
   }
 
   labelingTaskDefaultValues = {
@@ -2089,8 +2119,11 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     }
   }
 
-  selectValueDropdown(value: string, field: string, key: any) {
-    console.log(key)
-    this.getSearchFormArray(key).controls[0].get(field).setValue(value);
+  selectValueDropdown(value: string, i: number, field: string, key: any) {
+    this.getSearchFormArray(key).controls[i].get(field).setValue(value);
+    if (field == 'name') this.saveDropdonwAttribute = value;
+    this.searchOperatorDropdownArray = [];
+    this.tooltipsArray = [];
+    this.getOperatorDropdownValues(i, value);
   }
 }

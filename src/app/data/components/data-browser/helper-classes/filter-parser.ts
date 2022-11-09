@@ -317,7 +317,7 @@ export class DataBrowserFilterParser {
                 NEGATION: searchElement.values.negate,
                 FILTER: [],
             };
-            for (let i = 0; i < this.dataBrowser.attributesSortOrder.length; i++) {
+            for (let i = 1; i < this.dataBrowser.attributesSortOrder.length; i++) {
                 filterElement.FILTER.push({
                     RELATION: i == 0 ? 'NONE' : 'OR',
                     NEGATION: false,
