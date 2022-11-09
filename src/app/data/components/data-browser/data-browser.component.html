@@ -233,35 +233,20 @@
                                                                 <div class="flex-grow flex flex-row flex-wrap gap-1">
                                                                     <kern-dropdown [dropdownOptions]="{
                                                                         optionArray: attributesSortOrder,
-                                                                        buttonCaption: groupItem.get('name').value
+                                                                        buttonCaption: groupItem.get('name').value,
+                                                                        fontClass: 'font-dmMono',
+                                                                        backgroundColors: colorsAttributes
                                                                     }"
                                                                         (optionClicked)="selectValueDropdown($event, i, 'name', group.key)">
                                                                     </kern-dropdown>
 
-                                                                    <!-- <select formControlName="name"
-                                                                        class="font-dmMono flex-grow select select-sm select-bordered">
-                                                                        <option value="Any Attribute">Any Attribute
-                                                                        </option>
-                                                                        <option
-                                                                            *ngFor="let attribute of attributesSortOrder"
-                                                                            [value]="attributes.get(attribute.key).name">
-                                                                            {{attributes.get(attribute.key).name }}
-                                                                        </option>
-                                                                    </select> -->
-                                                                    <!-- <select formControlName="operator"
-                                                                        class="font-dmMono select select-sm select-bordered">
-                                                                        <option
-                                                                            *ngFor="let dropdown of searchOperatorDropdownArray"
-                                                                            [value]="dropdown.value">
-                                                                            {{dropdown.value }}
-                                                                        </option>
-                                                                    </select> -->
                                                                     <kern-dropdown
                                                                         *ngIf="groupItem.get('operator').value != ''"
                                                                         [dropdownOptions]="{
                                                                         optionArray: searchOperatorDropdownArray,
                                                                         buttonCaption: groupItem.get('operator').value,
-                                                                        optionTooltips: tooltipsArray
+                                                                        optionTooltips: tooltipsArray,
+                                                                        fontClass: 'font-dmMono'
                                                                     }"
                                                                         (optionClicked)="selectValueDropdown($event, i, 'operator', group.key)">
                                                                     </kern-dropdown>

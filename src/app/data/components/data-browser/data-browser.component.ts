@@ -13,7 +13,7 @@ import {
 import { ActivatedRoute, Router } from '@angular/router';
 import { KeyValue } from '@angular/common';
 import { combineLatest, forkJoin, interval, Observable, Subscription, timer } from 'rxjs';
-import { dateAsUTCDate, parseLinkFromText } from 'src/app/util/helper-functions';
+import { dateAsUTCDate, getColorForDataType, parseLinkFromText } from 'src/app/util/helper-functions';
 import {
   debounceTime,
   distinctUntilChanged,
@@ -190,6 +190,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   alertLastVisible: number;
   tooltipsArray: string[] = [];
   saveDropdonwAttribute: string = "";
+  colorsAttributes: string[] = [];
 
   getSearchFormArray(groupKey: string): FormArray {
     return this.fullSearch.get(groupKey).get('groupElements') as FormArray;
@@ -307,6 +308,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
         order: 0,
         type: 'TEXT'
       });
+      this.colorsAttributes.push('gray');
 
       attributes.forEach((att) => {
         this.attributes.set(att.id, att);
@@ -316,6 +318,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
           order: att.relativePosition,
           type: att.dataType,
         });
+        this.colorsAttributes.push(getColorForDataType(att.dataType));
       });
       this.attributeWait.isWaiting = false;
     }));

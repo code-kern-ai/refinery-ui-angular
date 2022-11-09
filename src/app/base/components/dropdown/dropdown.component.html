@@ -1,5 +1,5 @@
 <div class="relative"
-    [ngClass]="[dropdownOptions.buttonVersion == 'default' && !dropdownOptions.hasFullWidth ? ' w-max' : '', dropdownOptions.hasFullWidth ? 'w-full' : '']">
+    [ngClass]="[dropdownOptions.buttonVersion == 'default' && !dropdownOptions.hasFullWidth ? ' w-max' : '', dropdownOptions.hasFullWidth ? 'w-full' : '', dropdownOptions.fontClass ? dropdownOptions.fontClass : '']">
     <div [ngClass]="dropdownOptions.buttonTooltip? tooltipClassList: ''"
         [attr.data-tip]="dropdownOptions.buttonTooltip">
 
@@ -47,7 +47,7 @@
         <div class="py-1 cursor-pointer" role="none">
             <div *ngFor="let caption of dropdownOptionCaptions;let i = index" (click)="performActionOnOption($event,i)"
                 [attr.data-tip]="dropdownOptions.optionTooltips && dropdownOptions.optionTooltips[i]?dropdownOptions.optionTooltips[i]:null"
-                [ngClass]="dropdownOptions.optionTooltips && dropdownOptions.optionTooltips[i]?tooltipClassList:''"
+                [ngClass]="[dropdownOptions.optionTooltips && dropdownOptions.optionTooltips[i]?tooltipClassList:'', dropdownOptions.backgroundColors ?'bg-'+dropdownOptions.backgroundColors[i]+'-100': '']"
                 class="min-w-full">
                 <div [ngClass]="[dropdownOptions.textSize,dropdownOptions.textColor,dropdownOptions.optionDescriptions ? '' : 'flex' ,dropdownOptions.isOptionDisabled?.length && dropdownOptions.isOptionDisabled[i]?'opacity-50 cursor-not-allowed':'',!dropdownOptions.hasCheckboxes ? dropdownOptions.hoverColor + ' ' +dropdownOptions.textHoverColor:'', dropdownOptions.isModelDownloaded?.length && dropdownOptions.isModelDownloaded[i] ? 'text-green-700 hover:text-lime-300': '']"
                     [ngStyle]="{'border-bottom': dropdownOptions.isButtonSampleProjects && i%2 == 0 && i!=dropdownOptionCaptions.length-1 ? '1px dashed #e2e8f0' : (dropdownOptions.isButtonSampleProjects && i%2 != 0 && i!=dropdownOptionCaptions.length-1 ? '1px solid #e2e8f0' : null) }"
