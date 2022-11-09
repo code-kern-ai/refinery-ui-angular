@@ -217,7 +217,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     let firstNotAvailable = true;
     let insertPos = -1;
     for (let i = 0; i < tokenizer.length; i++) {
-      let t = tokenizer[i]
+      let t = { ...tokenizer[i] };
       if (t.configString != 'en_core_web_sm' && t.configString != 'de_core_news_sm') {
         if (firstNotAvailable) {
           insertPos = i;

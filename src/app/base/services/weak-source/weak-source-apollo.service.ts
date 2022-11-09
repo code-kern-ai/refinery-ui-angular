@@ -104,7 +104,12 @@ export class WeakSourceApolloService {
     const vc = query.valueChanges.pipe(
       map((result) => {
         if (result['data']['zeroShotRecommendations']) {
-          return JSON.parse(result['data']['zeroShotRecommendations']);
+          let zeroShotData = [];
+          JSON.parse(result['data']['zeroShotRecommendations']).forEach(zeroShot => {
+            zeroShot = { ...zeroShot, hidden: false, forceHidden: false, isZeroShot: true };
+            zeroShotData.push(zeroShot);
+          });
+          return zeroShotData;
         }
         return null;
       }));

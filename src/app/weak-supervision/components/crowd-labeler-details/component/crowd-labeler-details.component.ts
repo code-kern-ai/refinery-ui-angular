@@ -226,6 +226,7 @@ export class CrowdLabelerDetailsComponent
       this.annotators = users;
       this.annotatorLookup = {};
       this.annotators.forEach(annotator => {
+        annotator = { ...annotator };
         annotator.text = annotator.mail;
         this.annotatorLookup[annotator.id] = annotator;
       });

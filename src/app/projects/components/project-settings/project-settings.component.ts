@@ -266,6 +266,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     encoderSuggestions = encoderSuggestions.filter(e => e.tokenizers.includes("all") || e.tokenizers.includes(this.project.tokenizer))
     if (!encoderSuggestions.length) return;
     if (encoderSuggestions) encoderSuggestions.forEach(element => {
+      element = { ...element };
       element.hidden = false;
       element.forceHidden = false;
       if (typeof element.applicability === 'string' || element.applicability instanceof String) {
@@ -283,6 +284,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
 
     const suggestionList = this.embeddingHandlesMap.get(attId)
     for (let element of suggestionList) {
+      element = { ...element };
       element.forceHidden = true;
       if ((granularity == 'ON_ATTRIBUTE' && element.applicability?.attribute)
         || (granularity == 'ON_TOKEN' && element.applicability?.token)) {
@@ -707,23 +709,26 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
 
   }
 
-  selectEmbeddingHandle(embeddingHandle, inputElement: HTMLInputElement) {
+  selectEmbeddingHandle(embeddingHandle, inputElement: HTMLInputElement, hoverBox?: any) {
     inputElement.value = embeddingHandle.configString;
+    hoverBox.style.display = 'none';
     if (document.activeElement instanceof HTMLElement) {
       document.activeElement.blur();
     }
     this.checkEmbeddingHandles(inputElement);
   }
 
-  checkEmbeddingHandles(eventTarget: HTMLInputElement) {
+  checkEmbeddingHandles(eventTarget: HTMLInputElement,) {
     this.embeddingCreationFormGroup.get('embeddingHandle').setValue(eventTarget.value);
-    const suggestionList = this.embeddingHandlesMap.get(this.embeddingCreationFormGroup.get("targetAttribute").value)
+    const suggestionList = this.embeddingHandlesMap.get(this.embeddingCreationFormGroup.get("targetAttribute").value);
     if (!suggestionList || suggestionList.length == 0) return;
     const lowerEventValue = eventTarget.value.toLowerCase();
+    let suggestionsSave = [];
     for (let embeddingHandle of suggestionList) {
-      embeddingHandle.hidden = !embeddingHandle.configString.toLowerCase().includes(lowerEventValue)
+      embeddingHandle = { ...embeddingHandle, hidden: !embeddingHandle.configString.toLowerCase().includes(lowerEventValue) };
+      suggestionsSave.push(embeddingHandle)
     }
-
+    this.embeddingHandlesMap.set(this.embeddingCreationFormGroup.get("targetAttribute").value, suggestionsSave);
   }
 
   checkLabelingTaskName(eventTarget: HTMLInputElement) {
@@ -755,6 +760,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
         return;
       }
       for (let e of this.embeddings) {
+        e = { ...e };
         if (e.id == msgParts[2]) {
           if (msgParts[3] == "state") {
             if (msgParts[4] == "FINISHED") this.embeddingQuery$.refetch();
@@ -942,21 +948,23 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     });
   }
 
-  updateLabelColor(projectId: string, labelingTaskId: string, labelId: string, oldLabelColor: string, newLabelColor: string) {
+  updateLabelColor(projectId: string, labelingTaskId: string, labelId: string, oldLabelColor: string, newLabelColor: any) {
     let colorsInTask = this.labelingTaskColors.get(labelingTaskId);
     const index = colorsInTask.indexOf(oldLabelColor);
     if (index > -1) {
       colorsInTask.splice(index, 1); // 2nd parameter means remove one item only
     }
-    colorsInTask.push(newLabelColor);
+    colorsInTask.push(newLabelColor.name);
     this.labelingTaskColors.set(labelingTaskId, colorsInTask);
 
     this.projectApolloService
-      .updateLabelColor(projectId, labelId, newLabelColor).pipe(first())
+      .updateLabelColor(projectId, labelId, newLabelColor.name).pipe(first())
       .subscribe();
+    this.currentLabel = { ...this.currentLabel, color: newLabelColor.name };
   }
   checkAndSetLabelHotkey(event: KeyboardEvent) {
     this.labelHotkeyError = null;
+    this.currentLabel = { ...this.currentLabel };
     if (event.key == this.currentLabel.hotkey) return;
     const usedHotkeys = this.getUsedHotkey();
     if (event.key == 'ArrowRight' || event.key == 'ArrowLeft') {

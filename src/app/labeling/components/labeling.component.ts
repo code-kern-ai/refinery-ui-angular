@@ -1,4 +1,6 @@
 import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   ElementRef,
   HostListener,
@@ -37,6 +39,7 @@ import { CommentDataManager, CommentType } from 'src/app/base/components/comment
   selector: 'kern-labeling',
   templateUrl: './labeling.component.html',
   styleUrls: ['./labeling.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LabelingComponent implements OnInit, OnDestroy {
   get LabelSourceType(): typeof LabelSource {
@@ -138,7 +141,12 @@ export class LabelingComponent implements OnInit, OnDestroy {
     private projectApolloService: ProjectApolloService,
     private notificationApolloService: NotificationApolloService,
     private organizationService: OrganizationApolloService,
+    private cfRef: ChangeDetectorRef
   ) { }
+
+  ngAfterViewChecked() {
+    this.cfRef.detectChanges();
+  }
 
   ngOnDestroy() {
     if (this.tokenSubscription$) this.tokenSubscription$.unsubscribe();

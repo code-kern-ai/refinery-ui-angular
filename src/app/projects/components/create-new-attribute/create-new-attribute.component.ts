@@ -42,7 +42,6 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
   testerRequestedSomething: boolean = false;
   canRunProject: boolean = false;
   sampleRecords: any;
-  code: string = '';
   @ViewChild('calculateAttribute', { read: ElementRef }) calculateAttribute: ElementRef;
   @ViewChild('deleteAttribute', { read: ElementRef }) deleteAttribute: ElementRef;
   updatedThroughWebsocket: boolean = false;
@@ -160,14 +159,14 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
       this.currentAttribute = attribute;
       this.attributeName = this.currentAttribute?.name;
       this.attributeDataType = this.dataTypesArray.find((type) => type.value === this.currentAttribute?.dataType).name;
-      this.code = this.currentAttribute?.sourceCode;
+      this.codeFormCtrl.setValue(this.currentAttribute?.sourceCode);
       if (this.currentAttribute?.sourceCode == null) {
-        this.code = AttributeCodeLookup.getAttributeCalculationTemplate(AttributeCalculationExamples.AC_EMPTY_TEMPLATE, this.currentAttribute.dataType).code;
+        this.codeFormCtrl.setValue(AttributeCodeLookup.getAttributeCalculationTemplate(AttributeCalculationExamples.AC_EMPTY_TEMPLATE, this.currentAttribute.dataType).code);
       } else {
-        this.code = this.code.replace(
+        this.codeFormCtrl.setValue(this.codeFormCtrl.value.replace(
           'def ac(record):',
           'def ' + this.currentAttribute.name + '(record):'
-        );
+        ));
       }
 
       this.attributeLogs = attribute?.logs;
@@ -206,19 +205,19 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
         return;
       };
 
-      var regMatch: any = this.getPythonFunctionRegExMatch(this.code);
+      var regMatch: any = this.getPythonFunctionRegExMatch(this.codeFormCtrl.value);
       if (!regMatch) return;
-      this.code = this.code.replace(
+      this.codeFormCtrl.setValue(this.codeFormCtrl.value.replace(
         regMatch[0],
         'def ' + this.attributeName + '(record)'
-      );
+      ));
       this.saveAttribute(projectId);
     }
   }
 
   saveAttribute(projectId: string) {
     if (this.updatedThroughWebsocket) return;
-    const getCodeToSave = this.getPythonFunctionToSave(this.code);
+    const getCodeToSave = this.getPythonFunctionToSave(this.codeFormCtrl.value);
     this.projectApolloService
       .updateAttribute(projectId, this.currentAttribute.id, this.currentAttribute.dataType, this.currentAttribute.isPrimaryKey, this.attributeName, getCodeToSave)
       .pipe(first())
@@ -246,15 +245,15 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
       )
       .subscribe(() => {
         if (this.hasUnsavedChanges()) {
-          const regMatch: any = this.getPythonFunctionRegExMatch(this.code);
+          const regMatch: any = this.getPythonFunctionRegExMatch(this.codeFormCtrl.value);
           const findDuplicate = this.attributes.find(att => att.name == regMatch[2] && att.id != this.currentAttribute.id);
           this.duplicateNameExists = findDuplicate != undefined ? true : false;
 
           if (this.duplicateNameExists) {
-            this.code = this.code.replace(
+            this.codeFormCtrl.setValue(this.codeFormCtrl.value.replace(
               'def ' + regMatch[2] + '(record):',
               'def ' + this.currentAttribute.name + '(record):'
-            );
+            ));
             return;
           }
           this.saveAttribute(projectId);
@@ -268,7 +267,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
     if (this.attributeName != this.currentAttribute.name) return true;
     if (this.currentAttribute.sourceCode == null) return true;
     if (
-      this.code !=
+      this.codeFormCtrl.value !=
       this.currentAttribute.sourceCode.replace(
         'def ac(record):',
         'def ' + this.currentAttribute.name + '(record):'
@@ -351,7 +350,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
         'Function code holds tab characters -- replaced with 4 spaces to prevent unwanted behaviour'
       );
       codeToSave = codeToSave.replace(/\t/g, '    ');
-      this.code = this.code.replace(/\t/g, '    ');
+      this.codeFormCtrl.setValue(this.codeFormCtrl.value.replace(/\t/g, '    '));
     }
     var regMatch: any = this.getPythonFunctionRegExMatch(codeToSave);
     if (!regMatch) return codeToSave;
