@@ -36,3 +36,19 @@ export enum SearchOperator {
     LESS = 'LESS',
     LESS_EQUAL = 'LESS_EQUAL',
 }
+
+export function prepareFilterElements(searchElement, name) {
+    let values = [];
+    if (searchElement.values.operator == SearchOperator.BETWEEN) {
+        values = [name, searchElement.values.searchValue, searchElement.values.searchValueBetween];
+    } else if (searchElement.values.operator == SearchOperator.IN) {
+        const split = searchElement.values.searchValue.split(',');
+        values = [name, ...split];
+    } else if (searchElement.values.operator == '') {
+        // TODO: add the name of the operator for boolean
+        values = [name, !searchElement.values.negate];
+    } else {
+        values = [name, searchElement.values.searchValue];
+    }
+    return values;
+}

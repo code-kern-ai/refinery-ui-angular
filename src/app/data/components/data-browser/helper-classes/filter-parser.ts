@@ -1,6 +1,6 @@
 import { LabelSource } from "src/app/base/enum/graphql-enums";
 import { DataBrowserComponent } from "../data-browser.component";
-import { SearchOperator } from "./search-operators";
+import { prepareFilterElements, SearchOperator } from "./search-operators";
 import { SearchGroup, StaticOrderByKeys } from "./search-parameters";
 
 
@@ -318,17 +318,16 @@ export class DataBrowserFilterParser {
                 FILTER: [],
             };
             for (let i = 1; i < this.dataBrowser.attributesSortOrder.length; i++) {
-                filterElement.FILTER.push({
-                    RELATION: i == 0 ? 'NONE' : 'OR',
-                    NEGATION: false,
-                    TARGET_TABLE: 'RECORD',
-                    TARGET_COLUMN: 'DATA',
-                    OPERATOR: searchElement.values.operator,
-                    VALUES: [
-                        this.dataBrowser.attributes.get(this.dataBrowser.attributesSortOrder[i].key).name,
-                        searchElement.values.searchValue,
-                    ],
-                });
+                if (this.dataBrowser.attributesSortOrder[i].type !== "BOOLEAN") {
+                    filterElement.FILTER.push({
+                        RELATION: i == 1 ? 'NONE' : 'OR',
+                        NEGATION: false,
+                        TARGET_TABLE: 'RECORD',
+                        TARGET_COLUMN: 'DATA',
+                        OPERATOR: searchElement.values.operator,
+                        VALUES: prepareFilterElements(searchElement, this.dataBrowser.attributes.get(this.dataBrowser.attributesSortOrder[i].key).name),
+                    });
+                }
             }
         } else {
             filterElement = {
@@ -337,7 +336,7 @@ export class DataBrowserFilterParser {
                 TARGET_TABLE: 'RECORD',
                 TARGET_COLUMN: 'DATA',
                 OPERATOR: searchElement.values.operator,
-                VALUES: [searchElement.values.name, searchElement.values.searchValue],
+                VALUES: prepareFilterElements(searchElement, searchElement.values.name),
             };
         }
         return filterElement;
