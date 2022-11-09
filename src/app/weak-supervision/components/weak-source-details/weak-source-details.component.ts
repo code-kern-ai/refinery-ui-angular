@@ -71,7 +71,6 @@ export class WeakSourceDetailsComponent
   labelingTaskControl = new FormControl('');
 
   editorOptions = { theme: 'vs-light', language: 'python' };
-  code: string = '';
   description: string = '';
   descriptionOpen: boolean = false;
   informationSourceName: string = '';
@@ -288,17 +287,17 @@ export class WeakSourceDetailsComponent
   }
 
   prepareSourceCode(projectId: string, informationSource) {
-    if (!this.code || this.updatedThroughWebsocket) {
+    if (!this.codeFormCtrl.value || this.updatedThroughWebsocket) {
 
       if (informationSource.informationSourceType == InformationSourceType.LABELING_FUNCTION) {
-        this.code = informationSource.sourceCode.replace(
+        this.codeFormCtrl.setValue(informationSource.sourceCode.replace(
           'def lf(record):',
           'def ' + informationSource.name + '(record):'
-        );
+        ));
       } else if (this.informationSource.informationSourceType == InformationSourceType.ACTIVE_LEARNING) {
-        this.code = informationSource.sourceCode.replace(this.getClassLine(), this.getClassLine(this.informationSource.name));
+        this.codeFormCtrl.setValue(informationSource.sourceCode.replace(this.getClassLine(), this.getClassLine(this.informationSource.name)));
       }
-      else this.code = informationSource.sourceCode;
+      else this.codeFormCtrl.setValue(informationSource.sourceCode);
     }
     if (informationSource.lastTask) {
       [this.lastTaskQuery$, this.lastTask$] = this.informationSourceApolloService.getTaskByTaskId(
@@ -339,14 +338,14 @@ export class WeakSourceDetailsComponent
     if (template != null) {
       const templateCode = this.getInformationSourceTemplate(this.informationSource.informationSourceType).code;
       if (this.informationSource.informationSourceType == InformationSourceType.LABELING_FUNCTION) {
-        this.code = templateCode.replace(
+        this.codeFormCtrl.setValue(templateCode.replace(
           'def lf(record):',
           'def ' + this.informationSource.name + '(record):'
-        );
+        ));
       } else if (this.informationSource.informationSourceType == InformationSourceType.ACTIVE_LEARNING) {
-        this.code = templateCode.replace(this.getClassLine(), this.getClassLine(this.informationSource.name));
+        this.codeFormCtrl.setValue(templateCode.replace(this.getClassLine(), this.getClassLine(this.informationSource.name)));
       }
-      else this.code = templateCode;
+      else this.codeFormCtrl.setValue(templateCode);
     }
   }
 
@@ -429,9 +428,9 @@ export class WeakSourceDetailsComponent
     if (sourceType == InformationSourceType.LABELING_FUNCTION || sourceType == InformationSourceType.ACTIVE_LEARNING) {
       let functionName: string = this.informationSourceName;
       if (sourceType == InformationSourceType.LABELING_FUNCTION) {
-        functionName = this.getPythonFunctionName(this.code);
+        functionName = this.getPythonFunctionName(this.codeFormCtrl.value);
       } else {
-        functionName = this.getPythonClassName(this.code);
+        functionName = this.getPythonClassName(this.codeFormCtrl.value);
       }
       if (functionName == '@@unknown@@') {
         console.log(
@@ -444,7 +443,7 @@ export class WeakSourceDetailsComponent
           projectId,
           sourceId,
           this.labelingTaskControl.value,
-          this.getPythonFunctionToSave(this.code),
+          this.getPythonFunctionToSave(this.codeFormCtrl.value),
           this.description,
           functionName
         ).pipe(first())
@@ -481,17 +480,17 @@ export class WeakSourceDetailsComponent
     if (!open && this.informationSourceName != this.informationSource.name) {
       if (sourceType == InformationSourceType.LABELING_FUNCTION) {
         //change name in code:
-        var regMatch: any = this.getPythonFunctionRegExMatch(this.code);
+        var regMatch: any = this.getPythonFunctionRegExMatch(this.codeFormCtrl.value);
         if (!regMatch) return;
-        this.code = this.code.replace(
+        this.codeFormCtrl.setValue(this.codeFormCtrl.value.replace(
           regMatch[0],
           'def ' + this.informationSourceName + '(record)'
-        );
+        ));
       } else if (this.informationSource.informationSourceType == InformationSourceType.ACTIVE_LEARNING) {
-        var regMatch: any = this.getPythonClassRegExMatch(this.code);
+        var regMatch: any = this.getPythonClassRegExMatch(this.codeFormCtrl.value);
         if (!regMatch) return;
 
-        this.code = this.code.replace(regMatch[0], this.getClassLine(this.informationSourceName));
+        this.codeFormCtrl.setValue(this.codeFormCtrl.value.replace(regMatch[0], this.getClassLine(this.informationSourceName)));
       }
 
       //save data
@@ -512,7 +511,7 @@ export class WeakSourceDetailsComponent
     if (this.labelingTaskControl.value != this.informationSource.labelingTaskId) return true;
     if (this.informationSource.informationSourceType == InformationSourceType.LABELING_FUNCTION) {
       if (
-        this.code !=
+        this.codeFormCtrl.value !=
         this.informationSource.sourceCode.replace(
           'def lf(record):',
           'def ' + this.informationSource.name + '(record):'
@@ -520,10 +519,10 @@ export class WeakSourceDetailsComponent
       )
         return true;
     } else if (this.informationSource.informationSourceType == InformationSourceType.ACTIVE_LEARNING) {
-      if (this.code !=
+      if (this.codeFormCtrl.value !=
         this.informationSource.sourceCode.replace(this.getClassLine(), this.getClassLine(this.informationSource.name))) return true;
     } else {
-      if (this.code != this.informationSource.sourceCode) return true;
+      if (this.codeFormCtrl.value != this.informationSource.sourceCode) return true;
     }
     return false;
   }
@@ -543,7 +542,7 @@ export class WeakSourceDetailsComponent
         'Function code holds tab characters -- replaced with 4 spaces to prevent unwanted behaviour'
       );
       codeToSave = codeToSave.replace(/\t/g, '    ');
-      this.code = this.code.replace(/\t/g, '    ');
+      this.codeFormCtrl.setValue(this.codeFormCtrl.value.replace(/\t/g, '    '));
     }
     if (this.informationSource.informationSourceType == InformationSourceType.LABELING_FUNCTION) {
       var regMatch: any = this.getPythonFunctionRegExMatch(codeToSave);

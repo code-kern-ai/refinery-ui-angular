@@ -6,9 +6,7 @@
                     Record upload
                 </div>
 
-                <kern-upload-records
-                    [projectId]="projectId"
-                    [selectedTokenizer]="selectedTokenizer"
+                <kern-upload-records [projectId]="projectId" [selectedTokenizer]="selectedTokenizer"
                     (hasFileUploaded)="checkIfFileUploaded($event)"></kern-upload-records>
 
                 <div class="mt-4 flex flex-row">
@@ -17,7 +15,7 @@
                         type="submit">
                         Proceed
                     </button>
-                    <button [routerLink]="['../settings']"
+                    <button [routerLink]="['../settings']" type="button"
                         class="bg-red-100 border border-red-400 text-red-700 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer ml-3 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
                         Cancel
                     </button>

@@ -1,4 +1,6 @@
 import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChildren,
 } from '@angular/core';
 import {
@@ -89,6 +91,7 @@ type CurrentSearchRequest = {
   templateUrl: './data-browser.component.html',
   styleUrls: ['./data-browser.component.scss'],
   styles: [],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DataBrowserComponent implements OnInit, OnDestroy {
   get LabelSourceType(): typeof LabelSource {
@@ -199,7 +202,12 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     private recordApolloService: RecordApolloService,
     private organizationApolloService: OrganizationApolloService,
     public formBuilder: FormBuilder,
+    private cfRef: ChangeDetectorRef
   ) { }
+
+  ngAfterViewChecked() {
+    this.cfRef.detectChanges();
+  }
 
   ngOnDestroy(): void {
     this.subscriptions$.forEach((subscription) => subscription.unsubscribe());

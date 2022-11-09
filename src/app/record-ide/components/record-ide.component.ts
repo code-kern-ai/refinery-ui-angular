@@ -25,10 +25,8 @@ import { CommentDataManager, CommentType } from 'src/app/base/components/comment
 })
 export class RecordIDEComponent implements OnInit, OnDestroy {
 
-  codeFormCtrl = new FormControl('');
+  codeFormCtrl = new FormControl('# record is a pre-set variable which you can explore in this editor\n# you can access specific attributes via dictionary access\n# the record has the same format as a record entered into a labeling function\nprint(record)');
   editorOptions = { theme: 'vs-light', language: 'python' };
-  code: string = '# record is a pre-set variable which you can explore in this editor\n# you can access specific attributes via dictionary access\n# the record has the same format as a record entered into a labeling function\nprint(record)';
-
   project: Project;
   project$: any;
   subscriptions$: Subscription[] = [];
@@ -72,7 +70,9 @@ export class RecordIDEComponent implements OnInit, OnDestroy {
     this.linkData = parseLabelingLinkData(this.activatedRoute);
     this.prepareProject(this.linkData.projectId);
     const existingCode = localStorage.getItem("ideCode");
-    if (existingCode) this.code = existingCode;
+    if (existingCode) {
+      this.codeFormCtrl.setValue(existingCode);
+    }
     const horizontal = JSON.parse(localStorage.getItem("ideHorizontal"));
     if (horizontal) {
       this.vertical = !horizontal;
@@ -95,7 +95,7 @@ export class RecordIDEComponent implements OnInit, OnDestroy {
         distinctUntilChanged()
       )
       .subscribe(() => {
-        localStorage.setItem("ideCode", this.code);
+        localStorage.setItem("ideCode", this.codeFormCtrl.value);
       });
   }
 
@@ -115,7 +115,7 @@ export class RecordIDEComponent implements OnInit, OnDestroy {
   }
 
   runRecordIde(firstVisit: boolean = false) {
-    if (!firstVisit && this.code.indexOf("import easteregg") != -1) {
+    if (!firstVisit && this.codeFormCtrl.value.indexOf("import easteregg") != -1) {
       this.snakeActive = true;
     } else {
       this.loading = true;
@@ -123,7 +123,7 @@ export class RecordIDEComponent implements OnInit, OnDestroy {
 
       if (this.debounceTimer) this.debounceTimer.unsubscribe();
       this.debounceTimer = timer(400).subscribe(() => {
-        this.recordApolloService.runRecordIDE(this.project.id, recordId, this.code).subscribe(({ data, loading }) => {
+        this.recordApolloService.runRecordIDE(this.project.id, recordId, this.codeFormCtrl.value).subscribe(({ data, loading }) => {
           this.output = data["runRecordIde"];
           this.loading = false;
         });

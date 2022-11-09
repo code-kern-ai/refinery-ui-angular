@@ -61,17 +61,41 @@
                 }
               ],
               "optimization": true,
-              "outputHashing": "all",
-              "sourceMap": false,
+              "outputHashing": "none",
+              "sourceMap": true,
               "namedChunks": false,
-              "extractLicenses": true,
+              "showCircularDependencies": false,
+              "aot": true,
+              "extractLicenses": false,
+              "statsJson": false,
+              "progress": false,
               "vendorChunk": false,
-              "buildOptimizer": true,
+              "buildOptimizer": false,
+              "subresourceIntegrity": false,
               "budgets": [
                 {
                   "type": "initial",
                   "maximumWarning": "5mb",
                   "maximumError": "8mb"
+                }
+              ]
+            },
+            "development": {
+              "optimization": false,
+              "outputHashing": "none",
+              "aot": true,
+              "extractLicenses": false,
+              "statsJson": false,
+              "progress": true,
+              "vendorChunk": false,
+              "buildOptimizer": false,
+              "sourceMap": true,
+              "namedChunks": false,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "6mb"
                 },
                 {
                   "type": "anyComponentStyle",
@@ -84,12 +108,16 @@
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
+          "defaultConfiguration": "development",
           "options": {
             "browserTarget": "kern-frontspine:build"
           },
           "configurations": {
             "production": {
               "browserTarget": "kern-frontspine:build:production"
+            },
+            "development": {
+              "browserTarget": "kern-frontspine:build:development"
             }
           }
         },
