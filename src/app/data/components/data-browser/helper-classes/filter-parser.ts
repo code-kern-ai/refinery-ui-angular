@@ -1,6 +1,7 @@
 import { LabelSource } from "src/app/base/enum/graphql-enums";
 import { DataBrowserComponent } from "../data-browser.component";
-import { SearchGroup, SearchOperator, StaticOrderByKeys } from "./search-parameters";
+import { SearchOperator } from "./search-operators";
+import { SearchGroup, StaticOrderByKeys } from "./search-parameters";
 
 
 

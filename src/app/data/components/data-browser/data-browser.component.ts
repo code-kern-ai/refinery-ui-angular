@@ -38,13 +38,11 @@ import {
   getBasicGroupItems,
   getBasicSearchGroup as getBasicSearchGroupContainer,
   getBasicSearchItem,
-  getSearchOperatorTooltip,
   SearchGroupElement,
   SearchGroupItem,
   SearchGroup,
   SearchInfo,
   SearchItemType,
-  SearchOperator,
   StaticOrderByKeys,
   Slice,
   getDescriptionForSliceType,
@@ -55,6 +53,7 @@ import { DownloadState } from 'src/app/import/services/s3.enums';
 import { UserManager } from 'src/app/util/user-manager';
 import { labelingLinkType } from 'src/app/labeling/components/helper/labeling-helper';
 import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
+import { getSearchOperatorTooltip, SearchOperator } from './helper-classes/search-operators';
 
 
 type DataSlice = {
@@ -186,6 +185,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   currentSearchRequest: CurrentSearchRequest;
 
   alertLastVisible: number;
+  tooltipsArray: string[] = [];
 
   getSearchFormArray(groupKey: string): FormArray {
     return this.fullSearch.get(groupKey).get('groupElements') as FormArray;
@@ -229,6 +229,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
         this.prepareSearchGroups();
         this.loading = true;
         this.requestExtendedSearch();
+        this.getOperatorDropdownValues();
       });
     this.prepareDataSlicesRequest();
 
@@ -290,11 +291,14 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       attributes.sort((a, b) => a.relativePosition - b.relativePosition);
       this.attributes.clear();
       this.attributesSortOrder = [];
+
       attributes.forEach((att) => {
         this.attributes.set(att.id, att);
         this.attributesSortOrder.push({
+          name: att.name,
           key: att.id,
           order: att.relativePosition,
+          type: att.type,
         });
       });
       this.attributeWait.isWaiting = false;
@@ -1298,11 +1302,18 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
 
   getOperatorDropdownValues() {
     if (this.searchOperatorDropdownArray.length == 0) {
+      // const attributeName = this.getSearchFormArray(SearchGroup.ATTRIBUTES).controls[0].get('name').value;
+      // const attributeType = this.attributesSortOrder.find(att => att.name == attributeName)?.type;
+
+
+      // console.log(attributeType)
+
       for (let t of Object.values(SearchOperator)) {
         this.searchOperatorDropdownArray.push({
-          dataTip: getSearchOperatorTooltip(t),
           value: t,
+          dataTip: getSearchOperatorTooltip(t)
         });
+        this.tooltipsArray.push(getSearchOperatorTooltip(t));
       }
     }
     return this.searchOperatorDropdownArray;
@@ -2068,5 +2079,10 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     else {
       return "border-dashed"
     }
+  }
+
+  selectValueDropdown(value: string, field: string, key: any) {
+    console.log(key)
+    this.getSearchFormArray(key).controls[0].get(field).setValue(value);
   }
 }

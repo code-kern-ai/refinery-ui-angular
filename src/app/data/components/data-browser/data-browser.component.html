@@ -230,7 +230,14 @@
                                                             </div>
                                                             <div class="flex-grow mr-2 flex flex-col  mt-2 ">
                                                                 <div class="flex-grow flex flex-row flex-wrap gap-1">
-                                                                    <select formControlName="name"
+                                                                    <kern-dropdown [dropdownOptions]="{
+                                                                        optionArray: attributesSortOrder,
+                                                                        buttonCaption: groupItem.get('name').value
+                                                                    }"
+                                                                        (optionClicked)="selectValueDropdown($event, 'name', group.key)">
+                                                                    </kern-dropdown>
+
+                                                                    <!-- <select formControlName="name"
                                                                         class="font-dmMono flex-grow select select-sm select-bordered">
                                                                         <option value="Any Attribute">Any Attribute
                                                                         </option>
@@ -239,15 +246,22 @@
                                                                             [value]="attributes.get(attribute.key).name">
                                                                             {{attributes.get(attribute.key).name }}
                                                                         </option>
-                                                                    </select>
-                                                                    <select formControlName="operator"
+                                                                    </select> -->
+                                                                    <!-- <select formControlName="operator"
                                                                         class="font-dmMono select select-sm select-bordered">
                                                                         <option
-                                                                            *ngFor="let dropdown of getOperatorDropdownValues()"
+                                                                            *ngFor="let dropdown of searchOperatorDropdownArray"
                                                                             [value]="dropdown.value">
                                                                             {{dropdown.value }}
                                                                         </option>
-                                                                    </select>
+                                                                    </select> -->
+                                                                    <kern-dropdown [dropdownOptions]="{
+                                                                        optionArray: searchOperatorDropdownArray,
+                                                                        buttonCaption: groupItem.get('operator').value,
+                                                                        optionTooltips: tooltipsArray
+                                                                    }"
+                                                                        (optionClicked)="selectValueDropdown($event, 'operator', group.key)">
+                                                                    </kern-dropdown>
                                                                 </div>
 
                                                                 <div class="my-2 flex-grow">
