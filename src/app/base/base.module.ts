@@ -12,7 +12,7 @@ import { LoadingComponent } from './components/loading/loading.component';
 import { SnakeComponent } from './components/snake/snake.component';
 import { ModalComponent } from './components/modal/modal.component';
 import { ExportComponent } from './components/export/export.component';
-import { UploadAssistantComponent } from './components/upload-assistent/upload-assistant.component';
+import { LabelStudioAssistantComponent } from './components/upload-assistant/label-studio/label-studio-assistant.component';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { NgxHighlightWordsModule } from 'ngx-highlight-words';
 import { SidebarPmComponent } from './components/sidebar-pm/sidebar-pm.component';
@@ -31,7 +31,7 @@ import { LogsComponent } from './components/logs/logs.component';
     SnakeComponent,
     ModalComponent,
     ExportComponent,
-    UploadAssistantComponent,
+    LabelStudioAssistantComponent,
     DragAndDropDirective,
     HoverGroupDirective,
     DropdownDirective,
@@ -58,7 +58,7 @@ import { LogsComponent } from './components/logs/logs.component';
     SnakeComponent,
     ModalComponent,
     ExportComponent,
-    UploadAssistantComponent,
+    LabelStudioAssistantComponent,
     InfiniteScrollModule,
     HighlightModule,
     NgxHighlightWordsModule,

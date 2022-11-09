@@ -123,7 +123,7 @@ function sortByEnumPos(e: Object, arr: any[]) {
 }
 
 export function capitalizeFirstPerWord(str: string) {
-    str = str.replace("_", " ");
+    str = str.replace(/_/g, ' ');
     const parts = str.split(" ");
     for (let i = 0; i < parts.length; i++) {
         parts[i] = capitalizeFirst(parts[i]);
@@ -136,6 +136,7 @@ export function camelCaseToDashCase(str: string) {
 }
 
 export function capitalizeFirst(str: string) {
+    str = str.replace(/_/g, ' ');
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
 }
 

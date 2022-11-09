@@ -2,12 +2,24 @@ import { UploadType } from "src/app/import/components/upload/upload-helper";
 import { UploadComponent } from "src/app/import/components/upload/upload.component";
 
 
-export enum AssistantPreset {
-    LABEL_STUDIO = "LABEL_STUDIO"
+export enum AssistantConstants {
+    IGNORE_KEY = "IGNORE",
+    IGNORE_VALUE = "Ignore annotations",
+    UNKNOWN_KEY = "UNKNOWN",
+    UNKNOWN_VALUE = "User not known"
 }
+
+export enum LabelStudioTaskMapping {
+    FULL_RECORD_TASK = "FULL_RECORD_TASK",
+    ATTRIBUTE_SPECIFIC = "ATTRIBUTE_SPECIFIC"
+}
+
+
+
 export enum AssistantStep {
     PREPARATION = "PREPARATION",
-    SETTINGS = "SETTINGS",
+    MAPPINGS_USER = "MAPPINGS_USER",
+    MAPPINGS_TASKS = "MAPPINGS_TASKS",
     RESTRICTIONS = "RESTRICTIONS",
 }
 export type AssistantInputData = {
@@ -20,13 +32,4 @@ export type AssistantSetupData = {
     buttonCaption: string,
     modalHeader: string,
     isBeta?: boolean,
-}
-
-export function getBaseSetupDataForPreset(preset: AssistantPreset): AssistantSetupData {
-    switch (preset) {
-        case AssistantPreset.LABEL_STUDIO:
-            return { buttonCaption: 'Try our Label Studio import', modalHeader: 'Label Studio import', isBeta: true };
-    }
-
-    return { buttonCaption: "Unknown Assistant Preset", modalHeader: "Unknown Assistant Preset" };
 }

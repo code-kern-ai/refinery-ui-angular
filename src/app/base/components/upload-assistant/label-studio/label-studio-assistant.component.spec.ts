@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { UploadAssistantComponent } from './upload-assistant.component';
+import { LabelStudioAssistantComponent } from './label-studio-assistant.component';
 
 describe('ModalComponent', () => {
-  let component: UploadAssistantComponent;
-  let fixture: ComponentFixture<UploadAssistantComponent>;
+  let component: LabelStudioAssistantComponent;
+  let fixture: ComponentFixture<LabelStudioAssistantComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [UploadAssistantComponent]
+      declarations: [LabelStudioAssistantComponent]
     })
       .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(UploadAssistantComponent);
+    fixture = TestBed.createComponent(LabelStudioAssistantComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

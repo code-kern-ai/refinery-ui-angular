@@ -20,6 +20,7 @@ export class ModalComponent implements OnInit, OnChanges {
   @Input() closeButton: ModalButton;
   @Input() acceptButton: ModalButton;
   @Input() abortButton: ModalButton;
+  @Input() modalBoxStyle: {};
 
   @Output() optionClicked = new EventEmitter<string | any>();
   @ViewChild("backdrop") backdrop: ElementRef;

@@ -62,11 +62,11 @@
                         type="submit">
                         Proceed
                     </button>
-                    <kern-upload-assistant *ngIf="uploadRecordsComponent" [inputData]="{
+                    <kern-label-studio-assistant *ngIf="uploadRecordsComponent" [inputData]="{
                         uploadComponent: uploadRecordsComponent.uploadComponent,
                         uploadFunction: initializeProject,
                         uploadFunctionThisObject:this}" (initialUploadTriggered)="disableInput=$event">
-                    </kern-upload-assistant>
+                    </kern-label-studio-assistant>
                     <button [routerLink]="['/projects']"
                         class="bg-red-100 border border-red-400 text-red-700 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer hover:bg-red-200 focus:outline-none">
                         Cancel project creation

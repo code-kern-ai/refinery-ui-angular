@@ -1,0 +1,225 @@
+<input #assistantModal type="checkbox" id="assistant-modal" class="modal-toggle">
+<div class="tooltip tooltip-bottom" data-tip="Test our new Label Studio integration">
+    <button (click)="assistantModal.checked=true;checkCanProceed();"
+        class="relative bg-blue-700 text-white text-xs font-semibold px-4 py-2 rounded-md hover:bg-blue-800 focus:outline-none">
+        Try our Label Studio import
+        <label
+            class="absolute bg-gray-100 text-gray-800 rounded-lg text-xs px-2.5 py-0.5 cursor-default border border-gray-300"
+            style="top: -4px; right: -14px; transform: rotate(45deg);">Beta</label>
+    </button>
+</div>
+<kern-modal [isOpen]="assistantModal.checked" closeButton="X" [modalBoxStyle]="{'width':'45rem','overflow-x':'visible'}"
+    (optionClicked)="$event == 'CLOSE' ? assistantModal.checked=false : null"
+    [acceptButton]="{closeAfterClick:false,buttonCaption:states.fileIsPrepared?'Finish up':'Prepare',emitObject:this,emitFunction:clickProceed, disabled:!canProceed && !states.fileInPreparation}">
+    <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium -mb-2">
+        Label Studio import </div>
+
+
+    <div class="flex justify-center">
+        <div class="sm:block">
+            <div class="border-b border-gray-200">
+                <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                    <button (click)="states.currentTab = AssistantStepType.PREPARATION"
+                        [ngClass]="states.currentTab == AssistantStepType.PREPARATION ? 'border-indigo-500 text-indigo-600':'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                        class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">Preparation</button>
+
+                    <button (click)="states.currentTab = AssistantStepType.MAPPINGS_USER"
+                        [ngClass]="states.currentTab == AssistantStepType.MAPPINGS_USER ? 'border-indigo-500 text-indigo-600':'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                        class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">User Mapping</button>
+                    <button (click)="states.currentTab = AssistantStepType.MAPPINGS_TASKS"
+                        [ngClass]="states.currentTab == AssistantStepType.MAPPINGS_TASKS ? 'border-indigo-500 text-indigo-600':'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                        class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">Task Mapping</button>
+
+                    <button (click)="states.currentTab = AssistantStepType.RESTRICTIONS"
+                        [ngClass]="states.currentTab == AssistantStepType.RESTRICTIONS ? 'border-indigo-500 text-indigo-600':'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                        class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">Restrictions</button>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <!--Page Preparations-->
+    <div [ngClass]="states.currentTab != AssistantStepType.PREPARATION ? 'hidden':''"
+        class="flex justify-center items-center my-4">
+        <div class="grid grid-cols-2 gap-x-6 gap-y-2 items-center"
+            style="grid-template-columns: max-content max-content;">
+            <div>Project Name</div>
+            <label>{{prepareData.projectName?prepareData.projectName:'None provided'}}</label>
+            <div>File Name</div>
+            <label>{{prepareData.fileName?prepareData.fileName:'None provided'}}</label>
+            <div *ngIf="uploadTask?.fileAdditionalInfo.file_info as info" class="contents">
+                <!-- <div class="flex justify-center col-span-full font-bold -my-2">File Info</div> -->
+                <div>Records</div>
+                <label>{{info.records}}</label>
+                <div *ngFor="let annotations of info.annotations | keyvalue" class="contents">
+                    <div class="whitespace-nowrap">External User: {{annotations.key}}</div>
+                    <div class="whitespace-nowrap">Annotations: {{annotations.value}}</div>
+                </div>
+                <div class="flex items-center col-span-full cursor-pointer tooltip"
+                    [attr.data-tip]="'If a record already has a user annotation it will be ' + (mappings.prioritizeExisting? 'preserved':'removed')"
+                    (click)="states.finishingUp?null:mappings.prioritizeExisting=!mappings.prioritizeExisting">
+                    <input type="checkbox"
+                        class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-500 pointer-events-none mr-2"
+                        [checked]="mappings.prioritizeExisting">
+                    Prioritize existing labels over provided
+                </div>
+
+            </div>
+        </div>
+        <ng-template [ngIf]="uploadTask?.fileAdditionalInfo.errors.length>0">
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mt-2" role="alert">
+                <strong class="font-bold">Errors Detected!</strong>
+                <pre class="text-sm">{{uploadTask.fileAdditionalInfo.errors.join("\n")}}</pre>
+            </div>
+        </ng-template>
+
+    </div>
+    <!--Page User Mappings-->
+    <div [ngClass]="states.currentTab != AssistantStepType.MAPPINGS_USER ? 'hidden':''"
+        class="flex justify-center items-center my-4">
+        <div *ngIf="uploadTask?.fileAdditionalInfo.user_ids as users; else noUsersYet">
+            <div class="grid grid-cols-2 gap-x-6 gap-y-2 items-center"
+                style="grid-template-columns: max-content min-content;">
+                <div>External User</div>
+                <div>Refinery User</div>
+                <div *ngFor="let m of mappings.users | keyvalue" class="contents">
+                    <div>{{m.key}}</div>
+                    <div class="flex items-center">
+                        <kern-dropdown [dropdownOptions]="{
+                    optionArray:userOptions,
+                    valuePropertyPath:'key',
+                    buttonCaption:mappings.users[m.key].name,
+                    emitIndex:true,
+                    isDisabled:states.finishingUp
+                }" (optionClicked)="mappings.users[m.key] = userOptions[$event]">
+                        </kern-dropdown>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+        <ng-template #noUsersYet>
+            <label> No User Data Yet </label>
+        </ng-template>
+    </div>
+    <!--Page Task Mappings-->
+    <div [ngClass]="states.currentTab != AssistantStepType.MAPPINGS_TASKS ? 'hidden':''"
+        class="flex justify-center items-center my-4">
+        <div *ngIf="uploadTask?.fileAdditionalInfo.tasks as tasks; else noTasksYet">
+            <div class="grid grid-cols-2 gap-x-6 gap-y-2 items-center"
+                style="grid-template-columns: max-content min-content;">
+                <div>Label Studio target</div>
+                <div>Refinery task type</div>
+                <div *ngFor="let m of mappings.tasks | keyvalue" class="contents">
+                    <div>{{m.key}}</div>
+                    <div class="flex items-center">
+                        <kern-dropdown [dropdownOptions]="{
+                        optionArray:taskOptions,
+                        valuePropertyPath:'value',
+                        buttonCaption:mappings.tasks[m.key].name,
+                        emitIndex:true,
+                        isDisabled:states.finishingUp
+                    }" (optionClicked)="mappings.tasks[m.key] = taskOptions[$event]">
+                        </kern-dropdown>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+        <ng-template #noTasksYet>
+            <label> No Task Data Yet </label>
+        </ng-template>
+    </div>
+    <!--Page Restrictions-->
+    <div [ngClass]="states.currentTab != AssistantStepType.RESTRICTIONS ? 'hidden':''"
+        class="flex justify-center items-center my-4">
+        <ul role="list" class="-mt-5 divide-y divide-gray-200 max-w-2xl overflow-y-auto"
+            style="max-height:calc(100vh - 300px)">
+            <li class="py-5">
+                <div class="relative">
+                    <h3 class="text-sm font-semibold text-gray-800">
+                        General information
+                    </h3>
+                    <p class="mt-1 text-sm text-gray-600 line-clamp-2">We are testing the integration with Label Studio.
+                        This means only a smaller subset of theoretically possible functions are included. If you like
+                        the feature and want more functionality please reach out to us.</p>
+                </div>
+            </li>
+            <li class="py-5">
+                <div class="relative">
+                    <h3 class="text-sm font-semibold text-gray-800">
+                        Only Label Studio annotations are considered
+                    </h3>
+                    <p class="mt-1 text-sm text-gray-600 line-clamp-2">The Label Studio export provides a multitude of
+                        fields in their json export files. At this point in time only data and annotations are
+                        considered. Fields like predictions or drafts are ignored</p>
+                </div>
+            </li>
+            <li class="py-5">
+                <div class="relative">
+                    <h3 class="text-sm font-semibold text-gray-800">
+                        Imported labels are assumed to be manual
+                    </h3>
+                    <p class="mt-1 text-sm text-gray-600 line-clamp-2">At this point in time refinery considers every
+                        provided annotation as a manual (gold) label. The option to assume the annotations as heuristic
+                        results will be added in the future </p>
+                </div>
+            </li>
+            <li class="py-5">
+                <div class="relative">
+                    <h3 class="text-sm font-semibold text-gray-800">
+                        No extraction labels
+                    </h3>
+                    <p class="mt-1 text-sm text-gray-600 line-clamp-2">Label Studio works with a char based extraction
+                        logic, we use a token based extractions. Since converting between the different annotations
+                        isn't possible without information loss (and a lot more work) we decided to start with
+                        classification labels</p>
+                </div>
+            </li>
+            <li class="py-5">
+                <div class="relative">
+                    <h3 class="text-sm font-semibold text-gray-800">
+                        No multilable classification support
+                    </h3>
+                    <p class="mt-1 text-sm text-gray-600 line-clamp-2">Label Studio allows user to provided more than
+                        one label per user per record per task. Refinery at the moment doesn't (though it's on the
+                        horizon). Therefore we can't support that feature</p>
+                </div>
+            </li>
+            <li class="py-5">
+                <div class="relative">
+                    <h3 class="text-sm font-semibold text-gray-800">
+                        Single annotations per user
+                    </h3>
+                    <p class="mt-1 text-sm text-gray-600 line-clamp-2">Label Studio allows user to provided more than
+                        one annotation set per user per record per task, refinery doesn't.</p>
+                </div>
+            </li>
+            <li class="py-5">
+                <div class="relative">
+                    <h3 class="text-sm font-semibold text-gray-800">
+                        User mapping
+                    </h3>
+                    <p class="mt-1 text-sm text-gray-600 line-clamp-2">Label Studio exports users with their id. Since
+                        the id isn't known in refinery this needs to be mapped. You can retrieve the Label Studio id via
+                        the <a href="https://labelstud.io/guide/signup.html#Retrieve-user-info-from-the-command-line"
+                            class="underline cursor-pointer" target="_blank" rel="noopener noreferrer">command-line</a>
+                    </p>
+                </div>
+            </li>
+            <li class="py-5">
+                <div class="relative">
+                    <h3 class="text-sm font-semibold text-gray-800">
+                        Task mapping
+                    </h3>
+                    <p class="mt-1 text-sm text-gray-600 line-clamp-2">In refinery we have the option to create a full
+                        record labeling task. This isn't possible in Label Studio. To decide if the provided annotations
+                        should be attribute specific or not we need to provide that information</p>
+                </div>
+            </li>
+        </ul>
+
+    </div>
+
+</kern-modal>

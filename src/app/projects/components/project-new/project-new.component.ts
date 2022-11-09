@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewChecked, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { first } from 'rxjs/operators';
 import { AuthApiService } from 'src/app/base/services/auth-api.service';
@@ -19,9 +19,10 @@ import { UploadType } from 'src/app/import/components/upload/upload-helper';
 @Component({
   selector: 'kern-project-new',
   templateUrl: './project-new.component.html',
-  styleUrls: ['./project-new.component.scss']
+  styleUrls: ['./project-new.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectNewComponent implements OnInit {
+export class ProjectNewComponent implements OnInit, AfterViewChecked {
 
   user$: any;
   subscriptions$: Subscription[] = [];
@@ -52,7 +53,12 @@ export class ProjectNewComponent implements OnInit {
     private formBuilder: FormBuilder,
     private organizationApolloService: OrganizationApolloService,
     private projectApolloService: ProjectApolloService,
-    private router: Router) { }
+    private router: Router,
+    private cdRef: ChangeDetectorRef) { }
+
+  ngAfterViewChecked(): void {
+    this.cdRef.detectChanges();
+  }
 
   ngOnInit(): void {
     this.routeService.updateActivatedRoute(this.activatedRoute);
