@@ -221,7 +221,10 @@ export class UploadComponent implements OnDestroy, OnInit, AfterViewInit {
         this.resetUpload();
         if (this.deleteProjectOnFail) this.projectApolloService.deleteProjectById(this.projectId).pipe(first()).subscribe();
       }
-      else this.uploadTask.state = UploadStates[msgParts[4]];
+      else {
+        this.uploadTask = { ...this.uploadTask };
+        this.uploadTask.state = UploadStates[msgParts[4]]
+      };
     }
     else if (msgParts[3] == 'progress') this.uploadTask.progress = Number(msgParts[4]);
     else {

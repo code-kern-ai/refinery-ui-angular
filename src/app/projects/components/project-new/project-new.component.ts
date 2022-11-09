@@ -156,6 +156,7 @@ export class ProjectNewComponent implements OnInit {
     tokenizer = Array.from(tokenizer);
     const allowedConfigs = ConfigManager.getConfigValue("spacy_downloads");
     for (let i = 0; i < tokenizer.length; i++) {
+      tokenizer[i] = { ...tokenizer[i] };
       tokenizer[i].disabled = !allowedConfigs.includes(tokenizer[i].configString);
     }
     tokenizer.sort((a, b) => (+a.disabled) - (+b.disabled) || a.configString.localeCompare(b.configString));

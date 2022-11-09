@@ -1,5 +1,5 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterContentChecked, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { timer } from 'rxjs';
 import { UserManager } from 'src/app/util/user-manager';
 import { CommentDataManager, CommentType, CommentPosition } from './comment-helper';
@@ -24,9 +24,10 @@ import { CommentDataManager, CommentType, CommentPosition } from './comment-help
     ])
   ],
   templateUrl: './comment.component.html',
-  styleUrls: ['./comment.component.scss']
+  styleUrls: ['./comment.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CommentComponent implements OnInit, OnDestroy {
+export class CommentComponent implements AfterContentChecked, OnDestroy {
   dm: CommentDataManager;
 
   myUser: any;
@@ -42,10 +43,11 @@ export class CommentComponent implements OnInit, OnDestroy {
   isSlideOverOpen: boolean = false;
   positionComment: string = CommentPosition.RIGHT;
 
-  constructor() { }
+  constructor(private cfRef: ChangeDetectorRef) { }
   ngOnDestroy(): void {
   }
-  ngOnInit(): void {
+  ngAfterContentChecked(): void {
+    this.cfRef.detectChanges();
     this.initDataManger();
     UserManager.registerAfterInitActionOrRun(this, () => this.initUsers(), true);
     this.positionComment = localStorage.getItem('commentPosition') || CommentPosition.RIGHT;

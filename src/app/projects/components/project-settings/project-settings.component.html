@@ -570,7 +570,7 @@
 
                                                 <label class="cursor-pointer label"
                                                     [ngClass]="checkIfModelIsDownloaded(embeddingHandle.configString) ? 'text-green-700' : ''"
-                                                    (click)="selectEmbeddingHandle(embeddingHandle,inputEmbeddingHandle)">
+                                                    (click)="selectEmbeddingHandle(embeddingHandle,inputEmbeddingHandle,hoverBox)">
                                                     {{embeddingHandle.configString}}
                                                 </label>
                                             </li>
@@ -992,7 +992,7 @@
                     <p class="mt-2">Pick a color:</p>
                     <div class="mt-2 grid grid-cols-5 gap-2">
                         <label *ngFor="let colorContainer of labelColorOptions"
-                            (click)="updateLabelColor(project.id, currentColorLabelingTaskId, currentLabel.id, currentLabel.color, colorContainer.name);currentLabel.color=colorContainer.name;"
+                            (click)="updateLabelColor(project.id, currentColorLabelingTaskId, currentLabel.id, currentLabel.color, colorContainer)"
                             [ngClass]="[colorContainer.background, colorContainer.text,colorContainer.border, colorContainer.hover]"
                             class="w-full group border rounded-md py-1 px-2 text-sm font-medium hover:bg-gray-50
                                        focus:outline-none shadow-sm text-gray-900 cursor-pointer text-center">

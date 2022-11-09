@@ -189,9 +189,10 @@
                                 </div>
                             </div>
                             <!-- Group items -->
-                            <div #searchGroupItems class="transition_all ml-4"
-                                [ngClass]="!searchGroups.get(group.key).isOpen || searchGroups.get(group.key).inOpenTransition?'overflow-hidden':null"
-                                [style.max-height]="searchGroups.get(group.key).isOpen?searchGroupItems.scrollHeight +'px':'0px'">
+                            <div #searchGroupItems class="transition_all ml-4" [ngStyle]="{
+                                    maxHeight: searchGroups.get(group.key).isOpen ? searchGroupItems.scrollHeight +'px' : '0px', 
+                                    overflow: !searchGroups.get(group.key).isOpen || searchGroups.get(group.key).inOpenTransition ? 'hidden' : null
+                                  }">
                                 <form [formGroup]="fullSearch.get(group.key)">
                                     <div formArrayName="groupElements">
 
@@ -628,14 +629,12 @@
                         </label>
                     </div>
                     <div>
-                        <div data-tip="Update your current filter" class="tooltip tooltip-top relative"
-                            [ngClass]="updateButton.disabled ? 'cursor-not-allowed':'' ">
+                        <div data-tip="Update your current filter" class="tooltip tooltip-top relative">
                             <button #updateButton
                                 class="mr-1 inline-flex items-center w-32 px-2.5 py-1.5 border border-gray-200 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer"
                                 (click)="updateSlice()"
                                 [disabled]="!activeSlice || activeSlice?.sliceType == SliceTypes.STATIC_OUTLIER || (activeSlice?.static && activeSlice.count==staticDataSliceCurrentCount && !displayOutdatedWarning)"
-                                [ngClass]="updateButton.disabled ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer'"
-                                [ngStyle]="updateButton.disabled && {'background-color': '#f9fafb','cursor': 'not-allowed'}">
+                                [ngClass]="!activeSlice || activeSlice?.sliceType == SliceTypes.STATIC_OUTLIER || (activeSlice?.static && activeSlice.count==staticDataSliceCurrentCount && !displayOutdatedWarning) ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer'">
                                 <svg xmlns="http://www.w3.org/2000/svg"
                                     class="mr-2 icon icon-tabler icon-tabler-rotate-2" width="24" height="24"
                                     viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"

@@ -644,7 +644,12 @@ export class ProjectApolloService {
       })
       .valueChanges.pipe(
         map((result) => {
-          return result['data']['recommendedEncoders'];
+          let encodersData = [];
+          result['data']['recommendedEncoders'].forEach(encoder => {
+            encoder = { ...encoder, hidden: false, forceHidden: false, isZeroShot: false };
+            encodersData.push(encoder);
+          })
+          return encodersData;
         })
       );
   }
