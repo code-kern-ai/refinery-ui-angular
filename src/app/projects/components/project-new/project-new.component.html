@@ -14,16 +14,12 @@
                         <input [attr.disabled]="disableInput?true:null" name="projectTitle"
                             formControlName="projectTitle" type="submit" (keydown.enter)="initProjectEvent($event)"
                             type="text" placeholder="Enter some title here ..." required autocomplete="off"
-                            class="input input-sm input-bordered w-full placeholder-italic mr-3">
-
-                        <button [routerLink]="['/projects']" type="button"
-                            class="bg-red-100 border border-red-400 text-red-700 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer w-48 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-                            Cancel project creation
-                        </button>
+                            class="input input-sm input-bordered w-full placeholder-italic">
                     </div>
                 </div>
 
-                <div *ngIf="submitted && f.projectTitle.errors" class="text-red-700 text-xs mt-2">
+                <div *ngIf="(f.projectTitle.value.length > 0 || submitted)&& f.projectTitle.errors"
+                    class="text-red-700 text-xs mt-2">
                     <div *ngIf="f.projectTitle.errors.required">Project title is required</div>
                     <div *ngIf="f.projectTitle.errors.pattern">Project title cannot have empty spaces</div>
                     <div *ngIf="f.projectTitle.errors.projectTitleExists">Project title exists</div>
