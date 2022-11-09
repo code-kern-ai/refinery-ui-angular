@@ -255,7 +255,7 @@
                                                                 <div class="my-2 flex-grow">
                                                                     <input *ngIf="groupItem.get('operator').value != ''"
                                                                         formControlName="searchValue"
-                                                                        [type]="getAttributeType(groupItem.get('name').value) == 'INTEGER' ? 'number' : 'text'"
+                                                                        [type]="getAttributeType(groupItem.get('name').value) == 'INTEGER' && groupItem.get('operator').value != 'IN' ? 'number' : 'text'"
                                                                         [placeholder]="groupItem.get('addText').value"
                                                                         class="w-full input input-sm input-bordered">
 
@@ -265,7 +265,7 @@
                                                                     <input
                                                                         *ngIf="groupItem.get('operator').value == 'BETWEEN'"
                                                                         formControlName="searchValueBetween"
-                                                                        [type]="getAttributeType(groupItem.get('name').value) == 'INTEGER' ? 'number' : 'text'"
+                                                                        [type]="getAttributeType(groupItem.get('name').value) == 'INTEGER' && groupItem.get('operator').value != 'IN' ? 'number' : 'text'"
                                                                         [placeholder]="groupItem.get('addText').value"
                                                                         class="w-full input input-sm input-bordered">
                                                                 </div>
