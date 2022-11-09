@@ -191,6 +191,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   tooltipsArray: string[] = [];
   saveDropdonwAttribute: string = "";
   colorsAttributes: string[] = [];
+  separator: string = ",";
 
   getSearchFormArray(groupKey: string): FormArray {
     return this.fullSearch.get(groupKey).get('groupElements') as FormArray;
