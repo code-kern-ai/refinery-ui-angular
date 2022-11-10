@@ -89,6 +89,10 @@ export class LabelStudioAssistantComponent implements OnInit, OnChanges, OnDestr
 
   ngOnChanges(changes: SimpleChanges): void {
     this.prepareComponent();
+    if (changes.projectId.currentValue != changes.projectId.previousValue) {
+      //project - add collects the project id from route and sets it in onInit
+      this.subscribeToProjectNotifications(this.projectId);
+    }
   }
   prepareUserForDropdown(users: any[]) {
     const returnValues = [{ name: AssistantConstants.UNKNOWN_VALUE, key: AssistantConstants.UNKNOWN_KEY, }, { name: AssistantConstants.IGNORE_VALUE, key: AssistantConstants.IGNORE_KEY, }];
@@ -111,11 +115,9 @@ export class LabelStudioAssistantComponent implements OnInit, OnChanges, OnDestr
       if (obj.hasOwnProperty('createNewProject')) {
         //project - new
         this.prepareData.projectName = obj['createNewProject'].get('projectTitle').value;
-      } else if (obj.hasOwnProperty('projectId')) {
+      } else if (obj.hasOwnProperty('projectId') && obj['project']) {
         //project - add
         this.prepareData.projectName = obj['project'].name;
-      } else {
-        console.log("unknown upload object - cannot proceed");
       }
       this.canProceed = this.canProceed && !!this.prepareData.projectName && !!this.prepareData.fileName;
     }
@@ -138,19 +140,25 @@ export class LabelStudioAssistantComponent implements OnInit, OnChanges, OnDestr
   }
   private handleGlobalWebsocketNotification(msgParts: string[]) {
     if (msgParts[1] == 'project_created') {
-      if (!this.subscribedProjects.includes(msgParts[2])) {
-        this.subscribedProjects.push(msgParts[2]);
-        this.projectId = msgParts[2]
-        NotificationService.subscribeToNotification(this, {
-          projectId: msgParts[2],
-          whitelist: this.getWhiteListNotificationService(),
-          func: this.handleWebsocketNotification
-        });
+      if (this.subscribeToProjectNotifications(msgParts[2])) {
         this.projectCreated = true;
       }
     }
   }
+  private subscribeToProjectNotifications(projectId: string): boolean {
+    if (!this.subscribedProjects.includes(projectId)) {
 
+      this.subscribedProjects.push(projectId);
+      this.projectId = projectId;
+      NotificationService.subscribeToNotification(this, {
+        projectId: projectId,
+        whitelist: this.getWhiteListNotificationService(),
+        func: this.handleWebsocketNotification
+      });
+      return true;
+    }
+    return false;
+  }
   private checkAndPrepareDataAvailable(): boolean {
     if (this.inputData.uploadComponent.uploadTask.fileAdditionalInfo) {
 

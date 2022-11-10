@@ -89,7 +89,7 @@
                         </h3>
                         <p class="mt-1 text-sm text-gray-600">To use the Label Studio import assistant you need to enter
                             a unique project title {{prepareData.projectName?('('+prepareData.projectName+')'):''}} and
-                            select a file {{prepareData.fileName?('('+prepareData.fileName+')'):''}}.
+                            select a file{{prepareData.fileName?(' ('+prepareData.fileName+')'):''}}.
                         </p>
                     </div>
                 </li>
@@ -240,6 +240,16 @@
                     <p class="mt-1 text-sm text-gray-600">In refinery we have the option to create a full
                         record labeling task. This isn't possible in Label Studio. To decide if the provided annotations
                         should be attribute specific or not we need to provide that information</p>
+                </div>
+            </li>
+            <li class="py-5">
+                <div class="relative">
+                    <h3 class="text-sm font-semibold text-gray-800">
+                        File type json
+                    </h3>
+                    <p class="mt-1 text-sm text-gray-600">Label Studio supports multiple export file types. This
+                        includes csv, tsb, json and more. Since this is a beta feature and json allows for the most
+                        information transfer we only support this for the moment.</p>
                 </div>
             </li>
         </ul>
