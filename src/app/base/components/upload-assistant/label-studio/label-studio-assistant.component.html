@@ -74,7 +74,7 @@
             </div>
         </div>
         <ng-template [ngIf]="uploadTask?.fileAdditionalInfo.errors.length>0">
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative flex flex-col overflow-x-auto"
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative flex flex-col"
                 style="width: 80%;" role="alert">
                 <div class="self-center flex flex-row flex-nowrap items-center">
                     <strong class="font-bold">Errors detected</strong>
@@ -85,11 +85,11 @@
                             clip-rule="evenodd" />
                     </svg>
                 </div>
-                <pre class="text-sm">{{uploadTask.fileAdditionalInfo.errors.join("\n")}}</pre>
+                <pre class="text-sm overflow-x-auto">{{uploadTask.fileAdditionalInfo.errors.join("\n")}}</pre>
             </div>
         </ng-template>
         <ng-template [ngIf]="uploadTask?.fileAdditionalInfo.warnings.length>0">
-            <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative flex flex-col overflow-x-auto"
+            <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative flex flex-col"
                 style="width: 80%;" role="alert">
                 <div class="self-center flex flex-row flex-nowrap items-center">
                     <strong class="font-bold">Warning</strong>
@@ -100,7 +100,7 @@
                             clip-rule="evenodd" />
                     </svg>
                 </div>
-                <pre class="text-sm">{{uploadTask.fileAdditionalInfo.warnings.join("\n")}}</pre>
+                <pre class="text-sm overflow-x-auto">{{uploadTask.fileAdditionalInfo.warnings.join("\n")}}</pre>
             </div>
         </ng-template>
         <ng-template [ngIf]="uploadTask?.fileAdditionalInfo.info.length>0">
