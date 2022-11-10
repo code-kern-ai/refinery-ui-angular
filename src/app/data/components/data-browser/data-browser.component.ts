@@ -1022,24 +1022,58 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
 
   updateSearchParamText(searchElement) {
     if (searchElement.values.type == SearchItemType.ATTRIBUTE) {
+      const attributeType = this.getAttributeType(searchElement.values.name);
       if (searchElement.values.operator == SearchOperator.BETWEEN) {
-        searchElement.searchText =
-          searchElement.values.name +
-          ' ' +
-          searchElement.values.operator +
-          " '" +
-          searchElement.values.searchValue +
-          "'" + " AND " + searchElement.values.searchValueBetween + "'";
+        if (attributeType == "INTEGER" || attributeType == "FLOAT") {
+          searchElement.searchText =
+            searchElement.values.name +
+            ' ' +
+            searchElement.values.operator +
+            " " +
+            searchElement.values.searchValue +
+            "" + " AND " + searchElement.values.searchValueBetween;
+        } else {
+          searchElement.searchText =
+            searchElement.values.name +
+            ' ' +
+            searchElement.values.operator +
+            " '" +
+            searchElement.values.searchValue +
+            "'" + " AND '" + searchElement.values.searchValueBetween + "'";
+        }
       } else if (searchElement.values.operator == '') {
         searchElement.searchText = searchElement.values.name;
-      } else {
-        searchElement.searchText =
-          searchElement.values.name +
-          ' ' +
-          searchElement.values.operator +
-          " '" +
-          searchElement.values.searchValue +
-          "'";
+      } else if (searchElement.values.operator == SearchOperator.IN) {
+        if (attributeType == "INTEGER" || attributeType == "FLOAT") {
+          searchElement.searchText =
+            searchElement.values.name +
+            ' ' +
+            searchElement.values.operator +
+            " (" +
+            searchElement.values.searchValue + ")";
+        } else {
+          const splitTextBySeparator = searchElement.values.searchValue.split(this.separator);
+          searchElement.searchText = searchElement.values.name + ' ' + searchElement.values.operator + " (" + splitTextBySeparator.map(x => "'" + x + "'").join(", ") + ")";
+        }
+      }
+      else {
+        if (attributeType == "INTEGER" || attributeType == "FLOAT") {
+          searchElement.searchText =
+            searchElement.values.name +
+            ' ' +
+            searchElement.values.operator +
+            " " +
+            searchElement.values.searchValue;
+        }
+        else {
+          searchElement.searchText =
+            searchElement.values.name +
+            ' ' +
+            searchElement.values.operator +
+            " '" +
+            searchElement.values.searchValue +
+            "'";
+        }
       }
       if (searchElement.values.negate)
         searchElement.searchText = 'NOT (' + searchElement.searchText + ')';
