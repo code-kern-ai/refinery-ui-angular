@@ -1,20 +1,19 @@
 import { AfterViewChecked, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
-import { AbstractControl, FormBuilder, FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { first } from 'rxjs/operators';
-import { AuthApiService } from 'src/app/base/services/auth-api.service';
 import { NotificationService } from 'src/app/base/services/notification.service';
 import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
-import { ProjectStatus } from '../../enums/project-status.enum';
 import { Project } from 'src/app/base/entities/project';
 import { RouteService } from 'src/app/base/services/route.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { UploadComponent } from 'src/app/import/components/upload/upload.component';
 import { Subscription, timer } from 'rxjs';
 import { UploadRecordsComponent } from 'src/app/import/components/upload-records/upload-records.component';
 import { ConfigManager } from 'src/app/base/services/config-service';
 import { getUserAvatarUri } from 'src/app/util/helper-functions';
 import { UploadType } from 'src/app/import/components/upload/upload-helper';
+import { LabelStudioAssistantComponent } from 'src/app/base/components/upload-assistant/label-studio/label-studio-assistant.component';
+import { PreparationStep } from 'src/app/base/components/upload-assistant/label-studio/label-studio-assistant-helper';
 
 @Component({
   selector: 'kern-project-new',
@@ -37,8 +36,8 @@ export class ProjectNewComponent implements OnInit, AfterViewChecked {
   hasFileUploaded: boolean = false;
   submitted: boolean = false;
   file: File;
-  // @ViewChild(UploadComponent) uploadComponent;
   @ViewChild(UploadRecordsComponent) uploadRecordsComponent;
+  @ViewChild(LabelStudioAssistantComponent) labelStudioUploadAssistant;
   openTab: number = 0;
   organizationName: string;
   organizationInactive: boolean;
@@ -49,11 +48,9 @@ export class ProjectNewComponent implements OnInit, AfterViewChecked {
   constructor(
     private routeService: RouteService,
     private activatedRoute: ActivatedRoute,
-    private auth: AuthApiService,
     private formBuilder: FormBuilder,
     private organizationApolloService: OrganizationApolloService,
     private projectApolloService: ProjectApolloService,
-    private router: Router,
     private cdRef: ChangeDetectorRef) { }
 
   ngAfterViewChecked(): void {
@@ -118,6 +115,10 @@ export class ProjectNewComponent implements OnInit, AfterViewChecked {
   ngOnDestroy(): void {
     this.subscriptions$.forEach(subscription => subscription.unsubscribe());
     NotificationService.unsubscribeFromNotification(this);
+
+    if (this.uploadRecordsComponent?.uploadComponent?.uploadType == UploadType.LABEL_STUDIO) {
+      if (this.labelStudioUploadAssistant?.states.preparation != PreparationStep.MAPPING_TRANSFERRED) this.checkProjectToDelete();
+    }
   }
 
   canCreateProject(): boolean {
@@ -200,5 +201,12 @@ export class ProjectNewComponent implements OnInit, AfterViewChecked {
 
   checkIfFileUploaded(hasFileUploaded: boolean) {
     this.hasFileUploaded = hasFileUploaded;
+  }
+
+  checkProjectToDelete() {
+    if (this.uploadRecordsComponent.uploadComponent.projectId) {
+      this.uploadRecordsComponent.uploadComponent.deleteExistingProject();
+    }
+
   }
 }

@@ -6,8 +6,13 @@
     </button>
 </div>
 <kern-modal [isOpen]="assistantModal.checked" closeButton="X" [modalBoxStyle]="{'width':'45rem','overflow-x':'visible'}"
-    (optionClicked)="$event == 'CLOSE' ? assistantModal.checked=false : null"
-    [acceptButton]="{closeAfterClick:false,buttonCaption:states.fileIsPrepared?'Finish up':'Prepare',emitObject:this,emitFunction:clickProceed, disabled:!canProceed && !states.fileInPreparation}">
+    (optionClicked)="$event == 'CLOSE' ? assistantModal.checked=false : null" [acceptButton]="{
+        closeAfterClick:false,
+        buttonCaption:states.preparation == PreparationStepType.FILE_PREPARED?'Finish up':'Prepare',
+        emitObject:this,emitFunction:clickProceed, 
+        disabled:!canProceed || states.preparation == PreparationStepType.FILE_IN_PREPARATION,
+        useButton:states.preparation != PreparationStepType.MAPPING_TRANSFERRED
+    }">
     <div class="flex flex-row items-center justify-center gap-x-2">
 
         <span class="text-lg leading-6 text-gray-900 font-medium">
@@ -22,26 +27,26 @@
         <div class="sm:block">
             <div class="border-b border-gray-200">
                 <nav class="-mb-px flex space-x-8" aria-label="Tabs">
-                    <button (click)="states.currentTab = AssistantStepType.PREPARATION"
-                        [ngClass]="states.currentTab == AssistantStepType.PREPARATION ? 'border-indigo-500 text-indigo-600':'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                    <button (click)="states.tab = AssistantStepType.PREPARATION"
+                        [ngClass]="states.tab == AssistantStepType.PREPARATION ? 'border-indigo-500 text-indigo-600':'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
                         class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">Preparation</button>
 
-                    <button *ngIf="canProceed" (click)="states.currentTab = AssistantStepType.MAPPINGS_USER"
-                        [ngClass]="states.currentTab == AssistantStepType.MAPPINGS_USER ? 'border-indigo-500 text-indigo-600':'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                    <button *ngIf="canProceed" (click)="states.tab = AssistantStepType.MAPPINGS_USER"
+                        [ngClass]="states.tab == AssistantStepType.MAPPINGS_USER ? 'border-indigo-500 text-indigo-600':'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
                         class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">User Mapping</button>
-                    <button *ngIf="canProceed" (click)="states.currentTab = AssistantStepType.MAPPINGS_TASKS"
-                        [ngClass]="states.currentTab == AssistantStepType.MAPPINGS_TASKS ? 'border-indigo-500 text-indigo-600':'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                    <button *ngIf="canProceed" (click)="states.tab = AssistantStepType.MAPPINGS_TASKS"
+                        [ngClass]="states.tab == AssistantStepType.MAPPINGS_TASKS ? 'border-indigo-500 text-indigo-600':'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
                         class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">Task Mapping</button>
 
-                    <button (click)="states.currentTab = AssistantStepType.RESTRICTIONS"
-                        [ngClass]="states.currentTab == AssistantStepType.RESTRICTIONS ? 'border-indigo-500 text-indigo-600':'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                    <button (click)="states.tab = AssistantStepType.RESTRICTIONS"
+                        [ngClass]="states.tab == AssistantStepType.RESTRICTIONS ? 'border-indigo-500 text-indigo-600':'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
                         class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">Restrictions</button>
                 </nav>
             </div>
         </div>
     </div>
     <!--Page Preparations-->
-    <div [ngClass]="states.currentTab != AssistantStepType.PREPARATION ? 'hidden':''"
+    <div [ngClass]="states.tab != AssistantStepType.PREPARATION ? 'hidden':''"
         class="flex justify-center items-center my-4">
         <div *ngIf="canProceed else instructions" class="grid grid-cols-2 gap-x-6 gap-y-2 items-center"
             style="grid-template-columns: max-content max-content;">
@@ -59,7 +64,7 @@
                 </div>
                 <div class="flex items-center col-span-full cursor-pointer tooltip"
                     [attr.data-tip]="'If a record already has a user annotation it will be ' + (mappings.prioritizeExisting? 'preserved':'removed')"
-                    (click)="states.finishingUp?null:mappings.prioritizeExisting=!mappings.prioritizeExisting">
+                    (click)="states.preparation == PreparationStepType.MAPPING_TRANSFERRED?null:mappings.prioritizeExisting=!mappings.prioritizeExisting">
                     <input type="checkbox"
                         class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-500 pointer-events-none mr-2"
                         [checked]="mappings.prioritizeExisting">
@@ -94,7 +99,7 @@
 
     </div>
     <!--Page User Mappings-->
-    <div [ngClass]="states.currentTab != AssistantStepType.MAPPINGS_USER ? 'hidden':''"
+    <div [ngClass]="states.tab != AssistantStepType.MAPPINGS_USER ? 'hidden':''"
         class="flex justify-center items-center my-4">
         <div *ngIf="uploadTask?.fileAdditionalInfo.user_ids as users; else noUsersYet">
             <div class="grid grid-cols-2 gap-x-6 gap-y-2 items-center"
@@ -109,7 +114,7 @@
                     valuePropertyPath:'key',
                     buttonCaption:mappings.users[m.key].name,
                     emitIndex:true,
-                    isDisabled:states.finishingUp
+                    isDisabled:states.preparation == PreparationStepType.MAPPING_TRANSFERRED
                 }" (optionClicked)="mappings.users[m.key] = userOptions[$event]">
                         </kern-dropdown>
                     </div>
@@ -123,7 +128,7 @@
         </ng-template>
     </div>
     <!--Page Task Mappings-->
-    <div [ngClass]="states.currentTab != AssistantStepType.MAPPINGS_TASKS ? 'hidden':''"
+    <div [ngClass]="states.tab != AssistantStepType.MAPPINGS_TASKS ? 'hidden':''"
         class="flex justify-center items-center my-4">
         <div *ngIf="uploadTask?.fileAdditionalInfo.tasks as tasks; else noTasksYet">
             <div class="grid grid-cols-2 gap-x-6 gap-y-2 items-center"
@@ -138,7 +143,7 @@
                         valuePropertyPath:'value',
                         buttonCaption:mappings.tasks[m.key].name,
                         emitIndex:true,
-                        isDisabled:states.finishingUp
+                        isDisabled:states.preparation == PreparationStepType.MAPPING_TRANSFERRED
                     }" (optionClicked)="mappings.tasks[m.key] = taskOptions[$event]">
                         </kern-dropdown>
                     </div>
@@ -152,7 +157,7 @@
         </ng-template>
     </div>
     <!--Page Restrictions-->
-    <div [ngClass]="states.currentTab != AssistantStepType.RESTRICTIONS ? 'hidden':''"
+    <div [ngClass]="states.tab != AssistantStepType.RESTRICTIONS ? 'hidden':''"
         class="flex justify-center items-center my-4">
         <ul role="list" class="-mt-5 divide-y divide-gray-200 overflow-y-auto" style="max-height:calc(100vh - 300px)">
             <li class="py-5">

@@ -11,7 +11,7 @@ import { LabelSource, labelSourceToString } from '../../../enum/graphql-enums';
 import { NotificationService } from '../../../services/notification.service';
 import { ProjectApolloService } from '../../../services/project/project-apollo.service';
 import { UserManager } from 'src/app/util/user-manager';
-import { AssistantConstants, AssistantInputData, AssistantSetupData, AssistantStep, LabelStudioTaskMapping } from './label-studio-assistant-helper';
+import { AssistantConstants, AssistantInputData, AssistantSetupData, AssistantStep, LabelStudioTaskMapping, PreparationStep } from './label-studio-assistant-helper';
 import { ModalButtonType } from '../../modal/modal-helper';
 import { UploadType } from 'src/app/import/components/upload/upload-helper';
 
@@ -34,7 +34,6 @@ export class LabelStudioAssistantComponent implements OnInit, OnChanges, OnDestr
   assistantSetupData: AssistantSetupData;
   canProceed: boolean = false;
 
-  // states.currentTab: AssistantStep = AssistantStep.PREPARATION;
   prepareData = { projectName: null, fileName: null };
 
   uploadTask: any;
@@ -50,15 +49,18 @@ export class LabelStudioAssistantComponent implements OnInit, OnChanges, OnDestr
   }
 
   states = {
-    fileInPreparation: false,
-    fileIsPrepared: false,
-    finishingUp: false,
-    currentTab: AssistantStep.PREPARATION
+    preparation: PreparationStep.INITIAL,
+    tab: AssistantStep.PREPARATION
   }
+
+  public projectCreated: boolean = false;
 
 
   get AssistantStepType(): typeof AssistantStep {
     return AssistantStep;
+  }
+  get PreparationStepType(): typeof PreparationStep {
+    return PreparationStep;
   }
 
   constructor(
@@ -144,6 +146,7 @@ export class LabelStudioAssistantComponent implements OnInit, OnChanges, OnDestr
           whitelist: this.getWhiteListNotificationService(),
           func: this.handleWebsocketNotification
         });
+        this.projectCreated = true;
       }
     }
   }
@@ -154,8 +157,7 @@ export class LabelStudioAssistantComponent implements OnInit, OnChanges, OnDestr
       this.uploadTask = this.inputData.uploadComponent.uploadTask;
       this.mappings.users = Object.assign({}, ...this.uploadTask.fileAdditionalInfo.user_ids.map((u) => ({ [u]: this.userOptions[0] })));
       this.mappings.tasks = Object.assign({}, ...this.uploadTask.fileAdditionalInfo.tasks.map((t) => ({ [t]: this.taskOptions[0] })));
-      this.states.fileIsPrepared = true;
-      this.states.fileInPreparation = false;
+      this.states.preparation = PreparationStep.FILE_PREPARED;
       return true;
     }
     return false
@@ -164,8 +166,8 @@ export class LabelStudioAssistantComponent implements OnInit, OnChanges, OnDestr
 
   clickProceed(type: ModalButtonType) {
     if (type != ModalButtonType.ACCEPT) return;
-    if (this.states.fileInPreparation) return;
-    if (!this.states.fileIsPrepared) {
+    if (this.states.preparation == PreparationStep.FILE_IN_PREPARATION) return;
+    if (this.states.preparation == PreparationStep.INITIAL) {
       this.prepareLabelStudioImport();
       return;
     }
@@ -178,7 +180,7 @@ export class LabelStudioAssistantComponent implements OnInit, OnChanges, OnDestr
     }
     if (!projectId || !uploadTaskId || !mappings) return;
     this.projectApolloService.setUploadTaskMappings(projectId, uploadTaskId, JSON.stringify(mappings)).pipe(first())
-      .subscribe((data: any) => this.states.finishingUp = true);
+      .subscribe((x) => this.states.preparation = PreparationStep.MAPPING_TRANSFERRED);
 
   }
 
@@ -186,7 +188,7 @@ export class LabelStudioAssistantComponent implements OnInit, OnChanges, OnDestr
   prepareLabelStudioImport() {
     if (this.inputData.uploadFunction.call(this.inputData.uploadFunctionThisObject, UploadType.LABEL_STUDIO)) {
       this.initialUploadTriggered.emit(true);
-      this.states.fileInPreparation = true;
+      this.states.preparation = PreparationStep.FILE_IN_PREPARATION;
     }
 
   }

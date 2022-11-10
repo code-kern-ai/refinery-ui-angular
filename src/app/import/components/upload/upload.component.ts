@@ -158,12 +158,16 @@ export class UploadComponent implements OnDestroy, OnInit, AfterViewInit {
             timer(500).subscribe(() => this.file = null);
             if (this.init && progress.state === UploadStates.ERROR && this.deleteProjectOnFail) {
               //create created project if not successful -- only s3 upload errors not general import errors
-              this.projectApolloService.deleteProjectById(this.projectId).pipe(first()).subscribe();
+              this.deleteExistingProject();
             }
           }
         })
       )
     })
+  }
+
+  deleteExistingProject() {
+    this.projectApolloService.deleteProjectById(this.projectId).pipe(first()).subscribe();
   }
 
   startProgressCall(uploadTaskId: string) {
@@ -219,7 +223,7 @@ export class UploadComponent implements OnDestroy, OnInit, AfterViewInit {
       if (msgParts[4] == UploadStates.DONE) this.uploadTaskQuery$.refetch();
       else if (msgParts[4] == UploadStates.ERROR) {
         this.resetUpload();
-        if (this.deleteProjectOnFail) this.projectApolloService.deleteProjectById(this.projectId).pipe(first()).subscribe();
+        if (this.deleteProjectOnFail) this.deleteExistingProject();
       }
       else {
         this.uploadTask = { ...this.uploadTask };

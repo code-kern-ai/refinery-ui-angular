@@ -22,6 +22,12 @@ export enum AssistantStep {
     MAPPINGS_TASKS = "MAPPINGS_TASKS",
     RESTRICTIONS = "RESTRICTIONS",
 }
+export enum PreparationStep {
+    INITIAL = "INITIAL",
+    FILE_IN_PREPARATION = "FILE_IN_PREPARATION",
+    FILE_PREPARED = "FILE_PREPARED",
+    MAPPING_TRANSFERRED = "MAPPING_TRANSFERRED",
+}
 export type AssistantInputData = {
     uploadComponent: UploadComponent,
     uploadFunction: (type: UploadType) => boolean,
