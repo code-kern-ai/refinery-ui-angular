@@ -235,7 +235,8 @@
                                                                         optionArray: attributesSortOrder,
                                                                         buttonCaption: groupItem.get('name').value,
                                                                         fontClass: 'font-dmMono',
-                                                                        backgroundColors: colorsAttributes
+                                                                        backgroundColors: colorsAttributes,
+                                                                        width: '154px'
                                                                     }"
                                                                         (optionClicked)="selectValueDropdown($event, i, 'name', group.key)">
                                                                     </kern-dropdown>
@@ -246,27 +247,28 @@
                                                                         optionArray: searchOperatorDropdownArray,
                                                                         buttonCaption: groupItem.get('operator').value,
                                                                         optionTooltips: tooltipsArray,
-                                                                        fontClass: 'font-dmMono'
+                                                                        fontClass: 'font-dmMono',
+                                                                        width: '154px'
                                                                     }"
                                                                         (optionClicked)="selectValueDropdown($event, i, 'operator', group.key)">
                                                                     </kern-dropdown>
                                                                 </div>
 
-                                                                <div class="my-2 flex-grow">
+                                                                <div class="my-2 flex-grow flex flex-row items-center">
                                                                     <input *ngIf="groupItem.get('operator').value != ''"
                                                                         formControlName="searchValue"
                                                                         [type]="getAttributeType(groupItem.get('name').value) == 'INTEGER' && groupItem.get('operator').value != 'IN' ? 'number' : 'text'"
-                                                                        [placeholder]="groupItem.get('addText').value"
+                                                                        [placeholder]="getAttributeType(groupItem.get('name').value) == 'INTEGER' ? 'Enter any number' : groupItem.get('addText').value"
                                                                         class="w-full input input-sm input-bordered">
 
-                                                                    <span class="text-sm text-gray-500"
+                                                                    <span class="text-sm text-gray-500 mx-1"
                                                                         *ngIf="groupItem.get('operator').value == 'BETWEEN'">AND</span>
 
                                                                     <input
                                                                         *ngIf="groupItem.get('operator').value == 'BETWEEN'"
                                                                         formControlName="searchValueBetween"
                                                                         [type]="getAttributeType(groupItem.get('name').value) == 'INTEGER' && groupItem.get('operator').value != 'IN' ? 'number' : 'text'"
-                                                                        [placeholder]="groupItem.get('addText').value"
+                                                                        [placeholder]="getAttributeType(groupItem.get('name').value) == 'INTEGER' ? 'Enter any number' : groupItem.get('addText').value"
                                                                         class="w-full input input-sm input-bordered">
                                                                 </div>
                                                             </div>

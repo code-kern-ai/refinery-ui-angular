@@ -6,8 +6,10 @@
         <button #dropdownOpenButton type="button" *ngIf="dropdownOptions.buttonVersion == 'default'"
             class="inline-flex rounded-md border shadow-sm px-4 items-center text-xs font-semibold cursor-pointer focus:ring-offset-2 focus:ring-offset-gray-400"
             id="menu-button" aria-expanded="true" aria-haspopup="true" [disabled]="dropdownOptions.isDisabled"
-            [ngStyle]="dropdownOptions.maxWidth? { 'max-width': dropdownOptions.maxWidth } : {}"
-            [ngClass]="buttonClassList" (isMenuOpen)="toggleVisible($event, dropdownOptionsDiv)" appDropdown>
+            [ngStyle]="{
+                'max-width': dropdownOptions.maxWidth,
+                'width': dropdownOptions.width
+            }" [ngClass]="buttonClassList" (isMenuOpen)="toggleVisible($event, dropdownOptionsDiv)" appDropdown>
             {{ dropdownOptions.hasCheckboxes?'':dropdownOptions.buttonCaption }}
             <ng-template [ngIf]="dropdownOptions.hasCheckboxes">
                 <label class="truncate cursor-pointer">{{getDropdownDisplayText(dropdownOptions.optionArray,"EMPTY")}}
@@ -43,7 +45,8 @@
         [ngClass]="[dropdownClassList, dropdownOptions.isButtonSampleProjects ? 'width-sample-projects' : '', dropdownOptions.buttonVersion != '...' ? 'min-w-full': '', dropdownOptions.addScrollXDropdownOptions ? 'overflow-x-auto' : '']"
         [style.max-height]="dropdownOptions.maxHeight ? dropdownOptions.maxHeight : ''"
         [style.max-width]="dropdownOptions.maxWidth ? dropdownOptions.maxWidth : ''" role="menu"
-        aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
+        [style.width]="dropdownOptions.width ? dropdownOptions.width : ''" aria-orientation="vertical"
+        aria-labelledby="menu-button" tabindex="-1">
         <div class="py-1 cursor-pointer" role="none">
             <div *ngFor="let caption of dropdownOptionCaptions;let i = index" (click)="performActionOnOption($event,i)"
                 [attr.data-tip]="dropdownOptions.optionTooltips && dropdownOptions.optionTooltips[i]?dropdownOptions.optionTooltips[i]:null"

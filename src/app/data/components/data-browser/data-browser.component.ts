@@ -1077,6 +1077,8 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       }
       if (searchElement.values.negate)
         searchElement.searchText = 'NOT (' + searchElement.searchText + ')';
+      if (this.separator == "-")
+        searchElement.searchText = searchElement.searchText.replaceAll("-", ",");
     } else if (searchElement.values.type == SearchItemType.LABELING_TASK) {
       searchElement.searchText = this._labelingTaskBuildSearchParamText(
         searchElement.values
