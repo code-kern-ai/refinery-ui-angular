@@ -89,9 +89,11 @@ export class LabelStudioAssistantComponent implements OnInit, OnChanges, OnDestr
 
   ngOnChanges(changes: SimpleChanges): void {
     this.prepareComponent();
-    if (changes.projectId.currentValue != changes.projectId.previousValue) {
-      //project - add collects the project id from route and sets it in onInit
-      this.subscribeToProjectNotifications(this.projectId);
+    if (changes.projectId) {
+      if (changes.projectId.currentValue != changes.projectId.previousValue) {
+        //project - add collects the project id from route and sets it in onInit
+        this.subscribeToProjectNotifications(this.projectId);
+      }
     }
   }
   prepareUserForDropdown(users: any[]) {
