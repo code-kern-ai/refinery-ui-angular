@@ -11,7 +11,7 @@
         buttonCaption:states.preparation == PreparationStepType.FILE_PREPARED?'Finish up':'Prepare',
         emitObject:this,emitFunction:clickProceed, 
         disabled:!canProceed || states.preparation == PreparationStepType.FILE_IN_PREPARATION,
-        useButton:states.preparation != PreparationStepType.MAPPING_TRANSFERRED
+        useButton:states.preparation != PreparationStepType.MAPPING_TRANSFERRED && (!uploadTask || uploadTask.fileAdditionalInfo.errors.length==0)
     }">
     <div class="flex flex-row items-center justify-center gap-x-2">
 
@@ -31,10 +31,12 @@
                         [ngClass]="states.tab == AssistantStepType.PREPARATION ? 'border-indigo-500 text-indigo-600':'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
                         class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">Preparation</button>
 
-                    <button *ngIf="canProceed" (click)="states.tab = AssistantStepType.MAPPINGS_USER"
+                    <button *ngIf="canProceed && (!uploadTask || uploadTask.fileAdditionalInfo.errors.length==0)"
+                        (click)="states.tab = AssistantStepType.MAPPINGS_USER"
                         [ngClass]="states.tab == AssistantStepType.MAPPINGS_USER ? 'border-indigo-500 text-indigo-600':'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
                         class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">User Mapping</button>
-                    <button *ngIf="canProceed" (click)="states.tab = AssistantStepType.MAPPINGS_TASKS"
+                    <button *ngIf="canProceed && (!uploadTask || uploadTask.fileAdditionalInfo.errors.length==0)"
+                        (click)="states.tab = AssistantStepType.MAPPINGS_TASKS"
                         [ngClass]="states.tab == AssistantStepType.MAPPINGS_TASKS ? 'border-indigo-500 text-indigo-600':'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
                         class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">Task Mapping</button>
 
@@ -54,15 +56,14 @@
             <label>{{prepareData.projectName?prepareData.projectName:'None provided'}}</label>
             <div>File Name</div>
             <label>{{prepareData.fileName?prepareData.fileName:'None provided'}}</label>
-            <div *ngIf="uploadTask?.fileAdditionalInfo.file_info as info" class="contents">
-                <!-- <div class="flex justify-center col-span-full font-bold -my-2">File Info</div> -->
+            <div *ngIf="uploadTask?.fileAdditionalInfo as info" class="contents">
                 <div>Records</div>
-                <label>{{info.records}}</label>
-                <div *ngFor="let annotations of info.annotations | keyvalue" class="contents">
+                <label>{{info.file_info.records}}</label>
+                <div *ngFor="let annotations of info.file_info.annotations | keyvalue" class="contents">
                     <div class="whitespace-nowrap">External User: {{annotations.key}}</div>
                     <div class="whitespace-nowrap">Annotations: {{annotations.value}}</div>
                 </div>
-                <div class="flex items-center col-span-full cursor-pointer tooltip"
+                <div *ngIf="info.errors.length==0" class="flex items-center col-span-full cursor-pointer tooltip"
                     [attr.data-tip]="'If a record already has a user annotation it will be ' + (mappings.prioritizeExisting? 'preserved':'removed')"
                     (click)="states.preparation == PreparationStepType.MAPPING_TRANSFERRED?null:mappings.prioritizeExisting=!mappings.prioritizeExisting">
                     <input type="checkbox"
@@ -76,7 +77,7 @@
         <ng-template [ngIf]="uploadTask?.fileAdditionalInfo.errors.length>0">
             <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative flex flex-col"
                 style="width: 80%;" role="alert">
-                <div class="self-center flex flex-row flex-nowrap items-center">
+                <div class="self-center flex flex-row flex-nowrap items-center -mt-1 mb-1">
                     <strong class="font-bold">Errors detected</strong>
                     <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
                         fill="currentColor" aria-hidden="true">
@@ -91,7 +92,7 @@
         <ng-template [ngIf]="uploadTask?.fileAdditionalInfo.warnings.length>0">
             <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative flex flex-col"
                 style="width: 80%;" role="alert">
-                <div class="self-center flex flex-row flex-nowrap items-center">
+                <div class="self-center flex flex-row flex-nowrap items-center -mt-1 mb-1">
                     <strong class="font-bold">Warning</strong>
                     <svg class="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
                         fill="currentColor" aria-hidden="true">
@@ -106,7 +107,7 @@
         <ng-template [ngIf]="uploadTask?.fileAdditionalInfo.info.length>0">
             <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded relative flex flex-col"
                 style="width: 80%;" role="alert">
-                <div class="self-center flex flex-row flex-nowrap items-center">
+                <div class="self-center flex flex-row flex-nowrap items-center -mt-1 mb-1">
                     <strong class="font-bold">Information</strong>
                     <svg class="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
                         fill="currentColor" aria-hidden="true">
