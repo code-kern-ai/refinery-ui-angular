@@ -70,9 +70,9 @@
                 class="tooltip tooltip-margin inline-flex items-center px-2 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-xs">
                 Python variable
             </span>
-            <span data-tip="Copy import statement to clipboard" (click)="copyImportToClipboard(base.name)"
+            <span data-tip="Copy import statement to clipboard" (click)="copyImportToClipboard(base.pythonVariable)"
                 class="tooltip font-dmMono px-4 py-2 rounded-none rounded-r-md border border-0 border-gray-300 text-gray-500 sm:text-sm bg-gray-100 cursor-pointer">
-                {{asPythonVariable(base.name)}}</span>
+                {{base.pythonVariable}}</span>
 
             <div class="w-full">
                 <div class="float-right">

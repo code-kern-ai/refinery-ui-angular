@@ -174,3 +174,9 @@ export function getColorForDataType(dataType): string {
         default: return 'gray';
     }
 }
+
+
+
+export function asPythonVariable(baseName: string) {
+    return baseName.toLowerCase().replace(/ /g, "_")
+}

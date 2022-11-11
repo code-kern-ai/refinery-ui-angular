@@ -21,7 +21,7 @@ import {
 import { combineLatest, forkJoin, Subscription, timer } from 'rxjs';
 import { InformationSourceType, informationSourceTypeToString, LabelingTask, LabelSource } from 'src/app/base/enum/graphql-enums';
 import { InformationSourceCodeLookup, InformationSourceExamples } from '../information-sources-code-lookup';
-import { dateAsUTCDate, getColorForDataType, toPythonFunctionName } from 'src/app/util/helper-functions';
+import { asPythonVariable, dateAsUTCDate, getColorForDataType, toPythonFunctionName } from 'src/app/util/helper-functions';
 import { NotificationService } from 'src/app/base/services/notification.service';
 import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
 import { schemeCategory24 } from 'src/app/util/colors';
@@ -29,6 +29,7 @@ import { UserManager } from 'src/app/util/user-manager';
 import { RecordApolloService } from 'src/app/base/services/record/record-apollo.service';
 import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
 import { dataTypes } from 'src/app/util/data-types';
+import { KnowledgeBasesApolloService } from 'src/app/base/services/knowledge-bases/knowledge-bases-apollo.service';
 
 @Component({
   selector: 'kern-weak-source-details',
@@ -81,6 +82,8 @@ export class WeakSourceDetailsComponent
   embeddings: any;
   embeddingsFiltered: any;
   embeddingQuery$: any;
+  knowledgeBases: any;
+  knowledgeBasesQuery$: any;
   status: string;
   attributesQuery$: any;
   attributes: any;
@@ -99,7 +102,7 @@ export class WeakSourceDetailsComponent
     private projectApolloService: ProjectApolloService,
     private informationSourceApolloService: WeakSourceApolloService,
     private organizationService: OrganizationApolloService,
-    private recordApolloService: RecordApolloService,
+    private knowledgeBaseApollo: KnowledgeBasesApolloService,
   ) { }
 
   getTargetTaskLabels() {
@@ -118,7 +121,8 @@ export class WeakSourceDetailsComponent
     let tasks$ = [];
     tasks$.push(this.prepareLabelingTaskRequest(projectId));
     tasks$.push(this.prepareAttributes(projectId));
-    if (isType == 'ACTIVE_LEARNING') tasks$.push(this.prepareEmbeddingsRequest(projectId));
+    if (isType == InformationSourceType.ACTIVE_LEARNING) tasks$.push(this.prepareEmbeddingsRequest(projectId));
+    if (isType == InformationSourceType.LABELING_FUNCTION) tasks$.push(this.prepareKnowledgeRequest(projectId));
     tasks$.push(project$.pipe(first()));
 
     this.subscriptions$.push(project$.subscribe((project) => this.project = project));
@@ -138,6 +142,7 @@ export class WeakSourceDetailsComponent
     toReturn.push(...['information_source_deleted', 'information_source_updated']);
     toReturn.push(...['label_created', 'label_deleted']);
     toReturn.push(...['embedding_deleted', 'embedding']);
+    toReturn.push(...['knowledge_base_updated', 'knowledge_base_deleted', 'knowledge_base_created']);
     return toReturn;
   }
   private setUpCommentRequests(projectId: string, isType: string) {
@@ -145,7 +150,8 @@ export class WeakSourceDetailsComponent
     requests.push({ commentType: CommentType.ATTRIBUTE, projectId: projectId });
     requests.push({ commentType: CommentType.LABELING_TASK, projectId: projectId });
     requests.push({ commentType: CommentType.HEURISTIC, projectId: projectId });
-    if (isType == 'ACTIVE_LEARNING') requests.push({ commentType: CommentType.EMBEDDING, projectId: projectId });
+    if (isType == InformationSourceType.ACTIVE_LEARNING) requests.push({ commentType: CommentType.EMBEDDING, projectId: projectId });
+    if (isType == InformationSourceType.LABELING_FUNCTION) requests.push({ commentType: CommentType.KNOWLEDGE_BASE, projectId: projectId });
     else requests.push({ commentType: CommentType.KNOWLEDGE_BASE, projectId: projectId });
     requests.push({ commentType: CommentType.LABEL, projectId: projectId });
     CommentDataManager.registerCommentRequests(this, requests);
@@ -198,6 +204,8 @@ export class WeakSourceDetailsComponent
       }
     } else if (msgParts[1] == 'embedding_deleted' || (msgParts[1] == 'embedding' && msgParts[3] == 'state')) {
       if (this.embeddingQuery$) this.embeddingQuery$.refetch();
+    } else if (['knowledge_base_updated', 'knowledge_base_deleted', 'knowledge_base_created'].includes(msgParts[1])) {
+      if (this.knowledgeBasesQuery$) this.knowledgeBasesQuery$.refetch();
     }
     else {
       if (msgParts[2] != this.informationSource.id) return;
@@ -320,6 +328,15 @@ export class WeakSourceDetailsComponent
     ));
     return vc.pipe(first());
   }
+
+  prepareKnowledgeRequest(projectId: string) {
+    let vc;
+    [this.knowledgeBasesQuery$, vc] = this.knowledgeBaseApollo.getKnowledgeBasesByProjectId(projectId);
+    this.subscriptions$.push(vc.subscribe(bases => this.knowledgeBases = bases));
+    return vc.pipe(first());
+  }
+
+
   filterEmbeddingsForCurrentTask() {
     if (!this.embeddings || !this.labelingTasks.size || !this.labelingTaskControl.value) return;
     this.embeddingsFiltered = [];
@@ -688,5 +705,11 @@ export class WeakSourceDetailsComponent
   getLabelFromExtractionResult(str: string) {
     const array = str.split('\'');
     return array.length == 1 ? array[0] : array[1];
+  }
+
+
+  copyImportToClipboard(pythonVariable: string) {
+    const statement = "from knowledge import " + pythonVariable;
+    navigator.clipboard.writeText(statement);
   }
 }
