@@ -138,8 +138,9 @@ export class KnowledgeBaseDetailsComponent implements OnInit, AfterViewInit, OnD
     return true;
   }
 
-  copyToClipboard(textToCopy) {
-    navigator.clipboard.writeText(textToCopy);
+  copyImportToClipboard(baseName: string) {
+    const statement = "from knowledge import " + this.asPythonVariable(baseName);
+    navigator.clipboard.writeText(statement);
   }
 
   addTermToKnowledgeBase() {
