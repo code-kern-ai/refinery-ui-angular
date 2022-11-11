@@ -60,7 +60,8 @@
     </li>
     <textarea #commentText [attr.disabled]="!cData.edit?true:null"
         (blur)="cData.edit?updateComment($event,cData.id,'comment',commentText.value):null"
-        (keyup)="checkIfKeyShiftEnterUpdate($event,cData.id,commentText.value)"
+        (keyup)="checkIfKeyShiftEnterUpdate($event,cData.id,commentText.value);preventEventPropagation($event)"
+        (change)="preventEventPropagation($event)" (keydown)="preventEventPropagation($event)"
         [ngClass]="[cData.open?'null':'hidden',!cData.edit?'bg-gray-50':'']"
         class="textarea placeholder-italic w-full p-2 line-height-textarea focus:outline-none border border-gray-300"
         [ngStyle]="{'background-color': !cData.edit?'rgb(249 250 251)':null,'height':(commentText.scrollHeight+2) + 'px','overflow-y':commentText.scrollHeight < 400 ? 'hidden':'auto'}">{{cData.comment}}</textarea>
@@ -164,7 +165,9 @@
                                 <div class="mt-1">
                                     <textarea #commentBox
                                         class="textarea placeholder-italic w-full h-20 p-2 line-height-textarea border rounded-md border-gray-300 focus:outline-none focus:shadow-none"
-                                        (keyup)="checkIfKeyShiftEnterSave($event, commentBox, privateComment)"></textarea>
+                                        (keyup)="checkIfKeyShiftEnterSave($event, commentBox, privateComment);preventEventPropagation($event)"
+                                        (change)="preventEventPropagation($event)"
+                                        (keydown)="preventEventPropagation($event)"></textarea>
                                 </div>
                                 <div class="my-1 text-xs text-gray-500 font-normal text-justify">
                                     The comment will be stored on project-level, so that your team members can look into
