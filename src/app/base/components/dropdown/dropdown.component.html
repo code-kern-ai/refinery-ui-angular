@@ -41,8 +41,8 @@
     </a>
 
     <div #dropdownOptionsDiv
-        class="origin-top-right absolute mt-2 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none hidden overflow-y-auto"
-        [ngClass]="[dropdownClassList, dropdownOptions.isButtonSampleProjects ? 'width-sample-projects' : '', dropdownOptions.buttonVersion != '...' ? 'min-w-full': '', dropdownOptions.addScrollXDropdownOptions ? 'overflow-x-auto' : '']"
+        class="origin-top-right absolute mt-2 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none hidden"
+        [ngClass]="[dropdownClassList, dropdownOptions.isButtonSampleProjects ? 'width-sample-projects' : '', dropdownOptions.buttonVersion != '...' ? 'min-w-full': '', dropdownOptions.addScrollXDropdownOptions ? 'overflow-x-auto' : '', dropdownOptions.maxWidth ? 'overflow-y-auto' : '']"
         [style.max-height]="dropdownOptions.maxHeight ? dropdownOptions.maxHeight : ''"
         [style.max-width]="dropdownOptions.maxWidth ? dropdownOptions.maxWidth : ''" role="menu"
         [style.width]="dropdownOptions.width ? dropdownOptions.width : ''" aria-orientation="vertical"
