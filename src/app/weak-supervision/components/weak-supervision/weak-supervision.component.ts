@@ -235,16 +235,21 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
   runInformationSource(projectId: string, informationSourceId: string, type: string, force: boolean = false) {
     if (this.requestTimeOut && !force) return;
     this.justClickedRun = true;
+    let sendRequest = true;
     if (type == InformationSourceType.ZERO_SHOT) {
       this.informationSourceApolloService.runZeroShotProject(projectId, informationSourceId).pipe(first()).subscribe();
+    } else if (type == InformationSourceType.CROWD_LABELER) {
+      //nothing to do
+      sendRequest = false;
     } else {
       this.informationSourceApolloService
         .createTask(projectId, informationSourceId)
         .pipe(first()).subscribe()
-
     }
-    this.requestTimeOut = true;
-    timer(500).subscribe(() => this.requestTimeOut = false);
+    if (sendRequest) {
+      this.requestTimeOut = true;
+      timer(500).subscribe(() => this.requestTimeOut = false);
+    }
   }
 
   deleteSelectedInformationSources(projectId: string) {

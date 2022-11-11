@@ -56,7 +56,8 @@
                             buttonTooltipPosition: 'right',
                             buttonTooltip:'Multi-heuristic action',
                             buttonCaption: 'Actions',
-                            isOptionDisabled: [false, false, this.selectedInformationSources.length == 0, this.selectedInformationSources.length == 0]
+                            isOptionDisabled: [false, false, this.selectedInformationSources.length == 0, this.selectedInformationSources.length == 0],
+                            optionTooltips: [null, null, 'Except Crowd', null]
                         }" (optionClicked)="executeOption($event)">
                         </kern-dropdown>
                     </ng-template>
