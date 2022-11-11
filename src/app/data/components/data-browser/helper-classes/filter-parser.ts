@@ -1,6 +1,6 @@
 import { LabelSource } from "src/app/base/enum/graphql-enums";
 import { DataBrowserComponent } from "../data-browser.component";
-import { prepareFilterElements, SearchOperator } from "./search-operators";
+import { getAttributeType, prepareFilterElements, SearchOperator } from "./search-operators";
 import { SearchGroup, StaticOrderByKeys } from "./search-parameters";
 
 
@@ -318,16 +318,14 @@ export class DataBrowserFilterParser {
                 FILTER: [],
             };
             for (let i = 1; i < this.dataBrowser.attributesSortOrder.length; i++) {
-                if (this.dataBrowser.attributesSortOrder[i].type !== "BOOLEAN") {
-                    filterElement.FILTER.push({
-                        RELATION: i == 1 ? 'NONE' : 'OR',
-                        NEGATION: false,
-                        TARGET_TABLE: 'RECORD',
-                        TARGET_COLUMN: 'DATA',
-                        OPERATOR: searchElement.values.operator,
-                        VALUES: prepareFilterElements(searchElement, this.dataBrowser.attributes.get(this.dataBrowser.attributesSortOrder[i].key).name, this.dataBrowser.separator),
-                    });
-                }
+                filterElement.FILTER.push({
+                    RELATION: i == 1 ? 'NONE' : 'OR',
+                    NEGATION: false,
+                    TARGET_TABLE: 'RECORD',
+                    TARGET_COLUMN: 'DATA',
+                    OPERATOR: this.dataBrowser.attributesSortOrder[i].type !== "BOOLEAN" ? searchElement.values.operator : SearchOperator.EQUAL,
+                    VALUES: prepareFilterElements(searchElement, this.dataBrowser.attributes.get(this.dataBrowser.attributesSortOrder[i].key).name, this.dataBrowser.separator),
+                });
             }
         } else {
             filterElement = {
@@ -335,7 +333,7 @@ export class DataBrowserFilterParser {
                 NEGATION: searchElement.values.negate,
                 TARGET_TABLE: 'RECORD',
                 TARGET_COLUMN: 'DATA',
-                OPERATOR: searchElement.values.operator,
+                OPERATOR: getAttributeType(this.dataBrowser.attributesSortOrder, searchElement.values.name) !== "BOOLEAN" ? searchElement.values.operator : SearchOperator.EQUAL,
                 VALUES: prepareFilterElements(searchElement, searchElement.values.name, this.dataBrowser.separator),
             };
         }

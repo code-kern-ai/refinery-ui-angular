@@ -1,3 +1,5 @@
+import { StaticOrderByKeys } from "./search-parameters";
+
 export function getSearchOperatorTooltip(operator: SearchOperator): string {
     switch (operator) {
         case SearchOperator.EQUAL:
@@ -45,10 +47,14 @@ export function prepareFilterElements(searchElement, name, separator) {
         const split = searchElement.values.searchValue.split(separator);
         values = [name, ...split];
     } else if (searchElement.values.operator == '') {
-        // TODO: add the name of the operator for boolean
+        searchElement.values.operator = SearchOperator.EQUAL;
         values = [name, !searchElement.values.negate];
     } else {
         values = [name, searchElement.values.searchValue];
     }
     return values;
+}
+
+export function getAttributeType(attributes: any[], attributeName: string) {
+    return attributes.find(att => att.name == attributeName)?.type;
 }
