@@ -55,8 +55,8 @@ import { DownloadState } from 'src/app/import/services/s3.enums';
 import { UserManager } from 'src/app/util/user-manager';
 import { labelingLinkType } from 'src/app/labeling/components/helper/labeling-helper';
 import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
-import { getAttributeType, getSearchOperatorTooltip, SearchOperator } from './helper-classes/search-operators';
 import { UpdateSearchParameters } from './helper-classes/update-search-parameters';
+import { getAttributeType, getSearchOperatorTooltip, SearchOperator } from './helper-classes/search-operators';
 
 
 type DataSlice = {
@@ -1399,6 +1399,9 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
           searchElement.values.name == 'Any Attribute' ||
           searchElement.values.name == this.attributes.get(attributeKey).name
         ) {
+          if (typeof searchElement.values.searchValue != 'string') {
+            searchElement.values.searchValue = searchElement.values.searchValue.toString();
+          }
           filter = this.getRegexFromFilter(searchElement);
           if (filter != '') toSet.push(filter);
         }

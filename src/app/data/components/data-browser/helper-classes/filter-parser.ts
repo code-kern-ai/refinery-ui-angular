@@ -309,7 +309,7 @@ export class DataBrowserFilterParser {
         return filterElement;
     }
 
-    private buildFilterElementAttribute(first: boolean, searchElement) {
+    private buildFilterElementAttribute(first: boolean, searchElement: any) {
         let filterElement;
         if (searchElement.values.name == 'Any Attribute') {
             filterElement = {
@@ -318,23 +318,26 @@ export class DataBrowserFilterParser {
                 FILTER: [],
             };
             for (let i = 1; i < this.dataBrowser.attributesSortOrder.length; i++) {
-                filterElement.FILTER.push({
-                    RELATION: i == 1 ? 'NONE' : 'OR',
-                    NEGATION: false,
-                    TARGET_TABLE: 'RECORD',
-                    TARGET_COLUMN: 'DATA',
-                    OPERATOR: this.dataBrowser.attributesSortOrder[i].type !== "BOOLEAN" ? searchElement.values.operator : SearchOperator.EQUAL,
-                    VALUES: prepareFilterElements(searchElement, this.dataBrowser.attributes.get(this.dataBrowser.attributesSortOrder[i].key).name, this.dataBrowser.separator),
-                });
+                if (this.dataBrowser.attributesSortOrder[i].type != 'BOOLEAN') {
+                    filterElement.FILTER.push({
+                        RELATION: i == 1 ? 'NONE' : 'OR',
+                        NEGATION: false,
+                        TARGET_TABLE: 'RECORD',
+                        TARGET_COLUMN: 'DATA',
+                        OPERATOR: this.dataBrowser.attributesSortOrder[i].type !== "BOOLEAN" ? searchElement.values.operator : SearchOperator.EQUAL,
+                        VALUES: prepareFilterElements(searchElement, this.dataBrowser.attributes.get(this.dataBrowser.attributesSortOrder[i].key).name, this.dataBrowser.separator),
+                    });
+                }
             }
         } else {
+            const attributeType = getAttributeType(this.dataBrowser.attributesSortOrder, searchElement.values.name);
             filterElement = {
                 RELATION: first ? 'NONE' : 'AND',
                 NEGATION: searchElement.values.negate,
                 TARGET_TABLE: 'RECORD',
                 TARGET_COLUMN: 'DATA',
-                OPERATOR: getAttributeType(this.dataBrowser.attributesSortOrder, searchElement.values.name) !== "BOOLEAN" ? searchElement.values.operator : SearchOperator.EQUAL,
-                VALUES: prepareFilterElements(searchElement, searchElement.values.name, this.dataBrowser.separator),
+                OPERATOR: attributeType != "BOOLEAN" ? searchElement.values.operator : SearchOperator.EQUAL,
+                VALUES: prepareFilterElements(searchElement, searchElement.values.name, this.dataBrowser.separator, attributeType),
             };
         }
         return filterElement;

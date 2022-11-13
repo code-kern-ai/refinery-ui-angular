@@ -39,8 +39,13 @@ export enum SearchOperator {
     LESS_EQUAL = 'LESS_EQUAL',
 }
 
-export function prepareFilterElements(searchElement, name, separator) {
+export function prepareFilterElements(searchElement: any, name: string, separator: string, attributeType?: string) {
     let values = [];
+    if (attributeType && attributeType == "INTEGER" && searchElement.values.searchValue != '') {
+        searchElement.values.searchValue = parseInt(searchElement.values.searchValue);
+    } else if (attributeType && attributeType == "FLOAT" && searchElement.values.searchValue != '') {
+        searchElement.values.searchValue = parseFloat(searchElement.values.searchValue);
+    }
     if (searchElement.values.operator == SearchOperator.BETWEEN) {
         values = [name, searchElement.values.searchValue, searchElement.values.searchValueBetween];
     } else if (searchElement.values.operator == SearchOperator.IN) {
@@ -50,7 +55,7 @@ export function prepareFilterElements(searchElement, name, separator) {
         searchElement.values.operator = SearchOperator.EQUAL;
         values = [name, !searchElement.values.negate];
     } else {
-        values = [name, searchElement.values.searchValue];
+        values = [name, attributeType != "BOOLEAN" ? searchElement.values.searchValue : !searchElement.values.negate];
     }
     return values;
 }
