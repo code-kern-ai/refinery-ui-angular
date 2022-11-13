@@ -1358,7 +1358,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       if (getAttributeType(this.attributesSortOrder, this.saveDropdonwAttribute) !== 'BOOLEAN') {
         for (let t of Object.values(SearchOperator)) {
           this.searchOperatorDropdownArray.push({
-            value: t
+            value: t.split("_").join(" "),
           });
           this.tooltipsArray.push(getSearchOperatorTooltip(t));
         }

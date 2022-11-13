@@ -318,6 +318,7 @@ export class DataBrowserFilterParser {
                 FILTER: [],
             };
             for (let i = 1; i < this.dataBrowser.attributesSortOrder.length; i++) {
+                searchElement.values.operator = searchElement.values.operator.split(" ").join("_");
                 if (this.dataBrowser.attributesSortOrder[i].type != 'BOOLEAN') {
                     filterElement.FILTER.push({
                         RELATION: i == 1 ? 'NONE' : 'OR',
@@ -331,6 +332,7 @@ export class DataBrowserFilterParser {
             }
         } else {
             const attributeType = getAttributeType(this.dataBrowser.attributesSortOrder, searchElement.values.name);
+            searchElement.values.operator = searchElement.values.operator.split(" ").join("_");
             filterElement = {
                 RELATION: first ? 'NONE' : 'AND',
                 NEGATION: searchElement.values.negate,
