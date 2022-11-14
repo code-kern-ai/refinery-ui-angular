@@ -207,7 +207,23 @@
                     </h3>
                     <p class="mt-1 text-sm text-gray-600">We are testing the integration with Label Studio.
                         This means only a smaller subset of theoretically possible functions are included. If you like
-                        the feature and want more functionality please reach out to us.</p>
+                        the feature and want more functionality please reach out to us. Please also note that refinery
+                        uses the name "record" for one instance of your data elements. In Label Studio the same thing is
+                        called task.</p>
+                </div>
+            </li>
+            <li class="py-5">
+                <div class="relative">
+                    <h3 class="text-sm font-semibold text-gray-800">
+                        Use Cases
+                    </h3>
+                    <p class="mt-1 text-sm text-gray-600">We provide two use cases in this first implementation
+                        <br> A: Project import -> You have a Label Studio project and want to try refinery. This means
+                        we will be starting from "scratch" in refinery and a new project is created during the import
+                        process
+                        <br> B: Project update -> You have a project in refinery and want to label a subset of you data
+                        in Label Studio, then reimport the newly created labels in refinery.
+                    </p>
                 </div>
             </li>
             <li class="py-5">
@@ -290,6 +306,27 @@
                     <p class="mt-1 text-sm text-gray-600">In refinery we have the option to create a full
                         record labeling task. This isn't possible in Label Studio. To decide if the provided annotations
                         should be attribute specific or not we need to provide that information</p>
+                </div>
+            </li>
+            <li class="py-5">
+                <div class="relative">
+                    <h3 class="text-sm font-semibold text-gray-800">
+                        Project update - valid record ids
+                    </h3>
+                    <p class="mt-1 text-sm text-gray-600">If you want to update your existing project, the data column
+                        kern_refinery_record_id as to be present in the import file. Don't worry to much about it
+                        though, the column is automatically created if you export your data for Label Studio in
+                        refinery.</p>
+                </div>
+            </li>
+            <li class="py-5">
+                <div class="relative">
+                    <h3 class="text-sm font-semibold text-gray-800">
+                        Project update - no data update
+                    </h3>
+                    <p class="mt-1 text-sm text-gray-600">If you want to update your existing project, we assume that
+                        you only used Label Studio to add new labels. Therefore only the label data will be imported.
+                    </p>
                 </div>
             </li>
         </ul>
