@@ -176,7 +176,8 @@
                                 optionArray:labelingTasksUseable,
                                 buttonCaption:labelingTasks.get(crowdSettings.taskId).name,
                                 buttonTooltip: 'Select the labeling task',
-                                valuePropertyPath:'id'
+                                valuePropertyPath:'id',
+                                isDisabled:informationSource?.lastTask ? informationSource?.lastTask.progress !=0:false
                             }" (optionClicked)="changeSettings('taskId',$event)">
                             </kern-dropdown>
                             <div *ngIf="!labelingTasks.get(crowdSettings.taskId)?.labels.length"
@@ -203,7 +204,8 @@
                                 buttonCaption:crowdSettings.annotatorId?annotatorLookup[crowdSettings.annotatorId]?.mail:'Select annotator',
                                 buttonTooltip: 'Select an annotator',
                                 valuePropertyPath:'id',
-                                isDisabled:annotators.length == 0
+                                isDisabled:annotators.length == 0,
+                                isDisabled:informationSource?.lastTask ? informationSource?.lastTask.progress !=0:false
                             }" (optionClicked)="changeSettings('annotatorId',$event)">
                             </kern-dropdown>
                             <p class="px-2"> is going to work on slice </p>
@@ -212,7 +214,8 @@
                                 buttonCaption:crowdSettings.dataSliceId?sliceLookup[crowdSettings.dataSliceId]?.name:'Select slice',
                                 buttonTooltip: 'Select a static slice',
                                 valuePropertyPath:'id',
-                                isDisabled:dataSlices.length == 0
+                                isDisabled:dataSlices.length == 0,
+                                isDisabled:informationSource?.lastTask ? informationSource?.lastTask.progress !=0:false
                             }" (optionClicked)="changeSettings('dataSliceId',$event)">
                             </kern-dropdown>
 
@@ -282,8 +285,8 @@
                 <div class="mt-8">
                     <div class="text-sm leading-5 font-medium text-gray-700 inline-block">Statistics</div>
                     <div class="mt-1 flex flex-col">
-                        <div class="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                            <div class="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
+                        <div class="overflow-x-auto">
+                            <div class="inline-block min-w-full py-2 align-middle">
                                 <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
                                     <table class="min-w-full border divide-y divide-gray-300">
                                         <thead class="bg-gray-50">
