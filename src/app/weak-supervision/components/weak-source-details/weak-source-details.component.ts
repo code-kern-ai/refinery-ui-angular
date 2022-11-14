@@ -95,6 +95,8 @@ export class WeakSourceDetailsComponent
   selectedAttribute: string = '';
   dataTypesArray = dataTypes;
 
+  displayLogWarning: boolean = false;
+
   constructor(
     private router: Router,
     private routeService: RouteService,
@@ -312,7 +314,9 @@ export class WeakSourceDetailsComponent
         projectId,
         informationSource.lastTask.id
       );
-      this.subscriptions$.push(this.lastTask$.subscribe((task) => this.lastTaskLogs = task.logs));
+      if ((!this.displayLogWarning || !this.lastTaskLogs || this.lastTaskLogs.length == 0)) {
+        this.lastTask$.pipe(first()).subscribe((task) => this.lastTaskLogs = task.logs);
+      }
     } else {
       this.lastTask$ = null;
     }
@@ -424,6 +428,7 @@ export class WeakSourceDetailsComponent
       .createTask(projectId, this.informationSource.id)
       .pipe(first()).subscribe();
     this.requestTimeOut = true;
+    this.displayLogWarning = false;
     timer(1000).subscribe(() => this.requestTimeOut = false);
   }
 
@@ -650,6 +655,7 @@ export class WeakSourceDetailsComponent
     }
     this.justClickedRun = true;
     this.informationSourceApolloService.getLabelingFunctionOn10Records(projectId, this.informationSource.id).pipe(first()).subscribe((sampleRecords) => {
+      this.displayLogWarning = true;
       this.sampleRecords = sampleRecords;
       this.sampleRecords.records.forEach(record => {
         record.fullRecordData = JSON.parse(record.fullRecordData);

@@ -309,8 +309,13 @@
                 <div class="inline-block font-normal text-gray-500">Please send this log to the support if you face
                     problems
                     with your heuristic</div>
-            </div>
 
+            </div>
+            <div *ngIf="displayLogWarning" class="text-sm inline-block font-normal text-gray-500">
+                This is a temporary log from your last "Run on 10" execution. It will vanish once you leave/reload the
+                page or
+                "Run" the heuristic.
+            </div>
             <kern-logs [logs]="lastTaskLogs"></kern-logs>
 
             <div class="mt-8">
