@@ -50,7 +50,7 @@ export class UpdateSearchParameters {
                 }
             } else if (searchElement.values.operator == '') {
                 searchElement.searchText = searchElement.values.name;
-            } else if (searchElement.values.operator == SearchOperator.IN) {
+            } else if (searchElement.values.operator == SearchOperator.IN || searchElement.values.operator == "IN WC") {
                 if (attributeType == "INTEGER" || attributeType == "FLOAT") {
                     searchElement.searchText =
                         searchElement.values.name +

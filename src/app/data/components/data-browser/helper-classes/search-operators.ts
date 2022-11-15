@@ -32,6 +32,7 @@ export enum SearchOperator {
     ENDS_WITH = 'ENDS_WITH',
     CONTAINS = 'CONTAINS',
     IN = 'IN',
+    IN_WC = 'IN_WC',
     BETWEEN = 'BETWEEN',
     GREATER = 'GREATER',
     GREATER_EQUAL = 'GREATER_EQUAL',
@@ -41,14 +42,14 @@ export enum SearchOperator {
 
 export function prepareFilterElements(searchElement: any, name: string, separator: string, attributeType?: string) {
     let values = [];
-    if (attributeType && attributeType == "INTEGER" && searchElement.values.searchValue != '') {
+    if (attributeType && attributeType == "INTEGER" && searchElement.values.searchValue != '' && searchElement.values.operator != SearchOperator.IN && searchElement.values.operator != SearchOperator.IN_WC) {
         searchElement.values.searchValue = parseInt(searchElement.values.searchValue);
-    } else if (attributeType && attributeType == "FLOAT" && searchElement.values.searchValue != '') {
+    } else if (attributeType && attributeType == "FLOAT" && searchElement.values.searchValue != '' && searchElement.values.operator != SearchOperator.IN && searchElement.values.operator != SearchOperator.IN_WC) {
         searchElement.values.searchValue = parseFloat(searchElement.values.searchValue);
     }
     if (searchElement.values.operator == SearchOperator.BETWEEN) {
         values = [name, searchElement.values.searchValue, searchElement.values.searchValueBetween];
-    } else if (searchElement.values.operator == SearchOperator.IN) {
+    } else if (searchElement.values.operator == SearchOperator.IN || searchElement.values.operator == SearchOperator.IN_WC) {
         const split = searchElement.values.searchValue.split(separator);
         values = [name, ...split];
     } else if (searchElement.values.operator == '') {
