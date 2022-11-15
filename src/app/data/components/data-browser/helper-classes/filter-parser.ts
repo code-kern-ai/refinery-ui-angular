@@ -335,11 +335,15 @@ export class DataBrowserFilterParser {
                 if (type != "BOOLEAN") {
                     if (type == 'INTEGER') {
                         el.VALUES.slice(1, el.VALUES.length).forEach((val, index) => {
-                            el.VALUES[index + 1] = parseInt(val);
+                            if (!isNaN(parseInt(val))) {
+                                el.VALUES[index + 1] = parseInt(val);
+                            }
                         })
                     } else if (type == 'FLOAT') {
                         el.VALUES.slice(1, el.VALUES.length).forEach((val, index) => {
-                            el.VALUES[index + 1] = parseFloat(val);
+                            if (!isNaN(parseFloat(val))) {
+                                el.VALUES[index + 1] = parseFloat(val);
+                            }
                         })
                     }
                 }

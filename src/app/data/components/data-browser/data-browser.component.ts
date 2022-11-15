@@ -369,6 +369,9 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     this.searchGroups.get(lastGroup.get('groupKey').value).inOpenTransition =
       true;
 
+    this.saveDropdonwAttribute = "";
+    this.getOperatorDropdownValues();
+
     return group;
   }
 
@@ -1354,7 +1357,6 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
 
   getOperatorDropdownValues(i?: number, value?: any) {
     if (this.searchOperatorDropdownArray.length == 0) {
-
       if (getAttributeType(this.attributesSortOrder, this.saveDropdonwAttribute) !== 'BOOLEAN') {
         for (let t of Object.values(SearchOperator)) {
           this.searchOperatorDropdownArray.push({
