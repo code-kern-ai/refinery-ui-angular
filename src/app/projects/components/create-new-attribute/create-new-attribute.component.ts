@@ -167,14 +167,15 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
       this.currentAttribute = attribute;
       this.attributeName = this.currentAttribute?.name;
       this.attributeDataType = this.dataTypesArray.find((type) => type.value === this.currentAttribute?.dataType).name;
-      this.codeFormCtrl.setValue(this.currentAttribute?.sourceCode);
       if (this.currentAttribute?.sourceCode == null) {
         this.codeFormCtrl.setValue(AttributeCodeLookup.getAttributeCalculationTemplate(AttributeCalculationExamples.AC_EMPTY_TEMPLATE, this.currentAttribute.dataType).code);
       } else {
-        this.codeFormCtrl.setValue(this.codeFormCtrl.value.replace(
-          'def ac(record):',
-          'def ' + this.currentAttribute.name + '(record):'
-        ));
+        if (!this.codeFormCtrl.value) {
+          this.codeFormCtrl.setValue(this.currentAttribute.sourceCode.replace(
+            'def ac(record):',
+            'def ' + this.currentAttribute.name + '(record):'
+          ));
+        }
       }
 
       this.attributeLogs = attribute?.logs;

@@ -246,7 +246,7 @@ export class WeakSourceDetailsComponent
       }
       this.labelingTaskControl.setValue(informationSource.labelingTaskId);
       this.informationSource = informationSource;
-      this.prepareSourceCode(projectId, informationSource);
+      if (!this.codeFormCtrl.value) this.prepareSourceCode(projectId, informationSource);
       this.description = informationSource.description;
       this.informationSourceName = informationSource.name;
       this.justClickedRun = false;
