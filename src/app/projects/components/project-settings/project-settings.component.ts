@@ -16,6 +16,7 @@ import { UserManager } from 'src/app/util/user-manager';
 import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
 import { dataTypes } from 'src/app/util/data-types';
 import { toPythonFunctionName } from 'src/app/util/helper-functions';
+import { LabelHelper } from './helper/label-helper';
 
 @Component({
   selector: 'kern-project-settings',
@@ -42,15 +43,6 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     { name: 'Token', value: 'ON_TOKEN' }
   ];
 
-  labelColorOptions = []
-
-  colorOptions = [
-    "red", "orange", "amber",
-    "yellow", "lime", "green",
-    "emerald", "teal", "cyan",
-    "sky", "blue", "indigo",
-    "violet", "purple", "fuchsia",
-    "pink", "rose"];
 
   //better request available from backend?
   embeddingHandlesMap: Map<string, any> = new Map<string, any>();
@@ -60,7 +52,6 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
   project$: any;
   projectQuery$: any;
   project: any;
-  labels$: any;
   labelingTasksQuery$: any;
   attributesQuery$: any;
   subscriptions$: Subscription[] = [];
@@ -74,14 +65,9 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
   projectUpdateDisabled: boolean = true;
   isTaskNameUnique: boolean = true;
   tokenizationProgress: Number;
-  labelingTaskColors: Map<string, string[]> = new Map<string, string[]>();
-  currentLabel: any = null;
-  currentColorLabelingTaskId: any = null;
 
   downloadMessage: DownloadState = DownloadState.NONE;
   downloadPrepareMessage: DownloadState = DownloadState.NONE;
-  ALLOWED_KEYS = "abcdefghijklmnopqrstuvwxyzöäüß<>|,.;:-_#'\"~+*?\\{}[]()=/&%$§!@^°€";
-  labelHotkeyError: string;
   projectSize: any[];
   downloadSizeText: string;
   projectExportSchema = this.formBuilder.group({
@@ -115,7 +101,6 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
   get labelingTasksArray() {
     return this.labelingTasksSchema.get('labelingTasks') as FormArray;
   }
-  labelMap: Map<string, []> = new Map<string, []>();
   @ViewChild('modalInput', { read: ElementRef }) myModalnewRecordTask: ElementRef;
   @ViewChild('newAttributeModal', { read: ElementRef }) newAttributeModal: ElementRef;
   downloadedModelsList$: any;
@@ -126,13 +111,14 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
   attributeType: string = 'Text';
   duplicateNameExists: boolean = false;
 
+  lh: LabelHelper;
+
   constructor(
     private routeService: RouteService,
     private activatedRoute: ActivatedRoute,
     private projectApolloService: ProjectApolloService,
     private router: Router,
     private formBuilder: FormBuilder,
-    private http: HttpClient,
     private s3Service: S3Service,
     private informationSourceApolloService: WeakSourceApolloService
   ) { }
@@ -174,9 +160,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     preparationTasks$.push(this.prepareLabelingTasksRequest(projectId));
     preparationTasks$.push(this.prepareEmbeddingsRequest(projectId));
 
-    this.colorOptions.forEach(color => this.labelColorOptions.push({
-      name: color, background: `bg-${color}-100`, text: `text-${color}-700`, border: `border-${color}-400`, hover: `hover:bg-${color}-200`
-    }));
+
 
     const openModal = JSON.parse(localStorage.getItem("openModal"));
     if (openModal) {
@@ -189,6 +173,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
       })
     }
     this.checkIfManagedVersion();
+    this.lh = new LabelHelper(this, this.projectApolloService);
   }
   private setUpCommentRequests(projectId: string) {
     const requests = [];
@@ -400,16 +385,13 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
       tasks.sort((a, b) => a.relativePosition - b.relativePosition || a.name.localeCompare(b.name))
 
       if (this.onlyLabelsChanged(tasks)) {
-        this.labelMap.clear();
-        tasks.forEach((task) => {
-          task.labels.sort((a, b) => a.name.localeCompare(b.name));
-          this.labelMap.set(task.id, task.labels);
-        });
+        this.lh.setLabelMap(tasks);
       } else {
         this.labelingTasksArray.clear();
         tasks.forEach((task) => {
           task.labels.sort((a, b) => a.name.localeCompare(b.name));
-          this.labelingTaskColors.set(task.id, task.labels.map((label) => label.color));
+          this.lh.labelingTaskColors.set(task.id, task.labels.map((label) => label.color));
+          task.labels = task.labels.map((label) => this.lh.extendLabelForColor({ ...label }));
           let group = this.formBuilder.group({
             id: task.id,
             name: task.name,
@@ -418,7 +400,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
             targetName: task.taskTarget == LabelingTaskTarget.ON_ATTRIBUTE ? task.attribute.name : "Full Record",
             taskType: task.taskType,
           })
-          this.labelMap.set(task.id, task.labels);
+          this.lh.labelMap.set(task.id, task.labels);
           group.valueChanges.pipe(distinctUntilChanged()).subscribe(() => {
             let values = group.getRawValue(); //to ensure disabled will be returned as well
             if (values.nameOpen || !this.isTaskNameUniqueCheck(values.name, group) || values.name.trim() == "") return;
@@ -498,17 +480,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
   }
 
   removeLabel(projectId: string, taskId: string, labelId: string, labelColor: string) {
-    let colorsInTask = this.labelingTaskColors.get(taskId);
-
-    const index = colorsInTask.indexOf(labelColor);
-    if (index > -1) {
-      colorsInTask.splice(index, 1); // 2nd parameter means remove one item only
-    }
-    this.labelingTaskColors.set(taskId, colorsInTask);
-
-    this.projectApolloService
-      .deleteLabel(projectId, labelId).pipe(first())
-      .subscribe();
+    this.lh.removeLabel(projectId, taskId, labelId, labelColor);
   }
 
   addLabel(
@@ -516,29 +488,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     taskId: string,
     labelInput: HTMLInputElement
   ): void {
-    if (this.requestTimeOut) return;
-    if (!labelInput.value) return;
-    if (!this.isLabelNameUnique(taskId, labelInput.value)) return;
-    let labelColor = "yellow"
-    let colorsInTask = this.labelingTaskColors.get(taskId);
-    if (colorsInTask.length > 0) {
-      const availableColors = this.colorOptions.filter(x => !colorsInTask.includes(x));
-      if (availableColors.length > 0) {
-        labelColor = availableColors[0]
-        colorsInTask.push(labelColor);
-        this.labelingTaskColors.set(taskId, colorsInTask);
-      }
-    } else {
-      this.labelingTaskColors.set(taskId, [labelColor])
-    }
-    this.projectApolloService
-      .createLabel(projectId, taskId, labelInput.value, labelColor).pipe(first())
-      .subscribe();
-
-    labelInput.value = '';
-    labelInput.focus();
-    this.requestTimeOut = true;
-    timer(100).subscribe(() => this.requestTimeOut = false);
+    this.lh.addLabel(projectId, taskId, labelInput);
   }
 
   deleteProject(projectId: string) {
@@ -644,12 +594,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
   }
 
   isLabelNameUnique(taskId: string, name: string): boolean {
-    if (name == '') return true;
-    for (let label of this.labelMap.get(taskId)) {
-      if (label['name'] == name) return false;
-    }
-
-    return true;
+    return this.lh.isLabelNameUnique(taskId, name);
   }
 
   attributeAlreadyHasInformationExtraction(attributeId: string): boolean {
@@ -949,81 +894,17 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
   }
 
   updateLabelColor(projectId: string, labelingTaskId: string, labelId: string, oldLabelColor: string, newLabelColor: any) {
-    let colorsInTask = this.labelingTaskColors.get(labelingTaskId);
-    const index = colorsInTask.indexOf(oldLabelColor);
-    if (index > -1) {
-      colorsInTask.splice(index, 1); // 2nd parameter means remove one item only
-    }
-    colorsInTask.push(newLabelColor.name);
-    this.labelingTaskColors.set(labelingTaskId, colorsInTask);
-
-    this.projectApolloService
-      .updateLabelColor(projectId, labelId, newLabelColor.name).pipe(first())
-      .subscribe();
-    this.currentLabel = { ...this.currentLabel, color: newLabelColor.name };
+    this.lh.updateLabelColor(projectId, labelingTaskId, labelId, oldLabelColor, newLabelColor);
   }
+
   checkAndSetLabelHotkey(event: KeyboardEvent) {
-    this.labelHotkeyError = null;
-    this.currentLabel = { ...this.currentLabel };
-    if (event.key == this.currentLabel.hotkey) return;
-    const usedHotkeys = this.getUsedHotkey();
-    if (event.key == 'ArrowRight' || event.key == 'ArrowLeft') {
-      this.labelHotkeyError = "Key " + event.key + " is used to navigate between records."
-      return;
-    } else if (usedHotkeys.includes(event.key)) {
-      this.labelHotkeyError = "Key " + event.key + " is already in use."
-      return;
-    } else if ('123456789'.includes(event.key)) {
-      this.labelHotkeyError = "Key " + event.key + " is used to switch between users."
-      return;
-    } else if (!this.isValidKey(event.key)) {
-      this.labelHotkeyError = "Key " + event.key + " not in whitelist."
-      return;
-    }
-    this.currentLabel.hotkey = this.labelHotkeyError ? "" : event.key;
-    if (!this.labelHotkeyError) {
-      this.projectApolloService
-        .updateLabelHotkey(this.project.id, this.currentLabel.id, event.key.toLowerCase()).pipe(first())
-        .subscribe();
-    }
-
+    this.lh.checkAndSetLabelHotkey(event);
   }
-  getUsedHotkey(): string[] {
-    let usedHotkeys = [];
-    this.labelMap.forEach((value, key) => {
-      value.forEach((v: any) => {
-        if (v.hotkey) usedHotkeys.push(v.hotkey);
-      })
-    })
-    return usedHotkeys
-  }
-
-  isValidKey(key: string): boolean {
-    return this.ALLOWED_KEYS.includes(key.toLowerCase());
-  }
-
 
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {
-    if (!this.currentLabel) return;
+    if (!this.lh.currentLabel) return;
     this.checkAndSetLabelHotkey(event);
-  }
-
-
-  getBackground(color) {
-    return `bg-${color}-100`
-  }
-
-  getText(color) {
-    return `text-${color}-700`
-  }
-
-  getBorder(color) {
-    return `border-${color}-400`
-  }
-
-  getHover(color) {
-    return `hover:bg-${color}-200`
   }
 
 

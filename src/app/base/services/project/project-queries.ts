@@ -500,7 +500,14 @@ query ($projectId: ID!, $exportOptions: JSONString) {
   GET_LABELSTUDIO_TEMPLATE: gql`
   query ($projectId: ID!, $labelingTaskIds: [ID]!, $attributeIds: [ID]!) {
     labelstudioTemplate(projectId: $projectId, labelingTaskIds: $labelingTaskIds, attributeIds: $attributeIds)
-  }  `
+  }  `,
+
+  CHECK_RENAME_LABEL: gql`
+  query ($projectId: ID!, $labelId: ID!, $newName: String!) {
+    checkRenameLabel(projectId: $projectId, labelId: $labelId, newName: $newName)
+  }
+  
+  `
 
 
 

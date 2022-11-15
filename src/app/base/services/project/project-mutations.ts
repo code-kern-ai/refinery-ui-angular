@@ -95,6 +95,18 @@ export const mutations = {
     }
   }
   `,
+  UPDATE_LABEL_NAME: gql`
+  mutation ($projectId: ID!, $labelId: ID!, $newName: String!) {
+    updateLabelName(projectId: $projectId, labelingTaskLabelId: $labelId, newName: $newName) {
+      ok
+    }
+  }  `,
+  HANDLE_LABEL_RENAME_WARNING: gql`
+  mutation ($projectId: ID!, $warningData: JSONString!) {
+    handleLabelRenameWarnings(projectId: $projectId, warningData: $warningData) {
+      ok
+    }
+  } `,
   UPDATE_LABEL_HOTKEY: gql`
   mutation ($projectId: ID!, $labelingTaskLabelId: ID!, $labelHotkey: String!) {
     updateLabelHotkey(projectId: $projectId, labelingTaskLabelId: $labelingTaskLabelId, labelHotkey: $labelHotkey) {
