@@ -986,123 +986,6 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     return true;
   }
 
-  // refreshSearchParamText() {
-  //   for (let p of this.activeSearchParams) {
-  //     this.updateSearchParamText(p);
-  //     this.createSplittedText(p);
-  //   }
-  // }
-  // createSplittedText(p) {
-  //   const groupName = this.searchGroups.get(p.values.groupKey).nameAdd + ':';
-  //   p.searchTextReplaced = p.searchText.replaceAll("\nAND", "\n<gn>" + groupName + "\n");
-  //   p.splittedText = p.searchTextReplaced.split("\n<gn>");
-  // }
-
-  // updateSearchParam(searchElement, newValues) {
-  //   searchElement.values = newValues;
-  //   this.updateSearchParamText(searchElement);
-  //   this.createSplittedText(searchElement);
-  // }
-
-  // updateSearchParamText(searchElement) {
-  //   if (searchElement.values.type == SearchItemType.ATTRIBUTE) {
-  //     const attributeType = this.getAttributeType(searchElement.values.name);
-  //     if (searchElement.values.operator == SearchOperator.BETWEEN) {
-  //       if (attributeType == "INTEGER" || attributeType == "FLOAT") {
-  //         searchElement.searchText =
-  //           searchElement.values.name +
-  //           ' ' +
-  //           searchElement.values.operator +
-  //           " " +
-  //           searchElement.values.searchValue +
-  //           "" + " AND " + searchElement.values.searchValueBetween;
-  //       } else {
-  //         searchElement.searchText =
-  //           searchElement.values.name +
-  //           ' ' +
-  //           searchElement.values.operator +
-  //           " '" +
-  //           searchElement.values.searchValue +
-  //           "'" + " AND '" + searchElement.values.searchValueBetween + "'";
-  //       }
-  //     } else if (searchElement.values.operator == '') {
-  //       searchElement.searchText = searchElement.values.name;
-  //     } else if (searchElement.values.operator == SearchOperator.IN) {
-  //       if (attributeType == "INTEGER" || attributeType == "FLOAT") {
-  //         searchElement.searchText =
-  //           searchElement.values.name +
-  //           ' ' +
-  //           searchElement.values.operator +
-  //           " (" +
-  //           searchElement.values.searchValue + ")";
-  //       } else {
-  //         const splitTextBySeparator = searchElement.values.searchValue.split(this.separator);
-  //         searchElement.searchText = searchElement.values.name + ' ' + searchElement.values.operator + " (" + splitTextBySeparator.map(x => "'" + x + "'").join(", ") + ")";
-  //       }
-  //     }
-  //     else {
-  //       if (attributeType == "INTEGER" || attributeType == "FLOAT") {
-  //         searchElement.searchText =
-  //           searchElement.values.name +
-  //           ' ' +
-  //           searchElement.values.operator +
-  //           " " +
-  //           searchElement.values.searchValue;
-  //       }
-  //       else {
-  //         searchElement.searchText =
-  //           searchElement.values.name +
-  //           ' ' +
-  //           searchElement.values.operator +
-  //           " '" +
-  //           searchElement.values.searchValue +
-  //           "'";
-  //       }
-  //     }
-  //     if (searchElement.values.negate)
-  //       searchElement.searchText = 'NOT (' + searchElement.searchText + ')';
-  //     if (this.separator == "-")
-  //       searchElement.searchText = searchElement.searchText.replaceAll("-", ",");
-  //   } else if (searchElement.values.type == SearchItemType.LABELING_TASK) {
-  //     searchElement.searchText = this._labelingTaskBuildSearchParamText(
-  //       searchElement.values
-  //     );
-  //   } else if (searchElement.values.type == SearchItemType.USER) {
-  //     searchElement.searchText = this.userFilter.buildSearchParamText(
-  //       searchElement.values
-  //     );
-  //   } else if (searchElement.values.type == SearchItemType.ORDER_BY) {
-  //     searchElement.searchText = this._orderByBuildSearchParamText(
-  //       searchElement.values
-  //     );
-
-  //     this.staticSliceOrderActive = searchElement.searchText.replace("ORDER BY ", "");
-  //   }
-  // }
-
-  // refreshSearchParams(values) {
-  //   for (let p of this.activeSearchParams) {
-  //     if (p.id == values.id) {
-  //       if (values.active) {
-  //         p.values = values;
-  //         this.updateSearchParam(p, values);
-  //         return;
-  //       } else {
-  //         this.activeSearchParams = this.activeSearchParams.filter(
-  //           (e) => e.id != values.id
-  //         );
-  //         return;
-  //       }
-  //     }
-  //   }
-  //   //doesn't exist yet
-  //   if (values.active) {
-  //     let p = { id: values.id };
-  //     this.updateSearchParam(p, values);
-  //     this.activeSearchParams.push(p);
-  //   }
-  // }
-
   setFilterInactive(activeSearchParam) {
     for (let group of this.getSearchFormArray(activeSearchParam.values.groupKey)
       .controls) {
@@ -2168,7 +2051,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   }
 
   getAttributeType(attributeName: string) {
-    return this.attributesSortOrder.find(att => att.name == attributeName)?.type;
+    return getAttributeType(this.attributesSortOrder, attributeName);
   }
 
   checkIfDecimals(event: any, i: number, key: string) {
