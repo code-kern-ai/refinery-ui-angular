@@ -330,6 +330,20 @@ export class DataBrowserFilterParser {
                     });
                 }
             }
+            filterElement.FILTER.forEach((el) => {
+                const type = getAttributeType(this.dataBrowser.attributesSortOrder, el.VALUES[0]);
+                if (type != "BOOLEAN") {
+                    if (type == 'INTEGER') {
+                        el.VALUES.slice(1, el.VALUES.length).forEach((val, index) => {
+                            el.VALUES[index + 1] = parseInt(val);
+                        })
+                    } else if (type == 'FLOAT') {
+                        el.VALUES.slice(1, el.VALUES.length).forEach((val, index) => {
+                            el.VALUES[index + 1] = parseFloat(val);
+                        })
+                    }
+                }
+            });
         } else {
             const attributeType = getAttributeType(this.dataBrowser.attributesSortOrder, searchElement.values.name);
             searchElement.values.operator = searchElement.values.operator.split(" ").join("_");

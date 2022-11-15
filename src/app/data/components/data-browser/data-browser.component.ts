@@ -2168,8 +2168,9 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   getAttributeType(attributeName: string) {
     return this.attributesSortOrder.find(att => att.name == attributeName)?.type;
   }
+
   checkIfDecimals(event: any, i: number, key: string) {
-    if (this.getAttributeType(this.getSearchFormArray(key).controls[i].get("name").value) == "INTEGER" && (event.key == "." || event.key == ",")) {
+    if (this.getAttributeType(this.getSearchFormArray(key).controls[i].get("name").value) == "INTEGER" && (event.key == "." || event.key == ",") && this.getSearchFormArray(key).controls[i].get("operator").value != 'IN' && this.getSearchFormArray(key).controls[i].get("operator").value != 'IN_WS') {
       event.preventDefault();
       return;
     }
