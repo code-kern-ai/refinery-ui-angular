@@ -2055,9 +2055,20 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   }
 
   checkIfDecimals(event: any, i: number, key: string) {
-    if (this.getAttributeType(this.getSearchFormArray(key).controls[i].get("name").value) == "INTEGER" && (event.key == "." || event.key == ",") && this.getSearchFormArray(key).controls[i].get("operator").value != 'IN' && this.getSearchFormArray(key).controls[i].get("operator").value != 'IN_WS') {
-      event.preventDefault();
-      return;
+    if (this.getAttributeType(this.getSearchFormArray(key).controls[i].get("name").value) == "INTEGER") {
+      const operatorValue = this.getSearchFormArray(key).controls[i].get("operator").value;
+      if (operatorValue == 'IN' || operatorValue == 'IN WC') {
+        const pattern = operatorValue == 'IN' ? /^[0-9,]$/i : /^[0-9,_%]$/i;
+        if (!pattern.test(event.key) && event.key != 'Backspace') {
+          event.preventDefault();
+          return;
+        }
+      } else {
+        if (event.key == "." || event.key == ",") {
+          event.preventDefault();
+          return;
+        }
+      }
     }
   }
 }
