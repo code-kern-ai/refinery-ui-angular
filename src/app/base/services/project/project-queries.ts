@@ -244,7 +244,7 @@ export const queries = {
   }
   `,
   GET_RECOMMENDED_ENCODERS_FOR_EMBEDDINGS: gql`
-  query ($projectId: ID!) {
+  query ($projectId: ID) {
     recommendedEncoders(projectId: $projectId) {
       configString
       description

@@ -233,7 +233,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
   }
 
   prepareEmbeddingHandles(projectId: string, attributes) {
-    this.projectApolloService.getRecomendedEncodersForEmbeddings(projectId).pipe(first()).subscribe((encoderSuggestions) => {
+    this.projectApolloService.getRecommendedEncodersForEmbeddings(projectId).pipe(first()).subscribe((encoderSuggestions) => {
       if (!this.project) {
         let timer = interval(250).subscribe(() => {
           if (this.project) {

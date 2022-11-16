@@ -33,6 +33,7 @@ const routes: Routes = [
   { path: 'notification-center', component: NotificationCenterComponent, data: { name: 'NotificationCenterComponent' } },
   { path: 'projects/new', component: ProjectNewComponent, data: { name: 'ProjectNewComponent' } },
   { path: 'config', component: ConfigComponent, data: { name: 'ConfigComponent' } },
+  { path: 'model-download', component: ModelDownloadComponent, data: { name: 'ModelDownloadComponent' } },
 
   {
     path: 'projects/:projectId',
@@ -65,7 +66,6 @@ const routes: Routes = [
         component: KnowledgeBaseDetailsComponent, data: { name: 'KnowledgeBaseDetailsComponent' }
       },
       { path: 'model-callbacks', component: ModelCallbackComponent, data: { name: 'ModelCallbackComponent' } },
-      { path: 'model-download', component: ModelDownloadComponent, data: { name: 'ModelDownloadComponent' } },
       { path: 'attributes/:attributeId', component: CreateNewAttributeComponent, data: { name: 'CreateNewAttributeComponent' } },
       { path: '**', component: ProjectOverviewComponent, data: { name: 'ProjectOverviewComponent' } },
       //TODO: redirecting to projects overview page and errors

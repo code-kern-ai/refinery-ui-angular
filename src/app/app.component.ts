@@ -12,6 +12,7 @@ import { first } from 'rxjs/operators';
 import { ConfigApolloService } from './base/services/config/config-apollo.service';
 import { UserManager } from './util/user-manager';
 import { CommentDataManager } from './base/components/comment/comment-helper';
+import { RouteManager } from './util/route-manager';
 
 @Component({
   selector: 'app-root',
@@ -40,7 +41,7 @@ export class AppComponent implements OnDestroy, OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.initalRequests();
+    this.initialRequests();
     NotificationService.subscribeToNotification(this, {
       whitelist: ['notification_created', 'project_deleted', 'config_updated'],
       func: this.handleWebsocketNotification
@@ -50,8 +51,9 @@ export class AppComponent implements OnDestroy, OnInit {
     this.checkBrowser();
   }
 
-  initalRequests() {
+  initialRequests() {
     CommentDataManager.initManager(this.organizationService);
+    RouteManager.initRouteManager(this.router, this.organizationService);
     this.configService.isManaged().pipe(first()).subscribe((v) => ConfigManager.initConfigManager(this.http, this.configService, v));
     this.configService.isDemo().pipe(first()).subscribe((v) => ConfigManager.setIsDemo(v));
     this.configService.isAdmin().pipe(first()).subscribe((v) => ConfigManager.setIsAdmin(v));
@@ -66,7 +68,6 @@ export class AppComponent implements OnDestroy, OnInit {
       return;
     }
     this.initializeIntercom();
-    this.initRouterListener();
     //caution! the first user request needs to run after the db creation since otherwise the backend will try to create an unasigned user
     this.organizationService.getUserInfo().pipe(first()).subscribe((v) => UserManager.initUserManager(this.router, this.organizationService, v));
   }
@@ -95,23 +96,6 @@ export class AppComponent implements OnDestroy, OnInit {
       });
   }
 
-  initRouterListener() {
-
-    this.router.events.subscribe((val) => {
-      if (val instanceof RoutesRecognized) {
-        if (ConfigManager.getConfigValue("allow_data_tracking")) {
-          const event = { old: this.router.url, new: val.url, name: this.getRecusiveRouteData(val.state.root) };
-          this.organizationService.postEvent("AppNavigation", JSON.stringify(event)).pipe(first()).subscribe();
-        }
-      }
-    });
-  }
-  getRecusiveRouteData(root: ActivatedRouteSnapshot, key: string = 'name') {
-    if (root.firstChild) {
-      return this.getRecusiveRouteData(root.firstChild)
-    }
-    return root.data[key]
-  }
 
   initializeNotificationService() {
     [this.notificationsQuery$, this.notifications$] = this.notificationApolloService.getNotificationsByUser();

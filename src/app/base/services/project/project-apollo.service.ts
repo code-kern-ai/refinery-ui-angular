@@ -669,7 +669,7 @@ export class ProjectApolloService {
     return [query, vc]
   }
 
-  getRecomendedEncodersForEmbeddings(projectId: string) {
+  getRecommendedEncodersForEmbeddings(projectId: string = null) {
     return this.apollo
       .watchQuery({
         query: queries.GET_RECOMMENDED_ENCODERS_FOR_EMBEDDINGS,

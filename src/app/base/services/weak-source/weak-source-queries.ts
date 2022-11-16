@@ -71,7 +71,7 @@ export const queries = {
     }
 `,
   GET_ZERO_SHOT_RECOMMENDATIONS: gql`
-  query ($projectId: ID!) {
+  query ($projectId: ID) {
     zeroShotRecommendations(projectId: $projectId)
   }
 `,
@@ -117,7 +117,7 @@ export const queries = {
     }
   }
   `,
-GET_LABELING_FUNCTION_ON_10_RECORDS: gql`
+  GET_LABELING_FUNCTION_ON_10_RECORDS: gql`
   query ($projectId: ID!, $informationSourceId: ID!) {
     getLabelingFunctionOn10Records(projectId: $projectId, informationSourceId: $informationSourceId) {
       records {	
