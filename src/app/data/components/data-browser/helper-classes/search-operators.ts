@@ -12,6 +12,8 @@ export function getSearchOperatorTooltip(operator: SearchOperator): string {
             return 'ILIKE %{value}%';
         case SearchOperator.IN:
             return 'IN ({value})';
+        case SearchOperator.IN_WC:
+            return 'IN WC ({value})';
         case SearchOperator.BETWEEN:
             return 'BETWEEN {value}';
         case SearchOperator.GREATER:

@@ -259,8 +259,7 @@
                                                                     <input *ngIf="groupItem.get('operator').value != ''"
                                                                         formControlName="searchValue"
                                                                         (keydown)="checkIfDecimals($event, i, group.key)"
-                                                                        [type]="getAttributeType(groupItem.get('name').value) == 'INTEGER' && groupItem.get('operator').value != 'IN' && groupItem.get('operator').value != 'IN WC' ? 'number' : 'text'"
-                                                                        [placeholder]="getAttributeType(groupItem.get('name').value) == 'INTEGER' ? 'Enter any number' : groupItem.get('addText').value"
+                                                                        [placeholder]="groupItem.get('addText').value"
                                                                         class="w-full input input-sm input-bordered">
 
                                                                     <span class="text-sm text-gray-500 mx-1"
@@ -270,8 +269,7 @@
                                                                         *ngIf="groupItem.get('operator').value == 'BETWEEN'"
                                                                         formControlName="searchValueBetween"
                                                                         (keydown)="checkIfDecimals($event, i, group.key)"
-                                                                        [type]="getAttributeType(groupItem.get('name').value) == 'INTEGER' && groupItem.get('operator').value != 'IN' && groupItem.get('operator').value != 'IN WC' ? 'number' : 'text'"
-                                                                        [placeholder]="getAttributeType(groupItem.get('name').value) == 'INTEGER' ? 'Enter any number' : groupItem.get('addText').value"
+                                                                        [placeholder]="groupItem.get('addText').value"
                                                                         class="w-full input input-sm input-bordered">
                                                                 </div>
                                                             </div>

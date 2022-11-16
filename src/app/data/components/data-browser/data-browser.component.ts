@@ -1240,7 +1240,10 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
 
   getOperatorDropdownValues(i?: number, value?: any) {
     if (this.searchOperatorDropdownArray.length == 0) {
-      if (getAttributeType(this.attributesSortOrder, this.saveDropdonwAttribute) !== 'BOOLEAN') {
+      const attributeType = getAttributeType(this.attributesSortOrder, this.saveDropdonwAttribute);
+      if (attributeType !== 'BOOLEAN') {
+        this.getSearchFormArray(SearchGroup.ATTRIBUTES).controls[i].get('addText').setValue(attributeType == 'INTEGER' ? 'Enter any number' : 'Enter any string');
+
         for (let t of Object.values(SearchOperator)) {
           this.searchOperatorDropdownArray.push({
             value: t.split("_").join(" "),
@@ -2038,7 +2041,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
 
   selectValueDropdown(value: string, i: number, field: string, key: any) {
     this.getSearchFormArray(key).controls[i].get(field).setValue(value);
-    if (field == 'name') {
+    if (field == 'name' || this.getSearchFormArray(key).controls[i].get('operator').value == SearchOperator.IN || this.getSearchFormArray(key).controls[i].get('operator').value == 'IN WC') {
       this.saveDropdonwAttribute = value;
       if (this.getSearchFormArray(key).controls[i].get("searchValue").value != "") {
         this.getSearchFormArray(key).controls[i].get("searchValue").setValue("");
@@ -2050,24 +2053,13 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     this.getOperatorDropdownValues(i, value);
   }
 
-  getAttributeType(attributeName: string) {
-    return getAttributeType(this.attributesSortOrder, attributeName);
-  }
-
   checkIfDecimals(event: any, i: number, key: string) {
-    if (this.getAttributeType(this.getSearchFormArray(key).controls[i].get("name").value) == "INTEGER") {
+    if (getAttributeType(this.attributesSortOrder, this.getSearchFormArray(key).controls[i].get("name").value) == "INTEGER") {
       const operatorValue = this.getSearchFormArray(key).controls[i].get("operator").value;
-      if (operatorValue == 'IN' || operatorValue == 'IN WC') {
-        const pattern = operatorValue == 'IN' ? /^[0-9,]$/i : /^[0-9,_%]$/i;
-        if (!pattern.test(event.key) && event.key != 'Backspace') {
-          event.preventDefault();
-          return;
-        }
-      } else {
-        if (event.key == "." || event.key == ",") {
-          event.preventDefault();
-          return;
-        }
+      const pattern = operatorValue == 'IN' ? /^[0-9,]$/i : operatorValue == 'IN WC' ? /^[0-9,_%]$/i : /^[0-9]$/i;
+      if (!pattern.test(event.key) && event.key != 'Backspace') {
+        event.preventDefault();
+        return;
       }
     }
   }
