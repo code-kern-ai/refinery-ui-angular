@@ -2064,14 +2064,14 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       let pattern;
       if (attributeType == "INTEGER") {
         if (this.separator == '-') {
-          pattern = operatorValue == 'IN' ? /^[0-9,-]$/i : operatorValue == 'IN WC' ? /^[0-9,_%-]$/i : /^[0-9]$/i;
+          pattern = operatorValue == 'IN' ? /^[0-9-]$/i : operatorValue == 'IN WC' ? /^[0-9_%-]$/i : /^[0-9]$/i;
         } else {
           pattern = operatorValue == 'IN' ? /^[0-9,]$/i : operatorValue == 'IN WC' ? /^[0-9,_%]$/i : /^[0-9]$/i;
         }
 
       } else {
         if (this.separator == '-') {
-          pattern = operatorValue == 'IN' ? /^[0-9.,-]$/i : operatorValue == 'IN WC' ? /^[0-9.,_%-]$/i : /^[0-9.]$/i;
+          pattern = operatorValue == 'IN' ? /^[0-9.-]$/i : operatorValue == 'IN WC' ? /^[0-9._%-]$/i : /^[0-9.]$/i;
         } else {
           pattern = operatorValue == 'IN' ? /^[0-9.,]$/i : operatorValue == 'IN WC' ? /^[0-9.,_%]$/i : /^[0-9.]$/i;
         }
