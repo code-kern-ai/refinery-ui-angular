@@ -272,6 +272,14 @@
                                                                         [placeholder]="groupItem.get('addText').value"
                                                                         class="w-full input input-sm input-bordered">
                                                                 </div>
+
+                                                                <label
+                                                                    class="text-xs text-gray-500 cursor-pointer flex items-center"
+                                                                    *ngIf="groupItem.get('operator').value == 'BEGINS WITH' || groupItem.get('operator').value == 'ENDS WITH' || groupItem.get('operator').value == 'CONTAINS' || groupItem.get('operator').value == 'IN WC'">
+                                                                    <input type="checkbox"
+                                                                        formControlName="caseSensitive" class="mr-1">
+                                                                    Case sensitive
+                                                                </label>
                                                             </div>
 
                                                         </div>

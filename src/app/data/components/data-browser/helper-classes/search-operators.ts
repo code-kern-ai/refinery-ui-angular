@@ -1,21 +1,19 @@
-import { StaticOrderByKeys } from "./search-parameters";
-
 export function getSearchOperatorTooltip(operator: SearchOperator): string {
     switch (operator) {
         case SearchOperator.EQUAL:
             return '= {value}';
         case SearchOperator.BEGINS_WITH:
-            return 'ILIKE {value}%';
+            return 'starts with {value}%';
         case SearchOperator.ENDS_WITH:
-            return 'ILIKE %{value}';
+            return 'finishes with %{value}';
         case SearchOperator.CONTAINS:
-            return 'ILIKE %{value}%';
+            return 'has %{value}%';
         case SearchOperator.IN:
-            return 'IN ({value})';
+            return 'is included in ({value})';
         case SearchOperator.IN_WC:
-            return 'IN WC ({value})';
+            return '*,?,% and _ in ({value})';
         case SearchOperator.BETWEEN:
-            return 'BETWEEN {value}';
+            return 'between {a} and {b}';
         case SearchOperator.GREATER:
             return '> {value}';
         case SearchOperator.GREATER_EQUAL:
@@ -42,6 +40,10 @@ export enum SearchOperator {
     LESS_EQUAL = 'LESS_EQUAL',
 }
 
+export function getAttributeType(attributes: any[], attributeName: string) {
+    return attributes.find(att => att.name == attributeName)?.type;
+}
+
 export function prepareFilterElements(searchElement: any, name: string, separator: string, attributeType: string) {
     let values = [];
     if (searchElement.values.operator == SearchOperator.BETWEEN) {
@@ -59,10 +61,6 @@ export function prepareFilterElements(searchElement: any, name: string, separato
     return values;
 }
 
-export function getAttributeType(attributes: any[], attributeName: string) {
-    return attributes.find(att => att.name == attributeName)?.type;
-}
-
 export function parseFilterElements(searchElement: any, values: any, attributeType: string): any[] {
     if (attributeType == "INTEGER" && searchElement.values.operator != SearchOperator.IN_WC) {
         values.slice(1, values.length).forEach((value, index) => {
@@ -78,4 +76,31 @@ export function parseFilterElements(searchElement: any, values: any, attributeTy
         });
     }
     return values;
+}
+
+export function prepareOperator(searchElement: any, attributeType: string): string {
+    if (searchElement.values.caseSensitive) {
+        let operator = searchElement.values.operator;
+        switch (operator) {
+            case SearchOperator.BEGINS_WITH:
+                operator = "BEGINS_WITH_CS";
+                break;
+            case SearchOperator.ENDS_WITH:
+                operator = "ENDS_WITH_CS";
+                break;
+            case SearchOperator.CONTAINS:
+                operator = "CONTAINS_CS";
+                break;
+            default:
+                operator = "IN_WC_CS";
+                break;
+        }
+        return operator;
+    }
+
+    if (attributeType == "BOOLEAN") {
+        return SearchOperator.EQUAL;
+    } else {
+        return searchElement.values.operator;
+    }
 }
