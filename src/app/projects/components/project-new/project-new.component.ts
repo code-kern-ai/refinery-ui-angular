@@ -1,26 +1,27 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { AbstractControl, FormBuilder, FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
+import { AfterViewChecked, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { AbstractControl, FormBuilder, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { first } from 'rxjs/operators';
-import { AuthApiService } from 'src/app/base/services/auth-api.service';
 import { NotificationService } from 'src/app/base/services/notification.service';
 import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
-import { ProjectStatus } from '../../enums/project-status.enum';
 import { Project } from 'src/app/base/entities/project';
 import { RouteService } from 'src/app/base/services/route.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { UploadComponent } from 'src/app/import/components/upload/upload.component';
 import { Subscription, timer } from 'rxjs';
 import { UploadRecordsComponent } from 'src/app/import/components/upload-records/upload-records.component';
 import { ConfigManager } from 'src/app/base/services/config-service';
 import { getUserAvatarUri } from 'src/app/util/helper-functions';
+import { UploadType } from 'src/app/import/components/upload/upload-helper';
+import { LabelStudioAssistantComponent } from 'src/app/base/components/upload-assistant/label-studio/label-studio-assistant.component';
+import { PreparationStep } from 'src/app/base/components/upload-assistant/label-studio/label-studio-assistant-helper';
 
 @Component({
   selector: 'kern-project-new',
   templateUrl: './project-new.component.html',
-  styleUrls: ['./project-new.component.scss']
+  styleUrls: ['./project-new.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectNewComponent implements OnInit {
+export class ProjectNewComponent implements OnInit, AfterViewChecked {
 
   user$: any;
   subscriptions$: Subscription[] = [];
@@ -35,22 +36,26 @@ export class ProjectNewComponent implements OnInit {
   hasFileUploaded: boolean = false;
   submitted: boolean = false;
   file: File;
-  @ViewChild(UploadComponent) uploadComponent;
   @ViewChild(UploadRecordsComponent) uploadRecordsComponent;
+  @ViewChild(LabelStudioAssistantComponent) labelStudioUploadAssistant;
   openTab: number = 0;
   organizationName: string;
   organizationInactive: boolean;
   avatarUri: string;
+  disableInput: boolean = false;
 
 
   constructor(
     private routeService: RouteService,
     private activatedRoute: ActivatedRoute,
-    private auth: AuthApiService,
     private formBuilder: FormBuilder,
     private organizationApolloService: OrganizationApolloService,
     private projectApolloService: ProjectApolloService,
-    private router: Router) { }
+    private cdRef: ChangeDetectorRef) { }
+
+  ngAfterViewChecked(): void {
+    this.cdRef.detectChanges();
+  }
 
   ngOnInit(): void {
     this.routeService.updateActivatedRoute(this.activatedRoute);
@@ -110,6 +115,10 @@ export class ProjectNewComponent implements OnInit {
   ngOnDestroy(): void {
     this.subscriptions$.forEach(subscription => subscription.unsubscribe());
     NotificationService.unsubscribeFromNotification(this);
+
+    if (this.uploadRecordsComponent?.uploadComponent?.uploadType == UploadType.LABEL_STUDIO) {
+      if (this.labelStudioUploadAssistant?.states.preparation != PreparationStep.MAPPING_TRANSFERRED) this.checkProjectToDelete();
+    }
   }
 
   canCreateProject(): boolean {
@@ -118,15 +127,15 @@ export class ProjectNewComponent implements OnInit {
     for (const p of this.projectNameList) if (p.name == this.createNewProject.get('projectTitle').value) return false;
     return true;
   }
-
-  initializeProject(isInput: boolean, event?: Event) {
-    if (isInput) {
-      event.preventDefault();
-    }
-
+  initProjectEvent(event: Event) {
+    event.preventDefault();
+    this.initializeProject();
+  }
+  initializeProject(uploadType: UploadType = UploadType.DEFAULT): boolean {
+    this.uploadRecordsComponent.uploadComponent.uploadType = uploadType;
     this.uploadRecordsComponent.submitted = true;
     this.submitted = true;
-    if (this.createNewProject.invalid) return;
+    if (this.createNewProject.invalid) return false;
     this.createNewProject.setValue({
       projectTitle: (this.createNewProject.get('projectTitle').value).trim(),
       description: (this.createNewProject.get('description').value).trim(),
@@ -143,6 +152,7 @@ export class ProjectNewComponent implements OnInit {
           this.uploadRecordsComponent.submitUploadRecords();
         });
     }
+    return true;
   }
 
   checkWhitelistTokenizer(tokenizer) {
@@ -191,5 +201,12 @@ export class ProjectNewComponent implements OnInit {
 
   checkIfFileUploaded(hasFileUploaded: boolean) {
     this.hasFileUploaded = hasFileUploaded;
+  }
+
+  checkProjectToDelete() {
+    if (this.uploadRecordsComponent.uploadComponent.projectId) {
+      this.uploadRecordsComponent.uploadComponent.deleteExistingProject();
+    }
+
   }
 }

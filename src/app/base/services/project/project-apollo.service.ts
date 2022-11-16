@@ -774,7 +774,8 @@ export class ProjectApolloService {
     projectId: string,
     fileName: string,
     fileType: string,
-    fileImportOptions: string
+    fileImportOptions: string,
+    uploadType: string = null
 
   ): Observable<string> {
     return this.apollo
@@ -785,7 +786,8 @@ export class ProjectApolloService {
           projectId: projectId,
           fileName: fileName,
           fileType: fileType,
-          fileImportOptions: fileImportOptions
+          fileImportOptions: fileImportOptions,
+          uploadType: uploadType
         },
       })
       .pipe(map((result) => result['data']['uploadCredentialsAndId']));
@@ -820,10 +822,23 @@ export class ProjectApolloService {
       });
     const vc = query.valueChanges.pipe(
       map((result) => {
-        return result['data']['uploadTaskById'];
+        const r = { ...result['data']['uploadTaskById'] };
+        r.fileAdditionalInfo = JSON.parse(r.fileAdditionalInfo);
+        return r;
       })
     );
     return [query, vc]
+  }
+
+  setUploadTaskMappings(projectId: string, uploadTaskId: string, mappings: string) {
+    return this.apollo.mutate({
+      mutation: mutations.SET_UPLOAD_MAPPINGS,
+      variables: {
+        projectId: projectId,
+        uploadTaskId: uploadTaskId,
+        mappings: mappings,
+      },
+    });
   }
 
 

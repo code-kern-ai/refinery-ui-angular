@@ -75,6 +75,7 @@ export const queries = {
       userId
       state
       progress
+      fileAdditionalInfo
     }
   }
   `,
@@ -284,8 +285,8 @@ export const queries = {
     }
   `,
   GET_UPLOAD_CREDENTIALS_AND_ID: gql`
-    query ($projectId: ID!, $fileName: String!, $fileType: String!,$fileImportOptions:String!) {
-      uploadCredentialsAndId(projectId: $projectId, fileName: $fileName, fileType: $fileType,fileImportOptions:$fileImportOptions)
+    query ($projectId: ID!, $fileName: String!, $fileType: String!,$fileImportOptions:String!,$uploadType:String) {
+      uploadCredentialsAndId(projectId: $projectId, fileName: $fileName, fileType: $fileType,fileImportOptions:$fileImportOptions,uploadType:$uploadType)
     }
   `,
   GET_ALL_TOKENIZER_OPTIONS: gql`

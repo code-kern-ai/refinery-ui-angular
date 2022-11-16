@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewChecked, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { first } from 'rxjs/operators';
 import { AuthApiService } from 'src/app/base/services/auth-api.service';
@@ -12,13 +12,14 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { UploadComponent } from 'src/app/import/components/upload/upload.component';
 import { Subscription, timer } from 'rxjs';
 import { UploadRecordsComponent } from 'src/app/import/components/upload-records/upload-records.component';
+import { UploadType } from 'src/app/import/components/upload/upload-helper';
 
 @Component({
   selector: 'kern-project-add',
   templateUrl: './project-add.component.html',
   styleUrls: ['./project-add.component.scss']
 })
-export class ProjectAddComponent implements OnInit {
+export class ProjectAddComponent implements OnInit, AfterViewChecked {
 
   user$: any;
   subscriptions$: Subscription[] = [];
@@ -38,11 +39,15 @@ export class ProjectAddComponent implements OnInit {
 
   constructor(
     private routeService: RouteService,
-    private auth: AuthApiService,
     private formBuilder: FormBuilder,
     private organizationApolloService: OrganizationApolloService,
     private activatedRoute: ActivatedRoute,
-    private projectApolloService: ProjectApolloService) { }
+    private projectApolloService: ProjectApolloService,
+    private cdRef: ChangeDetectorRef) { }
+
+  ngAfterViewChecked(): void {
+    this.cdRef.detectChanges();
+  }
 
   ngOnInit(): void {
     this.routeService.updateActivatedRoute(this.activatedRoute);
@@ -72,15 +77,22 @@ export class ProjectAddComponent implements OnInit {
   }
 
 
-  uploadDataToProject() {
+  uploadDataToProject(uploadType: UploadType = UploadType.DEFAULT): boolean {
+    this.uploadRecordsComponent.uploadComponent.uploadType = uploadType;
     this.uploadRecordsComponent.submitted = true;
     this.submitted = true;
     if (this.submitted && this.hasFileUploaded) {
       this.uploadRecordsComponent.submitUploadRecords();
+      return true;
     }
+    return false;
   }
 
   checkIfFileUploaded(hasFileUploaded: boolean) {
     this.hasFileUploaded = hasFileUploaded;
+  }
+
+  getProjectName(): string {
+    return this.project?.name;
   }
 }
