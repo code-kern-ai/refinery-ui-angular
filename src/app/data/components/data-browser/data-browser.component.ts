@@ -1253,7 +1253,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
           if (formControlsIdx.get("operator").value == '') {
             formControlsIdx.get("operator").setValue("CONTAINS");
           }
-          formControlsIdx.get('addText').setValue(attributeType == 'INTEGER' ? 'Enter any number' : 'Enter any string');
+          formControlsIdx.get('addText').setValue(attributeType == 'INTEGER' ? 'Enter any number' : attributeType == 'FLOAT' ? 'Enter any float' : 'Enter any string');
         }
       } else {
         formControlsIdx.get("operator").setValue("");
@@ -2058,9 +2058,15 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   }
 
   checkIfDecimals(event: any, i: number, key: string) {
-    if (getAttributeType(this.attributesSortOrder, this.getSearchFormArray(key).controls[i].get("name").value) == "INTEGER") {
+    const attributeType = getAttributeType(this.attributesSortOrder, this.getSearchFormArray(key).controls[i].get("name").value);
+    if (attributeType == "INTEGER" || attributeType == "FLOAT") {
       const operatorValue = this.getSearchFormArray(key).controls[i].get("operator").value;
-      const pattern = operatorValue == 'IN' ? /^[0-9,]$/i : operatorValue == 'IN WC' ? /^[0-9,_%]$/i : /^[0-9]$/i;
+      let pattern;
+      if (attributeType == "INTEGER") {
+        pattern = operatorValue == 'IN' ? /^[0-9,]$/i : operatorValue == 'IN WC' ? /^[0-9,_%]$/i : /^[0-9]$/i;
+      } else {
+        pattern = operatorValue == 'IN' ? /^[0-9.,]$/i : operatorValue == 'IN WC' ? /^[0-9.,_%]$/i : /^[0-9.]$/i;
+      }
       if (!pattern.test(event.key) && event.key != 'Backspace') {
         event.preventDefault();
         return;
