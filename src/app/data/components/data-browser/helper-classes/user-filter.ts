@@ -5,7 +5,6 @@ import { labelSourceToString } from "src/app/base/enum/graphql-enums";
 import { OrganizationApolloService } from "src/app/base/services/organization/organization-apollo.service";
 import { DataBrowserComponent } from "../data-browser.component";
 import { getBasicGroupItems, getBasicSearchGroup, SearchGroup, SearchGroupItem } from "./search-parameters";
-import { UpdateSearchParameters } from "./update-search-parameters";
 
 export class UserFilter {
     private dataBrowser: DataBrowserComponent;
@@ -13,7 +12,6 @@ export class UserFilter {
     private users: any;
     public userMap: Map<string, any> = new Map<string, any>();
     public currentUserInfo: any;
-    private updateSearchParameters: UpdateSearchParameters;
 
     constructor(dataBrowser: DataBrowserComponent, organizationApolloSerivce: OrganizationApolloService) {
         this.dataBrowser = dataBrowser;
@@ -110,7 +108,7 @@ export class UserFilter {
             group.get('active').setValue(false);
             return;
         }
-        this.updateSearchParameters.refreshSearchParams(values);
+        this.dataBrowser.updateSearchParameters.refreshSearchParams(values);
         this.dataBrowser.checkAndDisplayDisplayValuesChangedWarning();
         if (this.dataBrowser.activeSlice?.static) {
             this.dataBrowser.checkFilterChangedForStaticSlice();
@@ -165,7 +163,7 @@ export class UserFilter {
         const setSomething = this.dataBrowser.applyValuesToFormGroup(filterValues, userGroup);
         let values = userGroup.getRawValue();
         values.active = this.somethingActive(values);
-        this.updateSearchParameters.refreshSearchParams(values);
+        this.dataBrowser.updateSearchParameters.refreshSearchParams(values);
         if (setSomething) {
             userGroup.get("updateDummy").setValue(true);
             this.dataBrowser.toggleGroupMenu(key, this.dataBrowser.getSearchGroupsHTMLByName(key), true);

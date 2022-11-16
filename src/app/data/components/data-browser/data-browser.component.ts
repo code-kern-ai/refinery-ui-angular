@@ -2063,9 +2063,18 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       const operatorValue = this.getSearchFormArray(key).controls[i].get("operator").value;
       let pattern;
       if (attributeType == "INTEGER") {
-        pattern = operatorValue == 'IN' ? /^[0-9,]$/i : operatorValue == 'IN WC' ? /^[0-9,_%]$/i : /^[0-9]$/i;
+        if (this.separator == '-') {
+          pattern = operatorValue == 'IN' ? /^[0-9,-]$/i : operatorValue == 'IN WC' ? /^[0-9,_%-]$/i : /^[0-9]$/i;
+        } else {
+          pattern = operatorValue == 'IN' ? /^[0-9,]$/i : operatorValue == 'IN WC' ? /^[0-9,_%]$/i : /^[0-9]$/i;
+        }
+
       } else {
-        pattern = operatorValue == 'IN' ? /^[0-9.,]$/i : operatorValue == 'IN WC' ? /^[0-9.,_%]$/i : /^[0-9.]$/i;
+        if (this.separator == '-') {
+          pattern = operatorValue == 'IN' ? /^[0-9.,-]$/i : operatorValue == 'IN WC' ? /^[0-9.,_%-]$/i : /^[0-9.]$/i;
+        } else {
+          pattern = operatorValue == 'IN' ? /^[0-9.,]$/i : operatorValue == 'IN WC' ? /^[0-9.,_%]$/i : /^[0-9.]$/i;
+        }
       }
       if (!pattern.test(event.key) && event.key != 'Backspace') {
         event.preventDefault();
