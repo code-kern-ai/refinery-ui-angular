@@ -2042,13 +2042,14 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   }
 
   selectValueDropdown(value: string, i: number, field: string, key: any) {
-    const prevOperator = this.getSearchFormArray(key).controls[i].get('operator').value;
-    this.getSearchFormArray(key).controls[i].get(field).setValue(value);
+    const formControlsIdx = this.getSearchFormArray(key).controls[i];
+    const prevOperator = formControlsIdx.get('operator').value;
+    formControlsIdx.get(field).setValue(value);
     if (field == 'name' || prevOperator == SearchOperator.IN || prevOperator == "IN WC") {
       this.saveDropdonwAttribute = value;
-      if (this.getSearchFormArray(key).controls[i].get("searchValue").value != "") {
-        this.getSearchFormArray(key).controls[i].get("searchValue").setValue("");
-        this.getSearchFormArray(key).controls[i].get("searchValueBetween").setValue("");
+      if (formControlsIdx.get("searchValue").value != "") {
+        formControlsIdx.get("searchValue").setValue("");
+        formControlsIdx.get("searchValueBetween").setValue("");
       }
     }
     this.searchOperatorDropdownArray = [];
