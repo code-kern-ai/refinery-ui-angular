@@ -59,7 +59,7 @@ export class UpdateSearchParameters {
                         " (" +
                         searchElement.values.searchValue + ")";
                 } else {
-                    const splitTextBySeparator = searchElement.values.searchValue.split(this.dataBrowser.separator);
+                    const splitTextBySeparator = searchElement.values.searchValue.split(this.dataBrowser.separator).filter(i => i);
                     searchElement.searchText = searchElement.values.name + ' ' + searchElement.values.operator + " (" + splitTextBySeparator.map(x => "'" + x + "'").join(", ") + ")";
                 }
             }
