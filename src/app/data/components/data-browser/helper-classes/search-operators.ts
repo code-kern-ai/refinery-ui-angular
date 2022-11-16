@@ -45,7 +45,7 @@ export function prepareFilterElements(searchElement: any, name: string, separato
     if (searchElement.values.operator == SearchOperator.BETWEEN) {
         values = [name, searchElement.values.searchValue, searchElement.values.searchValueBetween];
     } else if (searchElement.values.operator == SearchOperator.IN || searchElement.values.operator == SearchOperator.IN_WC) {
-        const split = searchElement.values.searchValue.split(separator);
+        const split = searchElement.values.searchValue.split(separator).filter(i => i);
         values = [name, ...split];
     } else if (searchElement.values.operator == '') {
         searchElement.values.operator = SearchOperator.EQUAL;
