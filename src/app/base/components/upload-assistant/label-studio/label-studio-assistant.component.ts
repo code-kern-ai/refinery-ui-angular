@@ -1,13 +1,8 @@
 
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
 import { timer } from 'rxjs';
 import { first } from 'rxjs/operators';
-import { DownloadState } from 'src/app/import/services/s3.enums';
-import { S3Service } from 'src/app/import/services/s3.service';
-import { caseType, copyToClipboard, enumToArray, findProjectIdFromRoute } from 'src/app/util/helper-functions';
-import { LabelSource, labelSourceToString } from '../../../enum/graphql-enums';
+import { caseType, enumToArray, isStringTrue } from 'src/app/util/helper-functions';
 import { NotificationService } from '../../../services/notification.service';
 import { ProjectApolloService } from '../../../services/project/project-apollo.service';
 import { UserManager } from 'src/app/util/user-manager';
@@ -25,11 +20,13 @@ import { UploadType } from 'src/app/import/components/upload/upload-helper';
 })
 export class LabelStudioAssistantComponent implements OnInit, OnChanges, OnDestroy {
 
+  @Input() projectAdd: string = "";
   @Input() inputData: AssistantInputData;
   //only to be set if the projectId already exists (project add)
   @Input() projectId: string;
   //only one supported atm - at some point it might make sense to have the presets as own components
   @Output() initialUploadTriggered = new EventEmitter<boolean>();
+
 
   assistantSetupData: AssistantSetupData;
   canProceed: boolean = false;
@@ -47,7 +44,7 @@ export class LabelStudioAssistantComponent implements OnInit, OnChanges, OnDestr
     tasks: {},
     prioritizeExisting: true
   }
-
+  isProjectAdd: boolean = false;
   states = {
     preparation: PreparationStep.INITIAL,
     tab: AssistantStep.PREPARATION
@@ -73,6 +70,7 @@ export class LabelStudioAssistantComponent implements OnInit, OnChanges, OnDestr
     this.subscribedProjects.forEach(projectId => NotificationService.unsubscribeFromNotification(this, projectId));
   }
   ngOnInit(): void {
+    this.isProjectAdd = isStringTrue(this.projectAdd);
     this.prepareComponent();
     UserManager.registerAfterInitActionOrRun(this, () => this.userOptions = this.prepareUserForDropdown(UserManager.getAllUsers()), true);
     NotificationService.subscribeToNotification(this, {
@@ -88,6 +86,7 @@ export class LabelStudioAssistantComponent implements OnInit, OnChanges, OnDestr
 
 
   ngOnChanges(changes: SimpleChanges): void {
+    this.isProjectAdd = isStringTrue(this.projectAdd);
     this.prepareComponent();
     if (changes.projectId) {
       if (changes.projectId.currentValue != changes.projectId.previousValue) {

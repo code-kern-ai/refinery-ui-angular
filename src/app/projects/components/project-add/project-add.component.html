@@ -15,7 +15,7 @@
                         type="submit">
                         Proceed
                     </button>
-                    <kern-label-studio-assistant *ngIf="uploadRecordsComponent" [inputData]="{
+                    <kern-label-studio-assistant *ngIf="uploadRecordsComponent" projectAdd="X" [inputData]="{
                         uploadComponent: uploadRecordsComponent.uploadComponent,
                         uploadFunction: uploadDataToProject,
                         uploadFunctionThisObject:this}" [projectId]="projectId">
