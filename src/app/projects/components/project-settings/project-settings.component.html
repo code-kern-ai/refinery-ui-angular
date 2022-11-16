@@ -643,7 +643,7 @@
                                             class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
                                             Target</th>
                                         <th scope="col"
-                                            class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                            class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500 w-60">
                                             Name</th>
                                         <th scope="col"
                                             class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
@@ -663,7 +663,7 @@
                                             {{labelingTaskContainer.get("targetName").value}}
                                         </td>
                                         <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                            <p class="break-words w-52 cursor-pointer"
+                                            <p class="break-words cursor-pointer"
                                                 [ngClass]="labelingTaskContainer.get('nameOpen').value?'hidden':null"
                                                 (click)="openTaskName(labelingTaskContainer)">
                                                 {{labelingTaskContainer.get("name").value}}</p>

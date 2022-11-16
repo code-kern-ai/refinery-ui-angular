@@ -903,7 +903,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
 
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {
-    if (!this.lh.currentLabel) return;
+    if (!this.lh.modalOpen.changeColor) return;
     this.checkAndSetLabelHotkey(event);
   }
 

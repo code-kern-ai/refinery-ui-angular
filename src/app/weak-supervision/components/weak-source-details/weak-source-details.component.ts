@@ -247,6 +247,7 @@ export class WeakSourceDetailsComponent
       this.labelingTaskControl.setValue(informationSource.labelingTaskId);
       this.informationSource = informationSource;
       if (!this.codeFormCtrl.value) this.prepareSourceCode(projectId, informationSource);
+      else this.checkLogs(projectId, informationSource);
       this.description = informationSource.description;
       this.informationSourceName = informationSource.name;
       this.justClickedRun = false;
@@ -296,7 +297,7 @@ export class WeakSourceDetailsComponent
     return vc.pipe(first());
   }
 
-  prepareSourceCode(projectId: string, informationSource) {
+  prepareSourceCode(projectId: string, informationSource: any) {
     if (!this.codeFormCtrl.value || this.updatedThroughWebsocket) {
 
       if (informationSource.informationSourceType == InformationSourceType.LABELING_FUNCTION) {
@@ -309,6 +310,10 @@ export class WeakSourceDetailsComponent
       }
       else this.codeFormCtrl.setValue(informationSource.sourceCode);
     }
+    this.checkLogs(projectId, informationSource);
+
+  }
+  checkLogs(projectId: string, informationSource: any) {
     if (informationSource.lastTask) {
       [this.lastTaskQuery$, this.lastTask$] = this.informationSourceApolloService.getTaskByTaskId(
         projectId,
@@ -374,14 +379,14 @@ export class WeakSourceDetailsComponent
 
     const firstLabelingTaskType = this.labelingTasks.get(this.labelingTaskControl.value).taskType;
 
-    let tmplateKey: InformationSourceExamples;
+    let templateKey: InformationSourceExamples;
     if (type == InformationSourceType.LABELING_FUNCTION) {
-      tmplateKey = firstLabelingTaskType == LabelingTask.INFORMATION_EXTRACTION ? InformationSourceExamples.LF_EMPTY_EXTRACTION : InformationSourceExamples.LF_EMPTY_CLASSIFICATION;
+      templateKey = firstLabelingTaskType == LabelingTask.INFORMATION_EXTRACTION ? InformationSourceExamples.LF_EMPTY_EXTRACTION : InformationSourceExamples.LF_EMPTY_CLASSIFICATION;
     }
     else {
-      tmplateKey = firstLabelingTaskType == LabelingTask.INFORMATION_EXTRACTION ? InformationSourceExamples.AL_EMPTY_EXTRACTION : InformationSourceExamples.AL_EMPTY_CLASSIFICATION;
+      templateKey = firstLabelingTaskType == LabelingTask.INFORMATION_EXTRACTION ? InformationSourceExamples.AL_EMPTY_EXTRACTION : InformationSourceExamples.AL_EMPTY_CLASSIFICATION;
     }
-    return InformationSourceCodeLookup.getInformationSourceTemplate(tmplateKey);
+    return InformationSourceCodeLookup.getInformationSourceTemplate(templateKey);
   }
 
 
