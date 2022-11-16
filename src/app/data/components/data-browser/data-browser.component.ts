@@ -1240,21 +1240,23 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
 
   getOperatorDropdownValues(i?: number, value?: any) {
     if (this.searchOperatorDropdownArray.length == 0) {
+      const formControlsIdx = this.getSearchFormArray(SearchGroup.ATTRIBUTES).controls[i];
       const attributeType = getAttributeType(this.attributesSortOrder, this.saveDropdonwAttribute);
       if (attributeType !== 'BOOLEAN') {
-        this.getSearchFormArray(SearchGroup.ATTRIBUTES).controls[i].get('addText').setValue(attributeType == 'INTEGER' ? 'Enter any number' : 'Enter any string');
-
         for (let t of Object.values(SearchOperator)) {
           this.searchOperatorDropdownArray.push({
             value: t.split("_").join(" "),
           });
           this.tooltipsArray.push(getSearchOperatorTooltip(t));
         }
-        if (this.getSearchFormArray(SearchGroup.ATTRIBUTES).controls[i] && this.getSearchFormArray(SearchGroup.ATTRIBUTES).controls[i].get("operator").value == '') {
-          this.getSearchFormArray(SearchGroup.ATTRIBUTES).controls[i].get("operator").setValue("CONTAINS");
+        if (formControlsIdx) {
+          if (formControlsIdx.get("operator").value == '') {
+            formControlsIdx.get("operator").setValue("CONTAINS");
+          }
+          formControlsIdx.get('addText').setValue(attributeType == 'INTEGER' ? 'Enter any number' : 'Enter any string');
         }
       } else {
-        this.getSearchFormArray(SearchGroup.ATTRIBUTES).controls[i].get("operator").setValue("");
+        formControlsIdx.get("operator").setValue("");
       }
     }
     return this.searchOperatorDropdownArray;
@@ -2040,8 +2042,9 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   }
 
   selectValueDropdown(value: string, i: number, field: string, key: any) {
+    const prevOperator = this.getSearchFormArray(key).controls[i].get('operator').value;
     this.getSearchFormArray(key).controls[i].get(field).setValue(value);
-    if (field == 'name' || this.getSearchFormArray(key).controls[i].get('operator').value == SearchOperator.IN || this.getSearchFormArray(key).controls[i].get('operator').value == 'IN WC') {
+    if (field == 'name' || prevOperator == SearchOperator.IN || prevOperator == "IN WC") {
       this.saveDropdonwAttribute = value;
       if (this.getSearchFormArray(key).controls[i].get("searchValue").value != "") {
         this.getSearchFormArray(key).controls[i].get("searchValue").setValue("");
