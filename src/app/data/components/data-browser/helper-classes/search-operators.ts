@@ -51,7 +51,7 @@ export function prepareFilterElements(searchElement: any, name: string, separato
         values = [name, ...split];
     } else if (searchElement.values.operator == '') {
         searchElement.values.operator = SearchOperator.EQUAL;
-        values = [name, !searchElement.values.negate];
+        values = [name, searchElement.values.negate ? searchElement.values.negate : !searchElement.values.negate];
     } else {
         values = [name, attributeType != "BOOLEAN" ? searchElement.values.searchValue : !searchElement.values.negate];
     }
