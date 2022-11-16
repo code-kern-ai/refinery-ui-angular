@@ -40,13 +40,8 @@ export enum SearchOperator {
     LESS_EQUAL = 'LESS_EQUAL',
 }
 
-export function prepareFilterElements(searchElement: any, name: string, separator: string, attributeType?: string) {
+export function prepareFilterElements(searchElement: any, name: string, separator: string, attributeType: string) {
     let values = [];
-    if (attributeType && attributeType == "INTEGER" && searchElement.values.searchValue != '' && searchElement.values.operator != SearchOperator.IN && searchElement.values.operator != SearchOperator.IN_WC) {
-        searchElement.values.searchValue = parseInt(searchElement.values.searchValue);
-    } else if (attributeType && attributeType == "FLOAT" && searchElement.values.searchValue != '' && searchElement.values.operator != SearchOperator.IN && searchElement.values.operator != SearchOperator.IN_WC) {
-        searchElement.values.searchValue = parseFloat(searchElement.values.searchValue);
-    }
     if (searchElement.values.operator == SearchOperator.BETWEEN) {
         values = [name, searchElement.values.searchValue, searchElement.values.searchValueBetween];
     } else if (searchElement.values.operator == SearchOperator.IN || searchElement.values.operator == SearchOperator.IN_WC) {
@@ -58,9 +53,27 @@ export function prepareFilterElements(searchElement: any, name: string, separato
     } else {
         values = [name, attributeType != "BOOLEAN" ? searchElement.values.searchValue : !searchElement.values.negate];
     }
+    values = parseFilterElements(searchElement, values, attributeType);
     return values;
 }
 
 export function getAttributeType(attributes: any[], attributeName: string) {
     return attributes.find(att => att.name == attributeName)?.type;
+}
+
+export function parseFilterElements(searchElement: any, values: any, attributeType: string): any[] {
+    if (attributeType == "INTEGER" && searchElement.values.operator != SearchOperator.IN_WC) {
+        values.slice(1, values.length).forEach((value, index) => {
+            values[index + 1] = parseInt(value);
+        });
+    } else if (attributeType == "FLOAT" && searchElement.values.operator != SearchOperator.IN_WC) {
+        values.slice(1, values.length).forEach((value, index) => {
+            values[index + 1] = parseFloat(value);
+        });
+    } else {
+        values.slice(1, values.length).forEach((value, index) => {
+            values[index + 1] = value;
+        });
+    }
+    return values;
 }

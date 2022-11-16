@@ -1,6 +1,6 @@
 import { LabelSource } from "src/app/base/enum/graphql-enums";
 import { DataBrowserComponent } from "../data-browser.component";
-import { getAttributeType, prepareFilterElements, SearchOperator } from "./search-operators";
+import { getAttributeType, parseFilterElements, prepareFilterElements, SearchOperator } from "./search-operators";
 import { SearchGroup, StaticOrderByKeys } from "./search-parameters";
 
 
@@ -326,28 +326,24 @@ export class DataBrowserFilterParser {
                         TARGET_TABLE: 'RECORD',
                         TARGET_COLUMN: 'DATA',
                         OPERATOR: this.dataBrowser.attributesSortOrder[i].type !== "BOOLEAN" ? searchElement.values.operator : SearchOperator.EQUAL,
-                        VALUES: prepareFilterElements(searchElement, this.dataBrowser.attributes.get(this.dataBrowser.attributesSortOrder[i].key).name, this.dataBrowser.separator),
+                        VALUES: prepareFilterElements(searchElement, this.dataBrowser.attributes.get(this.dataBrowser.attributesSortOrder[i].key).name, this.dataBrowser.separator, this.dataBrowser.attributesSortOrder[i].type),
                     });
                 }
             }
-            filterElement.FILTER.forEach((el) => {
-                const type = getAttributeType(this.dataBrowser.attributesSortOrder, el.VALUES[0]);
-                if (type != "BOOLEAN") {
-                    if (type == 'INTEGER') {
-                        el.VALUES.slice(1, el.VALUES.length).forEach((val, index) => {
-                            if (!isNaN(parseInt(val))) {
-                                el.VALUES[index + 1] = parseInt(val);
-                            }
-                        })
-                    } else if (type == 'FLOAT') {
-                        el.VALUES.slice(1, el.VALUES.length).forEach((val, index) => {
-                            if (!isNaN(parseFloat(val))) {
-                                el.VALUES[index + 1] = parseFloat(val);
-                            }
-                        })
+            let parseArray = [];
+            if (isNaN(parseInt(searchElement.values.searchValue)) || isNaN(parseFloat(searchElement.values.searchValue))) {
+                filterElement.FILTER.forEach((el) => {
+                    const type = getAttributeType(this.dataBrowser.attributesSortOrder, el.VALUES[0]);
+                    const parseValues = parseFilterElements(searchElement, el.VALUES, type);
+                    if (typeof parseValues[1] === 'string') {
+                        if (parseArray.length === 0) {
+                            el.RELATION = "NONE";
+                        }
+                        parseArray.push(el);
                     }
-                }
-            });
+                });
+                filterElement.FILTER = parseArray;
+            }
         } else {
             const attributeType = getAttributeType(this.dataBrowser.attributesSortOrder, searchElement.values.name);
             searchElement.values.operator = searchElement.values.operator.split(" ").join("_");
