@@ -117,7 +117,7 @@
                         class="w-full grid grid-cols-2 gap-y-1 items-center justify-center"
                         style="grid-column-gap: 26px;">
                         <div *ngFor="let dataSlice of dataSlices;let i=index" [attr.data-tip]="dataSlice.name"
-                            [ngClass]="[sliceName.offsetWidth < sliceName.scrollWidth?'tooltip':'',i%2==0?'tooltip_slice_left':'tooltip_slice_right']">
+                            [ngClass]="[sliceName.offsetWidth < sliceName.scrollWidth?'tooltip tooltip_slice_max_width':'',i%2==0?'tooltip-right':'tooltip-left']">
 
                             <button (click)="toggleSlice(dataSlice);"
                                 class="cursor-pointer inline-flex items-center justify-between px-2.5 py-1.5 border border-gray-200 shadow-sm text-sm font-medium rounded text-gray-700 bg-white slice-width hover:bg-gray-50 focus:outline-none"

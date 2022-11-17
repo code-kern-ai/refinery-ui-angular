@@ -90,16 +90,8 @@ input[type="number"] {
   z-index: 50;
 }
 
-.tooltip_slice_left::before {
-  left: 0;
-  transform: inherit;
-  right: 0;
-}
-
-.tooltip_slice_right::before {
-  left: 0;
-  transform: translateX(-45%);
-  right: 0;
+.tooltip_slice_max_width::before {
+  max-width: 200px;
 }
 
 .tooltip_description_operators::before {
