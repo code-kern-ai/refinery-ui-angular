@@ -517,6 +517,41 @@ export class ProjectApolloService {
     });
   }
 
+  checkRenameLabel(projectId: string, labelId: string, newName: string) {
+    return this.apollo
+      .query({
+        query: queries.CHECK_RENAME_LABEL,
+        variables: {
+          projectId: projectId,
+          labelId: labelId,
+          newName: newName
+        },
+        fetchPolicy: 'no-cache',
+      })
+      .pipe(
+        map((result) => JSON.parse(result['data']['checkRenameLabel']))
+      );
+  }
+  updateLabelName(projectId: string, labelId: string, newName: string) {
+    return this.apollo.mutate({
+      mutation: mutations.UPDATE_LABEL_NAME,
+      variables: {
+        projectId: projectId,
+        labelId: labelId,
+        newName: newName,
+      },
+    });
+  }
+
+  handleLabelRenameWarning(projectId: string, warningData: string) {
+    return this.apollo.mutate({
+      mutation: mutations.HANDLE_LABEL_RENAME_WARNING,
+      variables: {
+        projectId: projectId,
+        warningData: warningData,
+      },
+    });
+  }
   updateLabelColor(projectId: string, labelingTaskLabelId: string, labelColor: string) {
     return this.apollo.mutate({
       mutation: mutations.UPDATE_LABEL_COLOR,
@@ -634,7 +669,7 @@ export class ProjectApolloService {
     return [query, vc]
   }
 
-  getRecomendedEncodersForEmbeddings(projectId: string) {
+  getRecommendedEncodersForEmbeddings(projectId: string = null) {
     return this.apollo
       .watchQuery({
         query: queries.GET_RECOMMENDED_ENCODERS_FOR_EMBEDDINGS,

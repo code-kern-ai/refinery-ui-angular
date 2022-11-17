@@ -79,6 +79,7 @@ export function parseLogData(logs: string[], isType: InformationSourceType = nul
 const TRUE_VALUES = ['true', '1', 'yes', 'y', 'on', 'x'];
 
 export function isStringTrue(value: string): boolean {
+    if (!value) return false;
     value = value.toLowerCase();
     return TRUE_VALUES.includes(value);
 }
@@ -174,4 +175,10 @@ export function getColorForDataType(dataType): string {
         case 'FLOAT': return 'purple';
         default: return 'gray';
     }
+}
+
+
+
+export function asPythonVariable(baseName: string) {
+    return baseName.toLowerCase().replace(/ /g, "_")
 }

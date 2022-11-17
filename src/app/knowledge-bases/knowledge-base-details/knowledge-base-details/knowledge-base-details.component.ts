@@ -19,6 +19,7 @@ import { timer } from 'rxjs';
 import { UploadComponent } from 'src/app/import/components/upload/upload.component';
 import { UserManager } from 'src/app/util/user-manager';
 import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
+import { asPythonVariable } from 'src/app/util/helper-functions';
 
 
 @Component({
@@ -138,8 +139,9 @@ export class KnowledgeBaseDetailsComponent implements OnInit, AfterViewInit, OnD
     return true;
   }
 
-  copyToClipboard(textToCopy) {
-    navigator.clipboard.writeText(textToCopy);
+  copyImportToClipboard(pythonVariable: string) {
+    const statement = "from knowledge import " + pythonVariable;
+    navigator.clipboard.writeText(statement);
   }
 
   addTermToKnowledgeBase() {
@@ -257,10 +259,6 @@ export class KnowledgeBaseDetailsComponent implements OnInit, AfterViewInit, OnD
       .deleteKnowledgeBase(project_id, knowledge_base_id)
       .pipe(first())
       .subscribe();
-  }
-
-  asPythonVariable(baseName) {
-    return baseName.toLowerCase().replaceAll(" ", "_")
   }
 
   prepareStickyObserver(element: HTMLElement) {

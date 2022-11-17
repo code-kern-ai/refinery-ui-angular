@@ -60,11 +60,11 @@ export class LineChartComponent implements OnInit, OnChanges {
 
     // Add Y axis
     var y = d3.scaleLinear()
-      .domain([0, d3.max(data, function (d) { return +d.value; })])
+      .domain([0, 100])
       .range([height, 0]);
 
     var g = svg.append("g").attr("transform", "translate(0,0)");
-      g.append("g")
+    g.append("g")
       .attr("class", "y axis")
       .style("font-size", 14)
       .style('font-family', '"DM Sans", sans-serif')

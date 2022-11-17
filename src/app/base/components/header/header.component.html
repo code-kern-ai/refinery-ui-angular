@@ -61,6 +61,14 @@
                         </div>
                     </div>
                 </ng-template>
+                <ng-template [ngSwitchCase]="'model-download'">
+                    <div *ngIf="user" class="flex items-center">
+                        <div class="ml-6 text-gray-500 text-sm font-normal">
+                            Welcome, <span class="font-bold text-gray-900">{{user?.firstName}}</span>! See
+                            your downloaded models.
+                        </div>
+                    </div>
+                </ng-template>
                 <ng-template [ngSwitchCase]="'config'">
                     <div *ngIf="!organizationInactive && user" class="flex items-center">
                         <div class="ml-6 text-gray-500 text-sm font-normal">

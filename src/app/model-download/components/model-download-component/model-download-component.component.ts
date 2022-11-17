@@ -8,7 +8,9 @@ import { NotificationService } from 'src/app/base/services/notification.service'
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { RouteService } from 'src/app/base/services/route.service';
 import { WeakSourceApolloService } from 'src/app/base/services/weak-source/weak-source-apollo.service';
-import { dateAsUTCDate, formatBytes } from 'src/app/util/helper-functions';
+import { dateAsUTCDate, formatBytes, getUserAvatarUri } from 'src/app/util/helper-functions';
+import { RouteManager } from 'src/app/util/route-manager';
+import { UserManager } from 'src/app/util/user-manager';
 
 @Component({
   selector: 'kern-model-download-component',
@@ -17,11 +19,8 @@ import { dateAsUTCDate, formatBytes } from 'src/app/util/helper-functions';
 })
 export class ModelDownloadComponentComponent implements OnInit {
 
-  project$: any;
-  projectQuery$: any;
   downloadedModelsList$: any;
   downloadedModelsQuery$: any;
-  projectId: string;
   form: FormGroup;
   models: any[] = [];
   isManaged: boolean = true;
@@ -31,6 +30,9 @@ export class ModelDownloadComponentComponent implements OnInit {
   currentModel: any;
   indexSeparator: number;
   lastPage: string;
+
+  loggedInUser: any;
+  avatarUri: any;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -44,10 +46,7 @@ export class ModelDownloadComponentComponent implements OnInit {
   ngOnInit(): void {
     this.initForm();
     this.routeService.updateActivatedRoute(this.activatedRoute);
-    this.projectId = this.activatedRoute.parent.snapshot.paramMap.get('projectId');
     this.lastPage = this.activatedRoute.snapshot.queryParamMap.get('lastPage');
-
-    [this.projectQuery$, this.project$] = this.projectApolloService.getProjectByIdQuery(this.projectId);
     [this.downloadedModelsQuery$, this.downloadedModelsList$] = this.informationSourceApolloService.getModelProviderInfo();
     this.prepareModels();
 
@@ -68,11 +67,16 @@ export class ModelDownloadComponentComponent implements OnInit {
       whitelist: ['model_provider_download'],
       func: this.handleWebsocketNotification
     });
+    UserManager.registerAfterInitActionOrRun(this, () => {
+      this.loggedInUser = UserManager.getUser();
+      this.avatarUri = getUserAvatarUri(this.loggedInUser)
+
+    }, true);
   }
 
   ngOnDestroy(): void {
     this.subscriptions$.forEach((subscription) => subscription.unsubscribe());
-    NotificationService.unsubscribeFromNotification(this, this.projectId)
+    NotificationService.unsubscribeFromNotification(this)
   }
 
   initForm() {
@@ -102,8 +106,8 @@ export class ModelDownloadComponentComponent implements OnInit {
   prepareModels() {
     let tasks$ = [];
     let q, vc;
-    [q, vc] = this.informationSourceApolloService.getZeroShotRecommendations(this.projectId);
-    tasks$.push(this.projectApolloService.getRecomendedEncodersForEmbeddings(this.projectId));
+    [q, vc] = this.informationSourceApolloService.getZeroShotRecommendations();
+    tasks$.push(this.projectApolloService.getRecommendedEncodersForEmbeddings());
     tasks$.push(vc);
     combineLatest(tasks$).subscribe((models: any) => {
       this.models = models[0].filter(el =>
@@ -170,6 +174,9 @@ export class ModelDownloadComponentComponent implements OnInit {
 
   goBack() {
     this.router.navigate(["../" + this.lastPage], { relativeTo: this.activatedRoute });
+  }
+  clickBack() {
+    RouteManager.moveBack();
   }
 
   checkIfManagedVersion() {
