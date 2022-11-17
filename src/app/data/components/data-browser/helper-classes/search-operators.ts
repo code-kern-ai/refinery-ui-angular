@@ -3,17 +3,17 @@ export function getSearchOperatorTooltip(operator: SearchOperator): string {
         case SearchOperator.EQUAL:
             return '= {value}';
         case SearchOperator.BEGINS_WITH:
-            return 'starts with {value}%';
+            return 'LIKE {value}%';
         case SearchOperator.ENDS_WITH:
-            return 'finishes with %{value}';
+            return 'LIKE %{value}';
         case SearchOperator.CONTAINS:
-            return 'has %{value}%';
+            return 'LIKE %{value}%';
         case SearchOperator.IN:
-            return 'is included in ({value})';
+            return 'Included in separated list of values';
         case SearchOperator.IN_WC:
-            return '*,?,% and _ in ({value})';
+            return 'Like IN but with wildcard support (*,?,%,_)';
         case SearchOperator.BETWEEN:
-            return 'between {a} and {b}';
+            return '>= {a} and <= {b}';
         case SearchOperator.GREATER:
             return '> {value}';
         case SearchOperator.GREATER_EQUAL:
@@ -91,7 +91,7 @@ export function prepareOperator(searchElement: any, attributeType: string): stri
             case SearchOperator.CONTAINS:
                 operator = "CONTAINS_CS";
                 break;
-            default:
+            case SearchOperator.IN_WC:
                 operator = "IN_WC_CS";
                 break;
         }

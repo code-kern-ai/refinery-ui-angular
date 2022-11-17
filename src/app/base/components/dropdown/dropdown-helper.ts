@@ -35,6 +35,7 @@ import { FormArray } from "@angular/forms";
  * @fontClass {string, optional} - sets the font class for whole dropdown
  * @backgroundColors {string, optional} - sets the background color for dropdown options (needs to be the exact same length as the optionArray - can hold null values)
  * @width {string, optional} - sets the width of the dropdown options
+ * @tooltipMaxWidthClass {string, optional} - sets the max width of the tooltip - needs to be a class already existing in the css (eg 'tooltip_max_width_200)
 */
 export type DropdownOptions = {
     optionArray: string[] | FormArray[] | any[];
@@ -70,5 +71,6 @@ export type DropdownOptions = {
     fontClass?: string;
     backgroundColors?: string[];
     width?: string;
+    tooltipMaxWidthClass?: string;
 };
 

@@ -101,3 +101,7 @@ input[type="number"] {
   transform: translateX(-45%);
   right: 0;
 }
+
+.tooltip_description_operators::before {
+  max-width: 150px;
+}

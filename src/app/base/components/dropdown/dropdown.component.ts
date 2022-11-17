@@ -67,6 +67,7 @@ export class DropdownComponent implements OnChanges {
     this.buttonClassList += this.dropdownOptions.hasFullWidth ? ' w-full ' : '';
     this.buttonClassList += this.dropdownClassList;
     this.tooltipClassList = this.getTooltipClasses();
+    if (!this.dropdownOptions.tooltipMaxWidthClass) this.dropdownOptions.tooltipMaxWidthClass = '';
   }
   private getTooltipClasses(): string {
     let returnValue = "";

@@ -9,3 +9,11 @@
 .width-sample-projects {
     width: 384px !important;
 }
+
+.tooltip_max_width_200::before {
+    max-width: 200px;
+}
+
+.tooltip_max_width_300::before {
+    max-width: 300px;
+}

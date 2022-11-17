@@ -142,9 +142,7 @@ export class LabelHelper {
         if (!name) return false;
         if (name == this.currentLabel.label.name) return false;
         if (name.trim() == '') return false;
-        const found = this.labelMap.get(this.currentLabel.taskId).find(((x: any) => x.name == name));
-        if (found) return false;
-        return true;
+        return this.isLabelNameUnique(this.currentLabel.taskId, name);
     }
 
     public clearCurrentLabel() {

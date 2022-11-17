@@ -243,7 +243,7 @@
                                                                         buttonCaption: groupItem.get('name').value,
                                                                         fontClass: 'font-dmMono',
                                                                         backgroundColors: colorsAttributes,
-                                                                        width: '154px'
+                                                                        width:  groupItem.get('operator').value != '' ? '154px' : '312px'
                                                                     }"
                                                                         (optionClicked)="selectValueDropdown($event, i, 'name', group.key)">
                                                                     </kern-dropdown>
@@ -256,7 +256,8 @@
                                                                         optionTooltips: tooltipsArray,
                                                                         fontClass: 'font-dmMono',
                                                                         width: '154px',
-                                                                        buttonTooltipPosition: 'left'
+                                                                        buttonTooltipPosition: 'left',
+                                                                        tooltipMaxWidthClass: 'tooltip_max_width_200'
                                                                     }"
                                                                         (optionClicked)="selectValueDropdown($event, i, 'operator', group.key)">
                                                                     </kern-dropdown>
