@@ -40,7 +40,7 @@ export class AppComponent implements OnDestroy, OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.initalRequests();
+    this.initialRequests();
     NotificationService.subscribeToNotification(this, {
       whitelist: ['notification_created', 'project_deleted', 'config_updated'],
       func: this.handleWebsocketNotification
@@ -50,7 +50,7 @@ export class AppComponent implements OnDestroy, OnInit {
     this.checkBrowser();
   }
 
-  initalRequests() {
+  initialRequests() {
     CommentDataManager.initManager(this.organizationService);
     this.configService.isManaged().pipe(first()).subscribe((v) => ConfigManager.initConfigManager(this.http, this.configService, v));
     this.configService.isDemo().pipe(first()).subscribe((v) => ConfigManager.setIsDemo(v));
@@ -67,7 +67,7 @@ export class AppComponent implements OnDestroy, OnInit {
     }
     this.initializeIntercom();
     this.initRouterListener();
-    //caution! the first user request needs to run after the db creation since otherwise the backend will try to create an unasigned user
+    //caution! the first user request needs to run after the db creation since otherwise the backend will try to create an unassigned user
     this.organizationService.getUserInfo().pipe(first()).subscribe((v) => UserManager.initUserManager(this.router, this.organizationService, v));
   }
 
@@ -100,15 +100,15 @@ export class AppComponent implements OnDestroy, OnInit {
     this.router.events.subscribe((val) => {
       if (val instanceof RoutesRecognized) {
         if (ConfigManager.getConfigValue("allow_data_tracking")) {
-          const event = { old: this.router.url, new: val.url, name: this.getRecusiveRouteData(val.state.root) };
+          const event = { old: this.router.url, new: val.url, name: this.getRecursiveRouteData(val.state.root) };
           this.organizationService.postEvent("AppNavigation", JSON.stringify(event)).pipe(first()).subscribe();
         }
       }
     });
   }
-  getRecusiveRouteData(root: ActivatedRouteSnapshot, key: string = 'name') {
+  getRecursiveRouteData(root: ActivatedRouteSnapshot, key: string = 'name') {
     if (root.firstChild) {
-      return this.getRecusiveRouteData(root.firstChild)
+      return this.getRecursiveRouteData(root.firstChild)
     }
     return root.data[key]
   }
