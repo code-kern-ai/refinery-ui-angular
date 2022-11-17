@@ -1,3 +1,5 @@
+import { SearchOperator } from "./search-operators";
+
 export function getBasicGroupItems(
   group: SearchGroup,
   groupKey: string
@@ -142,27 +144,6 @@ export enum StaticOrderByKeys {
   MODEL_CALLBACK_CONFIDENCE = "MODEL_CALLBACK_CONFIDENCE",
   WEAK_SUPERVISION_CONFIDENCE = 'WEAK_SUPERVISION_CONFIDENCE',
   RANDOM = 'RANDOM'
-}
-
-export function getSearchOperatorTooltip(operator: SearchOperator): string {
-  switch (operator) {
-    case SearchOperator.EQUAL:
-      return '= {value}';
-    case SearchOperator.BEGINS_WITH:
-      return 'ILIKE {value}%';
-    case SearchOperator.ENDS_WITH:
-      return 'ILIKE %{value}';
-    case SearchOperator.CONTAINS:
-      return 'ILIKE %{value}%';
-  }
-  return 'UNKNOWN';
-}
-
-export enum SearchOperator {
-  EQUAL = 'EQUAL',
-  BEGINS_WITH = 'BEGINS_WITH',
-  ENDS_WITH = 'ENDS_WITH',
-  CONTAINS = 'CONTAINS',
 }
 
 export enum Slice {

@@ -57,21 +57,8 @@ export class RouteManager {
         return root.data[key]
     }
 
-    // public static getLastUrl() {
-    //     // if (!RouteManager.lastUrls || RouteManager.lastUrls.length == 0) return null;
-    //     // return RouteManager.lastUrls[RouteManager.lastUrls.length - 1];
-    //     return RouteManager.previousUrl;
-    // }
-
     public static moveBack() {
-        // this.router.navigate(['config'])
-
-        // this.router.navigate(['projects', notification.projectId, notification.page]);
-        // this.router.navigate(["../../settings"], { relativeTo: this.activatedRoute });
         const previous = RouteManager.lastUrls.pop();
-
-
-
         if (previous) {
             if (RouteManager.lastUrls?.length > 0) {
                 RouteManager.previousUrl = RouteManager.lastUrls[RouteManager.lastUrls.length - 1];
@@ -79,8 +66,6 @@ export class RouteManager {
             this.router.navigateByUrl(previous);
         }
         else this.router.navigateByUrl(RouteManager.startUrl);
-
-
     }
 
 }

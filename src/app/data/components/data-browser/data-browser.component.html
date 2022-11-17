@@ -117,7 +117,7 @@
                         class="w-full grid grid-cols-2 gap-y-1 items-center justify-center"
                         style="grid-column-gap: 26px;">
                         <div *ngFor="let dataSlice of dataSlices;let i=index" [attr.data-tip]="dataSlice.name"
-                            [ngClass]="[sliceName.offsetWidth < sliceName.scrollWidth?'tooltip':'',i%2==0?'tooltip_slice_left':'tooltip_slice_right']">
+                            [ngClass]="[sliceName.offsetWidth < sliceName.scrollWidth?'tooltip tooltip_slice_max_width':'',i%2==0?'tooltip-right':'tooltip-left']">
 
                             <button (click)="toggleSlice(dataSlice);"
                                 class="cursor-pointer inline-flex items-center justify-between px-2.5 py-1.5 border border-gray-200 shadow-sm text-sm font-medium rounded text-gray-700 bg-white slice-width hover:bg-gray-50 focus:outline-none"
@@ -198,7 +198,7 @@
                             <!-- Group items -->
                             <div #searchGroupItems class="transition_all ml-4" [ngStyle]="{
                                     maxHeight: searchGroups.get(group.key).isOpen ? searchGroupItems.scrollHeight +'px' : '0px', 
-                                    overflow: !searchGroups.get(group.key).isOpen || searchGroups.get(group.key).inOpenTransition ? 'hidden' : null
+                                    overflow: !searchGroups.get(group.key).isOpen  ? 'hidden' : 'visible'
                                   }">
                                 <form [formGroup]="fullSearch.get(group.key)">
                                     <div formArrayName="groupElements">
@@ -238,31 +238,56 @@
                                                             </div>
                                                             <div class="flex-grow mr-2 flex flex-col  mt-2 ">
                                                                 <div class="flex-grow flex flex-row flex-wrap gap-1">
-                                                                    <select formControlName="name"
-                                                                        class="font-dmMono flex-grow select select-sm select-bordered">
-                                                                        <option value="Any Attribute">Any Attribute
-                                                                        </option>
-                                                                        <option
-                                                                            *ngFor="let attribute of attributesSortOrder"
-                                                                            [value]="attributes.get(attribute.key).name">
-                                                                            {{attributes.get(attribute.key).name }}
-                                                                        </option>
-                                                                    </select>
-                                                                    <select formControlName="operator"
-                                                                        class="font-dmMono select select-sm select-bordered">
-                                                                        <option
-                                                                            *ngFor="let dropdown of getOperatorDropdownValues()"
-                                                                            [value]="dropdown.value">
-                                                                            {{dropdown.value }}
-                                                                        </option>
-                                                                    </select>
+                                                                    <kern-dropdown [dropdownOptions]="{
+                                                                        optionArray: attributesSortOrder,
+                                                                        buttonCaption: groupItem.get('name').value,
+                                                                        fontClass: 'font-dmMono',
+                                                                        backgroundColors: colorsAttributes,
+                                                                        width:  groupItem.get('operator').value != '' ? '154px' : '312px'
+                                                                    }"
+                                                                        (optionClicked)="selectValueDropdown($event, i, 'name', group.key)">
+                                                                    </kern-dropdown>
+
+                                                                    <kern-dropdown
+                                                                        *ngIf="groupItem.get('operator').value != ''"
+                                                                        [dropdownOptions]="{
+                                                                        optionArray: searchOperatorDropdownArray,
+                                                                        buttonCaption: groupItem.get('operator').value,
+                                                                        optionTooltips: tooltipsArray,
+                                                                        fontClass: 'font-dmMono',
+                                                                        width: '154px',
+                                                                        buttonTooltipPosition: 'left',
+                                                                        tooltipMaxWidthClass: 'tooltip_max_width_200'
+                                                                    }"
+                                                                        (optionClicked)="selectValueDropdown($event, i, 'operator', group.key)">
+                                                                    </kern-dropdown>
                                                                 </div>
 
-                                                                <div class="my-2 flex-grow">
-                                                                    <input formControlName="searchValue" type="text"
+                                                                <div class="my-2 flex-grow flex flex-row items-center">
+                                                                    <input *ngIf="groupItem.get('operator').value != ''"
+                                                                        formControlName="searchValue"
+                                                                        (keydown)="checkIfDecimals($event, i, group.key)"
+                                                                        [placeholder]="groupItem.get('addText').value"
+                                                                        class="w-full input input-sm input-bordered">
+
+                                                                    <span class="text-sm text-gray-500 mx-1"
+                                                                        *ngIf="groupItem.get('operator').value == 'BETWEEN'">AND</span>
+
+                                                                    <input
+                                                                        *ngIf="groupItem.get('operator').value == 'BETWEEN'"
+                                                                        formControlName="searchValueBetween"
+                                                                        (keydown)="checkIfDecimals($event, i, group.key)"
                                                                         [placeholder]="groupItem.get('addText').value"
                                                                         class="w-full input input-sm input-bordered">
                                                                 </div>
+
+                                                                <label
+                                                                    class="text-xs text-gray-500 cursor-pointer flex items-center"
+                                                                    *ngIf="groupItem.get('operator').value == 'BEGINS WITH' || groupItem.get('operator').value == 'ENDS WITH' || groupItem.get('operator').value == 'CONTAINS' || groupItem.get('operator').value == 'IN WC'">
+                                                                    <input type="checkbox"
+                                                                        formControlName="caseSensitive" class="mr-1">
+                                                                    Case sensitive
+                                                                </label>
                                                             </div>
 
                                                         </div>
@@ -913,6 +938,23 @@
                                 </div>
                             </fieldset>
 
+                            <div class="mt-3 text-sm text-gray-900">Select which separator you want to use for the IN
+                                operator</div>
+
+                            <div class="flex flex-row items-center my-2">
+                                <input type="radio" [(ngModel)]="separator" value="," name="separator" id="comma"
+                                    class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-200 cursor-pointer">
+                                <label for="comma"
+                                    class="ml-1 block text-sm font-medium text-gray-700 cursor-pointer">Comma
+                                    (,)</label>
+                            </div>
+                            <div class="flex flex-row items-center my-2">
+                                <input type="radio" [(ngModel)]="separator" value="-" name="separator" id="dash"
+                                    class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-200 cursor-pointer">
+                                <label for="dash"
+                                    class="ml-1 block text-sm font-medium text-gray-700 cursor-pointer">Dash (-)</label>
+                            </div>
+
                             <div class="modal-action">
                                 <label for="config-modal"
                                     class="bg-white text-gray-700 text-xs font-semibold mr-3 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
@@ -973,9 +1015,10 @@
                     <div class="px-4 py-5 sm:p-6">
                         <div *ngFor="let attribute of attributesSortOrder">
                             <div class="font-semibold text-sm text-gray-800 font-dmMono">
-                                {{attributes.get(attribute.key).name}}
+                                {{attributes.get(attribute.key)?.name}}
                             </div>
-                            <div class="text-gray-800 text-sm mb-4 overflow-anywhere flex">
+                            <div *ngIf="attributes.get(attribute.key)"
+                                class="text-gray-800 text-sm mb-4 overflow-anywhere flex">
                                 <ng-template [ngIf]=" highlightText && isTextHighlightNeeded &&
                                     isTextHighlightNeeded.get(attribute.key) &&
                                     record.data[attributes.get(attribute.key).name]" [ngIfElse]="noHighlight">

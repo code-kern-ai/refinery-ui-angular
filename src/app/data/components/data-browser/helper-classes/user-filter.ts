@@ -108,7 +108,7 @@ export class UserFilter {
             group.get('active').setValue(false);
             return;
         }
-        this.dataBrowser.refreshSearchParams(values);
+        this.dataBrowser.updateSearchParameters.refreshSearchParams(values);
         this.dataBrowser.checkAndDisplayDisplayValuesChangedWarning();
         if (this.dataBrowser.activeSlice?.static) {
             this.dataBrowser.checkFilterChangedForStaticSlice();
@@ -163,7 +163,7 @@ export class UserFilter {
         const setSomething = this.dataBrowser.applyValuesToFormGroup(filterValues, userGroup);
         let values = userGroup.getRawValue();
         values.active = this.somethingActive(values);
-        this.dataBrowser.refreshSearchParams(values);
+        this.dataBrowser.updateSearchParameters.refreshSearchParams(values);
         if (setSomething) {
             userGroup.get("updateDummy").setValue(true);
             this.dataBrowser.toggleGroupMenu(key, this.dataBrowser.getSearchGroupsHTMLByName(key), true);

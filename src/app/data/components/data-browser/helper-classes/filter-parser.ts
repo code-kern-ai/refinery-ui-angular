@@ -1,6 +1,7 @@
 import { LabelSource } from "src/app/base/enum/graphql-enums";
 import { DataBrowserComponent } from "../data-browser.component";
-import { SearchGroup, SearchOperator, StaticOrderByKeys } from "./search-parameters";
+import { getAttributeType, parseFilterElements, prepareFilterElements, prepareOperator, SearchOperator } from "./search-operators";
+import { SearchGroup, StaticOrderByKeys } from "./search-parameters";
 
 
 
@@ -308,7 +309,7 @@ export class DataBrowserFilterParser {
         return filterElement;
     }
 
-    private buildFilterElementAttribute(first: boolean, searchElement) {
+    private buildFilterElementAttribute(first: boolean, searchElement: any) {
         let filterElement;
         if (searchElement.values.name == 'Any Attribute') {
             filterElement = {
@@ -316,27 +317,43 @@ export class DataBrowserFilterParser {
                 NEGATION: searchElement.values.negate,
                 FILTER: [],
             };
-            for (let i = 0; i < this.dataBrowser.attributesSortOrder.length; i++) {
-                filterElement.FILTER.push({
-                    RELATION: i == 0 ? 'NONE' : 'OR',
-                    NEGATION: false,
-                    TARGET_TABLE: 'RECORD',
-                    TARGET_COLUMN: 'DATA',
-                    OPERATOR: searchElement.values.operator,
-                    VALUES: [
-                        this.dataBrowser.attributes.get(this.dataBrowser.attributesSortOrder[i].key).name,
-                        searchElement.values.searchValue,
-                    ],
+            for (let i = 1; i < this.dataBrowser.attributesSortOrder.length; i++) {
+                searchElement.values.operator = searchElement.values.operator.split(" ").join("_");
+                if (this.dataBrowser.attributesSortOrder[i].type != 'BOOLEAN') {
+                    filterElement.FILTER.push({
+                        RELATION: i == 1 ? 'NONE' : 'OR',
+                        NEGATION: false,
+                        TARGET_TABLE: 'RECORD',
+                        TARGET_COLUMN: 'DATA',
+                        OPERATOR: prepareOperator(searchElement, this.dataBrowser.attributesSortOrder[i].type),
+                        VALUES: prepareFilterElements(searchElement, this.dataBrowser.attributes.get(this.dataBrowser.attributesSortOrder[i].key).name, this.dataBrowser.separator, this.dataBrowser.attributesSortOrder[i].type),
+                    });
+                }
+            }
+            let parseArray = [];
+            if (isNaN(parseInt(searchElement.values.searchValue)) || isNaN(parseFloat(searchElement.values.searchValue))) {
+                filterElement.FILTER.forEach((el) => {
+                    const type = getAttributeType(this.dataBrowser.attributesSortOrder, el.VALUES[0]);
+                    const parseValues = parseFilterElements(searchElement, el.VALUES, type);
+                    if (typeof parseValues[1] === 'string') {
+                        if (parseArray.length === 0) {
+                            el.RELATION = "NONE";
+                        }
+                        parseArray.push(el);
+                    }
                 });
+                filterElement.FILTER = parseArray;
             }
         } else {
+            const attributeType = getAttributeType(this.dataBrowser.attributesSortOrder, searchElement.values.name);
+            searchElement.values.operator = searchElement.values.operator.split(" ").join("_");
             filterElement = {
                 RELATION: first ? 'NONE' : 'AND',
                 NEGATION: searchElement.values.negate,
                 TARGET_TABLE: 'RECORD',
                 TARGET_COLUMN: 'DATA',
-                OPERATOR: searchElement.values.operator,
-                VALUES: [searchElement.values.name, searchElement.values.searchValue],
+                OPERATOR: prepareOperator(searchElement, attributeType),
+                VALUES: prepareFilterElements(searchElement, searchElement.values.name, this.dataBrowser.separator, attributeType),
             };
         }
         return filterElement;
