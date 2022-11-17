@@ -1,422 +1,34 @@
 <div *ngIf="project$ | async as project" class="p-4 bg-gray-100 h-full overflow-y-auto flex-1 flex flex-col">
-    <div>
-        <div class="text-lg leading-6 text-gray-900 font-medium inline-block">
-            Data schema
+    <div class="text-lg leading-6 text-gray-900 font-medium inline-block">
+        Data schema
+    </div>
+    <div class="mt-1">
+        <div class="text-sm leading-5 font-medium text-gray-700 inline-block">
+            This schema holds the data structure of your project.
+            It contains the attributes uploaded on project creation and the added calculated attributes.
         </div>
-        <div class="mt-1">
-            <div class="text-sm leading-5 font-medium text-gray-700 inline-block">
-                This schema holds the data structure of your project.
-                It contains the attributes uploaded on project creation and the added calculated attributes.
-            </div>
+        <div class="">
             <div class="">
-                <div class="">
-                    <div class="inline-block min-w-full align-middle">
-                        <form [formGroup]="attributesSchema"
-                            class="shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-                            <table formArrayName="attributes" class="min-w-full divide-y divide-gray-300">
-                                <thead class="bg-gray-50">
-                                    <tr>
-                                        <th scope="col"
-                                            class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                            Name</th>
-                                        <th scope="col"
-                                            class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                            Data Type</th>
-                                        <th scope="col"
-                                            class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                            <div
-                                                class="flex flex-row flex-nowrap items-center justify-center leading-3">
-                                                <span>Primary Key</span>
-                                                <div class="inline-block w-4 h-3.5">
-                                                    <ng-template [ngIf]="pKeyValid!=null" [ngIfElse]="noCheck">
-                                                        <div *ngIf="pKeyValid" data-tip="Key combination is unique"
-                                                            class="tooltip tooltip-bottom normal-case relative"
-                                                            style="top:-2px">
-                                                            <svg xmlns="http://www.w3.org/2000/svg"
-                                                                class="inline-block w-4 h-4 stroke-current" fill="none"
-                                                                viewBox="0 0 24 24" stroke="currentColor">
-                                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                                    stroke-width="2" d="M5 13l4 4L19 7" />
-                                                            </svg>
-                                                        </div>
-
-                                                        <div *ngIf="pKeyValid == false"
-                                                            data-tip="Key combination isn't unique!"
-                                                            class="tooltip tooltip-bottom normal-case">
-                                                            <svg xmlns="http://www.w3.org/2000/svg"
-                                                                class="inline-block w-4 h-4 stroke-current" fill="none"
-                                                                viewBox="0 0 24 24" stroke="currentColor">
-                                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                                    stroke-width="2"
-                                                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                                            </svg>
-                                                        </div>
-                                                    </ng-template>
-                                                </div>
-                                            </div>
-                                        </th>
-                                        <th scope="col"
-                                            class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                            State
-                                        </th>
-                                        <th scope="col"
-                                            class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                            Modify
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-gray-200">
-                                    <tr *ngFor="let attributeContainer of attributesArray.controls; let j = index"
-                                        [ngClass]="j%2!=0 ? 'bg-gray-50':'bg-white'" [formGroupName]="j">
-                                        <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                            {{attributeContainer.get("name").value}}
-                                        </td>
-                                        <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                            {{attributeContainer.get('dataTypeName').value}}
-                                        </td>
-                                        <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                            <label class="cursor-pointer">
-                                                <input formControlName="isPrimaryKey" type="checkbox">
-                                            </label>
-                                        </td>
-                                        <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                            <kern-heuristic-statuses [status]="attributeContainer.get('state').value"
-                                                page="attributes" initialCaption="Registered">
-                                            </kern-heuristic-statuses>
-                                        </td>
-                                        <td class="text-center px-3 py-2 text-sm text-gray-500">
-                                            <button type="button"
-                                                [routerLink]="['../attributes/' + attributeContainer.get('id').value]"
-                                                *ngIf="attributeContainer.get('userCreated').value"
-                                                class="text-green-800 text-sm font-medium">
-                                                <span class="leading-5">Details</span>
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block"
-                                                    fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                                                    stroke-width="2">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                                                </svg>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-2 mt-1 align-top">
-                <div class="items-center flex flex-row">
-                    <div class="tooltip tooltip-bottom" data-tip="Add new attribute">
-                        <label (click)="openModalAttribute()"
-                            class="mr-1 inline-flex items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none cursor-pointer">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 h-5 w-5 inline-block stroke-current"
-                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 4v16m8-8H4" />
-                            </svg>
-                            Add new attibute
-                        </label>
-                    </div>
-                    <input #newAttributeModal type="checkbox" id="new-attribute-modal" class="modal-toggle">
-                    <div class="modal">
-                        <div class="modal-box modal_content text-black bg-white justify-center"
-                            style="overflow-y:visible;overflow-x:unset;width: 448px;">
-                            <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
-                                Add new attribute </div>
-                            <div class="mb-2 flex flex-grow justify-center text-sm text-gray-500">
-                                Choose a name for your attribute and pick a datatype you want to use</div>
-
-                            <div class="grid grid-cols-2  gap-2 items-center"
-                                style="grid-template-columns: max-content auto;">
-
-                                <span data-tip="Enter an attribute name"
-                                    class="cursor-help tooltip tooltip-right card-title mb-0 label-text font-normal"><span
-                                        class="underline"
-                                        style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Attribute
-                                        name</span></span>
-                                <input [(ngModel)]="attributeName" placeholder="Enter an attribute name..."
-                                    (input)="changeAttributeName($event)"
-                                    class="input input-sm input-bordered placeholder-italic" />
-
-                                <ng-template [ngIf]="duplicateNameExists">
-                                    <span></span>
-                                    <span class="text-red-700 text-xs mt-2">
-                                        Attribute name exists
-                                    </span>
-                                </ng-template>
-
-                                <span data-tip="Select an attribute type"
-                                    class="cursor-help tooltip tooltip-right card-title mb-0 label-text font-normal"><span
-                                        class="underline"
-                                        style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Attribute
-                                        type</span></span>
-                                <kern-dropdown [dropdownOptions]="{
-                                        optionArray: dataTypesArray,
-                                        buttonCaption: attributeType,
-                                        hasFullWidth: true
-                                    }" (optionClicked)="updateDataType($event)"></kern-dropdown>
-                            </div>
-
-                            <div class="modal-action">
-                                <div
-                                    [ngClass]="attributeName == '' || attributeType == '' || duplicateNameExists? 'cursor-not-allowed' : ''">
-                                    <label
-                                        [ngClass]="attributeName == '' || attributeType == '' || duplicateNameExists ? 'opacity-50 cursor-not-allowed pointer-events-none':'cursor-pointer opacity-100'"
-                                        class="bg-green-100 text-green-700 border border-green-400 text-white text-xs font-semibold mr-2 px-4 py-2 rounded-md cursor-pointer hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block"
-                                        (click)="createUserAttribute()">Add attribute</label>
-                                </div>
-
-                                <label for="new-attribute-modal"
-                                    class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded-md border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
-                            </div>
-                        </div>
-                    </div>
-
-
-                    <div class="tooltip tooltip-bottom" data-tip="Upload more records to the project">
-                        <button [routerLink]="['../add']"
-                            class="mr-1 inline-flex items-center px-2.5 py-2 border border-gray-300 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none cursor-pointer">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 h-4 w-4" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                            </svg>
-                            Upload records
-                        </button>
-                    </div>
-                    <kern-export></kern-export>
-
-
-                    <label for="projectExportModal" class="modal-button cursor-pointer inline-block">
-                        <div class="tooltip tooltip-bottom"
-                            data-tip="Creates a snapshot compressed file of your current project">
-                            <div
-                                class="mr-1 inline-flex items-center px-2.5 py-2 border border-gray-300 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none cursor-pointer">
-                                <svg xmlns="http://www.w3.org/2000/svg"
-                                    class="mr-1 icon icon-tabler icon-tabler-camera inline-block" width="16" height="16"
-                                    viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                                    stroke-linecap="round" stroke-linejoin="round">
-                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                    <path
-                                        d="M5 7h1a2 2 0 0 0 2 -2a1 1 0 0 1 1 -1h6a1 1 0 0 1 1 1a2 2 0 0 0 2 2h1a2 2 0 0 1 2 2v9a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2">
-                                    </path>
-                                    <circle cx="12" cy="13" r="3"></circle>
-                                </svg>
-                                Create project snapshot
-                            </div>
-                        </div>
-                    </label>
-                    <input type="checkbox" id="projectExportModal" class="modal-toggle"
-                        (click)="requestProjectSize();requestProjectExportCredentials()">
-                    <div class="modal">
-                        <div class="modal-box text-black bg-white justify-center mb-4"
-                            style="max-width: 80%; width:fit-content;">
-                            <div class="text-lg leading-6 text-gray-900 font-medium text-center">
-                                Project export </div>
-                            <div class="mt-1 text-sm leading-5 font-medium text-gray-700">See the size of each
-                                export item.</div>
-                            <div class="flex flex-col">
-                                <ng-template [ngIf]="projectSize" [ngIfElse]="sizeNotYetLoaded">
-                                    <form [formGroup]="projectExportSchema">
-                                        <div formArrayName="attributes" class="grid items-center p-2 gap-x-4"
-                                            style="grid-template-columns: auto 25px auto auto;">
-                                            <!--headline-->
-                                            <div class="flex">
-                                                <span class="card-title mb-0 label-text">Name</span>
-                                            </div>
-                                            <div>
-                                                <!--info hover-->
-                                            </div>
-                                            <div class="flex">
-                                                <span class="card-title mb-0 label-text">Size estimate</span>
-                                            </div>
-                                            <div class="flex flex-row justify-center items-center gap-2">
-                                                <span class="card-title mb-0 label-text">Export</span>
-                                            </div>
-                                            <!--content-->
-                                            <ng-template ngFor let-attribute [ngForOf]="projectExportArray.controls"
-                                                let-i="index">
-                                                <div [formGroupName]="i" class="contents">
-                                                    <div class="flex">
-                                                        <p class="break-words cursor-default capitalize-first"
-                                                            [ngClass]="attribute.get('moveRight').value?'ml-4':null">
-                                                            {{attribute.get("name").value}}</p>
-                                                    </div>
-                                                    <div class="flex items-center justify-items-center">
-                                                        <ng-template [ngIf]="attribute.get('desc').value">
-                                                            <div [attr.data-tip]="attribute.get('desc').value"
-                                                                class="tooltip tooltip-top">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
-                                                                    fill="none" viewBox="0 0 24 24"
-                                                                    stroke="currentColor" stroke-width="2">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                                </svg>
-                                                            </div>
-                                                        </ng-template>
-                                                    </div>
-                                                    <div class="flex">
-                                                        <p class="break-words cursor-default">
-                                                            {{attribute.get("sizeReadable").value}}
-                                                        </p>
-                                                    </div>
-                                                    <div class="flex justify-center">
-                                                        <div class="form-control">
-                                                            <label class="card-title mb-0 cursor-pointer label p-0">
-                                                                <input formControlName="export" type="checkbox"
-                                                                    class="cursor-pointer">
-                                                            </label>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </ng-template>
-                                        </div>
-                                    </form>
-                                </ng-template>
-                                <ng-template #sizeNotYetLoaded>
-                                    <div class="flex flex-col items-center justify-items-center mb-8 mt-4">
-                                        <kern-loading></kern-loading>
-                                    </div>
-                                </ng-template>
-                            </div>
-                            <div *ngIf="projectSize" class="mt-4 flex flex-row justify-between "
-                                style="border-top: 1px solid #ddd;">
-                                <!-- Final size-->
-                                <div></div>
-                                <div class="mt-4 mr-2 flex flex-row flex-nowrap">
-                                    <div class="flex">
-                                        <span class="card-title mb-0 label-text">Final size estimate:</span>
-                                    </div>
-                                    <div class="flex ml-2">
-                                        <span class="card-title mb-0 label-text">{{downloadSizeText}}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="modal-action">
-                                <label *ngIf="projectExportCredentials?.downloadFileName as fileName"
-                                    data-tip="Latest prepared export file" for="projectExportModal"
-                                    (click)="exportViaFile(false)"
-                                    class="tooltip bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded-md border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 h-4 w-4 inline-block"
-                                        fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                    </svg>
-                                    {{fileName}}
-                                </label>
-                                <label (click)="prepareDownload(project.id)"
-                                    [ngClass]="downloadPrepareMessage== DownloadStateType.PREPARATION||downloadPrepareMessage == DownloadStateType.DOWNLOAD?'opacity-50 cursor-not-allowed py-1' : 'opacity-100 cursor-pointer py-2'"
-                                    class="bg-green-100 text-green-700 border border-green-400 text-xs font-semibold px-4 rounded-md cursor-pointer hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-                                    type="submit">
-                                    Prepare download
-                                    <kern-loading color="green"
-                                        *ngIf="downloadPrepareMessage == DownloadStateType.PREPARATION || downloadPrepareMessage == DownloadStateType.DOWNLOAD">
-                                    </kern-loading>
-                                </label>
-                                <label for="projectExportModal"
-                                    class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                    Close
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="text-left lg:text-right">
-                    <div [attr.data-tip]="project.tokenizer"
-                        class="z-10 tooltip tooltip-right font-medium inline-block">
-                        <span class="cursor-help underline"
-                            style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">
-                            Tokenization</span>
-                    </div>
-                    <div
-                        class="h-8 ml-2 inline-flex items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white relative">
-                        <ng-template [ngIf]="tokenizationProgress">
-                            <progress class="progress progress-primary w-48 md:w-72 xl:w-96"
-                                [value]="tokenizationProgress" max="1"> </progress>
-                            <div *ngIf="tokenizationProgress==1"
-                                class="absolute top-0 left-0 right-0 bottom-0 flex flex-row items-center justify-center"
-                                style="background-color:#f4f4f5bf">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="inline-block w-4 h-4 stroke-current"
-                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M5 13l4 4L19 7" />
-                                </svg><span class="text-sm font-medium text-gray-700">Completed</span>
-                            </div>
-                        </ng-template>
-                        <ng-template [ngIf]="!tokenizationProgress">
-                            <progress class="progress progress-primary w-48 md:w-72 xl:w-96" value="0" max="1">
-                            </progress>
-                        </ng-template>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-        <div class="mt-8">
-            <div class="text-lg leading-6 text-gray-900 font-medium inline-block w-full">
-                <label>Embeddings</label>
-                <div class="mt-1">
-                    <div class="text-sm leading-5 font-medium text-gray-700 inline-block">You can enrich your records
-                        with
-                        embeddings, e.g. to use them for vector search or active transfer learning.</div>
-                    <div class="">
-                        <div class="inline-block min-w-full align-middle">
-                            <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-                                <table class="min-w-full divide-y divide-gray-300">
-                                    <thead class="bg-gray-50">
-                                        <tr>
-                                            <th scope="col"
-                                                class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                                Name</th>
-                                            <th scope="col"
-                                                class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                                Type</th>
-                                            <th scope="col"
-                                                class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                                Status</th>
-                                            <th scope="col"
-                                                class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                                Dimensionality</th>
-                                            <th scope="col"
-                                                class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                                Count</th>
-                                            <th scope="col"
-                                                class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-gray-200">
-                                        <tr *ngFor="let embeddingContainer of embeddings; let j = index"
-                                            [ngClass]="j%2!=0 ? 'bg-gray-50':'bg-white'">
-                                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                                {{embeddingContainer.name}}
-                                            </td>
-                                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                                <div
-                                                    class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
-                                                    {{embeddingContainer.type == 'ON_ATTRIBUTE'?
-                                                    'Attribute Specific' : 'Token Specific'}}
-                                                </div>
-                                            </td>
-                                            <td class="text-center px-3 text-sm text-gray-500"
-                                                [ngClass]="embeddingContainer.state != 'FINISHED' && embeddingContainer.state != 'FAILED' ? 'py-0' : 'whitespace-nowrap py-2'">
-                                                <ng-template
-                                                    [ngIf]="embeddingContainer.state != 'FINISHED' && embeddingContainer.state != 'FAILED'">
-                                                    <div class="items-center">
-                                                        <progress class="progress progress-primary"
-                                                            [value]="embeddingContainer.progress" max="1"></progress>
-                                                    </div>
-                                                    <p class="text-xs italic">{{embeddingContainer.state}}</p>
-                                                </ng-template>
-
-                                                <div *ngIf="embeddingContainer.state === 'FINISHED'"
-                                                    data-tip="Successfully created." class="tooltip">
-                                                    <div
-                                                        class="btn cursor-default btn-circle btn-xs no-animation btn-primary mx-2">
+                <div class="inline-block min-w-full align-middle">
+                    <form [formGroup]="attributesSchema" class="shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+                        <table formArrayName="attributes" class="min-w-full divide-y divide-gray-300">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col"
+                                        class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                        Name</th>
+                                    <th scope="col"
+                                        class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                        Data Type</th>
+                                    <th scope="col"
+                                        class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                        <div class="flex flex-row flex-nowrap items-center justify-center leading-3">
+                                            <span>Primary Key</span>
+                                            <div class="inline-block w-4 h-3.5">
+                                                <ng-template [ngIf]="pKeyValid!=null" [ngIfElse]="noCheck">
+                                                    <div *ngIf="pKeyValid" data-tip="Key combination is unique"
+                                                        class="tooltip tooltip-bottom normal-case relative"
+                                                        style="top:-2px">
                                                         <svg xmlns="http://www.w3.org/2000/svg"
                                                             class="inline-block w-4 h-4 stroke-current" fill="none"
                                                             viewBox="0 0 24 24" stroke="currentColor">
@@ -424,12 +36,10 @@
                                                                 stroke-width="2" d="M5 13l4 4L19 7" />
                                                         </svg>
                                                     </div>
-                                                </div>
 
-                                                <div *ngIf="embeddingContainer.state === 'FAILED'"
-                                                    data-tip="Embedding creation ran into errors." class="tooltip">
-                                                    <div
-                                                        class="btn cursor-default btn-circle btn-xs no-animation btn-error mx-2">
+                                                    <div *ngIf="pKeyValid == false"
+                                                        data-tip="Key combination isn't unique!"
+                                                        class="tooltip tooltip-bottom normal-case">
                                                         <svg xmlns="http://www.w3.org/2000/svg"
                                                             class="inline-block w-4 h-4 stroke-current" fill="none"
                                                             viewBox="0 0 24 24" stroke="currentColor">
@@ -438,588 +48,1094 @@
                                                                 d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                                                         </svg>
                                                     </div>
-                                                </div>
-                                            </td>
-                                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                                {{embeddingContainer.dimension}}
-                                            </td>
-                                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                                {{embeddingContainer.count}}
-                                            </td>
-                                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                                <label [for]="'my-modal-'+embeddingContainer.id"
-                                                    class="modal-button btn btn-sm btn-ghost px-0">
-
-                                                    <svg xmlns="http://www.w3.org/2000/svg"
-                                                        class="inline-block w-6 h-6 stroke-current" fill="none"
-                                                        viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                    </svg>
-                                                </label>
-                                                <input type="checkbox" [id]="'my-modal-'+embeddingContainer.id"
-                                                    class="modal-toggle">
-                                                <div class="modal">
-                                                    <div class="modal-box text-black bg-white justify-center">
-                                                        <div
-                                                            class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
-                                                            Warning </div>
-                                                        <p class="mt-2 text-gray-500 text-sm">Are you sure you want to
-                                                            delete
-                                                            this embedding?</p>
-                                                        <p class="text-gray-500 text-sm">This will delete all
-                                                            corresponding
-                                                            tensors!</p>
-                                                        <div class="modal-action">
-                                                            <label [for]="'my-modal-'+embeddingContainer.id"
-                                                                class="bg-red-100 text-red-700 border border-red-400 text-xs font-semibold mr-2 px-4 py-2 rounded flex cursor-pointer hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 inline-block"
-                                                                (click)="deleteEmbedding(embeddingContainer.id)">Delete
-                                                                embedding</label>
-                                                            <label [for]="'my-modal-'+embeddingContainer.id"
-                                                                class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="mt-1">
-                    <div class="tooltip tooltip-right"
-                        data-tip="Vectorize your attributes. Integration to Hugging Face available">
-                        <label for="my-modal-newEmbedding"
-                            class="inline-block items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none cursor-pointer">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 h-5 w-5 inline-block stroke-current"
-                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 4v16m8-8H4" />
-                            </svg>
-                            Generate embedding
-                        </label>
-                    </div>
-                    <input #modalInputEmbedding type="checkbox" id="my-modal-newEmbedding" class="modal-toggle">
-                    <div class="modal">
-                        <div class="modal-box modal_content text-black bg-white justify-center"
-                            style="overflow-y:visible;overflow-x:unset;width: 448px;">
-                            <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
-                                Add an embedding </div>
-                            <div class="mb-2 flex flex-grow justify-center text-sm text-gray-500">
-                                Pick from the below solutions to build a vector representation</div>
-
-                            <div *ngIf="attributesArray && embeddingCreationFormGroup">
-                                <form [formGroup]="embeddingCreationFormGroup"
-                                    class="grid grid-cols-2  gap-2 items-center"
-                                    style="grid-template-columns: max-content auto;">
-                                    <div class="tooltip tooltip-right" data-tip="Choose attribute that will be encoded">
-                                        <span class="card-title mb-0 label-text flex"><span
-                                                class="cursor-help underline"
-                                                style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Target
-                                                Attribute</span></span>
-                                    </div>
-                                    <select formControlName="targetAttribute"
-                                        class="select select-bordered select-sm max-w-xs"
-                                        data-intercom-target="Settings Page Embedding Mask Target Attribute Selector">
-                                        <option *ngFor="let attribute of attributesArrayTextUsableUploaded"
-                                            [value]="attribute.id">
-                                            {{attribute.name}}
-                                        </option>
-                                    </select>
-                                    <div class="tooltip tooltip-right"
-                                        data-tip="One embedding per record vs. per token">
-                                        <span class="card-title mb-0 label-text flex"><span
-                                                class="cursor-help underline"
-                                                style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Granularity</span></span>
-                                    </div><select formControlName="granularity"
-                                        class="select select-bordered select-sm max-w-xs"
-                                        data-intercom-target="Settings Page Embedding Mask Granularity Selector"
-                                        (change)="checkForceHiddenHandles()">
-                                        <option *ngFor="let granularity of granularityTypesArray"
-                                            [value]="granularity.value">
-                                            {{granularity.name}}
-                                        </option>
-                                    </select>
-                                    <div class="tooltip tooltip-right" data-tip="Name of your Hugging Face model">
-                                        <span class="card-title mb-0 label-text flex"><span
-                                                class="cursor-help underline"
-                                                style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Configuration</span></span>
-                                    </div>
-                                    <div class="dropdown"
-                                        data-intercom-target="Settings Page Embedding Mask Handle Selector With Suggestions"
-                                        *ngIf="embeddingHandlesMap.get(embeddingCreationFormGroup.get('targetAttribute').value) as suggestions;else noSuggestions">
-                                        <div tabindex="0"
-                                            class="flex flex-row select select-bordered select-sm pl-0 pr-8">
-                                            <input #inputEmbeddingHandle type="text" placeholder="Type to search..."
-                                                class="w-full font-bold input input-sm"
-                                                style="outline:none; box-shadow:none;height:1.9rem;"
-                                                [value]="embeddingCreationFormGroup.get('embeddingHandle').value"
-                                                (focus)="$event.target.select()"
-                                                (keydown.enter)="selectFirstUnhiddenEmbeddingHandle(inputEmbeddingHandle)"
-                                                (input)="checkEmbeddingHandles($event.target)">
-                                        </div>
-                                        <ul tabindex="0"
-                                            class="p-2 w-full menu dropdown-content bg-base-100 shadow max-h-80 overflow-y-auto">
-                                            <li #me *ngFor="let embeddingHandle of suggestions; let k = index"
-                                                [ngClass]="embeddingHandle.hidden || embeddingHandle.forceHidden?'hidden':null"
-                                                (mouseenter)="setCurrentEmbeddingHandle(embeddingHandle,hoverBox,me)"
-                                                (mouseleave)="setCurrentEmbeddingHandle(null)">
-
-                                                <label class="cursor-pointer label"
-                                                    [ngClass]="checkIfModelIsDownloaded(embeddingHandle.configString) ? 'text-green-700' : ''"
-                                                    (click)="selectEmbeddingHandle(embeddingHandle,inputEmbeddingHandle,hoverBox)">
-                                                    {{embeddingHandle.configString}}
-                                                </label>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <ng-template #noSuggestions>
-                                        <div class="flex flex-row select select-bordered select-sm pl-0 pr-8"
-                                            data-intercom-target="Settings Page Embedding Mask Handle Selector Without Suggestions">
-                                            <input #inputEmbeddingHandle type="text"
-                                                placeholder="Enter config string..."
-                                                class="w-full font-bold input input-sm"
-                                                style="outline:none; box-shadow:none;height:1.9rem;"
-                                                [value]="embeddingCreationFormGroup.get('embeddingHandle').value"
-                                                (focus)="$event.target.select()"
-                                                (input)="checkEmbeddingHandles($event.target)">
-                                        </div>
-                                    </ng-template>
-                                </form>
-                            </div>
-                            <div class="modal-action">
-                                <button [for]="'my-modal-newEmbedding'" [disabled]="embeddingCreationBlocked?true:null"
-                                    [ngClass]="embeddingCreationBlocked ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
-                                    class="bg-green-100 text-green-700 border border-green-400 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-                                    (click)="addEmbedding(project.id,modalInputEmbedding)"
-                                    data-intercom-target="Settings Page Embedding Mask Add Embedding Button">Add
-                                    embedding</button>
-                                <label for="my-modal-newEmbedding"
-                                    class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
-                            </div>
-                        </div>
-                    </div>
-                    <div #hoverBox class="absolute top-0 w-fit h-fit card shadow bg-white" style="z-index: 1000;"
-                        [ngClass]="currentEmbeddingHandle?null:'hidden'">
-                        <ng-template [ngIf]="currentEmbeddingHandle">
-                            <div class="card-body p-6 flex flex-col w-64">
-                                <div class="flex justify-center">
-                                    <span class="card-title mb-2 label-text">Info</span>
-                                </div>
-                                <span class="label-text text-sm">{{currentEmbeddingHandle.description}}</span>
-                            </div>
-                        </ng-template>
-                    </div>
-                    <div class="tooltip tooltip-right"
-                        [attr.data-tip]="!isManaged ? 'Check out our hosted version to use this function' : 'See which models are downloaded'">
-                        <button
-                            class="ml-1 inline-block items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none cursor-pointer"
-                            [routerLink]="['../model-download']" [queryParams]="{lastPage: 'settings'}"
-                            [disabled]="!isManaged"
-                            [ngClass]="!isManaged ? 'cursor-not-allowed' : 'opacity-100 cursor-pointer'">
-                            <svg xmlns="http://www.w3.org/2000/svg"
-                                class="inline-block icon icon-tabler icon-tabler-arrow-autofit-down" width="20"
-                                height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                                stroke-linecap="round" stroke-linejoin="round">
-                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                <path d="M12 20h-6a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h8"></path>
-                                <path d="M18 4v17"></path>
-                                <path d="M15 18l3 3l3 -3"></path>
-                            </svg>
-                            <span class="leading-5">
-                                See downloaded models
-                            </span>
-                        </button>
-                    </div>
-
-                </div>
-            </div>
-
-
-            <div class="mt-8">
-                <div class="text-lg leading-6 text-gray-900 font-medium inline-block">
-                    Labeling tasks
-                </div>
-                <div class="mt-1">
-                    <div class="text-sm leading-5 font-medium text-gray-700 inline-block">Define what kind of things you
-                        want to
-                        label. We currently support classifications and extractions.</div>
-                    <div class="">
-                        <div class="inline-block min-w-full align-middle">
-                            <form [formGroup]="labelingTasksSchema"
-                                class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-                                <table formArrayName="labelingTasks" class="min-w-full divide-y divide-gray-300">
-                                    <thead class="bg-gray-50">
-                                        <tr>
-                                            <th scope="col"
-                                                class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                                Target</th>
-                                            <th scope="col"
-                                                class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                                Name</th>
-                                            <th scope="col"
-                                                class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                                Task Type</th>
-                                            <th scope="col"
-                                                class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                                Labels</th>
-                                            <th scope="col"
-                                                class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-gray-200">
-                                        <tr *ngFor="let labelingTaskContainer of labelingTasksArray.controls; let j = index"
-                                            [ngClass]="j%2!=0 ? 'bg-gray-50':'bg-white'" [formGroupName]="j">
-                                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                                {{labelingTaskContainer.get("targetName").value}}
-                                            </td>
-                                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                                <p class="break-words w-52 cursor-pointer"
-                                                    [ngClass]="labelingTaskContainer.get('nameOpen').value?'hidden':null"
-                                                    (click)="openTaskName(labelingTaskContainer)">
-                                                    {{labelingTaskContainer.get("name").value}}</p>
-                                                <ng-template [ngIf]="labelingTaskContainer.get('nameOpen').value">
-                                                    <input #inputTaskName name="labelName" type="text"
-                                                        placeholder="Task Name"
-                                                        [value]="labelingTaskContainer.get('name').value"
-                                                        class="w-52 input input-outline input-bordered input-sm"
-                                                        (keyup)="checkTaskNameColor($event.target)"
-                                                        (keydown.enter)="changeTaskName(labelingTaskContainer,inputTaskName.value)"
-                                                        (blur)="changeTaskName(labelingTaskContainer,inputTaskName.value)">
                                                 </ng-template>
-                                            </td>
-                                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                                <select formControlName="taskType"
-                                                    class="select select-sm select-bordered pr-8 max-w-xs">
-                                                    <option *ngFor="let dropdown of labelingTasksDropdownValues()"
-                                                        [attr.disabled]="isLabelingTaskOptionDisabled(labelingTaskContainer,dropdown.value)?true:null"
-                                                        [value]="dropdown.value">{{
-                                                        dropdown.name }}
-                                                    </option>
-                                                </select>
-                                            </td>
-                                            <td
-                                                class="flex flex-wrap justify-center items-center px-3 py-2 text-sm text-gray-500">
-                                                <div
-                                                    *ngFor="let label of labelMap.get(labelingTaskContainer.get('id').value)">
-                                                    <div class="inline-flex border items-center mx-1.5 px-1.5 py-0.5 rounded-md text-sm font-medium"
-                                                        [ngClass]="[getBackground(label.color), getText(label.color), getBorder(label.color), getHover(label.color)]">
-                                                        <label for="label-color"
-                                                            (click)="currentLabel = label;currentColorLabelingTaskId=labelingTaskContainer.get('id').value"
-                                                            class="modal-button cursor-pointer inline-block">
-                                                            <svg xmlns="http://www.w3.org/2000/svg"
-                                                                class="mr-2 icon icon-tabler icon-tabler-color-picker"
-                                                                width="20" height="20" viewBox="0 0 24 24"
-                                                                stroke-width="2" stroke="currentColor" fill="none"
-                                                                stroke-linecap="round" stroke-linejoin="round">
-                                                                <path stroke="none" d="M0 0h24v24H0z" fill="none">
-                                                                </path>
-                                                                <path d="M11 7l6 6"></path>
-                                                                <path
-                                                                    d="M4 16l11.7 -11.7a1 1 0 0 1 1.4 0l2.6 2.6a1 1 0 0 1 0 1.4l-11.7 11.7h-4v-4z">
-                                                                </path>
-                                                            </svg>
-                                                        </label>
-
-                                                        <span>{{label.name}}</span>
-                                                        <kbd *ngIf="label.hotkey"
-                                                            class="ml-2 uppercase inline-flex items-center border bg-white border-gray-200 rounded px-2 text-sm font-sans font-medium text-gray-400">{{label.hotkey}}</kbd>
-                                                        <label [for]="'my-modal-'+label.id"
-                                                            class="modal-button cursor-pointer inline-block ml-2">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
-                                                                fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                                                                stroke-width="2">
-                                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                            </svg>
-                                                        </label>
-                                                        <input type="checkbox" [id]="'my-modal-'+label.id"
-                                                            class="modal-toggle">
-                                                        <div class="modal">
-                                                            <div class="modal-box text-black bg-white justify-center">
-                                                                <div
-                                                                    class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
-                                                                    Warning </div>
-                                                                <p class="mt-2 text-gray-500 text-sm text-center">Are
-                                                                    you
-                                                                    sure
-                                                                    you want to delete this label?</p>
-                                                                <p class="text-gray-500 text-sm text-center">This will
-                                                                    delete
-                                                                    all data associated with it!</p>
-                                                                <div class="modal-action">
-                                                                    <label [for]="'my-modal-'+label.id"
-                                                                        class="bg-red-100 text-red-700 border border-red-400 text-xs font-semibold mr-2 px-4 py-2 rounded flex cursor-pointer hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 inline-block"
-                                                                        (click)="removeLabel(project.id, labelingTaskContainer.get('id').value, label.id, label.color)">Delete
-                                                                        label</label>
-                                                                    <label [for]="'my-modal-'+label.id"
-                                                                        class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <label class="ml-2"
-                                                    [ngClass]="labelingTaskContainer.get('taskType').value == LabelingTaskType.NOT_SET ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
-                                                    [for]="'my-modal-labelCreation'+labelingTaskContainer.get('id').value">
-                                                    <span
-                                                        class="bg-gray-100 text-gray-800 cursor-pointer modal-button btn btn-sm btn-ghost px-1">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6"
-                                                            fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                                                            stroke-width="2">
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                                        </svg>
-                                                    </span>
-                                                </label>
-                                                <input type="checkbox"
-                                                    [id]="'my-modal-labelCreation'+labelingTaskContainer.get('id').value"
-                                                    class="modal-toggle"
-                                                    (change)="focusModalInputBox($event,'labelName')">
-                                                <div class="modal">
-                                                    <div class="modal-box text-black bg-white justify-center">
-                                                        <div
-                                                            class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
-                                                            Enter your labels </div>
-                                                        <div
-                                                            class="mb-2 flex flex-grow justify-center text-sm text-gray-500">
-                                                            You can add press enter to add a label</div>
-                                                        <input #labelName name="labelName" type="text"
-                                                            placeholder="Label Name"
-                                                            class="w-full input input-sm input-bordered"
-                                                            (input)="checkAndModifyLabelName($event.target)"
-                                                            (keydown.enter)="addLabel(project.id,labelingTaskContainer.get('id').value, labelName)">
-                                                        <div class="modal-action">
-                                                            <button
-                                                                [disabled]="!isLabelNameUnique(labelingTaskContainer.get('id').value,labelName.value)"
-                                                                [ngClass]="!isLabelNameUnique(labelingTaskContainer.get('id').value,labelName.value) ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
-                                                                class="bg-green-100 text-green-700 border border-green-400 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-                                                                (click)="addLabel(project.id,labelingTaskContainer.get('id').value, labelName)">Add
-                                                                label</button>
-                                                            <label
-                                                                [for]="'my-modal-labelCreation'+labelingTaskContainer.get('id').value"
-                                                                class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                                <label [for]="'my-modal-'+labelingTaskContainer.get('id').value"
-                                                    class="modal-button btn btn-sm btn-ghost px-0">
-
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
-                                                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                    </svg>
-                                                </label>
-                                                <input type="checkbox"
-                                                    [id]="'my-modal-'+labelingTaskContainer.get('id').value"
-                                                    class="modal-toggle">
-                                                <div class="modal">
-                                                    <div class="modal-box text-black bg-white justify-center">
-                                                        <div
-                                                            class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
-                                                            Warning </div>
-                                                        <p class="mt-2 text-gray-500 text-sm">Are you sure you want to
-                                                            delete
-                                                            this labeling task?</p>
-                                                        <p class="text-gray-500 text-sm">This will delete all data
-                                                            associated
-                                                            with it,</p>
-                                                        <p class="text-gray-500 text-sm">including heuristics and
-                                                            labels!</p>
-                                                        <div class="modal-action">
-                                                            <label
-                                                                [for]="'my-modal-'+labelingTaskContainer.get('id').value"
-                                                                class="bg-red-100 text-red-700 border border-red-400 text-xs font-semibold mr-2 px-4 py-2 rounded flex cursor-pointer hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 inline-block"
-                                                                (click)="deleteLabelingTask(project.id,labelingTaskContainer.get('id').value)">Delete
-                                                                labeling task</label>
-                                                            <label
-                                                                [for]="'my-modal-'+labelingTaskContainer.get('id').value"
-                                                                class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="mt-1">
-            <div class="tooltip tooltip-right" data-tip="Currently supporting classifications and extractions">
-                <label for="my-modal-newRecordTask"
-                    class="inline-block items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none cursor-pointer">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 h-5 w-5 inline-block stroke-current" fill="none"
-                        viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                    </svg>
-                    Add labeling task
-                </label>
-            </div>
-            <input #modalInput type="checkbox" id="my-modal-newRecordTask" class="modal-toggle"
-                (change)="focusModalInputBox($event,'labelingTaskName')">
-            <div class="modal">
-                <div class="modal-box text-black bg-white justify-center" style="width: 448px;">
-                    <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
-                        Add a labeling task </div>
-                    <div class="mb-2 flex flex-grow justify-center text-sm text-gray-500">
-                        Afterward, you can select the label task type depending on the target type</div>
-                    <div class="grid grid-cols-2 gap-2 items-center max-w-sm"
-                        style="grid-template-columns: max-content auto;">
-                        <div class="tooltip tooltip-right" data-tip="Choose attribute to be labeled">
-                            <span class="cursor-help card-title mb-0 label-text flex"><span class="underline"
-                                    style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Target
-                                    attribute</span></span>
-                        </div>
-                        <select #labelingTaskTarget class="select select-bordered select-sm">
-                            <option value="@@NO_ATTRIBUTE@@" selected="selected">Full Record</option>
-                            <option *ngFor="let attribute of attributesArrayUsableUploaded" [value]="attribute.id">
-                                {{attribute.name}}
-                            </option>
-                        </select>
-                        <div class="tooltip tooltip-right" data-tip="Name of your labeling task">
-                            <span class="cursor-help card-title mb-0 label-text flex"><span class="underline"
-                                    style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Name</span></span>
-                        </div><input #labelingTaskName name="labelingTaskName" type="text"
-                            placeholder="Labeling task name" class="input input-sm input-bordered"
-                            (input)="checkLabelingTaskName($event.target)"
-                            (keydown.enter)="addLabelingTask(project.id,modalInput,labelingTaskName.value,labelingTaskTarget.value);labelingTaskName.value=''">
-                    </div>
-                    <div class="modal-action">
-                        <button [disabled]="!isTaskNameUnique || labelingTaskName.value ==''"
-                            [ngClass]="!isTaskNameUnique || labelingTaskName.value=='' ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
-                            class="bg-green-100 text-green-700 border border-green-400 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-                            (click)="addLabelingTask(project.id,modalInput,labelingTaskName.value,labelingTaskTarget.value);labelingTaskName.value=''">Add
-                            labeling task</button>
-                        <label for="my-modal-newRecordTask"
-                            class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
-                    </div>
-                </div>
-            </div>
-
-
-            <div class="mt-8">
-                <div class="text-gray-900 text-lg leading-6 font-medium">
-                    Project metadata
-                </div>
-                <div class="text-sm leading-5 font-normal mt-2 text-gray-500 inline-block">Change your project name or
-                    description here.</div>
-                <div>
-                    <form action="#" class="relative">
-                        <div
-                            class="bg-white border border-gray-300 rounded-lg shadow-sm overflow-hidden flex flex-col divide-y divide-gray-200">
-                            <input #newProjectName [placeholder]="project.name"
-                                (keydown.enter)="updateProjectNameAndDescription(project.id,newProjectName.value,newProjectDescription.value);newProjectDescription.value = '';newProjectName.value=''"
-                                (input)="checkProjectUpdateDisabled($event.target.value,newProjectDescription.value)"
-                                class="appearance-none rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none"
-                                type="text">
-                            <textarea #newProjectDescription rows="2" [placeholder]="project.description" class="
-                            form-control block w-full px-3 py-1.5 text-sm text-gray-700
-                            bg-white bg-clip-padding focus:outline-none m-0"
-                                (input)="checkProjectUpdateDisabled(newProjectName.value,$event.target.value)"
-                                (keydown.enter)="updateProjectNameAndDescription(project.id,newProjectName.value,newProjectDescription.value);newProjectDescription.value = '';newProjectName.value=''"></textarea>
-                            <div
-                                class="border-t bg-gray-50 border-gray-200 px-2 py-2 flex justify-between items-center space-x-3 sm:px-3">
-                                <div class="flex-shrink-0">
-                                    <button type="submit" data-tip="Stores the changes"
-                                        (click)="updateProjectNameAndDescription(project.id,newProjectName.value,newProjectDescription.value);newProjectDescription.value = '';newProjectName.value=''"
-                                        class="tooltip tooltip-right inline-flex items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">Update</button>
-                                </div>
-                            </div>
-                        </div>
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th scope="col"
+                                        class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                        State
+                                    </th>
+                                    <th scope="col"
+                                        class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                        Modify
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <tr *ngFor="let attributeContainer of attributesArray.controls; let j = index"
+                                    [ngClass]="j%2!=0 ? 'bg-gray-50':'bg-white'" [formGroupName]="j">
+                                    <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                        {{attributeContainer.get("name").value}}
+                                    </td>
+                                    <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                        {{attributeContainer.get('dataTypeName').value}}
+                                    </td>
+                                    <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                        <label class="cursor-pointer">
+                                            <input formControlName="isPrimaryKey" type="checkbox">
+                                        </label>
+                                    </td>
+                                    <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                        <kern-heuristic-statuses [status]="attributeContainer.get('state').value"
+                                            page="attributes" initialCaption="Registered">
+                                        </kern-heuristic-statuses>
+                                    </td>
+                                    <td class="text-center px-3 py-2 text-sm text-gray-500">
+                                        <button type="button"
+                                            [routerLink]="['../attributes/' + attributeContainer.get('id').value]"
+                                            *ngIf="attributeContainer.get('userCreated').value"
+                                            class="text-green-800 text-sm font-medium">
+                                            <span class="leading-5">Details</span>
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                                            </svg>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </form>
                 </div>
             </div>
+        </div>
 
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-2 mt-1 align-top">
+            <div class="items-center flex flex-row">
+                <div class="tooltip tooltip-bottom" data-tip="Add new attribute">
+                    <label (click)="openModalAttribute()"
+                        class="mr-1 inline-flex items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 h-5 w-5 inline-block stroke-current"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        Add new attibute
+                    </label>
+                </div>
+                <input #newAttributeModal type="checkbox" id="new-attribute-modal" class="modal-toggle">
+                <div class="modal">
+                    <div class="modal-box modal_content text-black bg-white justify-center"
+                        style="overflow-y:visible;overflow-x:unset;width: 448px;">
+                        <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
+                            Add new attribute </div>
+                        <div class="mb-2 flex flex-grow justify-center text-sm text-gray-500">
+                            Choose a name for your attribute and pick a datatype you want to use</div>
 
-            <div class="mt-8 mb-8">
-                <div class="text-gray-900 text-lg leading-6 font-medium">Danger zone</div>
-                <div class="text-sm leading-5 font-normal mt-2 text-gray-500 inline-block">This action can not be
-                    reversed.
-                    Are you sure you want to delete this project?</div>
-                <div class="form-control">
-                    <div class="flex space-x-2 items-center">
-                        <input name="projectName" id="projectName" [formControl]="projectName" type="text"
-                            placeholder="Please enter the project name to enable deletion"
-                            class="w-full input input-sm border border-red-400 input-bordered focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                            (keydown.enter)="(projectName.value == project.name)? deleteProject(project.id):null">
-                        <div class="tooltip tooltip-left" data-tip="This can't be reverted!">
-                            <button (click)="deleteProject(project.id)"
-                                [disabled]="!(projectName.value === project.name)"
-                                [ngClass]="!(projectName.value === project.name) ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
-                                class="inline-flex text-xs items-center bg-red-100 border border-red-400 text-red-700 font-semibold px-4 py-2 rounded-md cursor-pointer ml-6 hover:bg-red-200 focus:outline-none cursor-pointer">
-                                <svg xmlns="http://www.w3.org/2000/svg"
-                                    class="mr-2 inline-block icon icon-tabler icon-tabler-wrecking-ball" width="16"
-                                    height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                                    stroke-linecap="round" stroke-linejoin="round">
-                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                    <circle cx="19" cy="13" r="2"></circle>
-                                    <circle cx="4" cy="17" r="2"></circle>
-                                    <circle cx="13" cy="17" r="2"></circle>
-                                    <line x1="13" y1="19" x2="4" y2="19"></line>
-                                    <line x1="4" y1="15" x2="13" y2="15"></line>
-                                    <path d="M8 12v-5h2a3 3 0 0 1 3 3v5"></path>
-                                    <path d="M5 15v-2a1 1 0 0 1 1 -1h7"></path>
-                                    <path d="M19 11v-7l-6 7"></path>
-                                </svg>
-                                Delete</button>
+                        <div class="grid grid-cols-2  gap-2 items-center"
+                            style="grid-template-columns: max-content auto;">
+
+                            <span data-tip="Enter an attribute name"
+                                class="cursor-help tooltip tooltip-right card-title mb-0 label-text font-normal"><span
+                                    class="underline"
+                                    style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Attribute
+                                    name</span></span>
+                            <input [(ngModel)]="attributeName" placeholder="Enter an attribute name..."
+                                (input)="changeAttributeName($event)"
+                                class="input input-sm input-bordered placeholder-italic" />
+
+                            <ng-template [ngIf]="duplicateNameExists">
+                                <span></span>
+                                <span class="text-red-700 text-xs mt-2">
+                                    Attribute name exists
+                                </span>
+                            </ng-template>
+
+                            <span data-tip="Select an attribute type"
+                                class="cursor-help tooltip tooltip-right card-title mb-0 label-text font-normal"><span
+                                    class="underline"
+                                    style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Attribute
+                                    type</span></span>
+                            <kern-dropdown [dropdownOptions]="{
+                                        optionArray: dataTypesArray,
+                                        buttonCaption: attributeType,
+                                        hasFullWidth: true
+                                    }" (optionClicked)="updateDataType($event)"></kern-dropdown>
+                        </div>
+
+                        <div class="modal-action">
+                            <div
+                                [ngClass]="attributeName == '' || attributeType == '' || duplicateNameExists? 'cursor-not-allowed' : ''">
+                                <label
+                                    [ngClass]="attributeName == '' || attributeType == '' || duplicateNameExists ? 'opacity-50 cursor-not-allowed pointer-events-none':'cursor-pointer opacity-100'"
+                                    class="bg-green-100 text-green-700 border border-green-400 text-white text-xs font-semibold mr-2 px-4 py-2 rounded-md cursor-pointer hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block"
+                                    (click)="createUserAttribute()">Add attribute</label>
+                            </div>
+
+                            <label for="new-attribute-modal"
+                                class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded-md border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
                         </div>
                     </div>
                 </div>
 
-            </div>
+
+                <div class="tooltip tooltip-bottom" data-tip="Upload more records to the project">
+                    <button [routerLink]="['../add']"
+                        class="mr-1 inline-flex items-center px-2.5 py-2 border border-gray-300 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 h-4 w-4" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                        </svg>
+                        Upload records
+                    </button>
+                </div>
+                <kern-export></kern-export>
 
 
-            <input #labelEditCheckbox type="checkbox" id="label-color" class="modal-toggle">
-            <div class="modal">
-                <div *ngIf="currentLabel" class="modal-box text-black bg-white flex flex-col">
-                    <div class="self-center flex flex-row flex-nowrap items-center">
-                        <p class="mr-2 font-bold">Label:</p><span
-                            class=" border rounded-md py-1 px-2 text-sm font-medium shadow-sm text-gray-900 text-center"
-                            [ngClass]="[getBackground(currentLabel.color), getText(currentLabel.color), getBorder(currentLabel.color)]">{{currentLabel.name}}</span>
-                    </div>
-
-                    <p class="mt-2">Pick a color:</p>
-                    <div class="mt-2 grid grid-cols-5 gap-2">
-                        <label *ngFor="let colorContainer of labelColorOptions"
-                            (click)="updateLabelColor(project.id, currentColorLabelingTaskId, currentLabel.id, currentLabel.color, colorContainer)"
-                            [ngClass]="[colorContainer.background, colorContainer.text,colorContainer.border, colorContainer.hover]"
-                            class="w-full group border rounded-md py-1 px-2 text-sm font-medium hover:bg-gray-50
-                                       focus:outline-none shadow-sm text-gray-900 cursor-pointer text-center">
-                            {{colorContainer.name}}
-                        </label>
-                    </div>
-                    <div class="mt-4">
-                        <label for="hotkey" class="block text-sm font-medium text-gray-700">Select a hotkey by pressing
-                            a
-                            key:</label>
-                        <div class="flex flex-row flex-nowrap items-center mt-1">
-                            <span class="w-10 bg-gray-100 rounded border text-center h-6 uppercase">
-                                {{currentLabel.hotkey}}</span>
-                            <span *ngIf="labelHotkeyError"
-                                class="ml-2 text-sm text-rose-700">{{labelHotkeyError}}</span>
+                <label for="projectExportModal" class="modal-button cursor-pointer inline-block">
+                    <div class="tooltip tooltip-bottom"
+                        data-tip="Creates a snapshot compressed file of your current project">
+                        <div
+                            class="mr-1 inline-flex items-center px-2.5 py-2 border border-gray-300 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none cursor-pointer">
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                class="mr-1 icon icon-tabler icon-tabler-camera inline-block" width="16" height="16"
+                                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <path
+                                    d="M5 7h1a2 2 0 0 0 2 -2a1 1 0 0 1 1 -1h6a1 1 0 0 1 1 1a2 2 0 0 0 2 2h1a2 2 0 0 1 2 2v9a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2">
+                                </path>
+                                <circle cx="12" cy="13" r="3"></circle>
+                            </svg>
+                            Create project snapshot
                         </div>
                     </div>
+                </label>
+                <input type="checkbox" id="projectExportModal" class="modal-toggle"
+                    (click)="requestProjectSize();requestProjectExportCredentials()">
+                <div class="modal">
+                    <div class="modal-box text-black bg-white justify-center mb-4"
+                        style="max-width: 80%; width:fit-content;">
+                        <div class="text-lg leading-6 text-gray-900 font-medium text-center">
+                            Project export </div>
+                        <div class="mt-1 text-sm leading-5 font-medium text-gray-700">See the size of each
+                            export item.</div>
+                        <div class="flex flex-col">
+                            <ng-template [ngIf]="projectSize" [ngIfElse]="sizeNotYetLoaded">
+                                <form [formGroup]="projectExportSchema">
+                                    <div formArrayName="attributes" class="grid items-center p-2 gap-x-4"
+                                        style="grid-template-columns: auto 25px auto auto;">
+                                        <!--headline-->
+                                        <div class="flex">
+                                            <span class="card-title mb-0 label-text">Name</span>
+                                        </div>
+                                        <div>
+                                            <!--info hover-->
+                                        </div>
+                                        <div class="flex">
+                                            <span class="card-title mb-0 label-text">Size estimate</span>
+                                        </div>
+                                        <div class="flex flex-row justify-center items-center gap-2">
+                                            <span class="card-title mb-0 label-text">Export</span>
+                                        </div>
+                                        <!--content-->
+                                        <ng-template ngFor let-attribute [ngForOf]="projectExportArray.controls"
+                                            let-i="index">
+                                            <div [formGroupName]="i" class="contents">
+                                                <div class="flex">
+                                                    <p class="break-words cursor-default capitalize-first"
+                                                        [ngClass]="attribute.get('moveRight').value?'ml-4':null">
+                                                        {{attribute.get("name").value}}</p>
+                                                </div>
+                                                <div class="flex items-center justify-items-center">
+                                                    <ng-template [ngIf]="attribute.get('desc').value">
+                                                        <div [attr.data-tip]="attribute.get('desc').value"
+                                                            class="tooltip tooltip-top">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                                                                fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                                                stroke-width="2">
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                            </svg>
+                                                        </div>
+                                                    </ng-template>
+                                                </div>
+                                                <div class="flex">
+                                                    <p class="break-words cursor-default">
+                                                        {{attribute.get("sizeReadable").value}}
+                                                    </p>
+                                                </div>
+                                                <div class="flex justify-center">
+                                                    <div class="form-control">
+                                                        <label class="card-title mb-0 cursor-pointer label p-0">
+                                                            <input formControlName="export" type="checkbox"
+                                                                class="cursor-pointer">
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </ng-template>
+                                    </div>
+                                </form>
+                            </ng-template>
+                            <ng-template #sizeNotYetLoaded>
+                                <div class="flex flex-col items-center justify-items-center mb-8 mt-4">
+                                    <kern-loading></kern-loading>
+                                </div>
+                            </ng-template>
+                        </div>
+                        <div *ngIf="projectSize" class="mt-4 flex flex-row justify-between "
+                            style="border-top: 1px solid #ddd;">
+                            <!-- Final size-->
+                            <div></div>
+                            <div class="mt-4 mr-2 flex flex-row flex-nowrap">
+                                <div class="flex">
+                                    <span class="card-title mb-0 label-text">Final size estimate:</span>
+                                </div>
+                                <div class="flex ml-2">
+                                    <span class="card-title mb-0 label-text">{{downloadSizeText}}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-action">
+                            <label *ngIf="projectExportCredentials?.downloadFileName as fileName"
+                                data-tip="Latest prepared export file" for="projectExportModal"
+                                (click)="exportViaFile(false)"
+                                class="tooltip bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded-md border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 h-4 w-4 inline-block" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                </svg>
+                                {{fileName}}
+                            </label>
+                            <label (click)="prepareDownload(project.id)"
+                                [ngClass]="downloadPrepareMessage== DownloadStateType.PREPARATION||downloadPrepareMessage == DownloadStateType.DOWNLOAD?'opacity-50 cursor-not-allowed py-1' : 'opacity-100 cursor-pointer py-2'"
+                                class="bg-green-100 text-green-700 border border-green-400 text-xs font-semibold px-4 rounded-md cursor-pointer hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                                type="submit">
+                                Prepare download
+                                <kern-loading color="green"
+                                    *ngIf="downloadPrepareMessage == DownloadStateType.PREPARATION || downloadPrepareMessage == DownloadStateType.DOWNLOAD">
+                                </kern-loading>
+                            </label>
+                            <label for="projectExportModal"
+                                class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                Close
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-                    <div class="modal-action mt-2 flex">
-                        <div class="flex items-center self-end">
-                            <label for="label-color"
-                                (click)="currentLabel=null;labelEditCheckbox.checked=false;labelHotkeyError=''"
+            <div class="text-left lg:text-right">
+                <div [attr.data-tip]="project.tokenizer" class="z-10 tooltip tooltip-right font-medium inline-block">
+                    <span class="cursor-help underline"
+                        style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">
+                        Tokenization</span>
+                </div>
+                <div
+                    class="h-8 ml-2 inline-flex items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white relative">
+                    <ng-template [ngIf]="tokenizationProgress">
+                        <progress class="progress progress-primary w-48 md:w-72 xl:w-96" [value]="tokenizationProgress"
+                            max="1"> </progress>
+                        <div *ngIf="tokenizationProgress==1"
+                            class="absolute top-0 left-0 right-0 bottom-0 flex flex-row items-center justify-center"
+                            style="background-color:#f4f4f5bf">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="inline-block w-4 h-4 stroke-current"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M5 13l4 4L19 7" />
+                            </svg><span class="text-sm font-medium text-gray-700">Completed</span>
+                        </div>
+                    </ng-template>
+                    <ng-template [ngIf]="!tokenizationProgress">
+                        <progress class="progress progress-primary w-48 md:w-72 xl:w-96" value="0" max="1">
+                        </progress>
+                    </ng-template>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="mt-8">
+        <div class="text-lg leading-6 text-gray-900 font-medium inline-block w-full">
+            <label>Embeddings</label>
+            <div class="mt-1">
+                <div class="text-sm leading-5 font-medium text-gray-700 inline-block">You can enrich your records
+                    with
+                    embeddings, e.g. to use them for vector search or active transfer learning.</div>
+                <div class="">
+                    <div class="inline-block min-w-full align-middle">
+                        <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+                            <table class="min-w-full divide-y divide-gray-300">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th scope="col"
+                                            class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                            Name</th>
+                                        <th scope="col"
+                                            class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                            Type</th>
+                                        <th scope="col"
+                                            class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                            Status</th>
+                                        <th scope="col"
+                                            class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                            Dimensionality</th>
+                                        <th scope="col"
+                                            class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                            Count</th>
+                                        <th scope="col"
+                                            class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-200">
+                                    <tr *ngFor="let embeddingContainer of embeddings; let j = index"
+                                        [ngClass]="j%2!=0 ? 'bg-gray-50':'bg-white'">
+                                        <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                            {{embeddingContainer.name}}
+                                        </td>
+                                        <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                            <div
+                                                class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
+                                                {{embeddingContainer.type == 'ON_ATTRIBUTE'?
+                                                'Attribute Specific' : 'Token Specific'}}
+                                            </div>
+                                        </td>
+                                        <td class="text-center px-3 text-sm text-gray-500"
+                                            [ngClass]="embeddingContainer.state != 'FINISHED' && embeddingContainer.state != 'FAILED' ? 'py-0' : 'whitespace-nowrap py-2'">
+                                            <ng-template
+                                                [ngIf]="embeddingContainer.state != 'FINISHED' && embeddingContainer.state != 'FAILED'">
+                                                <div class="items-center">
+                                                    <progress class="progress progress-primary"
+                                                        [value]="embeddingContainer.progress" max="1"></progress>
+                                                </div>
+                                                <p class="text-xs italic">{{embeddingContainer.state}}</p>
+                                            </ng-template>
+
+                                            <div *ngIf="embeddingContainer.state === 'FINISHED'"
+                                                data-tip="Successfully created." class="tooltip">
+                                                <div
+                                                    class="btn cursor-default btn-circle btn-xs no-animation btn-primary mx-2">
+                                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                                        class="inline-block w-4 h-4 stroke-current" fill="none"
+                                                        viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2" d="M5 13l4 4L19 7" />
+                                                    </svg>
+                                                </div>
+                                            </div>
+
+                                            <div *ngIf="embeddingContainer.state === 'FAILED'"
+                                                data-tip="Embedding creation ran into errors." class="tooltip">
+                                                <div
+                                                    class="btn cursor-default btn-circle btn-xs no-animation btn-error mx-2">
+                                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                                        class="inline-block w-4 h-4 stroke-current" fill="none"
+                                                        viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                            {{embeddingContainer.dimension}}
+                                        </td>
+                                        <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                            {{embeddingContainer.count}}
+                                        </td>
+                                        <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                            <label [for]="'my-modal-'+embeddingContainer.id"
+                                                class="modal-button btn btn-sm btn-ghost px-0">
+
+                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                    class="inline-block w-6 h-6 stroke-current text-red-700" fill="none"
+                                                    viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                </svg>
+                                            </label>
+                                            <input type="checkbox" [id]="'my-modal-'+embeddingContainer.id"
+                                                class="modal-toggle">
+                                            <div class="modal">
+                                                <div class="modal-box text-black bg-white justify-center">
+                                                    <div
+                                                        class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
+                                                        Warning </div>
+                                                    <p class="mt-2 text-gray-500 text-sm">Are you sure you want to
+                                                        delete
+                                                        this embedding?</p>
+                                                    <p class="text-gray-500 text-sm">This will delete all
+                                                        corresponding
+                                                        tensors!</p>
+                                                    <div class="modal-action">
+                                                        <label [for]="'my-modal-'+embeddingContainer.id"
+                                                            class="bg-red-100 text-red-700 border border-red-400 text-xs font-semibold mr-2 px-4 py-2 rounded flex cursor-pointer hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 inline-block"
+                                                            (click)="deleteEmbedding(embeddingContainer.id)">Delete
+                                                            embedding</label>
+                                                        <label [for]="'my-modal-'+embeddingContainer.id"
+                                                            class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-1">
+                <div class="tooltip tooltip-right"
+                    data-tip="Vectorize your attributes. Integration to Hugging Face available">
+                    <label for="my-modal-newEmbedding"
+                        class="inline-block items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 h-5 w-5 inline-block stroke-current"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        Generate embedding
+                    </label>
+                </div>
+                <input #modalInputEmbedding type="checkbox" id="my-modal-newEmbedding" class="modal-toggle">
+                <div class="modal">
+                    <div class="modal-box modal_content text-black bg-white justify-center"
+                        style="overflow-y:visible;overflow-x:unset;width: 448px;">
+                        <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
+                            Add an embedding </div>
+                        <div class="mb-2 flex flex-grow justify-center text-sm text-gray-500">
+                            Pick from the below solutions to build a vector representation</div>
+
+                        <div *ngIf="attributesArray && embeddingCreationFormGroup">
+                            <form [formGroup]="embeddingCreationFormGroup" class="grid grid-cols-2  gap-2 items-center"
+                                style="grid-template-columns: max-content auto;">
+                                <div class="tooltip tooltip-right" data-tip="Choose attribute that will be encoded">
+                                    <span class="card-title mb-0 label-text flex"><span class="cursor-help underline"
+                                            style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Target
+                                            Attribute</span></span>
+                                </div>
+                                <select formControlName="targetAttribute"
+                                    class="select select-bordered select-sm max-w-xs"
+                                    data-intercom-target="Settings Page Embedding Mask Target Attribute Selector">
+                                    <option *ngFor="let attribute of attributesArrayTextUsableUploaded"
+                                        [value]="attribute.id">
+                                        {{attribute.name}}
+                                    </option>
+                                </select>
+                                <div class="tooltip tooltip-right" data-tip="One embedding per record vs. per token">
+                                    <span class="card-title mb-0 label-text flex"><span class="cursor-help underline"
+                                            style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Granularity</span></span>
+                                </div><select formControlName="granularity"
+                                    class="select select-bordered select-sm max-w-xs"
+                                    data-intercom-target="Settings Page Embedding Mask Granularity Selector"
+                                    (change)="checkForceHiddenHandles()">
+                                    <option *ngFor="let granularity of granularityTypesArray"
+                                        [value]="granularity.value">
+                                        {{granularity.name}}
+                                    </option>
+                                </select>
+                                <div class="tooltip tooltip-right" data-tip="Name of your Hugging Face model">
+                                    <span class="card-title mb-0 label-text flex"><span class="cursor-help underline"
+                                            style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Configuration</span></span>
+                                </div>
+                                <div class="dropdown"
+                                    data-intercom-target="Settings Page Embedding Mask Handle Selector With Suggestions"
+                                    *ngIf="embeddingHandlesMap.get(embeddingCreationFormGroup.get('targetAttribute').value) as suggestions;else noSuggestions">
+                                    <div tabindex="0" class="flex flex-row select select-bordered select-sm pl-0 pr-8">
+                                        <input #inputEmbeddingHandle type="text" placeholder="Type to search..."
+                                            class="w-full font-bold input input-sm"
+                                            style="outline:none; box-shadow:none;height:1.9rem;"
+                                            [value]="embeddingCreationFormGroup.get('embeddingHandle').value"
+                                            (focus)="$event.target.select()"
+                                            (keydown.enter)="selectFirstUnhiddenEmbeddingHandle(inputEmbeddingHandle)"
+                                            (input)="checkEmbeddingHandles($event.target)">
+                                    </div>
+                                    <ul tabindex="0"
+                                        class="p-2 w-full menu dropdown-content bg-base-100 shadow max-h-80 overflow-y-auto">
+                                        <li #me *ngFor="let embeddingHandle of suggestions; let k = index"
+                                            [ngClass]="embeddingHandle.hidden || embeddingHandle.forceHidden?'hidden':null"
+                                            (mouseenter)="setCurrentEmbeddingHandle(embeddingHandle,hoverBox,me)"
+                                            (mouseleave)="setCurrentEmbeddingHandle(null)">
+
+                                            <label class="cursor-pointer label"
+                                                [ngClass]="checkIfModelIsDownloaded(embeddingHandle.configString) ? 'text-green-700' : ''"
+                                                (click)="selectEmbeddingHandle(embeddingHandle,inputEmbeddingHandle,hoverBox)">
+                                                {{embeddingHandle.configString}}
+                                            </label>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <ng-template #noSuggestions>
+                                    <div class="flex flex-row select select-bordered select-sm pl-0 pr-8"
+                                        data-intercom-target="Settings Page Embedding Mask Handle Selector Without Suggestions">
+                                        <input #inputEmbeddingHandle type="text" placeholder="Enter config string..."
+                                            class="w-full font-bold input input-sm"
+                                            style="outline:none; box-shadow:none;height:1.9rem;"
+                                            [value]="embeddingCreationFormGroup.get('embeddingHandle').value"
+                                            (focus)="$event.target.select()"
+                                            (input)="checkEmbeddingHandles($event.target)">
+                                    </div>
+                                </ng-template>
+                            </form>
+                        </div>
+                        <div class="modal-action">
+                            <button [for]="'my-modal-newEmbedding'" [disabled]="embeddingCreationBlocked?true:null"
+                                [ngClass]="embeddingCreationBlocked ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
+                                class="bg-green-100 text-green-700 border border-green-400 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                                (click)="addEmbedding(project.id,modalInputEmbedding)"
+                                data-intercom-target="Settings Page Embedding Mask Add Embedding Button">Add
+                                embedding</button>
+                            <label for="my-modal-newEmbedding"
                                 class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
                         </div>
                     </div>
                 </div>
+                <div #hoverBox class="absolute top-0 w-fit h-fit card shadow bg-white" style="z-index: 1000;"
+                    [ngClass]="currentEmbeddingHandle?null:'hidden'">
+                    <ng-template [ngIf]="currentEmbeddingHandle">
+                        <div class="card-body p-6 flex flex-col w-64">
+                            <div class="flex justify-center">
+                                <span class="card-title mb-2 label-text">Info</span>
+                            </div>
+                            <span class="label-text text-sm">{{currentEmbeddingHandle.description}}</span>
+                        </div>
+                    </ng-template>
+                </div>
+                <div class="tooltip tooltip-right"
+                    [attr.data-tip]="!isManaged ? 'Check out our hosted version to use this function' : 'See which models are downloaded'">
+                    <button
+                        class="ml-1 inline-block items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none cursor-pointer"
+                        [routerLink]="['/model-download']" [disabled]="!isManaged"
+                        [ngClass]="!isManaged ? 'cursor-not-allowed' : 'opacity-100 cursor-pointer'">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                            class="inline-block icon icon-tabler icon-tabler-arrow-autofit-down" width="20" height="20"
+                            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                            <path d="M12 20h-6a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h8"></path>
+                            <path d="M18 4v17"></path>
+                            <path d="M15 18l3 3l3 -3"></path>
+                        </svg>
+                        <span class="leading-5">
+                            See downloaded models
+                        </span>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+
+        <div class="mt-8">
+            <div class="text-lg leading-6 text-gray-900 font-medium inline-block">
+                Labeling tasks
+            </div>
+            <div class="mt-1">
+                <div class="text-sm leading-5 font-medium text-gray-700 inline-block">Define what kind of things you
+                    want to
+                    label. We currently support classifications and extractions.</div>
+                <div class="">
+                    <div class="inline-block min-w-full align-middle">
+                        <form [formGroup]="labelingTasksSchema"
+                            class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+                            <table formArrayName="labelingTasks" class="min-w-full divide-y divide-gray-300">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th scope="col"
+                                            class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                            Target</th>
+                                        <th scope="col"
+                                            class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500 w-60">
+                                            Name</th>
+                                        <th scope="col"
+                                            class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                            Task Type</th>
+                                        <th scope="col"
+                                            class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                            Labels</th>
+                                        <th scope="col"
+                                            class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-200">
+                                    <tr *ngFor="let labelingTaskContainer of labelingTasksArray.controls; let j = index"
+                                        [ngClass]="j%2!=0 ? 'bg-gray-50':'bg-white'" [formGroupName]="j">
+                                        <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                            {{labelingTaskContainer.get("targetName").value}}
+                                        </td>
+                                        <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                            <p class="break-words cursor-pointer"
+                                                [ngClass]="labelingTaskContainer.get('nameOpen').value?'hidden':null"
+                                                (click)="openTaskName(labelingTaskContainer)">
+                                                {{labelingTaskContainer.get("name").value}}</p>
+                                            <ng-template [ngIf]="labelingTaskContainer.get('nameOpen').value">
+                                                <input #inputTaskName name="labelName" type="text"
+                                                    placeholder="Task Name"
+                                                    [value]="labelingTaskContainer.get('name').value"
+                                                    class="w-52 input input-outline input-bordered input-sm"
+                                                    (keyup)="checkTaskNameColor($event.target)"
+                                                    (keydown.enter)="changeTaskName(labelingTaskContainer,inputTaskName.value)"
+                                                    (blur)="changeTaskName(labelingTaskContainer,inputTaskName.value)">
+                                            </ng-template>
+                                        </td>
+                                        <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                            <select formControlName="taskType"
+                                                class="select select-sm select-bordered pr-8 max-w-xs">
+                                                <option *ngFor="let dropdown of labelingTasksDropdownValues()"
+                                                    [attr.disabled]="isLabelingTaskOptionDisabled(labelingTaskContainer,dropdown.value)?true:null"
+                                                    [value]="dropdown.value">{{
+                                                    dropdown.name }}
+                                                </option>
+                                            </select>
+                                        </td>
+                                        <td
+                                            class="flex flex-wrap justify-center items-center px-3 py-2 text-sm text-gray-500">
+                                            <div
+                                                *ngFor="let label of lh.labelMap.get(labelingTaskContainer.get('id').value)">
+                                                <div class="inline-flex border items-center mx-1.5 px-1.5 py-0.5 rounded-md text-sm font-medium"
+                                                    [ngClass]="[label.color.backgroundColor, label.color.textColor, label.color.borderColor, label.color.hoverColor]">
+                                                    <label for="label-color"
+                                                        (click)="lh.setCurrentLabel(label,labelingTaskContainer.get('id').value)"
+                                                        class="modal-button cursor-pointer inline-block">
+                                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                                            class="mr-2 icon icon-tabler icon-tabler-color-picker"
+                                                            width="20" height="20" viewBox="0 0 24 24" stroke-width="2"
+                                                            stroke="currentColor" fill="none" stroke-linecap="round"
+                                                            stroke-linejoin="round">
+                                                            <path stroke="none" d="M0 0h24v24H0z" fill="none">
+                                                            </path>
+                                                            <path d="M11 7l6 6"></path>
+                                                            <path
+                                                                d="M4 16l11.7 -11.7a1 1 0 0 1 1.4 0l2.6 2.6a1 1 0 0 1 0 1.4l-11.7 11.7h-4v-4z">
+                                                            </path>
+                                                        </svg>
+                                                    </label>
+
+                                                    <span>{{label.name}}</span>
+                                                    <kbd *ngIf="label.hotkey"
+                                                        class="ml-2 uppercase inline-flex items-center border bg-white border-gray-200 rounded px-2 text-sm font-sans font-medium text-gray-400">{{label.hotkey}}</kbd>
+                                                    <label [for]="'my-modal-'+label.id"
+                                                        class="modal-button cursor-pointer inline-block ml-2">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
+                                                            fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                                            stroke-width="2">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                        </svg>
+                                                    </label>
+                                                    <input type="checkbox" [id]="'my-modal-'+label.id"
+                                                        class="modal-toggle">
+                                                    <div class="modal">
+                                                        <div class="modal-box text-black bg-white justify-center">
+                                                            <div
+                                                                class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
+                                                                Warning </div>
+                                                            <p class="mt-2 text-gray-500 text-sm text-center">Are
+                                                                you
+                                                                sure
+                                                                you want to delete this label?</p>
+                                                            <p class="text-gray-500 text-sm text-center">This will
+                                                                delete
+                                                                all data associated with it!</p>
+                                                            <div class="modal-action">
+                                                                <label [for]="'my-modal-'+label.id"
+                                                                    class="bg-red-100 text-red-700 border border-red-400 text-xs font-semibold mr-2 px-4 py-2 rounded flex cursor-pointer hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 inline-block"
+                                                                    (click)="removeLabel(project.id, labelingTaskContainer.get('id').value, label.id, label.color)">Delete
+                                                                    label</label>
+                                                                <label [for]="'my-modal-'+label.id"
+                                                                    class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <label class="ml-2"
+                                                [ngClass]="labelingTaskContainer.get('taskType').value == LabelingTaskType.NOT_SET ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
+                                                [for]="'my-modal-labelCreation'+labelingTaskContainer.get('id').value">
+                                                <span
+                                                    class="bg-gray-100 text-gray-800 cursor-pointer modal-button btn btn-sm btn-ghost px-1">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+                                                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                                    </svg>
+                                                </span>
+                                            </label>
+                                            <input type="checkbox"
+                                                [id]="'my-modal-labelCreation'+labelingTaskContainer.get('id').value"
+                                                class="modal-toggle" (change)="focusModalInputBox($event,'labelName')">
+                                            <div class="modal">
+                                                <div class="modal-box text-black bg-white justify-center">
+                                                    <div
+                                                        class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
+                                                        Enter your labels </div>
+                                                    <div
+                                                        class="mb-2 flex flex-grow justify-center text-sm text-gray-500">
+                                                        You can add press enter to add a label</div>
+                                                    <input #labelName name="labelName" type="text"
+                                                        placeholder="Label Name"
+                                                        class="w-full input input-sm input-bordered"
+                                                        (input)="checkAndModifyLabelName($event.target)"
+                                                        (keydown.enter)="addLabel(project.id,labelingTaskContainer.get('id').value, labelName)">
+                                                    <div class="modal-action">
+                                                        <button
+                                                            [disabled]="!isLabelNameUnique(labelingTaskContainer.get('id').value,labelName.value)"
+                                                            [ngClass]="!isLabelNameUnique(labelingTaskContainer.get('id').value,labelName.value) ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
+                                                            class="bg-green-100 text-green-700 border border-green-400 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                                                            (click)="addLabel(project.id,labelingTaskContainer.get('id').value, labelName)">Add
+                                                            label</button>
+                                                        <label
+                                                            [for]="'my-modal-labelCreation'+labelingTaskContainer.get('id').value"
+                                                            class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                            <label [for]="'my-modal-'+labelingTaskContainer.get('id').value"
+                                                class="modal-button btn btn-sm btn-ghost px-0">
+
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-700"
+                                                    fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                                    stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                </svg>
+                                            </label>
+                                            <input type="checkbox"
+                                                [id]="'my-modal-'+labelingTaskContainer.get('id').value"
+                                                class="modal-toggle">
+                                            <div class="modal">
+                                                <div class="modal-box text-black bg-white justify-center">
+                                                    <div
+                                                        class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
+                                                        Warning </div>
+                                                    <p class="mt-2 text-gray-500 text-sm">Are you sure you want to
+                                                        delete
+                                                        this labeling task?</p>
+                                                    <p class="text-gray-500 text-sm">This will delete all data
+                                                        associated
+                                                        with it,</p>
+                                                    <p class="text-gray-500 text-sm">including heuristics and
+                                                        labels!</p>
+                                                    <div class="modal-action">
+                                                        <label [for]="'my-modal-'+labelingTaskContainer.get('id').value"
+                                                            class="bg-red-100 text-red-700 border border-red-400 text-xs font-semibold mr-2 px-4 py-2 rounded flex cursor-pointer hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 inline-block"
+                                                            (click)="deleteLabelingTask(project.id,labelingTaskContainer.get('id').value)">Delete
+                                                            labeling task</label>
+                                                        <label [for]="'my-modal-'+labelingTaskContainer.get('id').value"
+                                                            class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="mt-1">
+        <div class="tooltip tooltip-right" data-tip="Currently supporting classifications and extractions">
+            <label for="my-modal-newRecordTask"
+                class="inline-block items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 h-5 w-5 inline-block stroke-current" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                Add labeling task
+            </label>
+        </div>
+        <input #modalInput type="checkbox" id="my-modal-newRecordTask" class="modal-toggle"
+            (change)="focusModalInputBox($event,'labelingTaskName')">
+        <div class="modal">
+            <div class="modal-box text-black bg-white justify-center" style="width: 448px;">
+                <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
+                    Add a labeling task </div>
+                <div class="mb-2 flex flex-grow justify-center text-sm text-gray-500">
+                    Afterward, you can select the label task type depending on the target type</div>
+                <div class="grid grid-cols-2 gap-2 items-center max-w-sm"
+                    style="grid-template-columns: max-content auto;">
+                    <div class="tooltip tooltip-right" data-tip="Choose attribute to be labeled">
+                        <span class="cursor-help card-title mb-0 label-text flex"><span class="underline"
+                                style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Target
+                                attribute</span></span>
+                    </div>
+                    <select #labelingTaskTarget class="select select-bordered select-sm">
+                        <option value="@@NO_ATTRIBUTE@@" selected="selected">Full Record</option>
+                        <option *ngFor="let attribute of attributesArrayUsableUploaded" [value]="attribute.id">
+                            {{attribute.name}}
+                        </option>
+                    </select>
+                    <div class="tooltip tooltip-right" data-tip="Name of your labeling task">
+                        <span class="cursor-help card-title mb-0 label-text flex"><span class="underline"
+                                style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Name</span></span>
+                    </div><input #labelingTaskName name="labelingTaskName" type="text" placeholder="Labeling task name"
+                        class="input input-sm input-bordered" (input)="checkLabelingTaskName($event.target)"
+                        (keydown.enter)="addLabelingTask(project.id,modalInput,labelingTaskName.value,labelingTaskTarget.value);labelingTaskName.value=''">
+                </div>
+                <div class="modal-action">
+                    <button [disabled]="!isTaskNameUnique || labelingTaskName.value ==''"
+                        [ngClass]="!isTaskNameUnique || labelingTaskName.value=='' ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
+                        class="bg-green-100 text-green-700 border border-green-400 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                        (click)="addLabelingTask(project.id,modalInput,labelingTaskName.value,labelingTaskTarget.value);labelingTaskName.value=''">Add
+                        labeling task</button>
+                    <label for="my-modal-newRecordTask"
+                        class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="mt-8">
+            <div class="text-gray-900 text-lg leading-6 font-medium">
+                Project metadata
+            </div>
+            <div class="text-sm leading-5 font-normal mt-2 text-gray-500 inline-block">Change your project name or
+                description here.</div>
+            <div>
+                <form action="#" class="relative">
+                    <div
+                        class="bg-white border border-gray-300 rounded-lg shadow-sm overflow-hidden flex flex-col divide-y divide-gray-200">
+                        <input #newProjectName [placeholder]="project.name"
+                            (keydown.enter)="updateProjectNameAndDescription(project.id,newProjectName.value,newProjectDescription.value);newProjectDescription.value = '';newProjectName.value=''"
+                            (input)="checkProjectUpdateDisabled($event.target.value,newProjectDescription.value)"
+                            class="appearance-none rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none"
+                            type="text">
+                        <textarea #newProjectDescription rows="2" [placeholder]="project.description" class="
+                            form-control block w-full px-3 py-1.5 text-sm text-gray-700
+                            bg-white bg-clip-padding focus:outline-none m-0"
+                            (input)="checkProjectUpdateDisabled(newProjectName.value,$event.target.value)"
+                            (keydown.enter)="updateProjectNameAndDescription(project.id,newProjectName.value,newProjectDescription.value);newProjectDescription.value = '';newProjectName.value=''"></textarea>
+                        <div
+                            class="border-t bg-gray-50 border-gray-200 px-2 py-2 flex justify-between items-center space-x-3 sm:px-3">
+                            <div class="flex-shrink-0">
+                                <button type="submit" data-tip="Stores the changes"
+                                    (click)="updateProjectNameAndDescription(project.id,newProjectName.value,newProjectDescription.value);newProjectDescription.value = '';newProjectName.value=''"
+                                    class="tooltip tooltip-right inline-flex items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">Update</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+
+        <div class="mt-8 mb-8">
+            <div class="text-gray-900 text-lg leading-6 font-medium">Danger zone</div>
+            <div class="text-sm leading-5 font-normal mt-2 text-gray-500 inline-block">This action can not be
+                reversed.
+                Are you sure you want to delete this project?</div>
+            <div class="form-control">
+                <div class="flex space-x-2 items-center">
+                    <input name="projectName" id="projectName" [formControl]="projectName" type="text"
+                        placeholder="Please enter the project name to enable deletion"
+                        class="w-full input input-sm border border-red-400 input-bordered focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                        (keydown.enter)="(projectName.value == project.name)? deleteProject(project.id):null">
+                    <div class="tooltip tooltip-left" data-tip="This can't be reverted!">
+                        <button (click)="deleteProject(project.id)" [disabled]="!(projectName.value === project.name)"
+                            [ngClass]="!(projectName.value === project.name) ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
+                            class="inline-flex text-xs items-center bg-red-100 border border-red-400 text-red-700 font-semibold px-4 py-2 rounded-md cursor-pointer ml-6 hover:bg-red-200 focus:outline-none cursor-pointer">
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                class="mr-2 inline-block icon icon-tabler icon-tabler-wrecking-ball" width="16"
+                                height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <circle cx="19" cy="13" r="2"></circle>
+                                <circle cx="4" cy="17" r="2"></circle>
+                                <circle cx="13" cy="17" r="2"></circle>
+                                <line x1="13" y1="19" x2="4" y2="19"></line>
+                                <line x1="4" y1="15" x2="13" y2="15"></line>
+                                <path d="M8 12v-5h2a3 3 0 0 1 3 3v5"></path>
+                                <path d="M5 15v-2a1 1 0 0 1 1 -1h7"></path>
+                                <path d="M19 11v-7l-6 7"></path>
+                            </svg>
+                            Delete</button>
+                    </div>
+                </div>
             </div>
 
-
         </div>
+    </div>
+</div>
+
+<ng-template [ngIf]="lh">
+    <kern-modal [isOpen]="lh.modalOpen.changeColor" (optionClicked)="lh.clearCurrentLabel()" closeButton="X">
+        <div *ngIf="lh.currentLabel?.label as label">
+            <div class="self-center flex flex-row flex-nowrap items-center justify-center">
+                <p class="mr-2 font-bold">Label:</p><span
+                    class="inline-flex items-center border rounded-md py-1 px-2 text-sm font-medium shadow-sm text-gray-900 text-center cursor-pointer tooltip tooltip-bottom"
+                    data-tip="Rename label" (click)="lh.openRenameLabel()"
+                    [ngClass]="[label.color.backgroundColor, label.color.textColor, label.color.borderColor,label.color.hoverColor]">{{label.name}}
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-pencil h-5 w-5"
+                        width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                        <path d="M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4"></path>
+                        <line x1="13.5" y1="6.5" x2="17.5" y2="10.5"></line>
+                    </svg></span>
+
+            </div>
+
+            <p class="mt-2">Pick a color:</p>
+            <div class="mt-2 grid grid-cols-5 gap-2">
+                <label *ngFor="let colorContainer of lh.labelColorOptions"
+                    (click)="updateLabelColor(project.id, lh.currentLabel.taskId, label.id, label.color.name, colorContainer)"
+                    [ngClass]="[colorContainer.backgroundColor, colorContainer.textColor,colorContainer.borderColor, colorContainer.hoverColor]"
+                    class="w-full group border rounded-md py-1 px-2 text-sm font-medium hover:bg-gray-50
+                                   focus:outline-none shadow-sm text-gray-900 cursor-pointer text-center">
+                    {{colorContainer.name}}
+                </label>
+            </div>
+            <div class="mt-4">
+                <label for="hotkey" class="block text-sm font-medium text-gray-700">Select a hotkey by pressing
+                    a
+                    key:</label>
+                <div class="flex flex-row flex-nowrap items-center mt-1">
+                    <span class="w-10 bg-gray-100 rounded border text-center h-6 uppercase">
+                        {{label.hotkey}}</span>
+                    <span *ngIf="lh.labelHotkeyError" class="ml-2 text-sm text-rose-700">{{lh.labelHotkeyError}}</span>
+                </div>
+            </div>
+        </div>
+
+    </kern-modal>
+    <kern-modal *ngIf="lh" [isOpen]="lh.modalOpen.changeName" (optionClicked)="lh.clearCurrentLabel()" closeButton="X"
+        [acceptButton]="{
+        buttonCaption:lh.renameLabelData?.checkResults?.warnings.length>0?'Rename anyway':'Rename',
+        disabled:!lh.renameLabelData?.checkResults || lh.renameLabelData?.checkResults?.errors.length>0,
+        emitObject:lh,emitFunction:lh.updateLabelName
+    }">
+        <div *ngIf="lh.renameLabelData && lh.currentLabel?.label as label" class="flex flex-col gap-y-2">
+            <div class="self-center flex flex-row flex-nowrap items-center justify-center">
+                <p class="mr-2 font-bold">Change label name:</p><span
+                    class=" border rounded-md py-1 px-2 text-sm font-medium shadow-sm text-gray-900 text-center"
+                    [ngClass]="[label.color.backgroundColor, label.color.textColor, label.color.borderColor]">{{label.name}}</span>
+            </div>
+            <div class="flex flex-col gap-y-2" style="max-height: calc(80vh - 100px);overflow-y: auto;">
+                <div class="flex flex-row flex-nowrap items-center">
+                    <input #newLabelName name="newLabelName" type="text" placeholder="New Name" [value]="label.name"
+                        class="w-80 input input-outline input-bordered input-sm focus:outline-none"
+                        style="box-shadow:none;" (keyup)="lh.checkInputRenameLabel($event)"
+                        (keydown.enter)="lh.checkRenameLabel()">
+                    <button (click)="lh.checkRenameLabel()" [attr.disabled]="lh.renameLabelData.canCheck?null:true"
+                        [ngClass]="lh.renameLabelData.canCheck ?  'opacity-100 cursor-pointer':'opacity-50 cursor-not-allowed'"
+                        class="ml-2 bg-green-100 text-green-700 border border-green-400 text-xs font-semibold px-4 py-2 rounded-md hover:bg-green-200 focus:outline-none">Check
+                        Rename</button>
+
+
+                </div>
+                <ng-template [ngIf]="lh.renameLabelData.checkResults?.errors.length>0">
+                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative flex flex-col"
+                        role="alert">
+                        <div class="self-center flex flex-row flex-nowrap items-center -mt-1 mb-1">
+                            <strong class="font-bold">Errors detected</strong>
+                            <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <pre *ngFor="let error of lh.renameLabelData.checkResults.errors"
+                            class="text-sm overflow-x-auto">{{error.msg}}</pre>
+                    </div>
+                </ng-template>
+                <ng-template [ngIf]="lh.renameLabelData.checkResults?.infos.length>0">
+                    <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded relative flex flex-col"
+                        role="alert">
+                        <div class="self-center flex flex-row flex-nowrap items-center -mt-1 mb-1">
+                            <strong class="font-bold">Information</strong>
+                            <svg class="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd"
+                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <pre *ngFor="let info of lh.renameLabelData.checkResults.infos"
+                            class="text-sm overflow-x-auto">{{info.msg}}</pre>
+                    </div>
+                </ng-template>
+                <ng-template [ngIf]="lh.renameLabelData.checkResults?.warnings.length>0">
+                    <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative flex flex-col gap-y-1"
+                        role="alert">
+                        <div class="self-center flex flex-row flex-nowrap items-center -mt-1 mb-1">
+                            <strong class="font-bold">Warning</strong>
+
+                            <svg class="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd"
+                                    d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="self-center -mt-4">
+
+                            <span class="text-sm mb-2">Open toggles to fix individual warnings</span>
+                        </div>
+                        <div *ngFor="let warning of lh.renameLabelData.checkResults.warnings"
+                            [ngClass]="warning.open?'border border-yellow-400':'tooltip'" class="text-sm"
+                            data-tip="Click me to open solution provider" class="flex flex-col gap-y-1">
+                            <div class="flex flex-row items-center cursor-pointer" (click)="warning.open=!warning.open">
+                                <div [ngClass]="warning.open?'':'rotate_transform_270'" class="mr-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                        class="icon icon-tabler icon-tabler-triangle-inverted h-3 w-3" width="24"
+                                        height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+                                        fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <path fill="currentColor"
+                                            d="M5 4h14a2 2 0 0 1 1.84 2.75l-7.1 12.25a2 2 0 0 1 -3.5 0l-7.1 -12.25a2 2 0 0 1 1.75 -2.75">
+                                        </path>
+                                    </svg>
+                                </div>
+                                <span class="text-sm overflow-x-auto">{{warning.msg}}</span>
+                            </div>
+
+                            <div [ngClass]="warning.open?'':'hidden'" class="flex flex-col p-2">
+                                <ng-template [ngIf]="warning.key == 'KNOWLEDGE_BASE'">
+                                    <div class="flex flex-row">
+                                        <span class="mr-2 font-bold text-sm">Current name:</span>
+                                        <span class="text-sm">{{warning.old}}</span>
+                                    </div>
+                                    <div class="flex flex-row">
+                                        <span class="mr-2 font-bold text-sm">New name:</span>
+                                        <span class="text-sm">{{warning.new}}</span>
+                                    </div>
+
+                                </ng-template>
+                                <ng-template [ngIf]="warning.key == 'HEURISTIC'">
+                                    <div class="flex flex-col gap-y-2">
+                                        <span class="text-sm font-bold">Current source code:</span>
+                                        <pre class="editor-pre" style="max-height: 15rem;"><ngx-highlight-words
+                                                [textToHighlight]="warning.old"
+                                                highlightClassName="bg-yellow-400"
+                                                [searchWords]="['\\b'+warning.old_name+'\\b']"
+                                                [autoEscape]="false"
+                                            >
+                                            </ngx-highlight-words></pre>
+                                        <span class="text-sm font-bold">New source code:</span>
+                                        <pre class="editor-pre" style="max-height: 15rem;"><ngx-highlight-words
+                                                [textToHighlight]="warning.new"
+                                                highlightClassName="bg-yellow-400"
+                                                [searchWords]="['\\b'+warning.new_name+'\\b']"
+                                                [autoEscape]="false"
+                                            >
+                                            </ngx-highlight-words></pre>
+                                    </div>
+                                </ng-template>
+                                <button (click)="lh.handleLabelRenameWarning(warning)"
+                                    class="self-center mt-2 bg-green-100 text-green-700 border border-green-400 text-xs font-semibold px-4 py-2 rounded-md hover:bg-green-200 focus:outline-none">Change</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </ng-template>
+            </div>
+        </div>
+
+    </kern-modal>
+
+</ng-template>

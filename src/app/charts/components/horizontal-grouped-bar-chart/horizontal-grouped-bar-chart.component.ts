@@ -164,33 +164,33 @@ export class HorizontalGroupedBarChartComponent implements OnInit, OnChanges, On
       .style("opacity", "1")
 
     // setting up y axis    
-    let yAxis =g.append("g")
+    let yAxis = g.append("g")
       .attr("class", "y axis")
       .style("font-size", 14)
       .style('font-family', '"DM Sans", sans-serif')
       // setting up y axis opacity to 0 before transition
       .style("opacity", "0");
 
-      yAxis.call(d3.axisLeft(y).ticks(null, "s").tickFormat(d3.format(".0%"))).selectAll(".tick").each(function (data) {
-        var tick = d3.select(this);
-        // pull the transform data out of the tick
-        var positionString = tick.attr("transform")
-        var position = parseFloat(positionString.substring(12, positionString.length - 1))
+    yAxis.call(d3.axisLeft(y).ticks(null, "s").tickFormat(d3.format(".0%"))).selectAll(".tick").each(function (data) {
+      var tick = d3.select(this);
+      // pull the transform data out of the tick
+      var positionString = tick.attr("transform")
+      var position = parseFloat(positionString.substring(12, positionString.length - 1))
 
-        g.append('line')
-          .style("stroke", "lightgray")
-          .style("stroke-width", 1)
-          .attr("x1", 0)
-          .attr("y1", position)
-          .attr("x2", width)
-          .attr("y2", position)
-          .style("stroke-opacity", "0")
-          .transition()
-          .duration(500)
-          .delay(600)
-          // setting up full opacity after transition
-          .style("stroke-opacity", "0.5");
-      });
+      g.append('line')
+        .style("stroke", "lightgray")
+        .style("stroke-width", 1)
+        .attr("x1", 0)
+        .attr("y1", position)
+        .attr("x2", width)
+        .attr("y2", position)
+        .style("stroke-opacity", "0")
+        .transition()
+        .duration(500)
+        .delay(600)
+        // setting up full opacity after transition
+        .style("stroke-opacity", "0.5");
+    });
 
     yAxis
       .call(d3.axisLeft(y))
@@ -298,9 +298,9 @@ export class HorizontalGroupedBarChartComponent implements OnInit, OnChanges, On
         <div class="font-bold">`+ elementData.key + `</div> 
         <div style="display: grid;grid-template-columns: max-content max-content;">
           <div class="font-bold">relative</div>
-          <div>`+ Math.round(elementData.value * 10000) / 100 + `%</div>
+          <div>`+ Math.round(elementData.value * 100) / 100 + `%</div>
           <div class="font-bold">absolute</div>
-          <div>`+ elementData.absolute + `</div>
+          <div>`+ elementData.absolute / 100 + `</div>
         </div>
       </div>
     </span>

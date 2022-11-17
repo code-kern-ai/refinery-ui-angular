@@ -19,7 +19,7 @@ import { OrganizationApolloService } from 'src/app/base/services/organization/or
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { UploadComponent } from 'src/app/import/components/upload/upload.component';
 import { ProjectStatus } from 'src/app/projects/enums/project-status.enum';
-import { dateAsUTCDate, getUserAvatarUri } from 'src/app/util/helper-functions';
+import { dateAsUTCDate, getUserAvatarUri, isStringTrue } from 'src/app/util/helper-functions';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 @Component({
@@ -87,9 +87,15 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   saveUrl: SafeResourceUrl;
   canCreateOrg: boolean = false;
   isManaged: boolean = true;
+
   isProjectInitial: boolean = false;
   previousValue: string;
   isDemoUser: boolean = false;
+  adminData = {
+    isAdmin: false,
+    prjDeleteModalOpen: false,
+    prjDeleteProject: null as Project,
+  }
 
   constructor(
     private projectApolloService: ProjectApolloService,
@@ -136,7 +142,8 @@ export class ProjectsComponent implements OnInit, OnDestroy {
       return;
     }
     this.isManaged = ConfigManager.getIsManaged();
-    this.isDemoUser = ConfigManager.getIsDemo() && !ConfigManager.getIsAdmin();
+    this.adminData.isAdmin = ConfigManager.getIsAdmin();
+    this.isDemoUser = ConfigManager.getIsDemo() && !this.adminData.isAdmin;
   }
 
   createDefaultOrg(user) {
@@ -365,4 +372,23 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     this.previousValue = projectInitial.value;
   }
 
+
+  adminOpenOrDeleteProject(project: Project) {
+    if (!this.adminData.isAdmin) return;
+    const deleteInstant = isStringTrue(localStorage.getItem("adminInstantDelete"));
+    this.adminData.prjDeleteProject = project;
+    if (deleteInstant) this.adminDeleteProject();
+    else {
+      this.adminData.prjDeleteModalOpen = true;
+    }
+  }
+  adminStoreInstantAndDelete() {
+    localStorage.setItem("adminInstantDelete", "X");
+    this.adminDeleteProject();
+  }
+
+  adminDeleteProject() {
+    if (!this.adminData.isAdmin || !this.adminData.prjDeleteProject) return;
+    this.projectApolloService.deleteProjectById(this.adminData.prjDeleteProject.id).pipe(first()).subscribe();
+  }
 }

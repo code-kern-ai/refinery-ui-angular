@@ -56,7 +56,8 @@
                             buttonTooltipPosition: 'right',
                             buttonTooltip:'Multi-heuristic action',
                             buttonCaption: 'Actions',
-                            isOptionDisabled: [false, false, this.selectedInformationSources.length == 0, this.selectedInformationSources.length == 0]
+                            isOptionDisabled: [false, false, this.selectedInformationSources.length == 0, this.selectedInformationSources.length == 0],
+                            optionTooltips: [null, null, 'Except Crowd', null]
                         }" (optionClicked)="executeOption($event)">
                         </kern-dropdown>
                     </ng-template>
@@ -548,17 +549,109 @@
                             <div class="relative flex space-x-3 items-center rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm hover:border-gray-400"
                                 [ngStyle]="{'height': getHeightInPx(source.stats)}"
                                 [ngClass]="filteredSourcesList.length > 2 ? 'item' : ''">
-                                <div class="h-full">
+                                <div class="h-full flex flex-col gap-2 items-center">
                                     <label (click)="toggleInformationSource(project.id, source.id)"
-                                        class="cursor-pointer">
+                                        class="cursor-pointer flex justify-center">
                                         <input type="checkbox" [checked]='source.selected'>
                                     </label>
+                                    <ng-container [ngSwitch]="source.informationSourceType">
+                                        <ng-template ngSwitchDefault>
+                                        </ng-template>
+                                        <ng-template ngSwitchCase="LABELING_FUNCTION">
+                                            <div class="tooltip tooltip-right" data-tip="Labeling function">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block"
+                                                    viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fill-rule="evenodd"
+                                                        d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z"
+                                                        clip-rule="evenodd" />
+                                                </svg>
+                                            </div>
+                                        </ng-template>
+
+                                        <ng-template ngSwitchCase="ACTIVE_LEARNING">
+                                            <div class="tooltip tooltip-right" data-tip="Active learning">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block"
+                                                    viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fill-rule="evenodd"
+                                                        d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"
+                                                        clip-rule="evenodd" />
+                                                </svg>
+                                            </div>
+                                        </ng-template>
+
+                                        <ng-template ngSwitchCase="ZERO_SHOT">
+                                            <div class="tooltip tooltip-right" data-tip="Zero-shot">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block"
+                                                    viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fill-rule="evenodd"
+                                                        d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732l-3.354 1.935-1.18 4.455a1 1 0 01-1.933 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732l3.354-1.935 1.18-4.455A1 1 0 0112 2z"
+                                                        clip-rule="evenodd" />
+                                                </svg>
+                                            </div>
+                                        </ng-template>
+                                        <ng-template ngSwitchCase="CROWD_LABELER">
+                                            <div class="tooltip tooltip-right" data-tip="Crowd labeler">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block"
+                                                    viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+                                                    fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                                    <circle cx="9" cy="7" r="4"></circle>
+                                                    <path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"></path>
+                                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                                    <path d="M21 21v-2a4 4 0 0 0 -3 -3.85"></path>
+                                                </svg>
+                                            </div>
+                                        </ng-template>
+                                    </ng-container>
                                 </div>
                                 <div class="flex-1 min-w-0 text-sm leading-5">
                                     <div class="flow-root font-medium">
+                                        <!-- <div class="flex flex-row flex-nowrap gap-x-2 float-left">
+                                            <ng-container [ngSwitch]="source.informationSourceType">
+                                                <ng-template ngSwitchDefault>
+                                                </ng-template>
+                                                <ng-template ngSwitchCase="LABELING_FUNCTION">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block"
+                                                        viewBox="0 0 20 20" fill="currentColor">
+                                                        <path fill-rule="evenodd"
+                                                            d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z"
+                                                            clip-rule="evenodd" />
+                                                    </svg>
+                                                </ng-template>
+
+                                                <ng-template ngSwitchCase="ACTIVE_LEARNING">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block"
+                                                        viewBox="0 0 20 20" fill="currentColor">
+                                                        <path fill-rule="evenodd"
+                                                            d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"
+                                                            clip-rule="evenodd" />
+                                                    </svg>
+                                                </ng-template>
+
+                                                <ng-template ngSwitchCase="ZERO_SHOT">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block"
+                                                        viewBox="0 0 20 20" fill="currentColor">
+                                                        <path fill-rule="evenodd"
+                                                            d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732l-3.354 1.935-1.18 4.455a1 1 0 01-1.933 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732l3.354-1.935 1.18-4.455A1 1 0 0112 2z"
+                                                            clip-rule="evenodd" />
+                                                    </svg>
+                                                </ng-template>
+                                                <ng-template ngSwitchCase="CROWD_LABELER">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block"
+                                                        viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+                                                        fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                                        <circle cx="9" cy="7" r="4"></circle>
+                                                        <path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"></path>
+                                                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                                        <path d="M21 21v-2a4 4 0 0 0 -3 -3.85"></path>
+                                                    </svg>
+                                                </ng-template>
+                                            </ng-container> -->
                                         <div class="text-gray-900 float-left">
                                             {{source.name}}
                                         </div>
+                                        <!-- </div> -->
                                         <div class="text-green-800 float-right cursor-pointer"
                                             [routerLink]="[source.routerLink]"
                                             [queryParams]="{type: source.informationSourceType, status: source?.state}">

@@ -225,10 +225,11 @@ export class CrowdLabelerDetailsComponent
     firstReturn.subscribe(users => {
       this.annotators = users;
       this.annotatorLookup = {};
-      this.annotators.forEach(annotator => {
+      this.annotators = this.annotators.map(annotator => {
         annotator = { ...annotator };
         annotator.text = annotator.mail;
         this.annotatorLookup[annotator.id] = annotator;
+        return annotator;
       });
     });
     return firstReturn;

@@ -92,7 +92,7 @@ export class WeakSourceApolloService {
     });
   }
 
-  getZeroShotRecommendations(projectId: string) {
+  getZeroShotRecommendations(projectId: string = null) {
     const query = this.apollo
       .watchQuery({
         query: queries.GET_ZERO_SHOT_RECOMMENDATIONS,

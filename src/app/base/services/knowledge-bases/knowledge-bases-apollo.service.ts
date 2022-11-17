@@ -4,6 +4,7 @@ import { mutations } from './knowledge-bases-mutations';
 import { queries } from './knowledge-bases-queries';
 import { map } from 'rxjs/operators';
 import { ApolloChecker } from '../base/apollo-checker';
+import { asPythonVariable } from 'src/app/util/helper-functions';
 
 @Injectable({
   providedIn: 'root',
@@ -199,7 +200,11 @@ export class KnowledgeBasesApolloService {
         nextFetchPolicy: 'cache-first', // Used for subsequent executions (refetch query updates the cache != triggers the function)
       });
     const vc = query.valueChanges.pipe(
-      map((result) => result['data']['knowledgeBasesByProjectId'])
+      map((result) => result['data']['knowledgeBasesByProjectId'].map((kb) => {
+        const copy = Object.assign({}, kb);
+        copy.pythonVariable = asPythonVariable(kb.name);
+        return copy;
+      }))
     );
     return [query, vc]
   }
@@ -236,7 +241,11 @@ export class KnowledgeBasesApolloService {
       });
     const vc = query
       .valueChanges.pipe(
-        map((result) => result['data']['knowledgeBaseByKnowledgeBaseId'])
+        map((result) => {
+          const copy = Object.assign({}, result['data']['knowledgeBaseByKnowledgeBaseId']);
+          copy.pythonVariable = asPythonVariable(copy.name);
+          return copy;
+        })
       );
     return [query, vc];
   }

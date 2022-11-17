@@ -107,8 +107,7 @@
 
                             <button
                                 class="ml-1 inline-block items-center border border-gray-300 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none cursor-pointer"
-                                [routerLink]="['../../model-download']"
-                                [queryParams]="{lastPage: 'zero-shot/'+informationSource.id}" [disabled]="!isManaged"
+                                [routerLink]="['/model-download']" [disabled]="!isManaged"
                                 [ngClass]="!isManaged ? 'cursor-not-allowed' : 'opacity-100 cursor-pointer'">
                                 <svg xmlns="http://www.w3.org/2000/svg"
                                     class="inline-block icon icon-tabler icon-tabler-arrow-autofit-down" width="20"

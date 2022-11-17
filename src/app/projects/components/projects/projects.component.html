@@ -29,6 +29,15 @@
                                     <span class="text-sm text-gray-900 text-gray-500">{{project.time}}</span>
                                 </ng-template>
                             </div>
+                            <div *ngIf="adminData.isAdmin"
+                                class="absolute top-0 left-0 cursor-pointer tooltip tooltip-right"
+                                data-tip="Admin function: Quick delete project"
+                                (click)="adminOpenOrDeleteProject(project)">
+                                <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </div>
                             <div class="my-2 grid grid-cols-3 gap-4 items-center lg:grid-cols-6">
                                 <div class="col-span-2">
                                     <div class="text-sm text-gray-900 font-medium">{{project.name}}</div>
@@ -344,3 +353,22 @@
         </div>
     </div>
 </div>
+
+<ng-template [ngIf]="adminData.isAdmin">
+    <kern-modal [isOpen]="adminData.prjDeleteModalOpen" (optionClicked)="adminData.prjDeleteModalOpen=false"
+        abortButton="X" [closeButton]="{
+            buttonCaption:'Delete',
+            emitObject:this,emitFunction:adminDeleteProject
+        }" [acceptButton]="{
+            buttonCaption:'Delete and never show again',
+            emitObject:this,emitFunction:adminStoreInstantAndDelete
+        }">
+        <div class="flex flex-row items-center justify-center">
+            <span class="text-lg leading-6 text-gray-900 font-medium">
+                Admin Function - Quick delete
+            </span>
+        </div>
+        Are you sure?<br>This will delete the project and all its data.
+    </kern-modal>
+
+</ng-template>

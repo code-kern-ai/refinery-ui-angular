@@ -16,6 +16,7 @@ import { RecordApolloService } from 'src/app/base/services/record/record-apollo.
 import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
 import { dataTypes } from 'src/app/util/data-types';
 import { getColorForDataType, toPythonFunctionName } from 'src/app/util/helper-functions';
+import { KnowledgeBasesApolloService } from 'src/app/base/services/knowledge-bases/knowledge-bases-apollo.service';
 
 @Component({
   selector: 'kern-create-new-attribute',
@@ -48,6 +49,8 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
   checkIfNewAttribute: string;
   attributesQuery$: any;
   attributes: any[];
+  knowledgeBases: any;
+  knowledgeBasesQuery$: any;
   recordData: any;
   currentRecordId: string;
   currentRecordIdx: number = -1;
@@ -66,7 +69,8 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
     private projectApolloService: ProjectApolloService,
     private recordApolloService: RecordApolloService,
     private routeService: RouteService,
-    private router: Router) { }
+    private router: Router,
+    private knowledgeBaseApollo: KnowledgeBasesApolloService,) { }
 
   ngOnInit(): void {
     this.routeService.updateActivatedRoute(this.activatedRoute);
@@ -77,7 +81,9 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
 
     let tasks$ = [];
     tasks$.push(this.prepareAttributes(projectId));
+    tasks$.push(this.prepareKnowledgeRequest(projectId));
     tasks$.push(project$.pipe(first()));
+
 
     this.checkProjectTokenization(projectId);
 
@@ -96,6 +102,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
     const requests = [];
     requests.push({ commentType: CommentType.ATTRIBUTE, projectId: projectId });
     requests.push({ commentType: CommentType.LABELING_TASK, projectId: projectId });
+    requests.push({ commentType: CommentType.KNOWLEDGE_BASE, projectId: projectId })
     CommentDataManager.registerCommentRequests(this, requests);
   }
 
@@ -123,6 +130,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
 
   getWhiteListNotificationService(): string[] {
     let toReturn = ['attributes_updated', 'calculate_attribute', 'tokenization',];
+    toReturn.push(...['knowledge_base_updated', 'knowledge_base_deleted', 'knowledge_base_created']);
     return toReturn;
   }
 
@@ -159,14 +167,15 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
       this.currentAttribute = attribute;
       this.attributeName = this.currentAttribute?.name;
       this.attributeDataType = this.dataTypesArray.find((type) => type.value === this.currentAttribute?.dataType).name;
-      this.codeFormCtrl.setValue(this.currentAttribute?.sourceCode);
       if (this.currentAttribute?.sourceCode == null) {
         this.codeFormCtrl.setValue(AttributeCodeLookup.getAttributeCalculationTemplate(AttributeCalculationExamples.AC_EMPTY_TEMPLATE, this.currentAttribute.dataType).code);
       } else {
-        this.codeFormCtrl.setValue(this.codeFormCtrl.value.replace(
-          'def ac(record):',
-          'def ' + this.currentAttribute.name + '(record):'
-        ));
+        if (!this.codeFormCtrl.value) {
+          this.codeFormCtrl.setValue(this.currentAttribute.sourceCode.replace(
+            'def ac(record):',
+            'def ' + this.currentAttribute.name + '(record):'
+          ));
+        }
       }
 
       this.attributeLogs = attribute?.logs;
@@ -320,6 +329,8 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
     } else if (msgParts[1] == 'calculate_attribute') {
       this.attributesQuery$.refetch();
       this.currentAttributeQuery$.refetch();
+    } else if (['knowledge_base_updated', 'knowledge_base_deleted', 'knowledge_base_created'].includes(msgParts[1])) {
+      if (this.knowledgeBasesQuery$) this.knowledgeBasesQuery$.refetch();
     } else if (msgParts[1] == 'tokenization' && msgParts[2] == 'docbin') {
       if (msgParts[3] == 'progress') {
         this.tokenizationProgress = Number(msgParts[4]);
@@ -347,7 +358,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
   getPythonFunctionToSave(codeToSave: string): string {
     if (codeToSave.includes('\t')) {
       console.log(
-        'Function code holds tab characters -- replaced with 4 spaces to prevent unwanted behaviour'
+        'Function code holds tab characters -- replaced with 4 spaces to prevent unwanted behavior'
       );
       codeToSave = codeToSave.replace(/\t/g, '    ');
       this.codeFormCtrl.setValue(this.codeFormCtrl.value.replace(/\t/g, '    '));
@@ -405,5 +416,16 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
   updateDataType(dataType: string) {
     this.currentAttribute.dataType = dataType;
     this.saveAttribute(this.project.id);
+  }
+
+  prepareKnowledgeRequest(projectId: string) {
+    let vc;
+    [this.knowledgeBasesQuery$, vc] = this.knowledgeBaseApollo.getKnowledgeBasesByProjectId(projectId);
+    this.subscriptions$.push(vc.subscribe(bases => this.knowledgeBases = bases));
+    return vc.pipe(first());
+  }
+  copyImportToClipboard(pythonVariable: string) {
+    const statement = "from knowledge import " + pythonVariable;
+    navigator.clipboard.writeText(statement);
   }
 }
