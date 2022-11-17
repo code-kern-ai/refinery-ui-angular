@@ -96,7 +96,6 @@ export class AppComponent implements OnDestroy, OnInit {
       });
   }
 
-
   initializeNotificationService() {
     [this.notificationsQuery$, this.notifications$] = this.notificationApolloService.getNotificationsByUser();
     this.notificationsSub$ = this.notifications$.subscribe((n) => {

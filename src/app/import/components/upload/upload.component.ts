@@ -11,6 +11,7 @@ import { UploadStates } from '../../services/s3.enums';
 import { Router } from '@angular/router';
 import { ProjectStatus } from 'src/app/projects/enums/project-status.enum';
 import { NotificationService } from 'src/app/base/services/notification.service';
+import { UploadType } from './upload-helper';
 
 
 @Component({
@@ -37,6 +38,7 @@ export class UploadComponent implements OnDestroy, OnInit, AfterViewInit {
   uploadStarted: boolean = false;
   uploadFileType = new FormControl('records');
   uploadRecordType = new FormControl(RecordCategory.SCALE);
+  uploadType: UploadType = UploadType.DEFAULT;
 
   uploadFileTypes = ['records', 'embeddings', 'labels'];
   uploadRecordsTypes = [RecordCategory.SCALE, RecordCategory.TEST];
@@ -156,12 +158,16 @@ export class UploadComponent implements OnDestroy, OnInit, AfterViewInit {
             timer(500).subscribe(() => this.file = null);
             if (this.init && progress.state === UploadStates.ERROR && this.deleteProjectOnFail) {
               //create created project if not successful -- only s3 upload errors not general import errors
-              this.projectApolloService.deleteProjectById(this.projectId).pipe(first()).subscribe();
+              this.deleteExistingProject();
             }
           }
         })
       )
     })
+  }
+
+  deleteExistingProject() {
+    this.projectApolloService.deleteProjectById(this.projectId).pipe(first()).subscribe();
   }
 
   startProgressCall(uploadTaskId: string) {
@@ -205,7 +211,8 @@ export class UploadComponent implements OnDestroy, OnInit, AfterViewInit {
         this.projectId,
         filename,
         this.uploadFileType.value,
-        fileImportOptions
+        fileImportOptions,
+        this.uploadType
       ).pipe(first());
   }
 
@@ -216,7 +223,7 @@ export class UploadComponent implements OnDestroy, OnInit, AfterViewInit {
       if (msgParts[4] == UploadStates.DONE) this.uploadTaskQuery$.refetch();
       else if (msgParts[4] == UploadStates.ERROR) {
         this.resetUpload();
-        if (this.deleteProjectOnFail) this.projectApolloService.deleteProjectById(this.projectId).pipe(first()).subscribe();
+        if (this.deleteProjectOnFail) this.deleteExistingProject();
       }
       else {
         this.uploadTask = { ...this.uploadTask };

@@ -245,6 +245,14 @@ mutation ($projectId: ID!, $linkId: ID!, $lockState: Boolean) {
     ok
   }
 }
+`,
+  SET_UPLOAD_MAPPINGS: gql`
+mutation ($projectId: ID!, $uploadTaskId: ID!, $mappings: String!) {
+  setUploadMappings(projectId: $projectId, uploadTaskId: $uploadTaskId, mappings: $mappings) {
+    ok
+  }
+}
+
 `
 
 };

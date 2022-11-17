@@ -11,19 +11,15 @@
                     <label class="text-gray-500 text-sm font-normal">Project title</label>
 
                     <div class="flex flex-row">
-                        <input name="projectTitle" formControlName="projectTitle" type="submit"
-                            (keydown.enter)="initializeProject(true,$event)" type="text"
-                            placeholder="Enter some title here ..." required autocomplete="off"
-                            class="input input-sm input-bordered w-full placeholder-italic mr-3">
-
-                        <button [routerLink]="['/projects']" type="button"
-                            class="bg-red-100 border border-red-400 text-red-700 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer w-48 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-                            Cancel project creation
-                        </button>
+                        <input [attr.disabled]="disableInput?true:null" name="projectTitle"
+                            formControlName="projectTitle" type="submit" (keydown.enter)="initProjectEvent($event)"
+                            type="text" placeholder="Enter some title here ..." required autocomplete="off"
+                            class="input input-sm input-bordered w-full placeholder-italic">
                     </div>
                 </div>
 
-                <div *ngIf="submitted && f.projectTitle.errors" class="text-red-700 text-xs mt-2">
+                <div *ngIf="(f.projectTitle.value.length > 0 || submitted)&& f.projectTitle.errors"
+                    class="text-red-700 text-xs mt-2">
                     <div *ngIf="f.projectTitle.errors.required">Project title is required</div>
                     <div *ngIf="f.projectTitle.errors.pattern">Project title cannot have empty spaces</div>
                     <div *ngIf="f.projectTitle.errors.projectTitleExists">Project title exists</div>
@@ -31,8 +27,9 @@
 
                 <div class="form-control mt-6">
                     <label class="text-gray-500 text-sm font-normal">Project description <em>- optional</em></label>
-                    <textarea formControlName="description" class="textarea-bordered placeholder-italic input input-sm"
-                        style="height: 2.2rem;" placeholder="Enter some description here ..."></textarea>
+                    <textarea [attr.disabled]="disableInput?true:null" formControlName="description"
+                        class="textarea-bordered placeholder-italic input input-sm" style="height: 2.2rem;"
+                        placeholder="Enter some description here ..."></textarea>
                 </div>
 
                 <div class="form-control mt-6">
@@ -55,14 +52,19 @@
                 <kern-upload-records [selectedTokenizer]="selectedTokenizer" [deleteProjectOnFail]="true"
                     (hasFileUploaded)="checkIfFileUploaded($event)"></kern-upload-records>
 
-                <div class="mt-4 flex flex-row">
-                    <button (click)="initializeProject(false)" type="button"
-                        class="bg-blue-700 text-white text-xs font-semibold px-4 py-2 rounded-md hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                <div class="mt-4 flex flex-row gap-x-3">
+                    <button (click)="initializeProject()" type="button"
+                        class="bg-blue-700 text-white text-xs font-semibold px-4 py-2 rounded-md hover:bg-blue-800 focus:outline-none"
                         type="submit">
                         Proceed
                     </button>
-                    <button [routerLink]="['/projects']" type="button"
-                        class="bg-red-100 border border-red-400 text-red-700 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer ml-3 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                    <kern-label-studio-assistant *ngIf="uploadRecordsComponent" [inputData]="{
+                        uploadComponent: uploadRecordsComponent.uploadComponent,
+                        uploadFunction: initializeProject,
+                        uploadFunctionThisObject:this}" (initialUploadTriggered)="disableInput=$event">
+                    </kern-label-studio-assistant>
+                    <button [routerLink]="['/projects']"
+                        class="bg-red-100 border border-red-400 text-red-700 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer hover:bg-red-200 focus:outline-none">
                         Cancel project creation
                     </button>
                 </div>

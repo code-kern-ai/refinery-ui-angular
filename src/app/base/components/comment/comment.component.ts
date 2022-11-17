@@ -27,7 +27,7 @@ import { CommentDataManager, CommentType, CommentPosition } from './comment-help
   styleUrls: ['./comment.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CommentComponent implements AfterContentChecked, OnDestroy {
+export class CommentComponent implements OnInit, AfterContentChecked, OnDestroy {
   dm: CommentDataManager;
 
   myUser: any;
@@ -43,14 +43,16 @@ export class CommentComponent implements AfterContentChecked, OnDestroy {
   isSlideOverOpen: boolean = false;
   positionComment: string = CommentPosition.RIGHT;
 
-  constructor(private cfRef: ChangeDetectorRef) { }
-  ngOnDestroy(): void {
-  }
-  ngAfterContentChecked(): void {
-    this.cfRef.detectChanges();
+  constructor(private cdRef: ChangeDetectorRef) { }
+  ngOnInit(): void {
     this.initDataManger();
     UserManager.registerAfterInitActionOrRun(this, () => this.initUsers(), true);
     this.positionComment = localStorage.getItem('commentPosition') || CommentPosition.RIGHT;
+  }
+  ngOnDestroy(): void {
+  }
+  ngAfterContentChecked(): void {
+    this.cdRef.detectChanges();
   }
 
   private initUsers() {

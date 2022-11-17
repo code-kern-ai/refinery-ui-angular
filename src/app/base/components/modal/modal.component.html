@@ -4,7 +4,8 @@
     <div class="fixed inset-0 z-modal overflow-y-auto">
         <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
             <div #modalBox
-                class="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95 modal-content relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6">
+                class="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95 modal-content relative transform rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6"
+                [ngStyle]="modalBoxStyle">
                 <div>
                     <ng-content></ng-content>
                     <div *ngIf="closeButton?.useButton || acceptButton?.useButton|| abortButton?.useButton"
