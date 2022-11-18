@@ -91,6 +91,7 @@ export class ZeroShotDetailsComponent
   modelsDownloadedState: boolean[] = [];
   isManaged: boolean = true;
 
+  cancelModalOpen: boolean = false;
   constructor(
     private router: Router,
     private routeService: RouteService,
@@ -392,6 +393,13 @@ export class ZeroShotDetailsComponent
     if (!this.canRunProject) return;
     this.canRunProject = false;
     this.informationSourceApolloService.runZeroShotProject(this.project.id, this.informationSource.id).pipe(first()).subscribe(
+      () => this.informationSourceQuery$.refetch()
+    );
+  }
+
+  cancelZeroShotRun() {
+    if (!this.informationSource.lastTask) return;
+    this.informationSourceApolloService.cancelZeroShotRun(this.project.id, this.informationSource.id, this.informationSource.lastTask.id).pipe(first()).subscribe(
       () => this.informationSourceQuery$.refetch()
     );
   }
