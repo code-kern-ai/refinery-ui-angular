@@ -155,6 +155,18 @@ export class WeakSourceApolloService {
       }
     });
   }
+  cancelZeroShotRun(projectId: string, informationSourceId: string, payloadId: string) {
+    return this.apollo.mutate({
+      mutation: mutations.CANCEL_ZERO_SHOT_RUN,
+      variables: {
+        projectId: projectId,
+        informationSourceId: informationSourceId,
+        payloadId: payloadId,
+      }
+    });
+  }
+
+
 
   getInformationSourcesOverviewData(projectId: string) {
     const query = this.apollo

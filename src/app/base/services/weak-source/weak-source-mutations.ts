@@ -90,6 +90,13 @@ export const mutations = {
   }
   
   `,
+  CANCEL_ZERO_SHOT_RUN: gql`
+  mutation ($projectId: ID!, $informationSourceId: ID!, $payloadId: ID!) {
+    cancelZeroShotRun(projectId: $projectId, informationSourceId: $informationSourceId, payloadId: $payloadId) {
+      ok
+    }
+  }
+  `,
 
   SET_ALL_INFORMATION_SOURCES: gql`
   mutation ($projectId: ID!, $value: Boolean!) {

@@ -526,11 +526,18 @@
                                         </svg>
                                     </div>
                                 </div>
-
-                                <div class="text-sm leading-5 font-normal text-gray-500">run#{{task.iteration}}</div>
-                                <progress *ngIf="task.state === 'CREATED'" class="progress progress-info w-full m-2"
-                                    [value]="task.progress" max="1"></progress>
-
+                                <ng-template [ngIf]="task.state === 'CREATED'" [ngIfElse]="notRunning">
+                                    <div class="text-sm leading-5 font-normal text-gray-500 cursor-pointer tooltip"
+                                        data-tip="Cancel Execution" (click)="cancelModalOpen=true;">
+                                        run#{{task.iteration}}
+                                    </div>
+                                    <progress class="progress progress-info w-full m-2" [value]="task.progress"
+                                        max="1"></progress>
+                                </ng-template>
+                                <ng-template #notRunning>
+                                    <div class="text-sm leading-5 font-normal text-gray-500">run#{{task.iteration}}
+                                    </div>
+                                </ng-template>
                                 <div data-tip="execution time" class="tooltip">
                                     <div *ngIf="task.durationText"
                                         class="text-sm leading-5 font-normal text-gray-500 ml-2 select-none">
@@ -588,3 +595,16 @@
         </div>
     </div>
 </div>
+
+<kern-modal [isOpen]="cancelModalOpen" closeButton="X" (optionClicked)="cancelModalOpen=false" [abortButton]="{
+    buttonCaption:'Cancel',
+    emitObject:this,emitFunction:cancelZeroShotRun
+}">
+
+    <div class="flex flex-col items-center">
+        <h1 class="text-lg text-gray-900 mb-2">Cancel Execution</h1>
+        <div class="text-sm text-gray-500 my-2">
+            Are you sure you want to cancel?<br>This will stop the execution and remove already created labels.
+        </div>
+    </div>
+</kern-modal>
