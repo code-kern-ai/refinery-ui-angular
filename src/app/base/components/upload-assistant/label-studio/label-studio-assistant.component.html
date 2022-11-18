@@ -64,7 +64,8 @@
                     <div class="whitespace-nowrap">External User: {{annotations.key}}</div>
                     <div class="whitespace-nowrap">Annotations: {{annotations.value}}</div>
                 </div>
-                <div *ngIf="info.errors.length==0" class="flex items-center col-span-full cursor-pointer tooltip"
+                <div *ngIf="info.errors.length==0 && isProjectAdd"
+                    class="flex items-center col-span-full cursor-pointer tooltip"
                     [attr.data-tip]="'If a record already has a user annotation it will be ' + (mappings.prioritizeExisting? 'preserved':'removed')"
                     (click)="states.preparation == PreparationStepType.MAPPING_TRANSFERRED?null:mappings.prioritizeExisting=!mappings.prioritizeExisting">
                     <input type="checkbox"
