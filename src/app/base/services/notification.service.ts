@@ -63,8 +63,6 @@ export class NotificationService {
         closeObserver: {
           next: (closeEvent) => {
             const timeout = this.getTimeout(this.timeOutIteration);
-            console.log("Websocket closed", closeEvent);
-            console.log("Trying to reconnect in " + timeout + " ms");
             timer(timeout).subscribe(() => { this.timeOutIteration++; this.initWsNotifications(); })
           }
         }
