@@ -21,6 +21,11 @@
         <label
             class="bg-gray-100 text-gray-800 rounded-lg text-xs px-2.5 py-0.5 cursor-default border border-gray-300">Beta</label>
     </div>
+    <div class="flex flex-row items-center justify-center gap-x-2">
+        <span class="text-sm leading-6 text-gray-900 font-medium">
+            Please take a look into the restrictions
+        </span>
+    </div>
 
 
     <div class="flex justify-center">
@@ -64,7 +69,8 @@
                     <div class="whitespace-nowrap">External User: {{annotations.key}}</div>
                     <div class="whitespace-nowrap">Annotations: {{annotations.value}}</div>
                 </div>
-                <div *ngIf="info.errors.length==0" class="flex items-center col-span-full cursor-pointer tooltip"
+                <div *ngIf="info.errors.length==0 && isProjectAdd"
+                    class="flex items-center col-span-full cursor-pointer tooltip"
                     [attr.data-tip]="'If a record already has a user annotation it will be ' + (mappings.prioritizeExisting? 'preserved':'removed')"
                     (click)="states.preparation == PreparationStepType.MAPPING_TRANSFERRED?null:mappings.prioritizeExisting=!mappings.prioritizeExisting">
                     <input type="checkbox"
@@ -327,6 +333,19 @@
                     </h3>
                     <p class="mt-1 text-sm text-gray-600">If you want to update your existing project, we assume that
                         you only used Label Studio to add new labels. Therefore only the label data will be imported.
+                    </p>
+                </div>
+            </li>
+            <li class="py-5">
+                <div class="relative">
+                    <h3 class="text-sm font-semibold text-gray-800">
+                        Attribute specific tasks - name equivalent
+                    </h3>
+                    <p class="mt-1 text-sm text-gray-600">If you want to create attribute specific labeling tasks, the
+                        "to_name"
+                        in the annotations of your file needs to be set to the attributes equivalent in records data. If
+                        for an "to_name" no
+                        equivalent attribute name is found, the labeling task gets created as a full record task.
                     </p>
                 </div>
             </li>
