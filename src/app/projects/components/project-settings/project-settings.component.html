@@ -498,7 +498,7 @@
                 <input #modalInputEmbedding type="checkbox" id="my-modal-newEmbedding" class="modal-toggle">
                 <div class="modal">
                     <div class="modal-box modal_content text-black bg-white justify-center"
-                        style="overflow-y:visible;overflow-x:unset;width: 448px;">
+                        style="overflow-y:visible;overflow-x:unset;width: fit-content; min-width:448px; max-width:80%">
                         <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
                             Add an embedding </div>
                         <div class="mb-2 flex flex-grow justify-center text-sm text-gray-500">
@@ -851,7 +851,8 @@
         <input #modalInput type="checkbox" id="my-modal-newRecordTask" class="modal-toggle"
             (change)="focusModalInputBox($event,'labelingTaskName')">
         <div class="modal">
-            <div class="modal-box text-black bg-white justify-center" style="width: 448px;">
+            <div class="modal-box text-black bg-white justify-center"
+                style="width: fit-content; min-width:448px; max-width:80%">
                 <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
                     Add a labeling task </div>
                 <div class="mb-2 flex flex-grow justify-center text-sm text-gray-500">
