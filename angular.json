@@ -70,7 +70,7 @@
               "statsJson": false,
               "progress": false,
               "vendorChunk": false,
-              "buildOptimizer": false,
+              "buildOptimizer": true,
               "subresourceIntegrity": false,
               "budgets": [
                 {
