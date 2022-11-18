@@ -174,25 +174,26 @@ export class LabelHelper {
     public checkAndSetLabelHotkey(event: KeyboardEvent) {
         this.labelHotkeyError = null;
         this.currentLabel = { ...this.currentLabel };
-        if (event.key == this.currentLabel.label.hotkey) return;
+        const key = event.key.toLowerCase();
+        if (key == this.currentLabel.label.hotkey) return;
         const usedHotkeys = this.getUsedHotkey();
-        if (event.key == 'ArrowRight' || event.key == 'ArrowLeft') {
-            this.labelHotkeyError = "Key " + event.key + " is used to navigate between records."
+        if (key == 'ArrowRight' || key == 'ArrowLeft') {
+            this.labelHotkeyError = "Key " + key + " is used to navigate between records."
             return;
-        } else if (usedHotkeys.includes(event.key)) {
-            this.labelHotkeyError = "Key " + event.key + " is already in use."
+        } else if (usedHotkeys.includes(key)) {
+            this.labelHotkeyError = "Key " + key + " is already in use."
             return;
-        } else if ('123456789'.includes(event.key)) {
-            this.labelHotkeyError = "Key " + event.key + " is used to switch between users."
+        } else if ('123456789'.includes(key)) {
+            this.labelHotkeyError = "Key " + key + " is used to switch between users."
             return;
-        } else if (!this.isValidKey(event.key)) {
-            this.labelHotkeyError = "Key " + event.key + " not in whitelist."
+        } else if (!this.isValidKey(key)) {
+            this.labelHotkeyError = "Key " + key + " not in whitelist."
             return;
         }
-        this.currentLabel.label.hotkey = this.labelHotkeyError ? "" : event.key;
+        this.currentLabel.label.hotkey = this.labelHotkeyError ? "" : key;
         if (!this.labelHotkeyError) {
             this.projectApolloService
-                .updateLabelHotkey(this.settings.project.id, this.currentLabel.label.id, event.key.toLowerCase()).pipe(first())
+                .updateLabelHotkey(this.settings.project.id, this.currentLabel.label.id, key).pipe(first())
                 .subscribe();
         }
 
