@@ -13,6 +13,20 @@
                         <span>View labeling</span>
                     </div>
                 </button>
+                <button (click)="loadCodeFromLocalStorage()" data-tip="Load code from local (browser) storage"
+                    class="tooltip tooltip-right">
+                    <div
+                        class="hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 bg-white text-gray-700 font-semibold text-xs mr-2 px-4 py-2 rounded-md border border-gray-300">
+                        <span>Load</span>
+                    </div>
+                </button>
+                <button (click)="saveCodeToLocalStorage()" data-tip="Save code to local (browser) storage"
+                    class="tooltip tooltip-right">
+                    <div
+                        class="hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 bg-white text-gray-700 font-semibold text-xs mr-2 px-4 py-2 rounded-md border border-gray-300">
+                        <span>Save</span>
+                    </div>
+                </button>
                 <span class="float-right flex flex-row flex-nowrap items-center">
                     <button (click)="switchView()"
                         [attr.data-tip]="vertical?'switch to horizontal view':'switch to vertical view'"
@@ -78,7 +92,7 @@
             </div>
             <div>
                 <ngx-monaco-editor class="h-full w-full" [ngStyle]="{'height': screenHeight}" [options]="editorOptions"
-                    [formControl]="codeFormCtrl" (onInit)="initEditor()">
+                    [formControl]="codeFormCtrl">
                 </ngx-monaco-editor>
             </div>
         </div>
