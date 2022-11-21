@@ -1709,6 +1709,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
       .subscribe();
 
     if (this.autoNextRecord) {
+      this.fullRecordData = null;
       this.nextRecord();
     }
 
