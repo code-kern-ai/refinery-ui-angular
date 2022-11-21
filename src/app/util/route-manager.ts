@@ -14,8 +14,16 @@ export class RouteManager {
     private static organizationService: OrganizationApolloService;
     private static lastUrls: string[];
     private static startUrl: string;
-    public static previousUrl: string; //
+    public static previousUrl: string;
+    private static actionsAfterRouteRecognized: Map<Object, (val: RoutesRecognized) => void> = new Map<Object, (val: RoutesRecognized) => void>();
 
+    public static routeColor = {
+        overview: { active: false, checkFor: ['overview'] },
+        data: { active: false, checkFor: ['data'] },
+        labeling: { active: false, checkFor: ['labeling', 'record-ide'] },
+        heuristics: { active: false, checkFor: ['heuristics', 'lookup-lists', 'model-callbacks', 'zero-shot', 'crowd-labeler'] },
+        settings: { active: false, checkFor: ['settings', 'attributes', 'add'] },
+    }
 
     //needs to be called once from app (because of the http injection)
     public static initRouteManager(router: Router, organizationService: OrganizationApolloService) {
@@ -33,7 +41,7 @@ export class RouteManager {
             timer(250).subscribe(() => RouteManager.initRouterListener());
             return;
         }
-        this.router.events.subscribe((val) => {
+        RouteManager.router.events.subscribe((val) => {
             if (val instanceof RoutesRecognized) {
 
                 const lastUrl = RouteManager.router.url;
@@ -43,10 +51,13 @@ export class RouteManager {
                 }
                 if (ConfigManager.getConfigValue("allow_data_tracking")) {
                     const event = { old: lastUrl, new: val.url, name: this.getRecursiveRouteData(val.state.root) };
-                    this.organizationService.postEvent("AppNavigation", JSON.stringify(event)).pipe(first()).subscribe();
+                    RouteManager.organizationService.postEvent("AppNavigation", JSON.stringify(event)).pipe(first()).subscribe();
                 }
+                RouteManager.checkRouteHighlight(val.url);
+                RouteManager.actionsAfterRouteRecognized.forEach((value, key) => value.call(this, val));
             }
         });
+        RouteManager.checkRouteHighlight(RouteManager.router.url);
     }
 
 
@@ -66,6 +77,25 @@ export class RouteManager {
             this.router.navigateByUrl(previous);
         }
         else this.router.navigateByUrl(RouteManager.startUrl);
+    }
+
+    private static checkRouteHighlight(url: string) {
+        for (const key in this.routeColor) {
+            this.routeColor[key].active = this.routeColor[key].checkFor.some(s => url.includes(s));
+        }
+    }
+
+
+    public static subscribeToRoutesRecognized(key: Object, func: (val: RoutesRecognized) => void) {
+        if (RouteManager.actionsAfterRouteRecognized.has(key)) {
+            RouteManager.actionsAfterRouteRecognized.delete(key);
+        }
+        RouteManager.actionsAfterRouteRecognized.set(key, func);
+    }
+    public static unsubscribeFromRoutesRecognized(key: Object) {
+        if (RouteManager.actionsAfterRouteRecognized.has(key)) {
+            RouteManager.actionsAfterRouteRecognized.delete(key);
+        }
     }
 
 }

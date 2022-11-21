@@ -20,7 +20,7 @@ export class NotificationService {
   private notifications = new Subject<UserNotification[]>();
   private ws_subject;
 
-  private static registedNotificationListeners: Map<string, Map<Object, NotificationSubscription>> = new Map<string, Map<Object, NotificationSubscription>>();
+  private static registeredNotificationListeners: Map<string, Map<Object, NotificationSubscription>> = new Map<string, Map<Object, NotificationSubscription>>();
 
   private timeOutIteration: number = 0;
 
@@ -90,7 +90,7 @@ export class NotificationService {
   }
 
   private handleWebsocketNotificationMessage(msg: string) {
-    if (NotificationService.registedNotificationListeners.size == 0) return;
+    if (NotificationService.registeredNotificationListeners.size == 0) return;
     if (msg.includes("\n")) {
       msg.split("\n").forEach(element => this.handleWebsocketNotificationMessage(element));
       return;
@@ -99,9 +99,9 @@ export class NotificationService {
 
     const msgParts = msg.split(":");
     const projectId = msgParts[0];
-    if (!NotificationService.registedNotificationListeners.has(projectId)) return;
+    if (!NotificationService.registeredNotificationListeners.has(projectId)) return;
 
-    NotificationService.registedNotificationListeners.get(projectId).forEach((params, key) => {
+    NotificationService.registeredNotificationListeners.get(projectId).forEach((params, key) => {
       if (!params.whitelist || params.whitelist.includes(msgParts[1])) {
         params.func.call(key, msgParts);
       }
@@ -111,17 +111,17 @@ export class NotificationService {
 
   public static subscribeToNotification(key: Object, params: NotificationSubscription) {
     if (!params.projectId) params.projectId = "GLOBAL";
-    if (!NotificationService.registedNotificationListeners.has(params.projectId)) {
-      NotificationService.registedNotificationListeners.set(params.projectId, new Map<Object, NotificationSubscription>());
+    if (!NotificationService.registeredNotificationListeners.has(params.projectId)) {
+      NotificationService.registeredNotificationListeners.set(params.projectId, new Map<Object, NotificationSubscription>());
     }
-    const innerMap = NotificationService.registedNotificationListeners.get(params.projectId);
+    const innerMap = NotificationService.registeredNotificationListeners.get(params.projectId);
     innerMap.set(key, params);
   }
 
   public static unsubscribeFromNotification(key: Object, projectId: string = null) {
     if (!projectId) projectId = "GLOBAL"
-    if (NotificationService.registedNotificationListeners.has(projectId)) {
-      NotificationService.registedNotificationListeners.get(projectId).delete(key);
+    if (NotificationService.registeredNotificationListeners.has(projectId)) {
+      NotificationService.registeredNotificationListeners.get(projectId).delete(key);
     }
   }
 
