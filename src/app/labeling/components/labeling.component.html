@@ -528,7 +528,7 @@
                         </div>
                     </div>
                     <div *ngIf="user?.role == 'ENGINEER'"
-                        class="ml-20 flex justify-center overflow-visible items-center cursor-pointer"
+                        class="flex justify-center overflow-visible items-center cursor-pointer"
                         (click)="toggleInformationSourceSwitch()">
                         <ng-template [ngIf]="isBottom && fullRecordData?.id != 'deleted'">
                             <label

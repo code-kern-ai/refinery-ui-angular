@@ -1114,11 +1114,14 @@
                                 </ng-template>
                                 <ng-template [ngIf]="warning.key == 'HEURISTIC'">
                                     <div class="flex flex-col gap-y-2">
-                                        <span class="text-sm font-bold">
-                                            <a [routerLink]="'../heuristics/' + warning.id" target="_blank"
-                                                class="tooltip cursor-pointer underline tooltip-right"
+                                        <span class="text-sm">
+                                            <div class="tooltip tooltip-right"
                                                 data-tip="Open information source in new tab">
-                                                Current source code:</a>
+
+                                                <a [routerLink]="'../heuristics/' + warning.id" target="_blank"
+                                                    class="cursor-pointer underline font-bold">
+                                                    Current source code:</a>
+                                            </div>
                                         </span>
                                         <pre class="editor-pre" style="max-height: 15rem;"><ngx-highlight-words
                                                 [textToHighlight]="warning.oldParsed"

@@ -10,7 +10,7 @@
                         <div *ngFor="let labelingTask of labelingTasks;let i=index"
                             (click)="toggleTabs(i, labelingTask)"
                             [ngClass]="openTab == i ? 'text-indigo-700 border-bottom' : 'text-gray-500' "
-                            class="text-sm leading-5 font-medium mr-10 cursor-pointer py-5">
+                            class="text-sm leading-5 font-medium mr-10 cursor-pointer py-5 whitespace-nowrap">
                             {{labelingTask.name}}
                         </div>
                     </div>

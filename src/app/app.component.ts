@@ -31,8 +31,9 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
   notificationsSub$: any;
   notificationsQuery$: any;
   refetchTimer: any;
-  @ViewChild('resizingModal') resizingModal: ElementRef;
   windowWidth: number;
+  sizeWarningOpen: boolean = false;
+  minWidth: number = 1250;
 
   constructor(
     private notificationApolloService: NotificationApolloService,
@@ -192,8 +193,10 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
   @HostListener('window:resize', ['$event'])
   onResize() {
     this.windowWidth = window.innerWidth;
-    if (window.innerWidth < 1400) {
-      this.resizingModal.nativeElement.checked = true;
+    if (window.innerWidth < this.minWidth) {
+      this.sizeWarningOpen = true;
+    } else {
+      this.sizeWarningOpen = false;
     }
   }
 

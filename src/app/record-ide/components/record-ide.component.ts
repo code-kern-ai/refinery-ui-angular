@@ -34,7 +34,6 @@ export class RecordIDEComponent implements OnInit, OnDestroy {
   subscriptions$: Subscription[] = [];
   output: string;
   loading: bool;
-  // labelingUrl: string;
   screenHeight: string;
   huddleData: labelingHuddle;
   linkData: labelingLinkData;
