@@ -2,13 +2,17 @@
     <ng-container *ngIf="informationSources$ | async as informationSources">
         <div class="w-full h-full">
             <div class="flex-shrink-0 block xl:flex justify-between items-center">
-                <div class="flex width-line border-b-2 border-b-gray-200 max-w-full overflow-x-auto">
-                    <div class="cursor-pointer text-sm leading-5 font-medium mr-10 py-5" (click)="toggleTabs(-1,null)"
-                        [ngClass]="openTab == -1 ? 'text-indigo-700 border-bottom' : 'text-gray-500'">All</div>
-                    <div *ngFor="let labelingTask of labelingTasks;let i=index" (click)="toggleTabs(i, labelingTask)"
-                        [ngClass]="openTab == i ? 'text-indigo-700 border-bottom' : 'text-gray-500' "
-                        class="text-sm leading-5 font-medium mr-10 cursor-pointer py-5">
-                        {{labelingTask.name}}
+                <div class="flex width-line border-b-2 border-b-gray-200 max-w-full">
+                    <div class="overflow-x-auto flex">
+                        <div class="cursor-pointer text-sm leading-5 font-medium mr-10 py-5"
+                            (click)="toggleTabs(-1,null)"
+                            [ngClass]="openTab == -1 ? 'text-indigo-700 border-bottom' : 'text-gray-500'">All</div>
+                        <div *ngFor="let labelingTask of labelingTasks;let i=index"
+                            (click)="toggleTabs(i, labelingTask)"
+                            [ngClass]="openTab == i ? 'text-indigo-700 border-bottom' : 'text-gray-500' "
+                            class="text-sm leading-5 font-medium mr-10 cursor-pointer py-5 whitespace-nowrap">
+                            {{labelingTask.name}}
+                        </div>
                     </div>
                     <div data-tip="Add new labeling task" class="tooltip tooltip-left">
                         <button (click)="navigateToSettings()"><svg xmlns="http://www.w3.org/2000/svg"
@@ -590,7 +594,7 @@
                                             </div>
                                         </ng-template>
                                         <ng-template ngSwitchCase="CROWD_LABELER">
-                                            <div class="tooltip tooltip-right" data-tip="Crowd labeler">
+                                            <div class="tooltip tooltip-right" data-tip="Crowd labeling">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block"
                                                     viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
                                                     fill="none" stroke-linecap="round" stroke-linejoin="round">

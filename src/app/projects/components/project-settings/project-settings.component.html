@@ -498,7 +498,7 @@
                 <input #modalInputEmbedding type="checkbox" id="my-modal-newEmbedding" class="modal-toggle">
                 <div class="modal">
                     <div class="modal-box modal_content text-black bg-white justify-center"
-                        style="overflow-y:visible;overflow-x:unset;width: 448px;">
+                        style="overflow-y:visible;overflow-x:unset;width: fit-content; min-width:448px; max-width:80%">
                         <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
                             Add an embedding </div>
                         <div class="mb-2 flex flex-grow justify-center text-sm text-gray-500">
@@ -851,7 +851,8 @@
         <input #modalInput type="checkbox" id="my-modal-newRecordTask" class="modal-toggle"
             (change)="focusModalInputBox($event,'labelingTaskName')">
         <div class="modal">
-            <div class="modal-box text-black bg-white justify-center" style="width: 448px;">
+            <div class="modal-box text-black bg-white justify-center"
+                style="width: fit-content; min-width:448px; max-width:80%">
                 <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
                     Add a labeling task </div>
                 <div class="mb-2 flex flex-grow justify-center text-sm text-gray-500">
@@ -1074,7 +1075,12 @@
                         </div>
                         <div class="self-center -mt-4">
 
-                            <span class="text-sm mb-2">Open toggles to fix individual warnings</span>
+                            <span class="text-sm mb-2">
+                                <p class="text-center">Inside each toggle is a suggestion how to fix the
+                                    corresponding
+                                    warning.</p>
+                                <p class="text-center">Please check them carefully before applying!</p>
+                            </span>
                         </div>
                         <div *ngFor="let warning of lh.renameLabelData.checkResults.warnings"
                             [ngClass]="warning.open?'border border-yellow-400':'tooltip'" class="text-sm"
@@ -1108,19 +1114,27 @@
                                 </ng-template>
                                 <ng-template [ngIf]="warning.key == 'HEURISTIC'">
                                     <div class="flex flex-col gap-y-2">
-                                        <span class="text-sm font-bold">Current source code:</span>
+                                        <span class="text-sm">
+                                            <div class="tooltip tooltip-right"
+                                                data-tip="Open information source in new tab">
+
+                                                <a [routerLink]="'../heuristics/' + warning.id" target="_blank"
+                                                    class="cursor-pointer underline font-bold">
+                                                    Current source code:</a>
+                                            </div>
+                                        </span>
                                         <pre class="editor-pre" style="max-height: 15rem;"><ngx-highlight-words
-                                                [textToHighlight]="warning.old"
+                                                [textToHighlight]="warning.oldParsed"
                                                 highlightClassName="bg-yellow-400"
-                                                [searchWords]="['\\b'+warning.old_name+'\\b']"
+                                                [searchWords]="warning.old_highlighting"
                                                 [autoEscape]="false"
                                             >
                                             </ngx-highlight-words></pre>
-                                        <span class="text-sm font-bold">New source code:</span>
+                                        <span class="text-sm font-bold">Suggested changes:</span>
                                         <pre class="editor-pre" style="max-height: 15rem;"><ngx-highlight-words
-                                                [textToHighlight]="warning.new"
+                                                [textToHighlight]="warning.newParsed"
                                                 highlightClassName="bg-yellow-400"
-                                                [searchWords]="['\\b'+warning.new_name+'\\b']"
+                                                [searchWords]="warning.new_highlighting"
                                                 [autoEscape]="false"
                                             >
                                             </ngx-highlight-words></pre>

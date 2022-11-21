@@ -1,8 +1,9 @@
-<div class="h-screen bg-gray-50 flex flex-col overflow-hidden">
+<div class="h-screen bg-gray-50 flex flex-col overflow-hidden"
+    [ngStyle]="{'width':windowWidth < minWidth ?minWidth+'px':'100%', 'overflow-x':windowWidth < minWidth? 'auto': 'hidden'}">
     <router-outlet></router-outlet>
 </div>
 
-<div class="absolute flex flex-col z-50 bottom-0 lg:left-24 left-2 mb-7 content-start">
+<div class="absolute flex flex-col z-50 bottom-0 left-24 mb-7 content-start">
     <div *ngFor="let notification of notificationList">
 
         <div *ngIf="notification.level === 'INFO'">
@@ -77,3 +78,15 @@
         </div>
     </div>
 </div>
+<kern-modal [isOpen]="sizeWarningOpen" [acceptButton]="{
+    buttonCaption:'Continue'}" [modalBoxStyle]="{'width':'600px'}">
+    <div class="flex flex-row justify-center text-lg leading-6 text-gray-900 font-medium mb-2">
+        Information </div>
+
+    <div class="mt-3 flex flex-row justify-between">
+        <div class="flex flex-row-reverse justify-start text-sm">
+            The application is designed for certain screen sizes (> {{minWidth}}px width). If you continue, the
+            application is provided with a global scrollbar.
+        </div>
+    </div>
+</kern-modal>

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Subscription, timer } from 'rxjs';
 import { NotificationApolloService } from './base/services/notification/notification-apollo.service';
 import { interval } from 'rxjs';
@@ -18,8 +18,9 @@ import { RouteManager } from './util/route-manager';
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AppComponent implements OnDestroy, OnInit {
+export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
   test = false;
   title = 'kern-frontspine';
   notificationList: any = [];
@@ -30,6 +31,9 @@ export class AppComponent implements OnDestroy, OnInit {
   notificationsSub$: any;
   notificationsQuery$: any;
   refetchTimer: any;
+  windowWidth: number;
+  sizeWarningOpen: boolean = false;
+  minWidth: number = 1250;
 
   constructor(
     private notificationApolloService: NotificationApolloService,
@@ -38,6 +42,7 @@ export class AppComponent implements OnDestroy, OnInit {
     private configService: ConfigApolloService,
     private router: Router,
     private http: HttpClient,
+    private cfRef: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
@@ -49,6 +54,14 @@ export class AppComponent implements OnDestroy, OnInit {
     this.initializeNotificationService();
     this.initWithConfigManager();
     this.checkBrowser();
+  }
+
+  ngAfterViewInit() {
+    this.onResize();
+  }
+
+  ngAfterViewChecked() {
+    this.cfRef.detectChanges();
   }
 
   initialRequests() {
@@ -174,6 +187,16 @@ export class AppComponent implements OnDestroy, OnInit {
         alert(t);
       }
       localStorage.setItem("browser_info_checked", "1");
+    }
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize() {
+    this.windowWidth = window.innerWidth;
+    if (window.innerWidth < this.minWidth) {
+      this.sizeWarningOpen = true;
+    } else {
+      this.sizeWarningOpen = false;
     }
   }
 

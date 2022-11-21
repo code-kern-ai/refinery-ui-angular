@@ -128,7 +128,7 @@
                                     <div>
                                         <label class="font-dmMono text-sm leading-5 font-medium text-gray-500"
                                             [ngClass]="i%2==0 ? 'bg-white':'bg-gray-50'">
-                                            {{order.key == '_gloabalTasks' ? 'Full Record':order.key}}
+                                            {{order.key == '_globalTasks' ? 'Full Record':order.key}}
                                         </label>
                                     </div>
                                     <div class="col-span-3 self-start">
@@ -528,7 +528,7 @@
                         </div>
                     </div>
                     <div *ngIf="user?.role == 'ENGINEER'"
-                        class="ml-20 flex justify-center overflow-visible items-center cursor-pointer"
+                        class="flex justify-center overflow-visible items-center cursor-pointer"
                         (click)="toggleInformationSourceSwitch()">
                         <ng-template [ngIf]="isBottom && fullRecordData?.id != 'deleted'">
                             <label

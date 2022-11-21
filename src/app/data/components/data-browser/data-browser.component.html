@@ -282,10 +282,11 @@
                                                                 </div>
 
                                                                 <label
-                                                                    class="text-xs text-gray-500 cursor-pointer flex items-center"
+                                                                    class="text-xs text-gray-500 cursor-pointer flex items-center pb-2"
                                                                     *ngIf="groupItem.get('operator').value == 'BEGINS WITH' || groupItem.get('operator').value == 'ENDS WITH' || groupItem.get('operator').value == 'CONTAINS' || groupItem.get('operator').value == 'IN WC'">
                                                                     <input type="checkbox"
-                                                                        formControlName="caseSensitive" class="mr-1">
+                                                                        formControlName="caseSensitive"
+                                                                        class="mr-1 cursor-pointer">
                                                                     Case sensitive
                                                                 </label>
                                                             </div>
@@ -863,10 +864,10 @@
                 </ng-template>
                 <div class="flex items-center">
                     <button *ngIf="activeSlice || activeSearchParams.length > 0 || similarSearchHelper.recordsInDisplay"
-                        class="mr-1 inline-flex items-center px-2.5 py-1.5 border border-gray-200 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer"
+                        class="mr-1 inline-flex items-center px-2.5 py-2 border border-gray-300 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none cursor-pointer"
                         (click)="clearFilters()">
                         <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 icon icon-tabler icon-tabler-filter-off"
-                            width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+                            width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
                             fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                             <line x1="3" y1="3" x2="21" y2="21"></line>
@@ -881,9 +882,9 @@
                 <div data-tip="Change the data browser configurations"
                     class="tooltip tooltip-left relative flex items-center">
                     <label for="config-modal"
-                        class=" opacity-100 cursor-pointer mr-1 inline-flex items-center px-2.5 py-1.5 border border-gray-200 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer">
+                        class="cursor-pointer mr-1 inline-flex items-center px-2.5 py-2 border border-gray-300 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
                         <svg xmlns="http://www.w3.org/2000/svg"
-                            class="mr-2 icon icon-tabler icon-tabler-adjustments inline-block" width="20" height="20"
+                            class="mr-2 icon icon-tabler icon-tabler-adjustments inline-block" width="16" height="16"
                             viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
                             stroke-linecap="round" stroke-linejoin="round">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>

@@ -182,3 +182,11 @@ export function getColorForDataType(dataType): string {
 export function asPythonVariable(baseName: string) {
     return baseName.toLowerCase().replace(/ /g, "_")
 }
+
+export function tryParseJSON(str: string): any {
+    try {
+        return JSON.parse(str);
+    } catch (e) {
+        return null;
+    }
+}

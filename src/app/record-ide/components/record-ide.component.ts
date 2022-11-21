@@ -16,6 +16,8 @@ import { bool } from 'aws-sdk/clients/signer';
 import { labelingHuddle, labelingLinkData, parseLabelingLinkData } from 'src/app/labeling/components/helper/labeling-helper';
 import { UserManager } from 'src/app/util/user-manager';
 import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
+import { caesarCipher, PASS_ME } from 'src/app/util/cipher';
+import { tryParseJSON } from 'src/app/util/helper-functions';
 
 
 @Component({
@@ -32,7 +34,6 @@ export class RecordIDEComponent implements OnInit, OnDestroy {
   subscriptions$: Subscription[] = [];
   output: string;
   loading: bool;
-  // labelingUrl: string;
   screenHeight: string;
   huddleData: labelingHuddle;
   linkData: labelingLinkData;
@@ -41,6 +42,7 @@ export class RecordIDEComponent implements OnInit, OnDestroy {
   vertical: boolean = true;
   position: number;
   debounceTimer;
+  canLoadFromLocalStorage: boolean = false;
 
   constructor(
     private routeService: RouteService,
@@ -69,10 +71,7 @@ export class RecordIDEComponent implements OnInit, OnDestroy {
     this.routeService.updateActivatedRoute(this.activatedRoute);
     this.linkData = parseLabelingLinkData(this.activatedRoute);
     this.prepareProject(this.linkData.projectId);
-    const existingCode = localStorage.getItem("ideCode");
-    if (existingCode) {
-      this.codeFormCtrl.setValue(existingCode);
-    }
+    this.canLoadFromLocalStorage = !!localStorage.getItem("ideCode");
     const horizontal = JSON.parse(localStorage.getItem("ideHorizontal"));
     if (horizontal) {
       this.vertical = !horizontal;
@@ -88,22 +87,29 @@ export class RecordIDEComponent implements OnInit, OnDestroy {
     CommentDataManager.registerCommentRequests(this, requests);
   }
 
-  initEditor() {
-    this.codeFormCtrl.valueChanges
-      .pipe(
-        debounceTime(1000), //5 sec
-        distinctUntilChanged()
-      )
-      .subscribe(() => {
-        localStorage.setItem("ideCode", this.codeFormCtrl.value);
-      });
-  }
-
   switchView() {
     localStorage.setItem("ideHorizontal", JSON.stringify(this.vertical));
     location.reload();
   }
 
+  loadCodeFromLocalStorage() {
+    const existingCode = localStorage.getItem("ideCode");
+    if (existingCode) {
+      let code = tryParseJSON(existingCode);
+      if (!code || !code.code) {
+        //old code
+        code = existingCode;
+      } else {
+        code = caesarCipher(code.code, PASS_ME, true);
+      }
+      this.codeFormCtrl.setValue(code);
+    }
+    this.runRecordIde();
+  }
+  saveCodeToLocalStorage() {
+    const toSave = { code: caesarCipher(this.codeFormCtrl.value, PASS_ME) };
+    localStorage.setItem("ideCode", JSON.stringify(toSave));
+  }
 
   prepareProject(projectId: string) {
     this.project$ = this.projectApolloService.getProjectById(projectId);

@@ -16,6 +16,7 @@ import { ProjectApolloService } from '../../services/project/project-apollo.serv
 import { ConfigApolloService } from '../../services/config/config-apollo.service';
 import { dateAsUTCDate } from 'src/app/util/helper-functions';
 import { ConfigManager } from '../../services/config-service';
+import { RouteManager } from 'src/app/util/route-manager';
 
 
 @Component({
@@ -68,22 +69,12 @@ export class SidebarPmComponent implements OnInit, OnDestroy {
   hasUpdates: boolean;
   private static initialConfigRequest: boolean = false;
 
-  // model-download isn't checked for since the page is accessed from different routes
-  // e.g. lastPage=settings => settings is checked for so settings is highlighted
-  routeColor = {
-    overview: { active: false, checkFor: ['overview'] },
-    data: { active: false, checkFor: ['data'] },
-    labeling: { active: false, checkFor: ['labeling', 'record-ide'] },
-    heuristics: { active: false, checkFor: ['heuristics', 'lookup-lists', 'model-callbacks', 'zero-shot', 'crowd-labeler'] },
-    settings: { active: false, checkFor: ['settings', 'attributes', 'add'] },
-  }
-
+  routeColor: any;
 
   constructor(
     private organizationService: OrganizationApolloService,
     private activatedRoute: ActivatedRoute,
     private auth: AuthApiService,
-    private router: Router,
     private projectApolloService: ProjectApolloService,
     private configService: ConfigApolloService,
     @Inject(DOCUMENT) private document: any
@@ -100,7 +91,6 @@ export class SidebarPmComponent implements OnInit, OnDestroy {
     }
 
     this.firstName.emit(this.user$);
-    this.checkRouteHighlight(this.router.url);
     this.logoutUrl$ = this.auth.getLogoutOut();
     this.subscriptions$.push(this.organizationService
       .getUserOrganization()
@@ -116,26 +106,8 @@ export class SidebarPmComponent implements OnInit, OnDestroy {
       SidebarPmComponent.initialConfigRequest = true;
     }
     this.checkIfManagedVersion();
-    this.initRouterListener();
+    this.routeColor = RouteManager.routeColor;
 
-  }
-
-  initRouterListener() {
-    this.subscriptions$.push(this.router.events.subscribe((val) => {
-      if (val instanceof RoutesRecognized) {
-        const values = { old: this.router.url, new: val.url };
-        if (values.old != values.new) {
-          this.checkRouteHighlight(val.url);
-        }
-      }
-    }));
-
-  }
-
-  checkRouteHighlight(url: string) {
-    for (const key in this.routeColor) {
-      this.routeColor[key].active = this.routeColor[key].checkFor.some(s => url.includes(s));
-    }
   }
 
   requestVersionOverview() {

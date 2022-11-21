@@ -86,7 +86,11 @@ export class LabelHelper {
         this.projectApolloService
             .checkRenameLabel(this.settings.project.id, this.currentLabel.label.id, this.renameLabelData.newLabelName.trim()).pipe(first())
             .subscribe((r) => {
-                r.warnings.forEach(e => e.open = false);
+                r.warnings.forEach(e => {
+                    e.open = false;
+                    e.oldParsed = this.prepareSourceCode(e.old, e.information_source_name);
+                    e.newParsed = this.prepareSourceCode(e.new, e.information_source_name);
+                });
                 this.renameLabelData.checkResults = r;
             });
     }
@@ -134,15 +138,18 @@ export class LabelHelper {
     }
     public checkInputRenameLabel(event: InputEvent) {
         const input = event.target as HTMLInputElement;
-
+        this.renameLabelData.checkResults = null;
         this.renameLabelData.canCheck = this.isValidNewName(input.value);
+        if (this.renameLabelData.canCheck && !this.isLabelNameUnique(this.currentLabel.taskId, input.value)) {
+            this.renameLabelData.canCheck = false;
+            this.renameLabelData.checkResults = { "errors": [{ "msg": "Label with name already exists" }], "warnings": [], "infos": [] };
+        }
         this.renameLabelData.newLabelName = input.value;
     }
     private isValidNewName(name: string): boolean {
         if (!name) return false;
-        if (name == this.currentLabel.label.name) return false;
         if (name.trim() == '') return false;
-        return this.isLabelNameUnique(this.currentLabel.taskId, name);
+        return true;
     }
 
     public clearCurrentLabel() {
@@ -174,25 +181,26 @@ export class LabelHelper {
     public checkAndSetLabelHotkey(event: KeyboardEvent) {
         this.labelHotkeyError = null;
         this.currentLabel = { ...this.currentLabel };
-        if (event.key == this.currentLabel.label.hotkey) return;
+        const key = event.key.toLowerCase();
+        if (key == this.currentLabel.label.hotkey) return;
         const usedHotkeys = this.getUsedHotkey();
-        if (event.key == 'ArrowRight' || event.key == 'ArrowLeft') {
-            this.labelHotkeyError = "Key " + event.key + " is used to navigate between records."
+        if (key == 'ArrowRight' || key == 'ArrowLeft') {
+            this.labelHotkeyError = "Key " + key + " is used to navigate between records."
             return;
-        } else if (usedHotkeys.includes(event.key)) {
-            this.labelHotkeyError = "Key " + event.key + " is already in use."
+        } else if (usedHotkeys.includes(key)) {
+            this.labelHotkeyError = "Key " + key + " is already in use."
             return;
-        } else if ('123456789'.includes(event.key)) {
-            this.labelHotkeyError = "Key " + event.key + " is used to switch between users."
+        } else if ('123456789'.includes(key)) {
+            this.labelHotkeyError = "Key " + key + " is used to switch between users."
             return;
-        } else if (!this.isValidKey(event.key)) {
-            this.labelHotkeyError = "Key " + event.key + " not in whitelist."
+        } else if (!this.isValidKey(key)) {
+            this.labelHotkeyError = "Key " + key + " not in whitelist."
             return;
         }
-        this.currentLabel.label.hotkey = this.labelHotkeyError ? "" : event.key;
+        this.currentLabel.label.hotkey = this.labelHotkeyError ? "" : key;
         if (!this.labelHotkeyError) {
             this.projectApolloService
-                .updateLabelHotkey(this.settings.project.id, this.currentLabel.label.id, event.key.toLowerCase()).pipe(first())
+                .updateLabelHotkey(this.settings.project.id, this.currentLabel.label.id, key).pipe(first())
                 .subscribe();
         }
 
@@ -200,8 +208,9 @@ export class LabelHelper {
 
     public isLabelNameUnique(taskId: string, name: string): boolean {
         if (name == '') return true;
+        const trimmedName = name.trim();
         for (let label of this.labelMap.get(taskId)) {
-            if (label['name'] == name) return false;
+            if (label['name'] == trimmedName) return false;
         }
 
         return true;
@@ -219,6 +228,13 @@ export class LabelHelper {
         this.projectApolloService
             .deleteLabel(projectId, labelId).pipe(first())
             .subscribe();
+    }
+
+    public prepareSourceCode(sourceCode: string, function_name: string): string {
+        return sourceCode.replace(
+            'def lf(record):',
+            'def ' + function_name + '(record):'
+        );
     }
 
 

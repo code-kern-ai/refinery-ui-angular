@@ -34,6 +34,7 @@ import { OrganizationApolloService } from 'src/app/base/services/organization/or
 import { NotificationService } from 'src/app/base/services/notification.service';
 import { assumeUserRole, guessLinkType, labelingHuddle, labelingLinkData, labelingLinkType, parseLabelingLinkData, userRoles } from './helper/labeling-helper';
 import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
+import { RouteManager } from 'src/app/util/route-manager';
 
 @Component({
   selector: 'kern-labeling',
@@ -64,12 +65,11 @@ export class LabelingComponent implements OnInit, OnDestroy {
   fullRecordData: any;
   project: Project;
   project$: any;
-  commentRecordId: string;
+  currentRecordId: string;
 
   dataSliceQuery$: any;
   dataSlices$: any;
 
-  // sourceId: string; // if the session is from an annotator heuristic
 
   user: any;
   displayUserId: any;
@@ -186,7 +186,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
     forkJoin(initialTasks$).pipe(first()).subscribe(() => {
       //user is set to null if a redirect is needed
       if (!this.user) return;
-      //user role need to be avaialbe but a locked link shouldn't bar us from the dropdown is the current one cant be accessed
+      //user role need to be available but a locked link shouldn't bar us from the dropdown is the current one cant be accessed
       this.collectAvailableLinks();
 
       if (this.labelingLinkData.linkLocked) return;
@@ -310,6 +310,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
     const assumedRole = this.roleAssumed ? this.user.role : null
     this.projectApolloService.availableLabelingLinks(this.labelingLinkData.projectId, assumedRole, heuristicId)
       .pipe(first()).subscribe((availableLinks) => {
+        if (!this.stillInLabeling()) return;
         this.availableLinks = availableLinks;
         this.availableLinksLookup = {};
         this.availableLinks.forEach(link => this.availableLinksLookup[link.id] = link);
@@ -317,6 +318,11 @@ export class LabelingComponent implements OnInit, OnDestroy {
         this.selectedLink = this.availableLinks.find(link => link.link.split("?")[0] == linkRoute);
       });
   }
+
+  stillInLabeling() {
+    return RouteManager.currentUrl.includes("labeling");
+  }
+
   dropdownSelectLink(linkId: string) {
     if (linkId == this.selectedLink?.id) return;
     this.selectedLink = this.availableLinksLookup[linkId];
@@ -371,6 +377,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
       return
     }
     this.projectApolloService.requestHuddleData(projectId, this.labelingLinkData.id, this.labelingLinkData.linkType).pipe(first()).subscribe((huddleData) => {
+      if (!this.stillInLabeling()) return;
       if (huddleId == LabelingComponent.DUMMY_HUDDLE_ID) {
         this.labelingLinkData.id = huddleData.huddleId;
         this.collectAvailableLinks();
@@ -420,12 +427,13 @@ export class LabelingComponent implements OnInit, OnDestroy {
     this.huddleData.linkData.requestedPos = jumpPos;
     localStorage.setItem('huddleData', JSON.stringify(this.huddleData));
 
-    //ensure adress matches request
+    //ensure address matches request
     this.router.navigate(["../" + projectId + "/labeling/" + this.huddleData.linkData.id],
       { relativeTo: this.activatedRoute.parent, queryParams: { pos: jumpPos, type: this.huddleData.linkData.linkType } });
 
     this.resetDataToInitialTask();
     if (this.debounceTimer) this.debounceTimer.unsubscribe();
+    this.currentRecordId = this.huddleData.recordIds[jumpPos - 1];
     this.debounceTimer = timer(200).subscribe(() => this.collectRecordData(projectId, this.huddleData.recordIds[jumpPos - 1]));
 
   }
@@ -450,7 +458,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
       this.roleAssumed = this.user.role != user.role;
       this.displayUserId = user.id;
 
-      //no old data to ensure the view is up to date (lockstate etc.)
+      //no old data to ensure the view is up to date (lock state etc.)
       if (this.roleAssumed) localStorage.removeItem("huddleData");
     });
     return pipeFirst;
@@ -658,25 +666,24 @@ export class LabelingComponent implements OnInit, OnDestroy {
   }
 
   collectRecordData(projectId: string, recordId: string) {
-
     if (recordId == null || recordId == "deleted") {
       this.fullRecordData = { id: recordId };
       if (this.recordLabelAssociations$) this.recordLabelAssociations$.unsubscribe();
       return;
     }
-    if (this.commentRecordId) {
-      CommentDataManager.unregisterPartialCommentRequests(this, [{ commentType: CommentType.RECORD, projectId: projectId, commentKey: this.commentRecordId }]);
+    if (this.currentRecordId) {
+      CommentDataManager.unregisterPartialCommentRequests(this, [{ commentType: CommentType.RECORD, projectId: projectId, commentKey: this.currentRecordId }]);
     }
-    this.commentRecordId = recordId;
-    CommentDataManager.registerCommentRequests(this, [{ commentType: CommentType.RECORD, projectId: projectId, commentKey: this.commentRecordId }]);
+    this.currentRecordId = recordId;
+    CommentDataManager.registerCommentRequests(this, [{ commentType: CommentType.RECORD, projectId: projectId, commentKey: this.currentRecordId }]);
 
     this.labelingTasksQuery$.refetch();
     this.resetDataToInitialTask();
     //call parallel so time isn't lost for each request
-    //first token (unchangedable..ish -- if a tasks type changes this will be called again)
+    //first token (unchangeable..ish -- if a tasks type changes this will be called again)
     this.getTokenizedRecord(recordId);
 
-    //then base record data (unchangedable)
+    //then base record data (unchangeable)
     if (this.recordData$) this.recordData$.unsubscribe();
     this.recordData$ = this.recordApolloService.getRecordByRecordId(projectId, recordId)
       .pipe(first()).subscribe((recordData) => {
@@ -692,12 +699,12 @@ export class LabelingComponent implements OnInit, OnDestroy {
       });
 
 
-    //then rlas (keep open to update when nessecary)
+    //then rlas (keep open to update when necessary)
     if (this.recordLabelAssociations$) this.recordLabelAssociations$.unsubscribe();
     [this.recordLabelAssociationsQuery$, this.recordLabelAssociations$] = this.recordApolloService.getRecordLabelAssociations(projectId, recordId);
     this.recordLabelAssociations$ = this.recordLabelAssociations$
       .subscribe((recordLabelAssociations) => {
-        if (!recordLabelAssociations) return;
+        if (this.ignoreRlas(recordLabelAssociations)) return;
         const rlaData = this.prepareRLADataForRole(recordLabelAssociations);
         this.extendRecordLabelAssociations(rlaData);
         this.parseRlaToGroups(rlaData)
@@ -706,6 +713,11 @@ export class LabelingComponent implements OnInit, OnDestroy {
         this.somethingLoading = false;
 
       });
+  }
+  ignoreRlas(rlas: any): boolean {
+    if (!rlas) return true;
+    if (rlas.length > 0 && rlas[0].recordId != this.currentRecordId) return true;
+    return false;
   }
 
   prepareRLADataForRole(rlaData: any[]): any[] {
@@ -750,12 +762,12 @@ export class LabelingComponent implements OnInit, OnDestroy {
     this.addTaskToRecord();
     this.ensureTaskAllowed();
     this.findUserGoldTasks();
-    this.upateTaskStarPotential();
+    this.updateTaskStarPotential();
     this.rebuildOverviewDisplay();
     this.applyColumnOrder();
   }
 
-  upateTaskStarPotential() {
+  updateTaskStarPotential() {
     for (const [key, task] of this.labelingTasksMap.entries()) {
       task.hasStarPotential = false;
       if (this.userIcons.length <= 1) continue;
@@ -805,7 +817,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
   showUserData(userId) {
     this.displayUserId = userId
     this.fullRecordData.recordLabelAssociations = this.getRlaForUser(userId);
-    this.upateTaskStarPotential();
+    this.updateTaskStarPotential();
     this.rebuildOverviewDisplay();
     this.prepareInformationExtractionDisplay();
     if (this.userIcons.length > 5) {
@@ -850,7 +862,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
         }
       }
     }
-    const globalTasksKey: string = '_gloabalTasks';
+    const globalTasksKey: string = '_globalTasks';
     if (this.fullRecordData.tasks[globalTasksKey]) {
       let found = false;
       for (const task of this.fullRecordData.tasks[globalTasksKey]) {
@@ -865,7 +877,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
 
   addTaskToRecord() {
     this.fullRecordData.tasks = {};
-    const globalTasksKey: string = '_gloabalTasks';
+    const globalTasksKey: string = '_globalTasks';
     for (const [key, task] of this.labelingTasksMap.entries()) {
       if (task.taskTarget == LabelingTaskTarget.ON_ATTRIBUTE) {
         if (!this.fullRecordData.tasks[task.attribute.name])
@@ -919,10 +931,10 @@ export class LabelingComponent implements OnInit, OnDestroy {
     if (this.sortOrder.length == 0 || !this.fullRecordData) return;
     this.fullRecordData.sortOrder = Array.from(this.sortOrder);
 
-    // push adds last so tchnically not nessesary to have high nubmer but what gives :)
-    if (this.fullRecordData.tasks['_gloabalTasks']) {
+    // push adds last so technically not necessary to have high number but what gives :)
+    if (this.fullRecordData.tasks['_globalTasks']) {
       this.fullRecordData.sortOrder.push({
-        key: '_gloabalTasks',
+        key: '_globalTasks',
         order: Number.MAX_VALUE,
       });
     }
@@ -1032,7 +1044,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
       }
     }
 
-    //set overlays now if extention is needed
+    //set overlays now if extension is needed
     for (let md of this.fullRecordData.recordLabelAssociations) {
       if (md.sourceType != sourceToDisplay || (!md.tokenStartIdx && md.tokenStartIdx != 0)) continue;
       const attributeId = md.labelingTaskLabel.labelingTask.attribute.id;
@@ -1104,6 +1116,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
   }
 
   nextRecord() {
+    this.fullRecordData = null;
     this.huddleData.linkData.requestedPos++;
     this.jumpToPosition(this.project.id, this.huddleData.linkData.requestedPos);
   }
@@ -1316,10 +1329,10 @@ export class LabelingComponent implements OnInit, OnDestroy {
     return anchorOffset;
   }
 
-  isThisTheLabelImLookingFor(name: string, index: Number, tasktype: LabelingTask): boolean {
+  isThisTheLabelImLookingFor(name: string, index: Number, taskType: LabelingTask): boolean {
     if (!this.labelSearchText) return true;
     if (this.isLabelSearchTextEmpty()) {
-      if (tasktype == LabelingTask.INFORMATION_EXTRACTION) return true;
+      if (taskType == LabelingTask.INFORMATION_EXTRACTION) return true;
       return index >= this.showNLabelButton;
     }
     let text = this.labelSearchText.nativeElement.textContent
@@ -1362,7 +1375,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
       }
       else if (!entry.user?.firstName) {
         entry.createdByShort = '#*';
-        entry.createdByName = 'Unkown User ID';
+        entry.createdByName = 'Unknown User ID';
       } else {
         entry.createdByShort = entry.user.firstName[0] + entry.user.lastName[0];
         entry.createdByName = entry.user.firstName + ' ' + entry.user.lastName;
@@ -1425,7 +1438,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
   // rla groups are used to preorganize the data needed for the display
   // one group per user, one for gold and one for global (rla = record label associations)
   // gold is similar to a user group. globals are for Information sources & Weak supervision since they are relevant for all.
-  // function getRlaForUser collectes the rla data needed for the user display (user + global)
+  // function getRlaForUser collects the rla data needed for the user display (user + global)
   parseRlaToGroups(rlas) {
 
     this.rlaGroupMap = new Map<string, any[]>();
@@ -1801,7 +1814,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
     overlayData,
     isInner,
     isFirstInner,
-    labelExtentionOverlay = false
+    labelExtensionOverlay = false
   ) {
     let extendDisplay = overlayData.token.extendDisplay;
     let isFirstInAttribute = overlayData.isFirst && overlayData.token.idx == 0;
@@ -1818,7 +1831,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
 
     style['border-left-width'] = '0px';
     style['border-right-width'] = '0px';
-    if (overlayData.isFirst && !labelExtentionOverlay) {
+    if (overlayData.isFirst && !labelExtensionOverlay) {
       style['padding-left'] = '0px'; //to counteract border
       style['border-top-left-radius'] = '10px';
       style['border-bottom-left-radius'] = '10px';
@@ -1835,12 +1848,12 @@ export class LabelingComponent implements OnInit, OnDestroy {
     if (overlayData.token.previousCloser) {
       style['padding-right'] = '0px'; //to counteract ml-1 & diff
     }
-    if (labelExtentionOverlay) {
-      style['padding-right'] = '2px'; //8px //to concider padding and svg bounds
+    if (labelExtensionOverlay) {
+      style['padding-right'] = '2px'; //8px //to consider padding and svg bounds
       style['left'] = '-3px'; //-9
     }
     if (isFirstInner) {
-      style['padding-right'] = '8px'; //to concider concider extention block padding & border
+      style['padding-right'] = '8px'; //to consider extension block padding & border
     }
 
     //}
@@ -1918,10 +1931,10 @@ export class LabelingComponent implements OnInit, OnDestroy {
     //usual fork join doesn't work so small own logic to prevent load of rla before done
     this.labelingTaskWait = true;
     this.labelingTasksQuery$.refetch();
-    let intervallTimer = interval(250).subscribe(() => {
+    let intervalTimer = interval(250).subscribe(() => {
       if (!this.labelingTaskWait) {
         func.call(this);
-        intervallTimer.unsubscribe();
+        intervalTimer.unsubscribe();
       }
     })
   }
@@ -1929,9 +1942,6 @@ export class LabelingComponent implements OnInit, OnDestroy {
   goToRecordIde() {
     const sessionId = this.labelingLinkData.id;
     const pos = this.labelingLinkData.requestedPos;
-    // const recordIdeUrlFull = this.activatedRoute.snapshot['_routerState'].url;
-    // const posIndex = /\?pos/.exec(recordIdeUrlFull).index;
-    // const position = parseInt(recordIdeUrlFull.substring(posIndex + 5)); // get rid of "?pos=" (5 chars)
 
     this.router.navigate(["projects", this.project.id, "record-ide", sessionId], { queryParams: { pos: pos } });
   }

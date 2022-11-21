@@ -75,7 +75,8 @@
                     </ng-template>
                 </div>
                 <div class="flex flex-row items-center" *ngIf="knowledgeBases">
-                    <div class="text-sm leading-5 font-medium text-gray-700 inline-block mr-2">Lookup lists</div>
+                    <div class="text-sm leading-5 font-medium text-gray-700 inline-block mr-2">
+                        {{knowledgeBases.length == 0?'No lookup lists in project':'Lookup lists'}}</div>
                     <span *ngFor="let base of knowledgeBases" (click)="copyImportToClipboard(base.pythonVariable)"
                         data-tip="Click to copy import statement" class="tooltip">
                         <div
@@ -83,6 +84,7 @@
                             {{base.pythonVariable}} - {{base.termCount}}
                         </div>
                     </span>
+
                 </div>
             </div>
 
