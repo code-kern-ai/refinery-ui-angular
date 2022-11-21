@@ -1075,7 +1075,12 @@
                         </div>
                         <div class="self-center -mt-4">
 
-                            <span class="text-sm mb-2">Open toggles to fix individual warnings</span>
+                            <span class="text-sm mb-2">
+                                <p class="text-center">Inside each toggle is a suggestion how to fix the
+                                    corresponding
+                                    warning.</p>
+                                <p class="text-center">Please check them carefully before applying!</p>
+                            </span>
                         </div>
                         <div *ngFor="let warning of lh.renameLabelData.checkResults.warnings"
                             [ngClass]="warning.open?'border border-yellow-400':'tooltip'" class="text-sm"
@@ -1109,19 +1114,24 @@
                                 </ng-template>
                                 <ng-template [ngIf]="warning.key == 'HEURISTIC'">
                                     <div class="flex flex-col gap-y-2">
-                                        <span class="text-sm font-bold">Current source code:</span>
+                                        <span class="text-sm font-bold">
+                                            <a [routerLink]="'../heuristics/' + warning.id" target="_blank"
+                                                class="tooltip cursor-pointer underline tooltip-right"
+                                                data-tip="Open information source in new tab">
+                                                Current source code:</a>
+                                        </span>
                                         <pre class="editor-pre" style="max-height: 15rem;"><ngx-highlight-words
-                                                [textToHighlight]="warning.old"
+                                                [textToHighlight]="warning.oldParsed"
                                                 highlightClassName="bg-yellow-400"
-                                                [searchWords]="['\\b'+warning.old_name+'\\b']"
+                                                [searchWords]="warning.old_highlighting"
                                                 [autoEscape]="false"
                                             >
                                             </ngx-highlight-words></pre>
-                                        <span class="text-sm font-bold">New source code:</span>
+                                        <span class="text-sm font-bold">Suggested changes:</span>
                                         <pre class="editor-pre" style="max-height: 15rem;"><ngx-highlight-words
-                                                [textToHighlight]="warning.new"
+                                                [textToHighlight]="warning.newParsed"
                                                 highlightClassName="bg-yellow-400"
-                                                [searchWords]="['\\b'+warning.new_name+'\\b']"
+                                                [searchWords]="warning.new_highlighting"
                                                 [autoEscape]="false"
                                             >
                                             </ngx-highlight-words></pre>
