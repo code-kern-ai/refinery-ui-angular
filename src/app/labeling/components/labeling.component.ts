@@ -65,7 +65,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
   fullRecordData: any;
   project: Project;
   project$: any;
-  commentRecordId: string;
+  currentRecordId: string;
 
   dataSliceQuery$: any;
   dataSlices$: any;
@@ -433,6 +433,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
 
     this.resetDataToInitialTask();
     if (this.debounceTimer) this.debounceTimer.unsubscribe();
+    this.currentRecordId = this.huddleData.recordIds[jumpPos - 1];
     this.debounceTimer = timer(200).subscribe(() => this.collectRecordData(projectId, this.huddleData.recordIds[jumpPos - 1]));
 
   }
@@ -665,17 +666,16 @@ export class LabelingComponent implements OnInit, OnDestroy {
   }
 
   collectRecordData(projectId: string, recordId: string) {
-
     if (recordId == null || recordId == "deleted") {
       this.fullRecordData = { id: recordId };
       if (this.recordLabelAssociations$) this.recordLabelAssociations$.unsubscribe();
       return;
     }
-    if (this.commentRecordId) {
-      CommentDataManager.unregisterPartialCommentRequests(this, [{ commentType: CommentType.RECORD, projectId: projectId, commentKey: this.commentRecordId }]);
+    if (this.currentRecordId) {
+      CommentDataManager.unregisterPartialCommentRequests(this, [{ commentType: CommentType.RECORD, projectId: projectId, commentKey: this.currentRecordId }]);
     }
-    this.commentRecordId = recordId;
-    CommentDataManager.registerCommentRequests(this, [{ commentType: CommentType.RECORD, projectId: projectId, commentKey: this.commentRecordId }]);
+    this.currentRecordId = recordId;
+    CommentDataManager.registerCommentRequests(this, [{ commentType: CommentType.RECORD, projectId: projectId, commentKey: this.currentRecordId }]);
 
     this.labelingTasksQuery$.refetch();
     this.resetDataToInitialTask();
@@ -704,7 +704,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
     [this.recordLabelAssociationsQuery$, this.recordLabelAssociations$] = this.recordApolloService.getRecordLabelAssociations(projectId, recordId);
     this.recordLabelAssociations$ = this.recordLabelAssociations$
       .subscribe((recordLabelAssociations) => {
-        if (!recordLabelAssociations) return;
+        if (this.ignoreRlas(recordLabelAssociations)) return;
         const rlaData = this.prepareRLADataForRole(recordLabelAssociations);
         this.extendRecordLabelAssociations(rlaData);
         this.parseRlaToGroups(rlaData)
@@ -713,6 +713,11 @@ export class LabelingComponent implements OnInit, OnDestroy {
         this.somethingLoading = false;
 
       });
+  }
+  ignoreRlas(rlas: any): boolean {
+    if (!rlas) return true;
+    if (rlas.length > 0 && rlas[0].recordId != this.currentRecordId) return true;
+    return false;
   }
 
   prepareRLADataForRole(rlaData: any[]): any[] {
@@ -1111,6 +1116,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
   }
 
   nextRecord() {
+    this.fullRecordData = null;
     this.huddleData.linkData.requestedPos++;
     this.jumpToPosition(this.project.id, this.huddleData.linkData.requestedPos);
   }
