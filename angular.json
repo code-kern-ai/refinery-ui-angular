@@ -61,17 +61,12 @@
                 }
               ],
               "optimization": true,
-              "outputHashing": "none",
-              "sourceMap": true,
+              "outputHashing": "all",
+              "sourceMap": false,
               "namedChunks": false,
-              "showCircularDependencies": false,
-              "aot": true,
-              "extractLicenses": false,
-              "statsJson": false,
-              "progress": false,
+              "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true,
-              "subresourceIntegrity": false,
               "budgets": [
                 {
                   "type": "initial",
