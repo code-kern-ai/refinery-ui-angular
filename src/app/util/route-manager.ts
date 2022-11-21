@@ -13,8 +13,8 @@ export class RouteManager {
     private static router: Router;
     private static organizationService: OrganizationApolloService;
     private static lastUrls: string[];
-    private static startUrl: string;
-    public static previousUrl: string;
+    private static startUrl: string = "/";
+    public static currentUrl: string;
     private static actionsAfterRouteRecognized: Map<Object, (val: RoutesRecognized) => void> = new Map<Object, (val: RoutesRecognized) => void>();
 
     public static routeColor = {
@@ -29,8 +29,6 @@ export class RouteManager {
     public static initRouteManager(router: Router, organizationService: OrganizationApolloService) {
         RouteManager.router = router;
         RouteManager.organizationService = organizationService;
-        RouteManager.startUrl = router.url;
-        RouteManager.previousUrl = router.url;
         RouteManager.lastUrls = [];
         RouteManager.initRouterListener();
     }
@@ -43,7 +41,7 @@ export class RouteManager {
         }
         RouteManager.router.events.subscribe((val) => {
             if (val instanceof RoutesRecognized) {
-
+                RouteManager.currentUrl = val.url;
                 const lastUrl = RouteManager.router.url;
                 RouteManager.lastUrls.push(lastUrl);
                 if (RouteManager.lastUrls?.length > 500) {
@@ -71,9 +69,6 @@ export class RouteManager {
     public static moveBack() {
         const previous = RouteManager.lastUrls.pop();
         if (previous) {
-            if (RouteManager.lastUrls?.length > 0) {
-                RouteManager.previousUrl = RouteManager.lastUrls[RouteManager.lastUrls.length - 1];
-            }
             this.router.navigateByUrl(previous);
         }
         else this.router.navigateByUrl(RouteManager.startUrl);
