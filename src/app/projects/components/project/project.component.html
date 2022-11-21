@@ -11,17 +11,3 @@
         </div>
     </div>
 </div>
-
-<input #resizingModal type="checkbox" class="modal-toggle">
-<kern-modal [isOpen]="resizingModal.checked" [acceptButton]="{
-    buttonCaption:'Continue'}" [modalBoxStyle]="{'width':'600px'}">
-    <div class="flex flex-row justify-center text-lg leading-6 text-gray-900 font-medium mb-2">
-        Resizing information </div>
-
-    <div class="mt-3 flex flex-row justify-between">
-        <div class="flex flex-row-reverse justify-start text-xs">
-            The current version of the application is designed for certain screen sizes. If you continue, the
-            application some of the application's features may not look as intended.
-        </div>
-    </div>
-</kern-modal>

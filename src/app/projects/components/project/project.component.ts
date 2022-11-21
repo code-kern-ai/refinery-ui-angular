@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { first } from 'rxjs/operators';
 import { AuthApiService } from 'src/app/base/services/auth-api.service';
@@ -26,7 +26,6 @@ export class ProjectComponent implements OnInit, OnDestroy {
   user: any;
   subscriptions$: Subscription[] = [];
   avatarUri: string;
-  @ViewChild('resizingModal') resizingModal: ElementRef;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -76,12 +75,5 @@ export class ProjectComponent implements OnInit, OnDestroy {
 
   getFirstName(userName) {
     this.user$ = userName;
-  }
-
-  @HostListener('window:resize', ['$event'])
-  onResize() {
-    if (window.innerWidth < 1400) {
-      this.resizingModal.nativeElement.checked = true;
-    }
   }
 }
