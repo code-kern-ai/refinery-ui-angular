@@ -14,32 +14,9 @@
                             buttonTooltip:'Actions',
                             buttonTooltipPosition: 'left',
                             buttonCaption: 'Actions',
-                            isOptionDisabled: [false, false, this.selectedLookupLists.length == 0]
+                            isOptionDisabled: [false, false, this.lookuplistsModals.deleteSelected.selectedLookupLists.length == 0]
                         }" (optionClicked)="executeOption($event)">
                         </kern-dropdown>
-
-                        <input #deleteSelectedLists type="checkbox" id="delete-modal-selected" class="modal-toggle">
-                        <div class="modal text-center items-center">
-                            <div class="modal-box">
-                                <h1 class="text-lg text-gray-900 mb-2">Delete lookup {{ selectedLookupLists.length == 1
-                                    ? 'list' : 'lists' }}</h1>
-                                <div class="text-sm text-gray-500 my-2 flex flex-col">
-                                    <span>Are you sure you want to delete selected lookup {{ selectedLookupLists.length
-                                        == 1 ? 'list' : 'lists' }}?</span>
-                                    <span>Currently selected {{ selectedLookupLists.length == 1 ? 'is' : 'are'
-                                        }}:</span>
-                                    <span class="whitespace-pre-line font-bold">{{selectionList}}</span>
-                                </div>
-
-                                <div class="modal-action text-center">
-                                    <label for="delete-modal-selected"
-                                        class="bg-red-100 text-red-700 border border-red-400 text-xs font-semibold mr-2 px-4 py-2 rounded flex cursor-pointer inline-block hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                                        (click)="deleteSelectedLookupLists()">Delete</label>
-                                    <label for="delete-modal-selected"
-                                        class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Close</label>
-                                </div>
-                            </div>
-                        </div>
                     </ng-template>
                     <ng-template #noLookupLists>
                         <div data-tip="At least one lookup list is needed to enable actions"
@@ -159,3 +136,21 @@
         </div>
     </ng-container>
 </div>
+
+<kern-modal [isOpen]="lookuplistsModals.deleteSelected.open" closeButton="X" [modalBoxStyle]="{'text-align':'center'}"
+    [abortButton]="{
+    buttonCaption: 'Delete',
+    emitObject: this, emitFunction: deleteSelectedLookupLists
+}" (optionClicked)="lookuplistsModals.deleteSelected.open = false">
+    <h1 class="text-lg text-gray-900 mb-2">Delete lookup {{ lookuplistsModals.deleteSelected.selectedLookupLists.length
+        == 1
+        ? 'list' : 'lists' }}</h1>
+    <div class="text-sm text-gray-500 my-2 flex flex-col">
+        <span>Are you sure you want to delete selected lookup {{
+            lookuplistsModals.deleteSelected.selectedLookupLists.length
+            == 1 ? 'list' : 'lists' }}?</span>
+        <span>Currently selected {{ lookuplistsModals.deleteSelected.selectedLookupLists.length == 1 ? 'is' : 'are'
+            }}:</span>
+        <span class="whitespace-pre-line font-bold">{{lookuplistsModals.deleteSelected.selectionList}}</span>
+    </div>
+</kern-modal>

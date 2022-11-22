@@ -234,7 +234,8 @@
     </div>
 </div>
 
-<kern-modal [isOpen]="sideBarPmModals.versionOverview.open" closeButton="X" [acceptButton]="{
+<kern-modal [isOpen]="sideBarPmModals.versionOverview.open" closeButton="X" [modalBoxStyle]="{'text-align':'center'}"
+    [acceptButton]="{
     buttonCaptiion: 'How to update',
     useButton: !isManaged,
     emitObject: this, emitFunction: howToUpdate 
