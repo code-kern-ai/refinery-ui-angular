@@ -15,7 +15,7 @@ import { AttributeCalculationExamples, AttributeCodeLookup } from './new-attribu
 import { RecordApolloService } from 'src/app/base/services/record/record-apollo.service';
 import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
 import { dataTypes } from 'src/app/util/data-types';
-import { getColorForDataType, toPythonFunctionName } from 'src/app/util/helper-functions';
+import { getColorForDataType, isStringTrue, toPythonFunctionName } from 'src/app/util/helper-functions';
 import { KnowledgeBasesApolloService } from 'src/app/base/services/knowledge-bases/knowledge-bases-apollo.service';
 
 @Component({
@@ -46,7 +46,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
   @ViewChild('calculateAttribute', { read: ElementRef }) calculateAttribute: ElementRef;
   @ViewChild('deleteAttribute', { read: ElementRef }) deleteAttribute: ElementRef;
   updatedThroughWebsocket: boolean = false;
-  checkIfNewAttribute: string;
+  checkIfNewAttribute: boolean;
   attributesQuery$: any;
   attributes: any[];
   knowledgeBases: any;
@@ -76,7 +76,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
     this.routeService.updateActivatedRoute(this.activatedRoute);
     const projectId = this.activatedRoute.parent.snapshot.paramMap.get('projectId');
     const attributeId = this.activatedRoute.snapshot.paramMap.get('attributeId');
-    this.checkIfNewAttribute = JSON.parse(localStorage.getItem("isNewAttribute"));
+    this.checkIfNewAttribute = isStringTrue(localStorage.getItem("isNewAttribute"));
     const project$ = this.projectApolloService.getProjectById(projectId);
 
     let tasks$ = [];
