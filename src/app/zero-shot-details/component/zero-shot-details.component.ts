@@ -23,6 +23,7 @@ import { parseToSettingsJson, parseZeroShotSettings, ZeroShotSettings } from './
 import { ConfigManager } from 'src/app/base/services/config-service';
 import { UserManager } from 'src/app/util/user-manager';
 import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
+import { createDefaultZeroShotModals, ZeroShotModals } from './zero-shot-details-helper';
 
 @Component({
   selector: 'kern-zero-shot-details',
@@ -90,8 +91,8 @@ export class ZeroShotDetailsComponent
   downloadedModels: any[];
   modelsDownloadedState: boolean[] = [];
   isManaged: boolean = true;
+  zeroShotModals: ZeroShotModals = createDefaultZeroShotModals();
 
-  cancelModalOpen: boolean = false;
   constructor(
     private router: Router,
     private routeService: RouteService,
@@ -234,6 +235,7 @@ export class ZeroShotDetailsComponent
       this.informationSourceName = informationSource.name;
       this.fillZeroShotSettings(informationSource.sourceCode);
       this.canRunProject = !informationSource.lastTask || informationSource.lastTask.state != "CREATED";
+      this.zeroShotModals.deleteZeroShot.zeroShotId = this.informationSource.id;
     }));
 
   }
@@ -278,9 +280,9 @@ export class ZeroShotDetailsComponent
     return vc.pipe(first());
   }
 
-  deleteInformationSource(projectId: string, informationSourceId: string) {
+  deleteInformationSource() {
     this.informationSourceApolloService
-      .deleteInformationSource(projectId, informationSourceId).pipe(first())
+      .deleteInformationSource(this.project.id, this.zeroShotModals.deleteZeroShot.zeroShotId).pipe(first())
       .subscribe();
   }
 
