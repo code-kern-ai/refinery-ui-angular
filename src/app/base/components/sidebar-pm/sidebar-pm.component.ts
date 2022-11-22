@@ -17,6 +17,7 @@ import { ConfigApolloService } from '../../services/config/config-apollo.service
 import { dateAsUTCDate } from 'src/app/util/helper-functions';
 import { ConfigManager } from '../../services/config-service';
 import { RouteManager } from 'src/app/util/route-manager';
+import { createDefaultSideBarPmModals, SideBarPmModals } from './sidebar-pm-helper';
 
 
 @Component({
@@ -61,15 +62,11 @@ export class SidebarPmComponent implements OnInit, OnDestroy {
   isFullscreen: boolean = false;
   @Output() firstName = new EventEmitter<Observable<any>>();
   toggleClass = 'ft-maximize';
-  versionOverview: any[] = [];
-  @ViewChild('versionOverviewModal', { read: ElementRef }) versionOverviewModal: ElementRef;
-  @ViewChild('stepsUpdate', { read: ElementRef }) stepsUpdate: ElementRef;
-  openTab: number = 0;
   isManaged: boolean = true;
   hasUpdates: boolean;
   private static initialConfigRequest: boolean = false;
-
   routeColor: any;
+  sideBarPmModals: SideBarPmModals = createDefaultSideBarPmModals();
 
   constructor(
     private organizationService: OrganizationApolloService,
@@ -111,16 +108,16 @@ export class SidebarPmComponent implements OnInit, OnDestroy {
   }
 
   requestVersionOverview() {
-    this.versionOverview = null;
+    this.sideBarPmModals.versionOverview.data = null;
     this.configService
       .getVersionOverview()
       .pipe(first())
       .subscribe((versionOverview) => {
-        this.versionOverview = versionOverview;
-        this.versionOverview.forEach((version) => {
+        this.sideBarPmModals.versionOverview.data = versionOverview;
+        this.sideBarPmModals.versionOverview.data.forEach((version) => {
           version.parseDate = this.parseUTC(version.lastChecked);
         });
-        this.versionOverview.sort((a, b) => a.service.localeCompare(b.service));
+        this.sideBarPmModals.versionOverview.data.sort((a, b) => a.service.localeCompare(b.service));
         this.configService
           .hasUpdates()
           .pipe(first())
@@ -188,17 +185,17 @@ export class SidebarPmComponent implements OnInit, OnDestroy {
   }
 
   howToUpdate() {
-    this.versionOverviewModal.nativeElement.checked = false;
-    this.stepsUpdate.nativeElement.checked = true;
+    this.sideBarPmModals.versionOverview.open = false;
+    this.sideBarPmModals.steps.open = true;
   }
 
   back() {
-    this.stepsUpdate.nativeElement.checked = false;
-    this.versionOverviewModal.nativeElement.checked = true;
+    this.sideBarPmModals.steps.open = false;
+    this.sideBarPmModals.versionOverview.open = true;
   }
 
   toggleTabs(index: number) {
-    this.openTab = index;
+    this.sideBarPmModals.steps.openTab = index;
   }
 
   copyToClipboard(textToCopy) {
