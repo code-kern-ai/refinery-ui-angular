@@ -57,6 +57,7 @@ import { labelingLinkType } from 'src/app/labeling/components/helper/labeling-he
 import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
 import { UpdateSearchParameters } from './helper-classes/update-search-parameters';
 import { getAttributeType, getSearchOperatorTooltip, SearchOperator } from './helper-classes/search-operators';
+import { createDefaultDataBrowserModals, DataBrowserModals } from './helper-classes/modals-helper';
 
 
 type DataSlice = {
@@ -194,6 +195,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   colorsAttributes: string[] = [];
   separator: string = ",";
   updateSearchParameters: UpdateSearchParameters;
+  dataBrowserModals: DataBrowserModals = createDefaultDataBrowserModals();
 
   getSearchFormArray(groupKey: string): FormArray {
     return this.fullSearch.get(groupKey).get('groupElements') as FormArray;
@@ -2089,3 +2091,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     }
   }
 }
+function createDataBrowserModals(): DataBrowserModals {
+  throw new Error('Function not implemented.');
+}
+

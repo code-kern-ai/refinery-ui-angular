@@ -334,8 +334,7 @@
                                                                                 <div [attr.data-tip]="user.get('dataTip').value"
                                                                                     class="tooltip tooltip-left">
                                                                                     <label class="cursor-pointer"
-                                                                                        for="user-info"
-                                                                                        (click)="userFilter.currentUserInfo = userM">
+                                                                                        (click)="dataBrowserModals.userInfo = {open: true, current: userM}">
                                                                                         <svg xmlns="http://www.w3.org/2000/svg"
                                                                                             class="h-4 w-4" fill="none"
                                                                                             viewBox="0 0 24 24"
@@ -1207,33 +1206,6 @@
                     </div>
                 </div>
             </ng-template>
-            <input type="checkbox" id="user-info" class="modal-toggle">
-            <div class="modal" *ngIf="userFilter.currentUserInfo">
-                <div class="modal-box text-center">
-                    <h1 class="text-lg text-gray-900 mb-2">Info</h1>
-                    <div class="flex-grow items-center flex flex-col mb-2">
-                        <div class="mb-4 ">{{userFilter.currentUserInfo.user.mail}}</div>
-                        <div *ngIf="!userFilter.currentUserInfo.countSum">No labels associated with this user.</div>
-                        <div class="grid gap-x-4 gap-y-2" style="grid-template-columns: max-content max-content;">
-                            <div *ngFor="let pair of userFilter.currentUserInfo.counts" class="contents">
-                                <div class="text-base text-gray-900 font-semibold">{{pair.source}}</div>
-                                <div class="text-base text-gray-500 font-normal">{{pair.count + ' record' +
-                                    (pair.count>1?'s':'')}}</div>
-                            </div>
-                            <div *ngIf="userFilter.currentUserInfo.counts >1" class="contents">
-                                <div class="text-base text-gray-900 font-semibold mt-2">Sum</div>
-                                <div class="text-base text-gray-500 font-normal mt-2">
-                                    {{userFilter.currentUserInfo.countSum + ' record' +
-                                    (userFilter.currentUserInfo.countSum>1?'s':'')}}</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-action">
-                        <label for="user-info"
-                            class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
-                    </div>
-                </div>
-            </div>
             <input type="checkbox" id="slice-information" class="modal-toggle">
             <div class="modal">
                 <div class="modal-box text-black bg-white justify-center"
@@ -1289,3 +1261,27 @@
         </svg>
     </button>
 </ng-template>
+
+
+
+<kern-modal [isOpen]="dataBrowserModals.userInfo.open" [modalBoxStyle]="{'width':'20rem'}" closeButton="X"
+    (optionClicked)="dataBrowserModals.userInfo.open = false">
+    <h1 class="text-lg text-gray-900 mb-2 text-center">Info</h1>
+    <div class="flex-grow items-center flex flex-col mb-2" *ngIf="dataBrowserModals.userInfo.current">
+        <div class="mb-4 ">{{dataBrowserModals.userInfo.current.user.mail}}</div>
+        <div *ngIf="!dataBrowserModals.userInfo.current.countSum">No labels associated with this user.</div>
+        <div class="grid gap-x-4 gap-y-2" style="grid-template-columns: max-content max-content;">
+            <div *ngFor="let pair of dataBrowserModals.userInfo.current.counts" class="contents">
+                <div class="text-base text-gray-900 font-semibold">{{pair.source}}</div>
+                <div class="text-base text-gray-500 font-normal">{{pair.count + ' record' +
+                    (pair.count>1?'s':'')}}</div>
+            </div>
+            <div *ngIf="dataBrowserModals.userInfo.current.counts >1" class="contents">
+                <div class="text-base text-gray-900 font-semibold mt-2">Sum</div>
+                <div class="text-base text-gray-500 font-normal mt-2">
+                    {{dataBrowserModals.userInfo.current.countSum + ' record' +
+                    (dataBrowserModals.userInfo.current.countSum>1?'s':'')}}</div>
+            </div>
+        </div>
+    </div>
+</kern-modal>
