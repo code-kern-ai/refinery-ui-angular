@@ -60,7 +60,7 @@
                             buttonTooltipPosition: 'right',
                             buttonTooltip:'Multi-heuristic action',
                             buttonCaption: 'Actions',
-                            isOptionDisabled: [false, false, this.selectedInformationSources.length == 0, this.selectedInformationSources.length == 0],
+                            isOptionDisabled: [false, false, this.heuristicsModals.selectedInformationSources.length == 0, this.heuristicsModals.selectedInformationSources == 0],
                             optionTooltips: [null, null, 'Except Crowd', null]
                         }" (optionClicked)="executeOption($event)">
                         </kern-dropdown>
@@ -81,30 +81,6 @@
                             </button>
                         </div>
                     </ng-template>
-
-                    <input #deleteSelectedHeuristics type="checkbox" [id]="'delete-modal-selected'"
-                        class="modal-toggle">
-                    <div class="modal text-center items-center">
-                        <div class="modal-box">
-                            <h1 class="text-lg text-gray-900 mb-2">Delete {{ selectedInformationSources.length == 1 ?
-                                'heuristic' : 'heuristics' }}</h1>
-                            <div class="text-sm text-gray-500 my-2 flex flex-col">
-                                <span>Are you sure you want to delete selected {{ selectedInformationSources.length == 1
-                                    ? 'heuristic' : 'heuristics' }}?</span>
-                                <span>Currently selected {{ selectedInformationSources.length == 1 ? 'is' : 'are'
-                                    }}:</span>
-                                <span class="whitespace-pre-line font-bold">{{selectionList}}</span>
-                            </div>
-
-                            <div class="modal-action text-center">
-                                <label [for]="'delete-modal-selected'"
-                                    class="bg-red-100 text-red-700 border border-red-400 text-xs font-semibold mr-2 px-4 py-2 rounded flex cursor-pointer hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 inline-block"
-                                    (click)="deleteSelectedInformationSources(project.id)">Delete</label>
-                                <label [for]="'delete-modal-selected'"
-                                    class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
-                            </div>
-                        </div>
-                    </div>
 
                     <div class="flex justify-center overflow-visible">
                         <ng-template [ngIf]="areInformationSourcesSelected(informationSources,false)"
@@ -151,7 +127,7 @@
                         [ngIfElse]="emptyInfo">
                         <div data-tip="Last weak supervision run information"
                             class="tooltip tooltip-left flex justify-center overflow-visible">
-                            <label for="weak-supervision-info"
+                            <label (click)="heuristicsModals.lastWeakSupervision.open = true"
                                 class="bg-white text-gray-700 text-xs font-medium mx-3 px-4 py-1.5 rounded-md border border-gray-300 cursor-pointer inline-block hover:bg-gray-50">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-wave-sine"
                                     width="24" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
@@ -162,53 +138,6 @@
                                     </path>
                                 </svg>
                             </label>
-                        </div>
-                        <input type="checkbox" id="weak-supervision-info" class="modal-toggle">
-                        <div class="modal">
-                            <div class="modal-box bg-white justify-center">
-                                <h1 class="text-lg text-gray-900 mb-2 text-center">Last Weak
-                                    Supervision Run</h1>
-                                <div class=" flex flex-grow justify-center my-4">
-                                    <div class="grid items-center" style="grid-template-columns: 215px auto">
-                                        <div class="text-sm font-bold">State</div>
-                                        <div class="text text-sm">
-                                            <kern-heuristic-statuses [status]="currentWeakSupervisionRun?.state">
-                                            </kern-heuristic-statuses>
-                                        </div>
-                                        <div class="text-sm font-bold">Selected Heuristics
-                                        </div>
-                                        <div class="text-sm text-gray-500">
-                                            {{currentWeakSupervisionRun.selectedInformationSources}}
-                                        </div>
-                                        <div class="text-sm font-bold">Selected labeling tasks</div>
-                                        <div class="text-sm text-gray-500">
-                                            {{currentWeakSupervisionRun.selectedLabelingTasks}}
-                                        </div>
-                                        <div class="text-sm font-bold">Distinct records</div>
-                                        <div class="text-sm text-gray-500">
-                                            {{currentWeakSupervisionRun.distinctRecords}}</div>
-                                        <div class="text-sm font-bold">Created labels</div>
-                                        <div class="text-sm text-gray-500">
-                                            {{currentWeakSupervisionRun.resultCount}}</div>
-                                        <div class="text-sm font-bold">Created by</div>
-                                        <div class="text-sm text-gray-500">
-                                            {{currentWeakSupervisionRun.displayName}}
-                                        </div>
-                                        <div class="text-sm font-bold">Started at</div>
-                                        <div class="text-sm text-gray-500">
-                                            {{currentWeakSupervisionRun.createdAtDisplay}}</div>
-                                        <div class="text-sm font-bold">Finished at</div>
-                                        <div class="text-sm text-gray-500">
-                                            {{currentWeakSupervisionRun.finishedAtDisplay}}</div>
-                                    </div>
-                                </div>
-                                <div class="modal-action">
-                                    <label for="weak-supervision-info"
-                                        class="bg-white text-gray-700 text-xs font-semibold px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">
-                                        Close
-                                    </label>
-                                </div>
-                            </div>
                         </div>
                     </ng-template>
                     <ng-template #emptyInfo>
@@ -239,244 +168,6 @@
                             class="tooltip tooltip-left bg-white text-gray-700 text-xs font-medium mr-3 px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                             Lookup lists
                         </button>
-                    </div>
-                </div>
-            </div>
-
-            <ng-template [ngIf]="labelingTasksClassification && labelingTasksClassification.length > 0">
-                <input #modalCreateZS type="checkbox" id="zero-shot-modal" class="modal-toggle">
-
-                <div class="modal">
-                    <div class="modal-box text-black bg-white justify-center modal-configuration"
-                        style="overflow: initial;">
-                        <h1 class="text-lg text-gray-900 mb-2 text-center mb-4">Add new zero shot classification</h1>
-
-                        <div *ngIf="attributes && labelingTasksClassification"
-                            class="grid grid-cols-2 gap-2 items-center"
-                            style="grid-template-columns: max-content auto;">
-
-                            <div class="tooltip tooltip-right justify-self-start" data-tip="Choose a labeling task">
-
-                                <span class="cursor-help card-title mb-0 label-text"><span class="underline"
-                                        style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Target
-                                        task</span></span>
-                            </div>
-                            <select #labelingTasksSelect class="select select-bordered select-sm"
-                                (change)="this.hideZeroShotAttribute = this.labelingTasksClassification[labelingTasksSelect.selectedIndex].taskTarget == 'ON_ATTRIBUTE'">
-                                <option *ngFor="let task of labelingTasksClassification" [value]="task.id">
-                                    {{task.taskTarget == 'ON_WHOLE_RECORD' ? ('Full Record - ' + task.name):
-                                    task.name }}
-                                </option>
-                            </select>
-
-                            <div class="contents" [ngClass]="hideZeroShotAttribute?'hidden':null">
-                                <div data-tip="Choose an input attribute for inference"
-                                    class="tooltip tooltip-right justify-self-start">
-                                    <span class="cursor-help card-title mb-0 label-text text-left"><span
-                                            class="underline"
-                                            style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Attribute</span></span>
-                                </div>
-
-                                <select #attributesSelect class="select select-bordered select-sm">
-                                    <option *ngFor="let attribute of attributes" [value]="attribute.id">
-                                        {{attribute.name }}
-                                    </option>
-                                </select>
-                            </div>
-                            <div data-tip="Choose a model from Hugging Face"
-                                class="tooltip tooltip-right justify-self-start"><span
-                                    class="card-title mb-0 label-text text-left"><span class="cursor-help underline"
-                                        style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Handle</span></span>
-
-                            </div>
-
-                            <div class="dropdown" *ngIf="zeroShotRecommendations?.length;else noSuggestions">
-                                <div tabindex="1" class="flex flex-row select select-bordered select-sm pl-0 pr-8">
-                                    <input #inputConfig type="text" placeholder="Type to search..."
-                                        class="w-full font-bold input input-sm"
-                                        style="outline:none; box-shadow:none;height:1.8rem;"
-                                        (focus)="$event.target.select()"
-                                        (keydown.enter)="selectFirstUnhiddenRecommendation(inputConfig)"
-                                        (input)="checkRecommendation($event.target)">
-                                </div>
-                                <ul tabindex="1"
-                                    class="p-2 w-full menu dropdown-content bg-base-100 shadow max-h-80 overflow-y-auto">
-                                    <li #me class="flex flex-row items-center justify-between"
-                                        *ngFor="let recommendation of zeroShotRecommendations; let k = index"
-                                        [ngClass]="recommendation.hidden?'hidden':null"
-                                        (mouseenter)="setCurrentRecommendation(recommendation,hoverBox,me)"
-                                        (mouseleave)="setCurrentRecommendation(null)">
-                                        <label class="cursor-pointer label flex-grow"
-                                            [ngClass]="checkIfModelIsDownloaded(recommendation.configString) ? 'text-green-700' : ''"
-                                            (click)="selectRecommendation(recommendation,inputConfig)">
-                                            {{recommendation.configString}}
-                                        </label>
-                                        <a [href]="recommendation.link" target="_blank" class="h4 w-4 mr-2"
-                                            style="padding:0px"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
-                                                fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                            </svg></a>
-                                    </li>
-                                </ul>
-                            </div>
-                            <ng-template #noSuggestions>
-                                <div class="flex flex-row select select-bordered select-sm pl-0 pr-8">
-                                    <input #inputConfig type="text" placeholder="Enter config string..."
-                                        class="w-full font-bold input input-sm"
-                                        style="outline:none; box-shadow:none;height:1.8rem;"
-                                        (focus)="$event.target.select()" (input)="checkRecommendation($event.target)">
-                                </div>
-                            </ng-template>
-                        </div>
-                        <div class="modal-action text-center mt-4">
-                            <label for="zero-shot-modal"
-                                [ngClass]="inputConfig && inputConfig.nativeElement.value ? 'opacity-100 cursor-pointer': 'opacity-50 cursor-not-allowed'"
-                                class="bg-green-100 text-green-700 border border-green-400 text-white text-xs font-semibold mr-2 px-4 py-2 rounded-md cursor-pointer hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block"
-                                (click)="createZeroShotInformationSource(project.id);modalOpen=false">Create</label>
-                            <label for="zero-shot-modal"
-                                class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded-md border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
-                        </div>
-                    </div>
-                </div>
-            </ng-template>
-
-            <div #hoverBox class="absolute top-0 w-fit h-fit card shadow bg-white" style="z-index: 1000;"
-                [ngClass]="currentRecommendation?null:'hidden'">
-                <ng-template [ngIf]="currentRecommendation">
-                    <div class="card-body p-6 flex flex-col w-64">
-                        <div class="flex justify-center">
-                            <span class="card-title mb-2 label-text">Info</span>
-                        </div>
-                        <div class="grid grid-cols-2  gap-2 items-center"
-                            style="grid-template-columns: max-content auto;">
-                            <span class="label-text text-sm font-bold">Avg Time</span>
-                            <span class="label-text text-sm">{{currentRecommendation.avgTime}}</span>
-                            <span class="label-text text-sm font-bold">Based on</span>
-                            <span class="label-text text-sm">{{currentRecommendation.base}}</span>
-                            <span class="label-text text-sm font-bold">Size</span>
-                            <span class="label-text text-sm">{{currentRecommendation.size}}</span>
-                        </div>
-                    </div>
-                </ng-template>
-            </div>
-
-
-            <input #modalCreateLF type="checkbox"
-                (change)="modalChangeForCreation(modalCreateLF.checked,InformationSourceType.LABELING_FUNCTION)"
-                [id]="'heuristics-'+InformationSourceType.LABELING_FUNCTION" class="modal-toggle">
-            <div class="modal">
-                <div class="modal-box text-black bg-white justify-center">
-                    <h1 class="text-lg text-gray-900 mb-2 text-center mb-4">Add new labeling function</h1>
-
-                    <div *ngIf="attributes && labelingTasksClassification" class="grid grid-cols-2 gap-2 items-center"
-                        style="grid-template-columns: max-content auto;">
-                        <div data-tip="Choose a labeling task" class="tooltip tooltip-right justify-self-start">
-                            <span class="cursor-help card-title mb-0 label-text text-left"><span class="underline"
-                                    style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Labeling
-                                    task</span></span>
-                        </div>
-
-                        <select class="select select-bordered select-sm"
-                            (change)="this.labelingTaskId = $event.target.value;">
-                            <option *ngFor="let labelingTask of labelingTasks" [value]="labelingTask.id">
-                                {{labelingTask.name }}
-                            </option>
-                        </select>
-                        <div data-tip="Enter a function name" class="tooltip tooltip-right justify-self-start">
-                            <span class="cursor-help card-title mb-0 label-text"><span class="underline"
-                                    style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Function
-                                    name</span></span>
-                        </div>
-
-                        <input [(ngModel)]="functionName" placeholder="Enter a function name..."
-                            (input)="changeInformationSourceName($event)"
-                            class="input input-sm input-bordered placeholder-italic" />
-                        <div data-tip="Enter description" class="tooltip tooltip-right justify-self-start">
-
-                            <span class="cursor-help card-title mb-0 label-text text-left"><span class="underline"
-                                    style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Description</span></span>
-                        </div>
-                        <input [(ngModel)]="description" placeholder="Enter description..."
-                            class="input input-sm input-bordered placeholder-italic" />
-                    </div>
-                    <div class="modal-action text-center mt-4">
-                        <div [ngClass]="functionName == '' ? 'cursor-not-allowed' : ''">
-                            <label [for]="'heuristics-'+InformationSourceType.LABELING_FUNCTION"
-                                [ngClass]="functionName =='' ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer'"
-                                class="bg-green-100 text-green-700 border border-green-400 text-white text-xs font-semibold mr-2 px-4 py-2 rounded hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block"
-                                (click)="createInformationSource(project.id, InformationSourceType.LABELING_FUNCTION)">Create</label>
-                        </div>
-
-                        <label [for]="'heuristics-'+InformationSourceType.LABELING_FUNCTION"
-                            class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
-                    </div>
-                </div>
-            </div>
-
-
-            <input #modalCreateAL type="checkbox"
-                (change)="modalChangeForCreation(modalCreateAL.checked,InformationSourceType.ACTIVE_LEARNING)"
-                [id]="'heuristics-'+InformationSourceType.ACTIVE_LEARNING" class="modal-toggle">
-            <div class="modal">
-                <div class="modal-box text-black bg-white justify-center modal-configuration">
-                    <h1 class="text-lg text-gray-900 mb-2 text-center mb-4">Add new active learning</h1>
-
-                    <div *ngIf="attributes && labelingTasksClassification" class="grid grid-cols-2 gap-2 items-center"
-                        style="grid-template-columns: max-content auto;">
-                        <div class="tooltip tooltip-right justify-self-start" data-tip="Choose a labeling task">
-                            <span class="cursor-help card-title mb-0 label-text text-left"><span class="underline"
-                                    style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Labeling
-                                    task</span></span>
-                        </div>
-
-                        <select class="select select-bordered select-sm"
-                            (change)="this.labelingTaskId = $event.target.value; prepareEmbeddingsRequest(project.id)">
-                            <option *ngFor="let labelingTask of labelingTasks" [value]="labelingTask.id">
-                                {{labelingTask.name }}
-                            </option>
-                        </select>
-                        <div data-tip="Enter name" class="tooltip tooltip-right justify-self-start">
-
-                            <span class="cursor-help card-title mb-0 label-text text-left"><span class="underline"
-                                    style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Function
-                                    name</span></span>
-                        </div>
-                        <input [(ngModel)]="functionName" placeholder="Enter name..."
-                            (input)="changeInformationSourceName($event)"
-                            class="input input-sm input-bordered placeholder-italic" />
-                        <div data-tip="Enter description" class="tooltip tooltip-right justify-self-start">
-                            <span class="cursor-help card-title mb-0 label-text text-left"><span class="underline"
-                                    style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Description</span></span>
-                        </div>
-
-                        <input [(ngModel)]="description" placeholder="Enter description..."
-                            class="input input-sm input-bordered placeholder-italic" />
-                        <div data-tip="Choose an embedding" class="tooltip tooltip-right justify-self-start">
-                            <span class="cursor-help card-title mb-0 label-text text-left"><span class="underline"
-                                    style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Embedding</span></span>
-                        </div>
-
-
-                        <select class="select select-bordered select-sm"
-                            [disabled]="!embeddingsFiltered || embeddingsFiltered.length == 0"
-                            [ngClass]="!embeddingsFiltered || embeddingsFiltered.length == 0 ? 'border-disabled' : 'opacity-100 cursor-pointer' "
-                            (change)="this.embedding = $event.target.value">
-                            <option *ngFor="let embedding of embeddingsFiltered;" [value]="embedding.name">
-                                {{embedding.name }}
-                            </option>
-                        </select>
-                    </div>
-                    <div class="modal-action text-center mt-4">
-                        <div [ngClass]="functionName =='' || embedding =='' ? 'cursor-not-allowed' : ''">
-                            <label [for]="'heuristics-'+InformationSourceType.ACTIVE_LEARNING"
-                                [ngClass]="functionName =='' || embedding =='' ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer'"
-                                class="bg-green-100 text-green-700 border border-green-400 text-white text-xs font-semibold mr-2 px-4 py-2 rounded cursor-pointer hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block"
-                                (click)="createInformationSource(project.id, InformationSourceType.ACTIVE_LEARNING)">Create</label>
-                        </div>
-
-                        <label [for]="'heuristics-'+InformationSourceType.ACTIVE_LEARNING"
-                            class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
                     </div>
                 </div>
             </div>
@@ -671,50 +362,298 @@
     </ng-container>
 </div>
 
-<input #modalCreateCL type="checkbox" [id]="'heuristics-'+InformationSourceType.CROWD_LABELER" class="modal-toggle">
-<div class="modal">
-    <div class="modal-box text-black bg-white justify-center">
-        <h1 class="text-lg text-gray-900 mb-2 text-center mb-4">Add new crowd labeler</h1>
+<kern-modal [isOpen]="heuristicsModals.deleteSelected.open" closeButton="X" [modalBoxStyle]="{'text-align':'center'}"
+    [abortButton]="{
+    buttonCaption: 'Delete',
+    emitObject: this, emitFunction: deleteSelectedInformationSources
+}" (optionClicked)="heuristicsModals.deleteSelected.open = false">
+    <h1 class="text-lg text-gray-900 mb-2">Delete {{ heuristicsModals.selectedInformationSources.length == 1 ?
+        'heuristic' : 'heuristics' }}</h1>
+    <div class="text-sm text-gray-500 my-2 flex flex-col">
+        <span>Are you sure you want to delete selected {{ heuristicsModals.selectedInformationSources.length == 1
+            ? 'heuristic' : 'heuristics' }}?</span>
+        <span>Currently selected {{ heuristicsModals.selectedInformationSources.length == 1 ? 'is' : 'are'
+            }}:</span>
+        <span class="whitespace-pre-line font-bold">{{heuristicsModals.selectionList}}</span>
+    </div>
+</kern-modal>
 
-        <div *ngIf="labelingTasksClassification" class="grid grid-cols-2 gap-2 items-center"
-            style="grid-template-columns: max-content auto;">
-            <div data-tip="Choose a labeling task" class="tooltip tooltip-right justify-self-start">
 
-                <span class="cursor-help card-title mb-0 label-text text-left"><span class="underline"
-                        style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Labeling
-                        task</span></span>
+<kern-modal [isOpen]="heuristicsModals.lastWeakSupervision.open" closeButton="X"
+    (optionClicked)="heuristicsModals.lastWeakSupervision.open = false;">
+    <h1 class="text-lg text-gray-900 mb-2 text-center">Last Weak
+        Supervision Run</h1>
+    <div class=" flex flex-grow justify-center my-4"
+        *ngIf="heuristicsModals.lastWeakSupervision.currentWeakSupervisionRun">
+        <div class="grid items-center" style="grid-template-columns: 215px auto">
+            <div class="text-sm font-bold">State</div>
+            <div class="text text-sm">
+                <kern-heuristic-statuses
+                    [status]="heuristicsModals.lastWeakSupervision.currentWeakSupervisionRun?.state">
+                </kern-heuristic-statuses>
             </div>
-            <select class="select select-bordered select-sm" (change)="this.labelingTaskId = $event.target.value;">
-                <option *ngFor="let labelingTask of labelingTasks" [value]="labelingTask.id">
-                    {{labelingTask.name }}
-                </option>
-            </select>
-            <div class="tooltip tooltip-right justify-self-start" data-tip="Enter a name">
-
-                <span class="cursor-help card-title mb-0 label-text"><span class="underline"
-                        style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Heuristic
-                        name</span></span>
+            <div class="text-sm font-bold">Selected Heuristics
             </div>
-            <input [(ngModel)]="functionName" placeholder="Enter a name..."
-                class="input input-sm input-bordered placeholder-italic" />
-            <div data-tip="Enter description" class="tooltip tooltip-right justify-self-start">
-                <span class="cursor-help card-title mb-0 label-text text-left"><span class="underline"
-                        style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Description</span></span>
+            <div class="text-sm text-gray-500">
+                {{heuristicsModals.selectedInformationSources}}
             </div>
-
-            <input [(ngModel)]="description" placeholder="Enter description..."
-                class="input input-sm input-bordered placeholder-italic" />
-        </div>
-        <div class="modal-action text-center mt-4">
-            <div [ngClass]="functionName == '' ? 'cursor-not-allowed' : ''">
-                <label [for]="'heuristics-'+InformationSourceType.CROWD_LABELER"
-                    [ngClass]="functionName =='' ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer'"
-                    class="bg-green-100 text-green-700 border border-green-400 text-white text-xs font-semibold mr-2 px-4 py-2 rounded hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block"
-                    (click)="createCrowdLabelerInformationSource(project.id)">Create</label>
+            <div class="text-sm font-bold">Selected labeling tasks</div>
+            <div class="text-sm text-gray-500">
+                {{heuristicsModals.lastWeakSupervision.currentWeakSupervisionRun.selectedLabelingTasks}}
             </div>
-
-            <label [for]="'heuristics-'+InformationSourceType.CROWD_LABELER"
-                class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
+            <div class="text-sm font-bold">Distinct records</div>
+            <div class="text-sm text-gray-500">
+                {{heuristicsModals.lastWeakSupervision.currentWeakSupervisionRun.distinctRecords}}</div>
+            <div class="text-sm font-bold">Created labels</div>
+            <div class="text-sm text-gray-500">
+                {{heuristicsModals.lastWeakSupervision.currentWeakSupervisionRun.resultCount}}</div>
+            <div class="text-sm font-bold">Created by</div>
+            <div class="text-sm text-gray-500">
+                {{heuristicsModals.lastWeakSupervision.currentWeakSupervisionRun.displayName}}
+            </div>
+            <div class="text-sm font-bold">Started at</div>
+            <div class="text-sm text-gray-500">
+                {{heuristicsModals.lastWeakSupervision.currentWeakSupervisionRun.createdAtDisplay}}</div>
+            <div class="text-sm font-bold">Finished at</div>
+            <div class="text-sm text-gray-500">
+                {{heuristicsModals.lastWeakSupervision.currentWeakSupervisionRun.finishedAtDisplay}}</div>
         </div>
     </div>
+</kern-modal>
+
+<kern-modal [isOpen]="heuristicsModals.createLabelingFunction.open" [modalBoxStyle]="{'min-width':'40rem'}"
+    closeButton="X" [acceptButton]="{
+    buttonCaption: 'Create',
+    disabled: heuristicsModals.functionName == '',
+    emitObject: this, emitFunction: createLabelingFunction
+}" (optionClicked)="heuristicsModals.createLabelingFunction.open = false">
+    <h1 class="text-lg text-gray-900 mb-2 text-center mb-4">Add new labeling function</h1>
+
+    <div *ngIf="attributes && labelingTasksClassification" class="grid grid-cols-2 gap-2 items-center"
+        style="grid-template-columns: max-content auto;">
+        <div data-tip="Choose a labeling task" class="tooltip tooltip-right justify-self-start">
+            <span class="cursor-help card-title mb-0 label-text text-left"><span class="underline"
+                    style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Labeling
+                    task</span></span>
+        </div>
+
+        <select class="select select-bordered select-sm" (change)="this.labelingTaskId = $event.target.value;">
+            <option *ngFor="let labelingTask of labelingTasks" [value]="labelingTask.id">
+                {{labelingTask.name }}
+            </option>
+        </select>
+        <div data-tip="Enter a function name" class="tooltip tooltip-right justify-self-start">
+            <span class="cursor-help card-title mb-0 label-text"><span class="underline"
+                    style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Function
+                    name</span></span>
+        </div>
+
+        <input [(ngModel)]="heuristicsModals.functionName" placeholder="Enter a function name..."
+            (input)="changeInformationSourceName($event)" class="input input-sm input-bordered placeholder-italic" />
+        <div data-tip="Enter description" class="tooltip tooltip-right justify-self-start">
+
+            <span class="cursor-help card-title mb-0 label-text text-left"><span class="underline"
+                    style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Description</span></span>
+        </div>
+        <input [(ngModel)]="heuristicsModals.description" placeholder="Enter description..."
+            class="input input-sm input-bordered placeholder-italic" />
+    </div>
+</kern-modal>
+
+<kern-modal [isOpen]="heuristicsModals.createActiveLearning.open" [modalBoxStyle]="{'min-width':'40rem'}"
+    closeButton="X" [acceptButton]="{
+    buttonCaption: 'Create',
+    disabled: heuristicsModals.functionName == '' || heuristicsModals.createActiveLearning.embedding == '',
+    emitObject: this, emitFunction: createActiveLearning
+}" (optionClicked)="heuristicsModals.createActiveLearning.open = false">
+    <h1 class="text-lg text-gray-900 mb-2 text-center mb-4">Add new active learning</h1>
+
+    <div *ngIf="attributes && labelingTasksClassification" class="grid grid-cols-2 gap-2 items-center"
+        style="grid-template-columns: max-content auto;">
+        <div class="tooltip tooltip-right justify-self-start" data-tip="Choose a labeling task">
+            <span class="cursor-help card-title mb-0 label-text text-left"><span class="underline"
+                    style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Labeling
+                    task</span></span>
+        </div>
+
+        <select class="select select-bordered select-sm"
+            (change)="this.labelingTaskId = $event.target.value; prepareEmbeddingsRequest(project.id)">
+            <option *ngFor="let labelingTask of labelingTasks" [value]="labelingTask.id">
+                {{labelingTask.name }}
+            </option>
+        </select>
+        <div data-tip="Enter name" class="tooltip tooltip-right justify-self-start">
+
+            <span class="cursor-help card-title mb-0 label-text text-left"><span class="underline"
+                    style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Function
+                    name</span></span>
+        </div>
+        <input [(ngModel)]="heuristicsModals.functionName" placeholder="Enter name..."
+            (input)="changeInformationSourceName($event)" class="input input-sm input-bordered placeholder-italic" />
+        <div data-tip="Enter description" class="tooltip tooltip-right justify-self-start">
+            <span class="cursor-help card-title mb-0 label-text text-left"><span class="underline"
+                    style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Description</span></span>
+        </div>
+
+        <input [(ngModel)]="heuristicsModals.description" placeholder="Enter description..."
+            class="input input-sm input-bordered placeholder-italic" />
+        <div data-tip="Choose an embedding" class="tooltip tooltip-right justify-self-start">
+            <span class="cursor-help card-title mb-0 label-text text-left"><span class="underline"
+                    style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Embedding</span></span>
+        </div>
+
+
+        <select class="select select-bordered select-sm"
+            [disabled]="!embeddingsFiltered || embeddingsFiltered.length == 0"
+            [ngClass]="!embeddingsFiltered || embeddingsFiltered.length == 0 ? 'border-disabled' : 'opacity-100 cursor-pointer' "
+            (change)="this.embedding = $event.target.value">
+            <option *ngFor="let embedding of embeddingsFiltered;" [value]="embedding.name">
+                {{embedding.name }}
+            </option>
+        </select>
+    </div>
+</kern-modal>
+
+<kern-modal [isOpen]="heuristicsModals.createCrowdLabeling.open" [modalBoxStyle]="{'min-width':'40rem'}" closeButton="X"
+    [acceptButton]="{
+    buttonCaption: 'Create',
+    disabled: heuristicsModals.functionName == '',
+    emitObject: this, emitFunction: createCrowdLabelerInformationSource
+}" (optionClicked)="heuristicsModals.createCrowdLabeling.open = false">
+    <h1 class="text-lg text-gray-900 mb-2 text-center mb-4">Add new crowd labeler</h1>
+
+    <div *ngIf="labelingTasksClassification" class="grid grid-cols-2 gap-2 items-center"
+        style="grid-template-columns: max-content auto;">
+        <div data-tip="Choose a labeling task" class="tooltip tooltip-right justify-self-start">
+
+            <span class="cursor-help card-title mb-0 label-text text-left"><span class="underline"
+                    style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Labeling
+                    task</span></span>
+        </div>
+        <select class="select select-bordered select-sm" (change)="this.labelingTaskId = $event.target.value;">
+            <option *ngFor="let labelingTask of labelingTasks" [value]="labelingTask.id">
+                {{labelingTask.name }}
+            </option>
+        </select>
+        <div class="tooltip tooltip-right justify-self-start" data-tip="Enter a name">
+
+            <span class="cursor-help card-title mb-0 label-text"><span class="underline"
+                    style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Heuristic
+                    name</span></span>
+        </div>
+        <input [(ngModel)]="heuristicsModals.functionName" placeholder="Enter a name..."
+            class="input input-sm input-bordered placeholder-italic" />
+        <div data-tip="Enter description" class="tooltip tooltip-right justify-self-start">
+            <span class="cursor-help card-title mb-0 label-text text-left"><span class="underline"
+                    style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Description</span></span>
+        </div>
+
+        <input [(ngModel)]="heuristicsModals.description" placeholder="Enter description..."
+            class="input input-sm input-bordered placeholder-italic" />
+    </div>
+</kern-modal>
+
+<ng-template [ngIf]="labelingTasksClassification && labelingTasksClassification.length > 0">
+    <kern-modal [isOpen]="heuristicsModals.createZeroShot.open"
+        [modalBoxStyle]="{'min-width': '40rem', 'overflow-x': 'visible'}" closeButton="X" [acceptButton]="{
+    buttonCaption: 'Create',
+    disabled: heuristicsModals.createZeroShot.value == '' || heuristicsModals.createZeroShot.value == null,
+    emitObject: this, emitFunction: createZeroShotInformationSource
+    }" (optionClicked)="heuristicsModals.createZeroShot.open = false">
+        <h1 class="text-lg text-gray-900 mb-2 text-center mb-4">Add new zero shot classification</h1>
+
+        <div *ngIf="attributes && labelingTasksClassification" class="grid grid-cols-2 gap-2 items-center"
+            style="grid-template-columns: max-content auto;">
+
+            <div class="tooltip tooltip-right justify-self-start" data-tip="Choose a labeling task">
+
+                <span class="cursor-help card-title mb-0 label-text"><span class="underline"
+                        style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Target
+                        task</span></span>
+            </div>
+            <select #labelingTasksSelect class="select select-bordered select-sm"
+                (change)="this.heuristicsModals.createZeroShot.hideZeroShotAttribute = this.labelingTasksClassification[labelingTasksSelect.selectedIndex].taskTarget == 'ON_ATTRIBUTE'">
+                <option *ngFor="let task of labelingTasksClassification" [value]="task.id">
+                    {{task.taskTarget == 'ON_WHOLE_RECORD' ? ('Full Record - ' + task.name):
+                    task.name }}
+                </option>
+            </select>
+
+            <div class="contents" [ngClass]="heuristicsModals.createZeroShot.hideZeroShotAttribute?'hidden':null">
+                <div data-tip="Choose an input attribute for inference"
+                    class="tooltip tooltip-right justify-self-start">
+                    <span class="cursor-help card-title mb-0 label-text text-left"><span class="underline"
+                            style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Attribute</span></span>
+                </div>
+
+                <select #attributesSelect class="select select-bordered select-sm">
+                    <option *ngFor="let attribute of attributes" [value]="attribute.id">
+                        {{attribute.name }}
+                    </option>
+                </select>
+            </div>
+            <div data-tip="Choose a model from Hugging Face" class="tooltip tooltip-right justify-self-start"><span
+                    class="card-title mb-0 label-text text-left"><span class="cursor-help underline"
+                        style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Handle</span></span>
+
+            </div>
+
+            <div class="dropdown"
+                *ngIf="heuristicsModals.createZeroShot.zeroShotRecommendations?.length;else noSuggestions">
+                <div tabindex="1" class="flex flex-row select select-bordered select-sm pl-0 pr-8">
+                    <input #inputConfig type="text" placeholder="Type to search..."
+                        [value]="heuristicsModals.createZeroShot.value" class="w-full font-bold input input-sm"
+                        style="outline:none; box-shadow:none;height:1.8rem;" (focus)="$event.target.select()"
+                        (keydown.enter)="selectFirstUnhiddenRecommendation(inputConfig)"
+                        (input)="checkRecommendation($event.target)">
+                </div>
+                <ul tabindex="1" class="p-2 w-full menu dropdown-content bg-base-100 shadow max-h-80 overflow-y-auto">
+                    <li #me class="flex flex-row items-center justify-between"
+                        *ngFor="let recommendation of heuristicsModals.createZeroShot.zeroShotRecommendations; let k = index"
+                        [ngClass]="recommendation.hidden?'hidden':null"
+                        (mouseenter)="setCurrentRecommendation(recommendation,hoverBox,me)"
+                        (mouseleave)="setCurrentRecommendation(null)">
+                        <label class="cursor-pointer label flex-grow"
+                            [ngClass]="checkIfModelIsDownloaded(recommendation.configString) ? 'text-green-700' : ''"
+                            (click)="selectRecommendation(recommendation,inputConfig)">
+                            {{recommendation.configString}}
+                        </label>
+                        <a [href]="recommendation.link" target="_blank" class="h4 w-4 mr-2" style="padding:0px"><svg
+                                xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg></a>
+                    </li>
+                </ul>
+            </div>
+            <ng-template #noSuggestions>
+                <div class="flex flex-row select select-bordered select-sm pl-0 pr-8">
+                    <input #inputConfig type="text" placeholder="Enter config string..."
+                        class="w-full font-bold input input-sm" style="outline:none; box-shadow:none;height:1.8rem;"
+                        (focus)="$event.target.select()" (input)="checkRecommendation($event.target)">
+                </div>
+            </ng-template>
+        </div>
+    </kern-modal>
+</ng-template>
+
+<div #hoverBox class="absolute top-0 w-fit h-fit card shadow bg-white" style="z-index: 1000;"
+    [ngClass]="heuristicsModals.createZeroShot.currentRecommendation?null:'hidden'">
+    <ng-template [ngIf]="heuristicsModals.createZeroShot.currentRecommendation">
+        <div class="card-body p-6 flex flex-col w-64">
+            <div class="flex justify-center">
+                <span class="card-title mb-2 label-text">Info</span>
+            </div>
+            <div class="grid grid-cols-2  gap-2 items-center" style="grid-template-columns: max-content auto;">
+                <span class="label-text text-sm font-bold">Avg Time</span>
+                <span
+                    class="label-text text-sm">{{heuristicsModals.createZeroShot.currentRecommendation.avgTime}}</span>
+                <span class="label-text text-sm font-bold">Based on</span>
+                <span class="label-text text-sm">{{heuristicsModals.createZeroShot.currentRecommendation.base}}</span>
+                <span class="label-text text-sm font-bold">Size</span>
+                <span class="label-text text-sm">{{heuristicsModals.createZeroShot.currentRecommendation.size}}</span>
+            </div>
+        </div>
+    </ng-template>
 </div>
