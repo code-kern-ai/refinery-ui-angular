@@ -30,6 +30,7 @@ import { RecordApolloService } from 'src/app/base/services/record/record-apollo.
 import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
 import { dataTypes } from 'src/app/util/data-types';
 import { KnowledgeBasesApolloService } from 'src/app/base/services/knowledge-bases/knowledge-bases-apollo.service';
+import { createDefaultHeuristicsDetailsModals, HeuristicsDetailsModals } from './weak-source-details-helper';
 
 @Component({
   selector: 'kern-weak-source-details',
@@ -90,12 +91,13 @@ export class WeakSourceDetailsComponent
 
   stickyObserver: IntersectionObserver;
   isHeaderNormal: boolean = true;
-  currentRecordIdx: number = -1;
   sampleRecords: any;
   selectedAttribute: string = '';
   dataTypesArray = dataTypes;
 
   displayLogWarning: boolean = false;
+
+  heuristicDetailsModals: HeuristicsDetailsModals = createDefaultHeuristicsDetailsModals();
 
   constructor(
     private router: Router,
@@ -415,9 +417,9 @@ export class WeakSourceDetailsComponent
     }
   }
 
-  deleteInformationSource(projectId, informationSourceId) {
+  deleteInformationSource() {
     this.informationSourceApolloService
-      .deleteInformationSource(projectId, informationSourceId).pipe(first())
+      .deleteInformationSource(this.project.id, this.informationSource.id).pipe(first())
       .subscribe();
   }
 

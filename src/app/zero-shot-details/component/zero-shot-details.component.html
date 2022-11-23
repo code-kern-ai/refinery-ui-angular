@@ -546,7 +546,7 @@
     </div>
 </kern-modal>
 
-<kern-modal [isOpen]="zeroShotModals.runOn10Details.open" closeButton="X"
+<kern-modal [isOpen]="zeroShotModals.runOn10Details.open" closeButton="X" [modalBoxStyle]="{'width': '40rem'}"
     (optionClicked)="zeroShotModals.runOn10Details.open = false">
     <h1 class="text-lg text-gray-900 mb-2 text-center">View details</h1>
     <div class="text-sm text-gray-500 my-2" class="overflow-y-auto max-height-modal">
