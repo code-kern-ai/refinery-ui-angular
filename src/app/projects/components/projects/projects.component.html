@@ -305,9 +305,8 @@
             New project
         </button>
         <button class="ml-6 mt-6 mr-6 xs:mr-0">
-            <label
-                class="bg-blue-700 text-white text-xs font-semibold px-4 py-2.5 rounded-md cursor-pointer hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                for="project-upload-modal">
+            <label (click)="this.projectsModals.uploadProject.open = true"
+                class="bg-blue-700 text-white text-xs font-semibold px-4 py-2.5 rounded-md cursor-pointer hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                 Import snapshot
             </label>
         </button>
@@ -328,32 +327,6 @@
     </div>
 </ng-template>
 
-<input #inputUpload type="checkbox" id="project-upload-modal" class="modal-toggle">
-<div class="modal text-center items-center">
-    <div class="modal-box modal_content text-black bg-white justify-center">
-        <h1 class="flex flex-grow justify-center text-lg text-gray-900 font-bold">Upload Project Data
-        </h1>
-        <div class="text-sm text-gray-500 mb-4">
-            Upload data from an existing project
-        </div>
-        <div>
-            <kern-upload [projectId]="null" [init]="true" (fileAttached)="getFile($event)">
-            </kern-upload>
-        </div>
-        <div class="modal-action">
-            <label (click)="importExistingProject()"
-                class="bg-green-100 text-green-700 border border-green-400 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-                type="submit">
-                Upload
-            </label>
-            <label for="project-upload-modal"
-                class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                Close
-            </label>
-        </div>
-    </div>
-</div>
-
 <ng-template [ngIf]="adminData.isAdmin">
     <kern-modal [isOpen]="adminData.prjDeleteModalOpen" (optionClicked)="adminData.prjDeleteModalOpen=false"
         abortButton="X" [closeButton]="{
@@ -372,3 +345,19 @@
     </kern-modal>
 
 </ng-template>
+
+<kern-modal [isOpen]="projectsModals.uploadProject.open" closeButton="X" [modalBoxStyle]="{'width':'35rem'}"
+    [acceptButton]="{
+    buttonCaption:'Upload',
+    emitObject:this,emitFunction:importExistingProject
+}" (optionClicked)="projectsModals.uploadProject.open = false">
+    <h1 class="flex flex-grow justify-center text-lg text-gray-900 font-bold">Upload Project Data
+    </h1>
+    <div class="text-sm text-gray-500 mb-4 text-center">
+        Upload data from an existing project
+    </div>
+    <div>
+        <kern-upload [projectId]="null" [init]="true" (fileAttached)="getFile($event)">
+        </kern-upload>
+    </div>
+</kern-modal>
