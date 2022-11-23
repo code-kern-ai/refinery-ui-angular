@@ -80,7 +80,7 @@
                         class="tooltip tooltip-bottom">
                         <label
                             class="ml-3 mr-1 inline-flex items-center px-4 py-2 border border-gray-200 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer"
-                            for="list-upload-modal">
+                            (click)="lookupListDetailsModals.uploadLookupList.open = true">
                             <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 icon icon-tabler icon-tabler-upload"
                                 width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
                                 fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -112,7 +112,7 @@
                         </label>
                     </button>
 
-                    <label for="paste-list-modal"
+                    <label (click)="lookupListDetailsModals.pasteLookupList.open = true"
                         class="ml-2 mr-1 inline-flex items-center px-4 py-2 border border-gray-200 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer">
                         <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 h-4 w-4" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor" stroke-width="2">
@@ -123,7 +123,7 @@
 
                     </label>
 
-                    <label for="remove-list-modal"
+                    <label (click)="lookupListDetailsModals.removeLookupList.open = true"
                         class="ml-2 mr-1 inline-flex items-center px-4 py-2 border border-red-400 shadow-sm text-xs font-semibold rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 cursor-pointer">
                         <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 icon icon-tabler icon-tabler-clipboard-off"
                             width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
@@ -264,109 +264,83 @@
                 Are you sure you want to delete this lookup list?</div>
 
             <div data-tip="This can't be reverted!" class="tooltip tooltip-right">
-                <label [for]="'delete-modal-'+base.id"
+                <label (click)="lookupListDetailsModals.deleteLookupList.open = true"
                     class="bg-red-100 text-red-700 border border-red-400 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer ml-6 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 inline-block">
                     Delete {{base.name}}
                 </label>
             </div>
-            <input type="checkbox" [id]="'delete-modal-'+base.id" class="modal-toggle">
-            <div class="modal text-center items-center">
-                <div class="modal-box">
-                    <h1 class="text-lg text-gray-900 mb-2">Delete lookup list</h1>
-                    <div class="text-sm text-gray-500 my-2">
-                        Are you sure you want to delete this lookup list?
-                    </div>
-
-                    <div class="modal-action text-center">
-                        <label [for]="'delete-modal-'+base.id"
-                            class="bg-red-100 text-red-700 border border-red-400 text-xs font-semibold mr-2 px-4 py-2 rounded flex cursor-pointer hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 inline-block"
-                            (click)="deleteKnowledgeBase(projectId, base.id)">Delete</label>
-                        <label [for]="'delete-modal-'+base.id"
-                            class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Close</label>
-                    </div>
-
-
-                </div>
-            </div>
-        </div>
-
-        <input type="checkbox" id="paste-list-modal" class="modal-toggle">
-        <div class="modal text-center items-center">
-            <div class="modal-box">
-                <h1 class="text-lg text-gray-900 mb-2 font-bold">Paste your list</h1>
-
-                <div class="grid justify-center items-center gap-x-2 gap-y-1 justify-items-start"
-                    style="grid-template-columns: max-content min-content;">
-                    <span>Split On</span><input #inputSplit type="text" class="input input-sm input-bordered w-10"
-                        value="\n">
-                </div>
-                <div style="max-height:80vh;overflow-x: auto;">
-                    <textarea #inputArea
-                        class="mt-4 textarea border-gray-200 placeholder-italic h-72 w-full p-4 leading-4 focus:outline-none"
-                        style="line-height:1rem"
-                        placeholder="Paste your values here.&#10;&#10;No need to check for duplication, we do that for you."></textarea>
-                </div>
-                <div class="modal-action text-center mt-0">
-                    <label for="paste-list-modal"
-                        class="bg-green-100 border border-green-400 text-green-700 hover:bg-green-200 focus:ring-green-500 text-xs font-semibold mr-2 px-4 py-2 rounded flex mt-4 cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 inline-block"
-                        (click)="pasteLookupList(projectId, base.id,inputArea.value,inputSplit.value, false)">Add</label>
-                    <label for="paste-list-modal"
-                        class="bg-white text-gray-700 text-xs font-semibold mr-4 mt-4 px-4 py-2 rounded-md border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Cancel</label>
-                </div>
-            </div>
-        </div>
-
-        <input type="checkbox" id="remove-list-modal" class="modal-toggle">
-        <div class="modal text-center items-center">
-            <div class="modal-box">
-                <h1 class="text-lg text-gray-900 mb-2 font-bold">Remove from your list</h1>
-
-                <div class="grid justify-center items-center gap-x-2 gap-y-1 justify-items-start"
-                    style="grid-template-columns: max-content min-content;">
-                    <span>Split On</span><input #rmInputSplit type="text" class="input input-sm input-bordered w-10"
-                        value="\n">
-                </div>
-                <div style="max-height:80vh;overflow-x: auto;">
-                    <textarea #rmInputArea
-                        class="mt-4 textarea border-gray-200 placeholder-italic h-72 w-full p-4 leading-4 focus:outline-none"
-                        style="line-height:1rem"
-                        placeholder="Paste your values here.&#10;&#10;No need to check for duplication, we do that for you."></textarea>
-                </div>
-                <div class="modal-action text-center mt-0">
-                    <label for="remove-list-modal"
-                        class="bg-red-100 border border-red-400 text-red-700 hover:bg-red-200 focus:ring-red-500 text-xs font-semibold mr-2 px-4 py-2 rounded-md flex mt-4 cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 inline-block"
-                        (click)="pasteLookupList(projectId, base.id,rmInputArea.value,rmInputSplit.value, true)">Remove</label>
-                    <label for="remove-list-modal"
-                        class="bg-white text-gray-700 text-xs font-semibold mr-4 mt-4 px-4 py-2 rounded-md border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Cancel</label>
-                </div>
-            </div>
         </div>
     </div>
 </div>
 
-
-<input #inputUpload type="checkbox" id="list-upload-modal" class="modal-toggle">
-<div class="modal text-center items-center">
-    <div class="modal-box modal_content text-black bg-white justify-center">
-        <h1 class="flex flex-grow justify-center text-lg text-gray-900 font-bold">Upload list data
-        </h1>
-        <div class="text-sm text-gray-500 mb-4">
-            Upload data to your lookup list
-        </div>
-        <div>
-            <kern-upload [projectId]="projectId" (fileAttached)="getFile($event)">
-            </kern-upload>
-        </div>
-        <div class="modal-action">
-            <label (click)="uploadToMinio()"
-                class="bg-green-100 text-green-700 border border-green-400 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                type="submit">
-                Upload
-            </label>
-            <label for="list-upload-modal"
-                class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                Close
-            </label>
-        </div>
+<kern-modal [isOpen]="lookupListDetailsModals.deleteLookupList.open" closeButton="X"
+    [modalBoxStyle]="{'text-align':'center'}" [abortButton]="{
+    buttonCaption: 'Delete',
+    emitObject: this, emitFunction: deleteKnowledgeBase
+}" (optionClicked)="lookupListDetailsModals.deleteLookupList.open = false">
+    <h1 class="text-lg text-gray-900 mb-2">Delete lookup list</h1>
+    <div class="text-sm text-gray-500 my-2">
+        Are you sure you want to delete this lookup list?
     </div>
-</div>
+</kern-modal>
+
+<kern-modal [isOpen]="lookupListDetailsModals.uploadLookupList.open" closeButton="X" [modalBoxStyle]="{'width':'35rem'}"
+    [acceptButton]="{
+    buttonCaption: 'Upload',
+    emitObject: this, emitFunction: uploadToMinio
+}" (optionClicked)="lookupListDetailsModals.uploadLookupList.open = false">
+    <h1 class="flex flex-grow justify-center text-lg text-gray-900 font-bold">Upload list data
+    </h1>
+    <div class="text-sm text-gray-500 mb-4 text-center">
+        Upload data to your lookup list
+    </div>
+    <div>
+        <kern-upload [projectId]="projectId" (fileAttached)="getFile($event)">
+        </kern-upload>
+    </div>
+</kern-modal>
+
+<kern-modal [isOpen]="lookupListDetailsModals.pasteLookupList.open" closeButton="X" [modalBoxStyle]="{'width':'35rem'}"
+    [acceptButton]="{
+    buttonCaption: 'Add',
+    emitObject: this, emitFunction: pasteLookupList
+}" (optionClicked)="lookupListDetailsModals.pasteLookupList.open = false">
+    <h1 class="text-lg text-gray-900 mb-2 font-bold text-center">Paste your list</h1>
+
+    <div class="grid justify-center items-center gap-x-2 gap-y-1 justify-items-start"
+        style="grid-template-columns: max-content min-content;">
+        <span>Split On</span><input #inputSplit type="text" class="input input-sm input-bordered w-10"
+            (input)="setInputSplit(inputSplit.value,false)"
+            [value]="lookupListDetailsModals.pasteLookupList.inputSplit">
+    </div>
+    <div style="max-height:80vh;overflow-x: auto;">
+        <textarea #inputArea [value]="lookupListDetailsModals.pasteLookupList.inputArea"
+            (input)="setTextareaValue(inputArea.value, false)"
+            class="mt-4 textarea border-gray-200 placeholder-italic h-72 w-full p-4 leading-4 focus:outline-none"
+            style="line-height:1rem"
+            placeholder="Paste your values here.&#10;&#10;No need to check for duplication, we do that for you."></textarea>
+    </div>
+
+</kern-modal>
+
+<kern-modal [isOpen]="lookupListDetailsModals.removeLookupList.open" closeButton="X" [modalBoxStyle]="{'width':'35rem'}"
+    [abortButton]="{
+    buttonCaption: 'Remove',
+    emitObject: this, emitFunction: removeLookupList
+}" (optionClicked)="lookupListDetailsModals.removeLookupList.open = false">
+    <h1 class="text-lg text-gray-900 mb-2 font-bold text-center">Remove from your list</h1>
+
+    <div class="grid justify-center items-center gap-x-2 gap-y-1 justify-items-start"
+        style="grid-template-columns: max-content min-content;">
+        <span>Split On</span><input #rmInputSplit type="text" class="input input-sm input-bordered w-10"
+            (input)="setInputSplit(rmInputSplit.value, true)"
+            [value]="lookupListDetailsModals.removeLookupList.inputSplit">
+    </div>
+    <div style="max-height:80vh;overflow-x: auto;">
+        <textarea #rmInputArea (input)="setTextareaValue(rmInputArea.value, true)"
+            [value]="lookupListDetailsModals.removeLookupList.inputArea"
+            class="mt-4 textarea border-gray-200 placeholder-italic h-72 w-full p-4 leading-4 focus:outline-none"
+            style="line-height:1rem"
+            placeholder="Paste your values here.&#10;&#10;No need to check for duplication, we do that for you."></textarea>
+    </div>
+</kern-modal>

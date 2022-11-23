@@ -19,7 +19,7 @@ import { timer } from 'rxjs';
 import { UploadComponent } from 'src/app/import/components/upload/upload.component';
 import { UserManager } from 'src/app/util/user-manager';
 import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
-import { asPythonVariable } from 'src/app/util/helper-functions';
+import { createDefaultLookupListDetailsModals, LookupListsDetailsModals } from './knowledge-bases-details-helper';
 
 
 @Component({
@@ -57,6 +57,7 @@ export class KnowledgeBaseDetailsComponent implements OnInit, AfterViewInit, OnD
   get DownloadStateType(): typeof DownloadState {
     return DownloadState;
   }
+  lookupListDetailsModals: LookupListsDetailsModals = createDefaultLookupListDetailsModals();
 
   constructor(
     private routeService: RouteService,
@@ -254,9 +255,9 @@ export class KnowledgeBaseDetailsComponent implements OnInit, AfterViewInit, OnD
     }
   }
 
-  deleteKnowledgeBase(project_id, knowledge_base_id) {
+  deleteKnowledgeBase() {
     this.knowledgeBaseApolloService
-      .deleteKnowledgeBase(project_id, knowledge_base_id)
+      .deleteKnowledgeBase(this.projectId, this.knowledgeBaseId)
       .pipe(first())
       .subscribe();
   }
@@ -321,8 +322,20 @@ export class KnowledgeBaseDetailsComponent implements OnInit, AfterViewInit, OnD
     }
   }
 
-  pasteLookupList(projectId: string, baseId: string, value: string, split: string, remove: boolean) {
-    this.knowledgeBaseApolloService.pasteTerm(projectId, baseId, value, split, remove).pipe(first()).subscribe();
+  pasteLookupList() {
+    const pasteValues = this.lookupListDetailsModals.pasteLookupList;
+    this.knowledgeBaseApolloService.pasteTerm(this.projectId, this.knowledgeBaseId, pasteValues.inputArea, pasteValues.inputSplit, pasteValues.remove)
+      .pipe(first()).subscribe(() => {
+        this.lookupListDetailsModals.pasteLookupList.inputArea = '';
+      });
+  }
+
+  removeLookupList() {
+    const removeValues = this.lookupListDetailsModals.removeLookupList;
+    this.knowledgeBaseApolloService.pasteTerm(this.projectId, this.knowledgeBaseId, removeValues.inputArea, removeValues.inputSplit, removeValues.remove)
+      .pipe(first()).subscribe(() => {
+        this.lookupListDetailsModals.removeLookupList.inputArea = '';
+      });
   }
 
   executeOption(value: string, term: any) {
@@ -340,4 +353,19 @@ export class KnowledgeBaseDetailsComponent implements OnInit, AfterViewInit, OnD
     }
   }
 
+  setInputSplit(value: string, isRemove: boolean) {
+    if (isRemove) {
+      this.lookupListDetailsModals.removeLookupList.inputSplit = value;
+    } else {
+      this.lookupListDetailsModals.pasteLookupList.inputSplit = value;
+    }
+  }
+
+  setTextareaValue(value: string, isRemove: boolean) {
+    if (isRemove) {
+      this.lookupListDetailsModals.removeLookupList.inputArea = value;
+    } else {
+      this.lookupListDetailsModals.pasteLookupList.inputArea = value;
+    }
+  }
 }
