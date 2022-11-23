@@ -35,6 +35,7 @@ import { NotificationService } from 'src/app/base/services/notification.service'
 import { assumeUserRole, guessLinkType, labelingHuddle, labelingLinkData, labelingLinkType, parseLabelingLinkData, userRoles } from './helper/labeling-helper';
 import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
 import { RouteManager } from 'src/app/util/route-manager';
+import { createDefaultLabelingModals, LabelingModals } from './helper/modals-helper';
 
 @Component({
   selector: 'kern-labeling',
@@ -101,7 +102,6 @@ export class LabelingComponent implements OnInit, OnDestroy {
   @ViewChild('dataBlock', { read: ElementRef }) dataBlock: ElementRef;
   @ViewChild('labelSearchText', { read: ElementRef }) labelSearchText: ElementRef;
   @ViewChild('labelSearchBlinker', { read: ElementRef }) labelSearchBlinker: ElementRef;
-  @ViewChild('modalGoldUser', { read: ElementRef }) modalGoldUser: ElementRef;
 
   commentForm = new FormControl('');
 
@@ -132,6 +132,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
   availableLinks: any[];
   availableLinksLookup: {};
   selectedLink: any;
+  labelingModals: LabelingModals = createDefaultLabelingModals();
 
   constructor(
     private router: Router,
@@ -827,7 +828,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
       }
     }
     if (userId == this.GOLD_USER_ID && this.firstVisitGold) {
-      this.modalGoldUser.nativeElement.checked = true;
+      this.labelingModals.goldStar.open = true;
       this.firstVisitGold = false;
     }
   }
