@@ -41,76 +41,6 @@
                         (ngModelChange)="filterAvailableSlices()" class="w-full input input-sm input-bordered p-2">
 
                 </div>
-                <input #saveInputCheckbox type="checkbox" id="save-slice-modal" class="modal-toggle"
-                    (change)="focusModalInputBox($event,'dataSliceName')">
-                <div class="modal">
-                    <div class="modal-box text-black bg-white justify-center">
-                        <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
-                            Filter creation</div>
-                        <div class="mb-2 flex flex-grow justify-center text-sm">
-                            Save or update a filter for the data browser.</div>
-                        <p class="pt-4">You have two choices.
-                            <label class="block font-bold mt-2">Dynamic:</label>
-                            Stores the current filter critera and is reapplied whenever the slice is
-                            selected.<br><br>
-                            <label class="block font-bold mt-2 ">Static:</label>
-                            Used for visualization filters and scope of
-                            work for annotators & domain experts.
-                            Stores the current records provided by your filter.
-                            These are limited to 10,000 records and can be refreshed if nessecary.
-                        </p>
-                        <div class="mt-2">
-                            <div class="flex">
-                                <div class="inline-flex">
-                                    <div class="form-control">
-                                        <label class="cursor-pointer label">
-                                            <span class="label-text mr-1">Dynamic</span>
-                                            <input #inputDynamic type="radio"
-                                                style="--focus-shadow:none;accent-color:rgb(29,78,216)"
-                                                (click)="setStatic(inputDynamic,inputStatic,false)"
-                                                class="h-4 w-4 border-gray-200 cursor-pointer" checked [value]="true">
-                                        </label>
-                                    </div>
-                                    <div class="form-control">
-                                        <label class="cursor-pointer label">
-                                            <span class="label-text mr-1">Static</span>
-                                            <input #inputStatic type="radio"
-                                                style="--focus-shadow:none;accent-color:rgb(180,83,9)"
-                                                (click)="setStatic(inputDynamic,inputStatic,true)"
-                                                class="h-4 w-4 border-gray-200 cursor-pointer" [value]="false">
-                                        </label>
-                                    </div>
-                                </div>
-                                <div data-tip="Too many records for a static slice" class="relative tooltip mr-1"
-                                    style="white-space: break-spaces;">
-                                    <div class="flex justify-center items-center w-full h-full"
-                                        [ngClass]="{hidden:!displayStaticNotAllowedWarning}">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
-                                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                            <path fill="#E8CD20" stroke-linecap="round" stroke-linejoin="round"
-                                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                        </svg>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="flex w-full justify-between mt-2">
-                                <input #inputSliceName type="text" class="w-1/2 input input-bordered input-sm"
-                                    placeholder="Enter name" name="dataSliceName"
-                                    (keyup)="checkNameExists(inputSliceName.value)"
-                                    (keydown.enter)="saveInputCheckbox.checked=false;sliceNameExists ? updateSliceByName(inputSliceName.value):createSlice(inputSliceName.value)">
-                                <div>
-                                    <label for="save-slice-modal"
-                                        class="bg-green-100 text-green-700 border border-green-400 text-xs font-semibold px-4 py-2 mr-2 rounded-md cursor-pointer hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-                                        (click)="sliceNameExists? updateSliceByName(inputSliceName.value):createSlice(inputSliceName.value)">{{sliceNameExists?
-                                        'Update filter':'Save filter'}}</label>
-
-                                    <label for="save-slice-modal"
-                                        class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
                 <div class="mt-2 mb-4" *ngIf="dataSlices">
                     <div *ngIf="dataSlices.length > 0"
@@ -124,8 +54,8 @@
                                 [ngClass]="getBorderStyle(dataSlice)"
                                 [ngClass]="{'hidden':filteredSliceIds.has(dataSlice.id),'ring-2 ring-blue-500':activeSlice == dataSlice}">
 
-                                <label class="cursor-pointer mr-2" for="slice-information"
-                                    (click)="updateSliceInfo(dataSlice.id);$event.stopPropagation()">
+                                <label class="cursor-pointer mr-2"
+                                    (click)="updateSliceInfo(dataSlice.id);$event.stopPropagation(); dataBrowserModals.sliceInfo.open = true">
                                     <svg class="h-5 w-5 rounded-full stroke-0" xmlns="http://www.w3.org/2000/svg"
                                         viewBox="0 0 20 20" [ngStyle]="dataSlice.sliceType==SliceTypes.STATIC_OUTLIER?{background: 'rgb(77,124,15)', fill: 'rgb(236,252,203)'}:
                                     dataSlice.sliceType==SliceTypes.STATIC_DEFAULT?{background: 'rgb(180,83,9)', fill: 'rgb(254,243,199)'}:
@@ -646,7 +576,8 @@
                 <div class="flex items-center mt-4">
                     <div data-tip="Store filters to disk" class="tooltip tooltip-top relative"
                         [ngClass]="similarSearchHelper.recordsInDisplay || activeSlide ? 'cursor-not-allowed':'' ">
-                        <label for="save-slice-modal"
+                        <label
+                            (click)="dataBrowserModals.filter.open = true; focusModalInputBox($event,'dataSliceName')"
                             class="mr-1 inline-flex items-center w-32 px-2.5 py-1.5 border border-gray-200 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer"
                             [ngClass]="similarSearchHelper.recordsInDisplay || activeSlide ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer'"
                             [ngStyle]="similarSearchHelper.recordsInDisplay || activeSlide ? {'background-color': '#f9fafb','cursor': 'not-allowed'} : null">
@@ -880,7 +811,7 @@
 
                 <div data-tip="Change the data browser configurations"
                     class="tooltip tooltip-left relative flex items-center">
-                    <label for="config-modal"
+                    <label (click)="dataBrowserModals.configuration.open = true; focusModalInputBox($event,'config')"
                         class="cursor-pointer mr-1 inline-flex items-center px-2.5 py-2 border border-gray-300 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
                         <svg xmlns="http://www.w3.org/2000/svg"
                             class="mr-2 icon icon-tabler icon-tabler-adjustments inline-block" width="16" height="16"
@@ -899,68 +830,6 @@
                         </svg>
                         Configuration
                     </label>
-                </div>
-                <input #saveInputCheckbox type="checkbox" id="config-modal" class="modal-toggle"
-                    (change)="focusModalInputBox($event,'config')">
-                <div class="modal">
-                    <div class="modal-box text-black bg-white justify-center">
-                        <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
-                            View configuration </div>
-                        <div class="mb-2 flex flex-grow justify-center text-sm">
-                            Change the content that is displayed in the browser.</div>
-                        <div class="mb-2">
-                            <fieldset class="space-y-5">
-                                <div class="relative flex items-start">
-                                    <div class="flex items-center h-5">
-                                        <input id="comments" type="checkbox"
-                                            class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
-                                            (change)="toggleHighlightText()" [checked]='highlightText'>
-                                    </div>
-                                    <div class="ml-3 text-sm">
-                                        <label class="font-medium text-gray-700">Highlight text</label>
-                                        <p id="comments-description" class="text-gray-500">During search, you can remove
-                                            the text highlighting. This makes the search a bit faster.</p>
-                                    </div>
-                                </div>
-                                <div class="relative flex items-start">
-                                    <div class="flex items-center h-5">
-                                        <input id="comments" type="checkbox"
-                                            class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
-                                            (change)="toggleWeakSupervisionRelated()"
-                                            [checked]='weakSupervisionRelated'>
-                                    </div>
-                                    <div class="ml-3 text-sm">
-                                        <label class="font-medium text-gray-700">Only show weakly
-                                            supervised-related</label>
-                                        <p id="comments-description" class="text-gray-500">If checked, the data-browser
-                                            will only show you heuristics that affect the weak supervision.</p>
-                                    </div>
-                                </div>
-                            </fieldset>
-
-                            <div class="mt-3 text-sm text-gray-900">Select which separator you want to use for the IN
-                                operator</div>
-
-                            <div class="flex flex-row items-center my-2">
-                                <input type="radio" [(ngModel)]="separator" value="," name="separator" id="comma"
-                                    class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-200 cursor-pointer">
-                                <label for="comma"
-                                    class="ml-1 block text-sm font-medium text-gray-700 cursor-pointer">Comma
-                                    (,)</label>
-                            </div>
-                            <div class="flex flex-row items-center my-2">
-                                <input type="radio" [(ngModel)]="separator" value="-" name="separator" id="dash"
-                                    class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-200 cursor-pointer">
-                                <label for="dash"
-                                    class="ml-1 block text-sm font-medium text-gray-700 cursor-pointer">Dash (-)</label>
-                            </div>
-
-                            <div class="modal-action">
-                                <label for="config-modal"
-                                    class="bg-white text-gray-700 text-xs font-semibold mr-3 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
-                            </div>
-                        </div>
-                    </div>
                 </div>
                 <kern-export [sessionId]="extendedRecords?.sessionId"></kern-export>
             </div>
@@ -1206,43 +1075,6 @@
                     </div>
                 </div>
             </ng-template>
-            <input type="checkbox" id="slice-information" class="modal-toggle">
-            <div class="modal">
-                <div class="modal-box text-black bg-white justify-center"
-                    style="max-width: 70%; width:fit-content; height:fit-content; max-height: 80%;min-width: 30%;">
-                    <div class="flex flex-grow justify-center mb-4 font-bold">Slice information</div>
-                    <div *ngFor="let item of sliceInfo | keyvalue : orderOriginal">
-                        <ng-template [ngIf]="item.key == 'Link'" [ngIfElse]="normalDisplay">
-                            <div class="mt-3 flex rounded-md">
-                                <span
-                                    class="inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-50 px-3 text-gray-500 sm:text-sm">{{item.value.startsWith("https")?
-                                    'https://':'http://'}}</span>
-                                <span data-tip="Copy to clipboard"
-                                    (click)="copyToClipboard(item.value + '?pos=1&type=DATA_SLICE')" type="text"
-                                    class="cursor-pointer tooltip border rounded-none rounded-r-md border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                                    {{item.value.substring(item.value.startsWith("https")?8:7)}}</span>
-
-                            </div>
-                            <div>
-                                <button (click)="testLink(item.value + '?pos=1&type=DATA_SLICE')"
-                                    class="mt-3 opacity-100 cursor-pointer w-40 bg-indigo-700 text-white text-xs leading-4 font-semibold px-4 py-2 rounded-md cursor-pointer hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                    View as expert
-                                </button>
-                            </div>
-                        </ng-template>
-                        <ng-template #normalDisplay>
-                            <div class="flex flex-grow justify-between gap-8">
-                                <p>{{item.key}}</p>
-                                <p>{{item.value}}</p>
-                            </div>
-                        </ng-template>
-                    </div>
-                    <div class="modal-action">
-                        <label for="slice-information"
-                            class="mr-2 bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 </div>
@@ -1282,6 +1114,151 @@
                     {{dataBrowserModals.userInfo.current.countSum + ' record' +
                     (dataBrowserModals.userInfo.current.countSum>1?'s':'')}}</div>
             </div>
+        </div>
+    </div>
+</kern-modal>
+
+<kern-modal [isOpen]="dataBrowserModals.filter.open" closeButton="X" [modalBoxStyle]="{'width':'45rem'}" [acceptButton]="{
+    buttonCaption: dataBrowserModals.filter.sliceNameExists? 'Update filter':'Save filter',
+    emitObject: this, emitFunction: dataBrowserModals.filter.sliceNameExists? updateSliceByName :createSlice
+}" (optionClicked)="dataBrowserModals.filter.open = false">
+    <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
+        Filter creation</div>
+    <div class="mb-2 flex flex-grow justify-center text-sm">
+        Save or update a filter for the data browser.</div>
+    <p class="pt-4">You have two choices.
+        <label class="block font-bold mt-2">Dynamic:</label>
+        Stores the current filter critera and is reapplied whenever the slice is
+        selected.<br><br>
+        <label class="block font-bold mt-2 ">Static:</label>
+        Used for visualization filters and scope of
+        work for annotators & domain experts.
+        Stores the current records provided by your filter.
+        These are limited to 10,000 records and can be refreshed if nessecary.
+    </p>
+    <div class="mt-2">
+        <div class="flex">
+            <div class="inline-flex">
+                <div class="form-control">
+                    <label class="cursor-pointer label">
+                        <span class="label-text mr-1">Dynamic</span>
+                        <input #inputDynamic type="radio" style="--focus-shadow:none;accent-color:rgb(29,78,216)"
+                            (click)="setStatic(inputDynamic,inputStatic,false)"
+                            class="h-4 w-4 border-gray-200 cursor-pointer" checked [value]="true">
+                    </label>
+                </div>
+                <div class="form-control">
+                    <label class="cursor-pointer label">
+                        <span class="label-text mr-1">Static</span>
+                        <input #inputStatic type="radio" style="--focus-shadow:none;accent-color:rgb(180,83,9)"
+                            (click)="setStatic(inputDynamic,inputStatic,true)"
+                            class="h-4 w-4 border-gray-200 cursor-pointer" [value]="false">
+                    </label>
+                </div>
+            </div>
+            <div data-tip="Too many records for a static slice" class="relative tooltip mr-1"
+                style="white-space: break-spaces;">
+                <div class="flex justify-center items-center w-full h-full"
+                    [ngClass]="{hidden:!dataBrowserModals.filter.displayStaticNotAllowedWarning}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor" stroke-width="2">
+                        <path fill="#E8CD20" stroke-linecap="round" stroke-linejoin="round"
+                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+        <div class="flex w-full justify-between mt-2">
+            <input #inputSliceName type="text" class="w-1/2 input input-bordered input-sm" placeholder="Enter name"
+                name="dataSliceName" [value]="dataBrowserModals.filter.name"
+                (input)="setFilterName(inputSliceName.value)" (keyup)="checkNameExists(inputSliceName.value)"
+                (keydown.enter)="dataBrowserModals.filter.open = false; dataBrowserModals.filter.sliceNameExists ?
+            updateSliceByName():createSlice()">
+        </div>
+    </div>
+
+</kern-modal>
+
+<kern-modal [isOpen]="dataBrowserModals.sliceInfo.open" closeButton="X"
+    (optionClicked)="dataBrowserModals.sliceInfo.open = false">
+    <div class="flex flex-grow justify-center mb-4 font-bold">Slice information</div>
+    <div *ngFor="let item of dataBrowserModals.sliceInfo.data | keyvalue : orderOriginal">
+        <ng-template [ngIf]="item.key == 'Link'" [ngIfElse]="normalDisplay">
+            <div class="mt-3 flex rounded-md">
+                <span
+                    class="inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-50 px-3 text-gray-500 sm:text-sm">{{item.value.startsWith("https")?
+                    'https://':'http://'}}</span>
+                <span data-tip="Copy to clipboard" (click)="copyToClipboard(item.value + '?pos=1&type=DATA_SLICE')"
+                    type="text"
+                    class="cursor-pointer tooltip border rounded-none rounded-r-md border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                    {{item.value.substring(item.value.startsWith("https")?8:7)}}</span>
+
+            </div>
+            <div>
+                <button (click)="testLink(item.value + '?pos=1&type=DATA_SLICE')"
+                    class="mt-3 opacity-100 cursor-pointer w-40 bg-indigo-700 text-white text-xs leading-4 font-semibold px-4 py-2 rounded-md cursor-pointer hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    View as expert
+                </button>
+            </div>
+        </ng-template>
+        <ng-template #normalDisplay>
+            <div class="flex flex-grow justify-between gap-8">
+                <p>{{item.key}}</p>
+                <p>{{item.value}}</p>
+            </div>
+        </ng-template>
+    </div>
+</kern-modal>
+
+<kern-modal [isOpen]="dataBrowserModals.configuration.open" closeButton="X"
+    (optionClicked)="dataBrowserModals.configuration.open = false">
+    <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
+        View configuration </div>
+    <div class="mb-2 flex flex-grow justify-center text-sm">
+        Change the content that is displayed in the browser.</div>
+    <div class="mb-2">
+        <fieldset class="space-y-5">
+            <div class="relative flex items-start">
+                <div class="flex items-center h-5">
+                    <input id="comments" type="checkbox"
+                        class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
+                        (change)="toggleHighlightText()" [checked]="dataBrowserModals.configuration.highlightText">
+                </div>
+                <div class="ml-3 text-sm">
+                    <label class="font-medium text-gray-700">Highlight text</label>
+                    <p id="comments-description" class="text-gray-500">During search, you can remove
+                        the text highlighting. This makes the search a bit faster.</p>
+                </div>
+            </div>
+            <div class="relative flex items-start">
+                <div class="flex items-center h-5">
+                    <input id="comments" type="checkbox"
+                        class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
+                        (change)="toggleWeakSupervisionRelated()"
+                        [checked]="dataBrowserModals.configuration.weakSupervisionRelated">
+                </div>
+                <div class="ml-3 text-sm">
+                    <label class="font-medium text-gray-700">Only show weakly
+                        supervised-related</label>
+                    <p id="comments-description" class="text-gray-500">If checked, the data-browser
+                        will only show you heuristics that affect the weak supervision.</p>
+                </div>
+            </div>
+        </fieldset>
+
+        <div class="mt-3 text-sm text-gray-900">Select which separator you want to use for the IN
+            operator</div>
+
+        <div class="flex flex-row items-center my-2">
+            <input type="radio" [(ngModel)]="dataBrowserModals.configuration.separator" value="," name="separator"
+                id="comma" class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-200 cursor-pointer">
+            <label for="comma" class="ml-1 block text-sm font-medium text-gray-700 cursor-pointer">Comma
+                (,)</label>
+        </div>
+        <div class="flex flex-row items-center my-2">
+            <input type="radio" [(ngModel)]="dataBrowserModals.configuration.separator" value="-" name="separator"
+                id="dash" class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-200 cursor-pointer">
+            <label for="dash" class="ml-1 block text-sm font-medium text-gray-700 cursor-pointer">Dash (-)</label>
         </div>
     </div>
 </kern-modal>

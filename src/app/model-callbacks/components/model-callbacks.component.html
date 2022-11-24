@@ -150,24 +150,18 @@
     [abortButton]="{
     buttonCaption: 'Delete',
     emitObject: this, emitFunction: deleteSelectedInformationSources
-}" (optionClicked)="modelCallbackModals.deleteSelected.open = false"></kern-modal>
+}" (optionClicked)="modelCallbackModals.deleteSelected.open = false">
 
-<input #deleteSelectedHeuristics type="checkbox" [id]="'delete-modal-selected'" class="modal-toggle">
-<div class="modal text-center items-center">
-    <div class="modal-box">
-        <h1 class="text-lg text-gray-900 mb-2">Delete {{
-            modelCallbackModals.deleteSelected.selectedInformationSources.length == 1 ?
-            'callback' : 'callbacks' }}</h1>
-        <div class="text-sm text-gray-500 my-2 flex flex-col">
-            <span>Are you sure you want to delete selected {{
-                modelCallbackModals.deleteSelected.selectedInformationSources.length == 1
-                ? 'callback' : 'callbacks' }}?</span>
-            <span>Currently selected {{ modelCallbackModals.deleteSelected.selectedInformationSources.length == 1 ? 'is'
-                : 'are'
-                }}:</span>
-            <span class="whitespace-pre-line font-bold">{{modelCallbackModals.deleteSelected.selectionList}}</span>
-        </div>
-
-
+    <h1 class="text-lg text-gray-900 mb-2">Delete {{
+        modelCallbackModals.deleteSelected.selectedInformationSources.length == 1 ?
+        'callback' : 'callbacks' }}</h1>
+    <div class="text-sm text-gray-500 my-2 flex flex-col">
+        <span>Are you sure you want to delete selected {{
+            modelCallbackModals.deleteSelected.selectedInformationSources.length == 1
+            ? 'callback' : 'callbacks' }}?</span>
+        <span>Currently selected {{ modelCallbackModals.deleteSelected.selectedInformationSources.length == 1 ? 'is'
+            : 'are'
+            }}:</span>
+        <span class="whitespace-pre-line font-bold">{{modelCallbackModals.deleteSelected.selectionList}}</span>
     </div>
-</div>
+</kern-modal>

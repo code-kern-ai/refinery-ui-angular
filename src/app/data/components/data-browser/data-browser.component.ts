@@ -159,19 +159,14 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   activeSlice: DataSlice = null;
   dataSliceFilter: string = "";
   lastActiveSliceId: string = ""; // used for activating correct slice after refetching
-  sliceNameExists: boolean = false;
-  sliceInfo = {};
   anyRecordManuallyLabeled: boolean = false;
   initializingFilter: Boolean = false;
   displayOutdatedWarning: Boolean = false;
   displayChangedValuesWarning: Boolean = false;
-  displayStaticNotAllowedWarning: Boolean = false;
 
   subscriptions$: Subscription[] = [];
 
   lastSearchParams;
-  highlightText: boolean = true;
-  weakSupervisionRelated: boolean = false;
   isTextHighlightNeeded: Map<string, boolean> = new Map<string, boolean>();
   textHighlightArray: Map<string, string[]> = new Map<string, string[]>();
 
@@ -193,7 +188,6 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   tooltipsArray: string[] = [];
   saveDropdonwAttribute: string = "";
   colorsAttributes: string[] = [];
-  separator: string = ",";
   updateSearchParameters: UpdateSearchParameters;
   dataBrowserModals: DataBrowserModals = createDefaultDataBrowserModals();
 
@@ -1328,11 +1322,11 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   }
 
   toggleHighlightText() {
-    this.highlightText = !this.highlightText;
+    this.dataBrowserModals.configuration.highlightText = !this.dataBrowserModals.configuration.highlightText;
   }
 
   toggleWeakSupervisionRelated() {
-    this.weakSupervisionRelated = !this.weakSupervisionRelated;
+    this.dataBrowserModals.configuration.weakSupervisionRelated = !this.dataBrowserModals.configuration.weakSupervisionRelated;
   }
 
   setSortForControl(control: AbstractControl) {
@@ -1388,7 +1382,8 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     }
   }
 
-  createSlice(name: string) {
+  createSlice() {
+    const name = this.dataBrowserModals.filter.name;
     if (!name) return;
 
     this.projectApolloService.createDataSlice(this.projectId,
@@ -1413,9 +1408,9 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   }
 
 
-  updateSliceByName(name: string) {
+  updateSliceByName() {
     for (let value of this.slicesById.values()) {
-      if (value.name == name) {
+      if (value.name == this.dataBrowserModals.filter.name) {
         this.activeSlice = value;
         this.updateSlice(this.isStaticDataSlice);
         break;
@@ -1524,7 +1519,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
 
   updateSliceInfo(sliceId: string) {
     if (!this.slicesById.has(sliceId)) {
-      this.sliceInfo = [{ fieldName: "Error", fieldValue: "Slice does not exist!" }];
+      this.dataBrowserModals.sliceInfo.data = [{ fieldName: "Error", fieldValue: "Slice does not exist!" }];
     }
     const slice = this.slicesById.get(sliceId);
 
@@ -1555,7 +1550,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       sliceInfo["Link"] = "/projects/" + this.projectId + "/labeling/" + sliceId;
       sliceInfo["Link"] = this.buildFullLink("/projects/" + this.projectId + "/labeling/" + sliceId);
     }
-    this.sliceInfo = sliceInfo;
+    this.dataBrowserModals.sliceInfo.data = sliceInfo;
   }
 
 
@@ -1867,7 +1862,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   }
 
   checkNameExists(value: string) {
-    this.sliceNameExists = this.sliceNames.has(value);
+    this.dataBrowserModals.filter.sliceNameExists = this.sliceNames.has(value);
   }
 
   checkAndDisplayDisplayValuesChangedWarning() {
@@ -1882,7 +1877,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     let allowed = (this.extendedRecords != undefined && this.extendedRecords.fullCount && this.extendedRecords.fullCount < 10000);
     if (!allowed) {
       this.isStaticDataSlice = false;
-      this.displayStaticNotAllowedWarning = true;
+      this.dataBrowserModals.filter.displayStaticNotAllowedWarning = true;
     }
   }
   setStatic(htmlDynamic: HTMLInputElement, htmlStatic: HTMLInputElement, isStatic: boolean) {
@@ -2071,14 +2066,14 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       const operatorValue = this.getSearchFormArray(key).controls[i].get("operator").value;
       let pattern;
       if (attributeType == "INTEGER") {
-        if (this.separator == '-') {
+        if (this.dataBrowserModals.configuration.separator == '-') {
           pattern = operatorValue == 'IN' ? /^[0-9-]$/i : operatorValue == 'IN WC' ? /^[0-9_%-*?]$/i : /^[0-9]$/i;
         } else {
           pattern = operatorValue == 'IN' ? /^[0-9,]$/i : operatorValue == 'IN WC' ? /^[0-9,_%*?]$/i : /^[0-9]$/i;
         }
 
       } else {
-        if (this.separator == '-') {
+        if (this.dataBrowserModals.configuration.separator == '-') {
           pattern = operatorValue == 'IN' ? /^[0-9.-]$/i : operatorValue == 'IN WC' ? /^[0-9._%-*?]$/i : /^[0-9.]$/i;
         } else {
           pattern = operatorValue == 'IN' ? /^[0-9.,]$/i : operatorValue == 'IN WC' ? /^[0-9.,_%*?]$/i : /^[0-9.]$/i;
@@ -2089,6 +2084,10 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
         return;
       }
     }
+  }
+
+  setFilterName(name: string) {
+    this.dataBrowserModals.filter.name = name;
   }
 }
 function createDataBrowserModals(): DataBrowserModals {

@@ -326,7 +326,7 @@ export class DataBrowserFilterParser {
                         TARGET_TABLE: 'RECORD',
                         TARGET_COLUMN: 'DATA',
                         OPERATOR: prepareOperator(searchElement, this.dataBrowser.attributesSortOrder[i].type),
-                        VALUES: prepareFilterElements(searchElement, this.dataBrowser.attributes.get(this.dataBrowser.attributesSortOrder[i].key).name, this.dataBrowser.separator, this.dataBrowser.attributesSortOrder[i].type),
+                        VALUES: prepareFilterElements(searchElement, this.dataBrowser.attributes.get(this.dataBrowser.attributesSortOrder[i].key).name, this.dataBrowser.dataBrowserModals.configuration.separator, this.dataBrowser.attributesSortOrder[i].type),
                     });
                 }
             }
@@ -353,7 +353,7 @@ export class DataBrowserFilterParser {
                 TARGET_TABLE: 'RECORD',
                 TARGET_COLUMN: 'DATA',
                 OPERATOR: prepareOperator(searchElement, attributeType),
-                VALUES: prepareFilterElements(searchElement, searchElement.values.name, this.dataBrowser.separator, attributeType),
+                VALUES: prepareFilterElements(searchElement, searchElement.values.name, this.dataBrowser.dataBrowserModals.configuration.separator, attributeType),
             };
         }
         return filterElement;
