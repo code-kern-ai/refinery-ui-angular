@@ -911,6 +911,9 @@
                                             <th scope="col"
                                                 class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
                                                 Expires at</th>
+                                            <th scope="col"
+                                                class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                                Last used</th>
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-gray-200">
@@ -924,7 +927,10 @@
                                                 {{convertTokenScope(tokenContainer.scope)}}
                                             </td>
                                             <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                                {{convertTokenExpireDate(tokenContainer.expiresAt)}}
+                                                {{convertTokenDate(tokenContainer.expiresAt)}}
+                                            </td>
+                                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                                {{convertTokenDate(tokenContainer.lastUsed)}}
                                             </td>
                                             <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
                                                 <label [for]="'my-modal-'+tokenContainer.id"
@@ -1018,14 +1024,6 @@
 
                                 <input #tokenName name="tokenName" type="text" placeholder="Token name"
                                     class="input input-sm input-bordered">
-
-                                <!--                                 <div class="w-full flex flex-col col-start-1 col-span-full" style="max-width: 450;">
-                                    <div class="flex flex-col">
-                                        <div style="max-height:500px;">
-                                            <span #token class="text-xs break-words">{{newToken}}</span>
-                                        </div>
-                                    </div>
-                                </div> -->
 
                                 <div class="tooltip tooltip-right" data-tip="Value of the token">
                                     <span class="cursor-help card-title mb-0 label-text flex"><span class="underline"

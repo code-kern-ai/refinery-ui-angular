@@ -518,6 +518,7 @@ query ($projectId: ID!, $exportOptions: JSONString) {
       name
       scope
       expiresAt
+      lastUsed
     }
   }
   

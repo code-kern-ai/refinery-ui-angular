@@ -1017,8 +1017,8 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     else return "Invalid";
   }
 
-  convertTokenExpireDate(expireAt) {
-    if (expireAt == null) return "Never";
-    return new Date(expireAt).toDateString();
+  convertTokenDate(date) {
+    if (date == null) return "Never";
+    return new Date(date).toDateString();
   }
 }
