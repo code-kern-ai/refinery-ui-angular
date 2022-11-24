@@ -5,6 +5,7 @@ export type DataBrowserModals = {
     configuration: ConfigurationModal;
     findOutliers: FindOutliersModal;
     similaritySearch: SimilaritySearchModal;
+    deleteSlice: DeleteSliceModal;
 };
 
 export type UserInfoModal = {
@@ -42,6 +43,11 @@ export type SimilaritySearchModal = {
     embeddingId: string;
 };
 
+export type DeleteSliceModal = {
+    open: boolean;
+    id: string;
+};
+
 export function createDefaultDataBrowserModals(): DataBrowserModals {
     return {
         userInfo: {
@@ -72,6 +78,10 @@ export function createDefaultDataBrowserModals(): DataBrowserModals {
             open: false,
             recordId: null,
             embeddingId: null
+        },
+        deleteSlice: {
+            open: false,
+            id: null
         }
     };
 }

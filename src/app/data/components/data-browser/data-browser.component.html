@@ -72,7 +72,8 @@
                                     dataSlice.name : parseUTC(dataSlice.createdAt,true) }}</label>
 
 
-                                <div (click)="deleteSlice(dataSlice.id);$event.stopPropagation();" class="">
+                                <div
+                                    (click)="dataBrowserModals.deleteSlice = {open: true, id: dataSlice.id}; $event.stopPropagation();">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2 text-red-700"
                                         fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -1210,8 +1211,6 @@
     </kern-modal>
 </ng-template>
 
-
-
 <ng-template [ngIf]="similarSearchHelper.embeddings?.length>1">
     <kern-modal [isOpen]="dataBrowserModals.similaritySearch.open" closeButton="X" [acceptButton]="{
         buttonCaption: 'Seach',
@@ -1232,3 +1231,14 @@
         </select>
     </kern-modal>
 </ng-template>
+
+
+<kern-modal [isOpen]="dataBrowserModals.deleteSlice.open" closeButton="X" [abortButton]="{
+    buttonCaption: 'Delete',
+    emitObject: this, emitFunction: deleteSlice
+}" (optionClicked)="dataBrowserModals.deleteSlice.open = false">
+    <h1 class="text-lg text-gray-900 mb-2 text-center">Delete data slice</h1>
+    <div class="text-sm text-gray-500 my-2">
+        Are you sure you want to delete selected slice?
+    </div>
+</kern-modal>

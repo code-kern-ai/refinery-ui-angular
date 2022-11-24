@@ -1446,10 +1446,10 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   }
 
 
-  deleteSlice(id: string = "") {
+  deleteSlice() {
     let idToDelete = "";
-    if (id != "") {
-      idToDelete = id;
+    if (this.dataBrowserModals.deleteSlice.id != "") {
+      idToDelete = this.dataBrowserModals.deleteSlice.id;
       this.lastActiveSliceId = this.activeSlice ? this.activeSlice.id : this.lastActiveSliceId;
     }
     else if (this.activeSlice) {
