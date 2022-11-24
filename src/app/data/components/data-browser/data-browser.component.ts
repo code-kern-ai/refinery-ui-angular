@@ -1004,12 +1004,16 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     return false;
   }
 
-  requestSimilarSearch(recordId: string, embeddingId: string = null) {
-    this.similarSearchHelper.requestSimilarSearch(embeddingId, recordId);
+  requestSimilarSearch() {
+    const saveSimilaritySeach = this.dataBrowserModals.similaritySearch;
+    this.similarSearchHelper.requestSimilarSearch(saveSimilaritySeach.embeddingId, saveSimilaritySeach.recordId);
   }
 
-  requestOutlierSlice(embedding_id: string = null) {
-    this.similarSearchHelper.requestOutlierSlice(embedding_id);
+  requestOutlierSlice() {
+    if (this.similarSearchHelper.embeddings?.length == 1) {
+      this.dataBrowserModals.findOutliers.embeddingId = this.similarSearchHelper.embeddings[0].id;
+    }
+    this.similarSearchHelper.requestOutlierSlice(this.dataBrowserModals.findOutliers.embeddingId);
   }
 
   requestExtendedSearch(force: boolean = false) {
@@ -2088,6 +2092,14 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
 
   setFilterName(name: string) {
     this.dataBrowserModals.filter.name = name;
+  }
+
+  setEmbeddingId(selectedValue: string) {
+    this.dataBrowserModals.findOutliers.embeddingId = this.similarSearchHelper.embeddings[selectedValue].id;
+  }
+
+  setEmbeddingIdSS(selectedValue: string) {
+    this.dataBrowserModals.similaritySearch.embeddingId = this.similarSearchHelper.embeddings[selectedValue].id;
   }
 }
 function createDataBrowserModals(): DataBrowserModals {

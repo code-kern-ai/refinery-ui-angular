@@ -3,6 +3,8 @@ export type DataBrowserModals = {
     filter: FilterModal;
     sliceInfo: SliceInfoModal;
     configuration: ConfigurationModal;
+    findOutliers: FindOutliersModal;
+    similaritySearch: SimilaritySearchModal;
 };
 
 export type UserInfoModal = {
@@ -29,6 +31,17 @@ export type ConfigurationModal = {
     separator: string;
 };
 
+export type FindOutliersModal = {
+    open: boolean;
+    embeddingId: string;
+};
+
+export type SimilaritySearchModal = {
+    open: boolean;
+    recordId: string;
+    embeddingId: string;
+};
+
 export function createDefaultDataBrowserModals(): DataBrowserModals {
     return {
         userInfo: {
@@ -50,6 +63,15 @@ export function createDefaultDataBrowserModals(): DataBrowserModals {
             highlightText: true,
             weakSupervisionRelated: false,
             separator: ','
+        },
+        findOutliers: {
+            open: false,
+            embeddingId: null
+        },
+        similaritySearch: {
+            open: false,
+            recordId: null,
+            embeddingId: null
         }
     };
 }

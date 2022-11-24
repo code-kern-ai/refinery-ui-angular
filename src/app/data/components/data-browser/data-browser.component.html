@@ -618,8 +618,8 @@
                 <div class="mt-1">
                     <div data-tip="Creates a static slices" class="tooltip tooltip-bottom relative"
                         [ngClass]="!(similarSearchHelper.embeddings?.length && anyRecordManuallyLabeled) ? 'cursor-not-allowed' : ''">
-                        <label [for]="similarSearchHelper.embeddings?.length > 1?'outlier-search-embedding-select':''"
-                            (click)="similarSearchHelper.embeddings?.length==1?requestOutlierSlice(similarSearchHelper.embeddings[0].id):null"
+                        <label
+                            (click)="similarSearchHelper.embeddings?.length==1? requestOutlierSlice(): similarSearchHelper.embeddings?.length>1?dataBrowserModals.findOutliers.open=true: null"
                             [ngClass]="!(similarSearchHelper.embeddings?.length && anyRecordManuallyLabeled) ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer' "
                             class="text-green-800 text-sm font-medium">
                             <span
@@ -638,55 +638,6 @@
                             </span>
                         </label>
                     </div>
-                    <ng-template [ngIf]="similarSearchHelper.embeddings?.length>1">
-                        <input type="checkbox" id="outlier-search-embedding-select" class="modal-toggle">
-                        <div class="modal" *ngIf="similarSearchHelper.embeddings?.length>1">
-                            <div class="modal-box text-black bg-white justify-center">
-                                <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
-                                    Select embedding for outlier search </div>
-                                <div *ngIf="activeSearchParams.length > 0 || similarSearchHelper.recordsInDisplay">
-                                    <div class="text-red-500 mb-2 flex flex-grow justify-center text-sm">
-                                        Warning: your current filter selection will be removed!</div>
-                                </div>
-                                <select #embeddingSelect class="select select-bordered select-sm w-full mt-4">
-                                    <option *ngFor="let embedding of similarSearchHelper.embeddings"
-                                        [value]="embedding.id">
-                                        {{embedding.name }}
-                                    </option>
-                                </select>
-                                <div class="modal-action">
-                                    <label for="outlier-search-embedding-select"
-                                        class="mr-2 bg-green-100 text-green-700 border border-green-400 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-                                        (click)="requestOutlierSlice(similarSearchHelper.embeddings[embeddingSelect.selectedIndex].id)">Build</label>
-                                    <label for="outlier-search-embedding-select"
-                                        class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
-                                </div>
-                            </div>
-                        </div>
-                    </ng-template>
-                    <ng-template [ngIf]="similarSearchHelper.embeddings?.length>1">
-                        <input type="checkbox" id="outlier-slice-embedding-select" class="modal-toggle">
-                        <div class="modal" *ngIf="similarSearchHelper.embeddings?.length>1">
-                            <div class="modal-box text-black bg-white justify-center">
-                                <div class="flex flex-grow justify-center mb-4 font-bold">
-                                    Select corresponding embedding
-                                </div>
-                                <select #embeddingSelect class="select select-bordered select-sm w-full">
-                                    <option *ngFor="let embedding of similarSearchHelper.embeddings"
-                                        [value]="embedding.id">
-                                        {{embedding.name }}
-                                    </option>
-                                </select>
-                                <div class="modal-action">
-                                    <label for="outlier-slice-embedding-select"
-                                        class="bg-green-100 text-green-700 border border-green-400 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-                                        (click)="requestOutlierSlice(similarSearchHelper.embeddings[embeddingSelect.selectedIndex].id)">Create</label>
-                                    <label for="outlier-slice-embedding-select"
-                                        class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
-                                </div>
-                            </div>
-                        </div>
-                    </ng-template>
                 </div>
             </div>
         </div>
@@ -1010,8 +961,8 @@
                                     </label>
                                 </ng-template>
                                 <ng-template [ngIf]="similarSearchHelper.embeddings?.length > 1">
-                                    <label (click)="similarSearchHelper.rememberedRecordId = record.id"
-                                        for="similarity-search-embedding-select"
+                                    <label
+                                        (click)="dataBrowserModals.similaritySearch.open = true; similarSearchHelper.rememberedRecordId = record.id; dataBrowserModals.similaritySearch.recordId = record.id"
                                         class="text-green-700 hover:text-green-500 text-sm font-medium cursor-pointer">
                                         <span class="leading-5">Find similar
                                             records
@@ -1050,31 +1001,6 @@
                     </div>
                 </div>
             </div>
-            <ng-template [ngIf]="similarSearchHelper.embeddings?.length>1">
-                <input type="checkbox" id="similarity-search-embedding-select" class="modal-toggle">
-                <div class="modal" *ngIf="similarSearchHelper.embeddings?.length>1">
-                    <div class="modal-box text-black bg-white justify-center">
-                        <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
-                            Select embedding for similarity search </div>
-                        <div *ngIf="activeSearchParams.length > 0 || similarSearchHelper.recordsInDisplay">
-                            <div class="text-red-500 mb-2 flex flex-grow justify-center text-sm">
-                                Warning: your current filter selection will be removed!</div>
-                        </div>
-                        <select #embeddingSelect class="select select-bordered select-sm w-full mt-4">
-                            <option *ngFor="let embedding of similarSearchHelper.embeddings" [value]="embedding.id">
-                                {{embedding.name }}
-                            </option>
-                        </select>
-                        <div class="modal-action">
-                            <label for="similarity-search-embedding-select"
-                                class="mr-2 bg-green-100 text-green-700 border border-green-400 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-                                (click)="requestSimilarSearch(similarSearchHelper.rememberedRecordId,similarSearchHelper.embeddings[embeddingSelect.selectedIndex].id)">Search</label>
-                            <label for="similarity-search-embedding-select"
-                                class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
-                        </div>
-                    </div>
-                </div>
-            </ng-template>
         </div>
     </div>
 </div>
@@ -1262,3 +1188,47 @@
         </div>
     </div>
 </kern-modal>
+
+<ng-template [ngIf]="similarSearchHelper.embeddings?.length>1">
+    <kern-modal [isOpen]="dataBrowserModals.findOutliers.open" closeButton="X" [acceptButton]="{
+        buttonCaption: 'Build',
+        emitObject: this, emitFunction: requestOutlierSlice}"
+        (optionClicked)="dataBrowserModals.findOutliers.open = false">
+        <div *ngIf="similarSearchHelper.embeddings?.length>1"
+            class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
+            Select embedding for outlier search </div>
+        <div *ngIf="activeSearchParams.length > 0 || similarSearchHelper.recordsInDisplay">
+            <div class="text-red-500 mb-2 flex flex-grow justify-center text-sm">
+                Warning: your current filter selection will be removed!</div>
+        </div>
+        <select #embeddingSelect class="select select-bordered select-sm w-full mt-4"
+            (change)="setEmbeddingId(embeddingSelect.selectedIndex)">
+            <option *ngFor="let embedding of similarSearchHelper.embeddings" [value]="embedding.id">
+                {{embedding.name }}
+            </option>
+        </select>
+    </kern-modal>
+</ng-template>
+
+
+
+<ng-template [ngIf]="similarSearchHelper.embeddings?.length>1">
+    <kern-modal [isOpen]="dataBrowserModals.similaritySearch.open" closeButton="X" [acceptButton]="{
+        buttonCaption: 'Seach',
+        emitObject: this, emitFunction:requestSimilarSearch
+    }" (optionClicked)="dataBrowserModals.similaritySearch.open = false">
+        <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium"
+            *ngIf="similarSearchHelper.embeddings?.length>1">
+            Select embedding for similarity search </div>
+        <div *ngIf="activeSearchParams.length > 0 || similarSearchHelper.recordsInDisplay">
+            <div class="text-red-500 mb-2 flex flex-grow justify-center text-sm">
+                Warning: your current filter selection will be removed!</div>
+        </div>
+        <select #embeddingSelectSS class="select select-bordered select-sm w-full mt-4"
+            (change)="setEmbeddingIdSS(embeddingSelectSS.selectedIndex)">
+            <option *ngFor="let embedding of similarSearchHelper.embeddings" [value]="embedding.id">
+                {{embedding.name }}
+            </option>
+        </select>
+    </kern-modal>
+</ng-template>
