@@ -435,31 +435,26 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
   }
 
 
-  addLabelingTask(
-    projectId: string,
-    modalInputToClose: HTMLInputElement,
-    taskName: string,
-    taskTargetId: string = null
-  ) {
+  addLabelingTask() {
+    const labelingTask = this.settingModals.labelingTask.create;
     if (this.requestTimeOut) return;
-    if (taskName.trim().length == 0) return;
-    if (!this.isTaskNameUniqueCheck(taskName)) return;
-    if (taskTargetId == "@@NO_ATTRIBUTE@@") taskTargetId = null;
+    if (labelingTask.name.trim().length == 0) return;
+    if (!this.isTaskNameUniqueCheck(labelingTask.name)) return;
+    if (labelingTask.taskId == "@@NO_ATTRIBUTE@@") labelingTask.taskId = null;
     let labelingTaskType = LabelingTask.MULTICLASS_CLASSIFICATION;
     if (
-      taskTargetId &&
-      this.getAttributeArrayAttribute(taskTargetId, 'dataType') == 'TEXT'
+      labelingTask.taskId &&
+      this.getAttributeArrayAttribute(labelingTask.taskId, 'dataType') == 'TEXT'
     )
       labelingTaskType = LabelingTask.NOT_SET;
 
-    this.projectApolloService.addLabelingTask(projectId, taskName.trim(), labelingTaskType, taskTargetId)
+    this.projectApolloService.addLabelingTask(this.project.id, labelingTask.name.trim(), labelingTaskType, labelingTask.taskId)
       .pipe(first()).subscribe();
 
     this.requestTimeOut = true;
     timer(100).subscribe(() => this.requestTimeOut = false);
 
-
-    modalInputToClose.checked = false;
+    this.settingModals.labelingTask.create.open = false;
   }
 
   getAttributeArrayAttribute(attributeId: string, valueID: string) {
@@ -675,6 +670,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
 
   checkLabelingTaskName(eventTarget: HTMLInputElement) {
     this.isTaskNameUnique = this.isTaskNameUniqueCheck(eventTarget.value);
+    this.settingModals.labelingTask.create.name = eventTarget.value;
   }
 
   checkAndModifyLabelName(eventTarget: HTMLInputElement) {
@@ -926,7 +922,6 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
       .createUserAttribute(this.project.id, this.settingModals.attribute.name, attributeType)
       .pipe(first())
       .subscribe((res) => {
-        // this.newAttributeModal.nativeElement.checked = true;
         const id = res?.data?.createUserAttribute.attributeId;
         if (id) {
           localStorage.setItem("isNewAttribute", "X");
@@ -959,5 +954,9 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
       if (match) counterList.push(parseInt(match[1]));
     }
     return "attribute_" + (counterList.length > 0 ? (Math.max(...counterList) + 1) : (this.attributes.length + 1));
+  }
+
+  setLabelingTaskTarget(id: string) {
+    this.settingModals.labelingTask.create.taskId = id;
   }
 }

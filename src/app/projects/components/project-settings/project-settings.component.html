@@ -470,7 +470,8 @@
     </div>
     <div class="mt-1">
         <div class="tooltip tooltip-right" data-tip="Currently supporting classifications and extractions">
-            <label for="my-modal-newRecordTask"
+            <label
+                (click)="settingModals.labelingTask.create.open = true; focusModalInputBox($event,'labelingTaskName')"
                 class="inline-block items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none cursor-pointer">
                 <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 h-5 w-5 inline-block stroke-current" fill="none"
                     viewBox="0 0 24 24" stroke="currentColor">
@@ -479,47 +480,6 @@
                 Add labeling task
             </label>
         </div>
-        <input #modalInput type="checkbox" id="my-modal-newRecordTask" class="modal-toggle"
-            (change)="focusModalInputBox($event,'labelingTaskName')">
-        <div class="modal">
-            <div class="modal-box text-black bg-white justify-center"
-                style="width: fit-content; min-width:448px; max-width:80%">
-                <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
-                    Add a labeling task </div>
-                <div class="mb-2 flex flex-grow justify-center text-sm text-gray-500">
-                    Afterward, you can select the label task type depending on the target type</div>
-                <div class="grid grid-cols-2 gap-2 items-center max-w-sm"
-                    style="grid-template-columns: max-content auto;">
-                    <div class="tooltip tooltip-right" data-tip="Choose attribute to be labeled">
-                        <span class="cursor-help card-title mb-0 label-text flex"><span class="underline"
-                                style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Target
-                                attribute</span></span>
-                    </div>
-                    <select #labelingTaskTarget class="select select-bordered select-sm">
-                        <option value="@@NO_ATTRIBUTE@@" selected="selected">Full Record</option>
-                        <option *ngFor="let attribute of attributesArrayUsableUploaded" [value]="attribute.id">
-                            {{attribute.name}}
-                        </option>
-                    </select>
-                    <div class="tooltip tooltip-right" data-tip="Name of your labeling task">
-                        <span class="cursor-help card-title mb-0 label-text flex"><span class="underline"
-                                style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Name</span></span>
-                    </div><input #labelingTaskName name="labelingTaskName" type="text" placeholder="Labeling task name"
-                        class="input input-sm input-bordered" (input)="checkLabelingTaskName($event.target)"
-                        (keydown.enter)="addLabelingTask(project.id,modalInput,labelingTaskName.value,labelingTaskTarget.value);labelingTaskName.value=''">
-                </div>
-                <div class="modal-action">
-                    <button [disabled]="!isTaskNameUnique || labelingTaskName.value ==''"
-                        [ngClass]="!isTaskNameUnique || labelingTaskName.value=='' ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
-                        class="bg-green-100 text-green-700 border border-green-400 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-                        (click)="addLabelingTask(project.id,modalInput,labelingTaskName.value,labelingTaskTarget.value);labelingTaskName.value=''">Add
-                        labeling task</button>
-                    <label for="my-modal-newRecordTask"
-                        class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
-                </div>
-            </div>
-        </div>
-
 
         <div class="mt-8">
             <div class="text-gray-900 text-lg leading-6 font-medium">
@@ -1071,4 +1031,38 @@
         with it,</p>
     <p class="text-gray-500 text-sm">including heuristics and
         labels!</p>
+</kern-modal>
+
+<kern-modal [isOpen]="settingModals.labelingTask.create.open" closeButton="X" [acceptButton]="{
+    buttonCaption: 'Add labeling task',
+    disabled: settingModals.labelingTask.create.name == '' || settingModals.labelingTask.create.name == null || !isTaskNameUniqueCheck(settingModals.labelingTask.create.name),
+    emitObject: this, emitFunction: addLabelingTask
+}" (optionClicked)="settingModals.labelingTask.create.open = false">
+
+    <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
+        Add a labeling task </div>
+    <div class="mb-2 flex flex-grow justify-center text-sm text-gray-500">
+        Afterward, you can select the label task type depending on the target type</div>
+    <div class="grid grid-cols-2 gap-2 items-center max-w-sm" style="grid-template-columns: max-content auto;">
+        <div class="tooltip tooltip-right" data-tip="Choose attribute to be labeled">
+            <span class="cursor-help card-title mb-0 label-text flex"><span class="underline"
+                    style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Target
+                    attribute</span></span>
+        </div>
+        <select #labelingTaskTarget class="select select-bordered select-sm"
+            (change)="setLabelingTaskTarget(labelingTaskTarget.value)">
+            <option value="@@NO_ATTRIBUTE@@" selected="selected">Full Record</option>
+            <option *ngFor="let attribute of attributesArrayUsableUploaded" [value]="attribute.id">
+                {{attribute.name}}
+            </option>
+        </select>
+        <div class="tooltip tooltip-right" data-tip="Name of your labeling task">
+            <span class="cursor-help card-title mb-0 label-text flex"><span class="underline"
+                    style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Name</span></span>
+        </div><input #labelingTaskName name="labelingTaskName" type="text" placeholder="Labeling task name"
+            class="input input-sm input-bordered" (input)="checkLabelingTaskName($event.target)"
+            (keydown.enter)="addLabelingTask();labelingTaskName.value=''"
+            [value]="settingModals.labelingTask.create.name">
+    </div>
+
 </kern-modal>

@@ -59,7 +59,11 @@ export type DeleteLabelModal = {
     taskId: string;
 };
 
-export type CreateLabelingTaskModal = {};
+export type CreateLabelingTaskModal = {
+    open: boolean;
+    name: string;
+    taskId: string;
+};
 
 export type DeleteLabelingTaskModal = {
     open: boolean;
@@ -108,7 +112,11 @@ export function createDefaultSettingModals(): SettingModals {
             }
         },
         labelingTask: {
-            create: {},
+            create: {
+                open: false,
+                name: null,
+                taskId: null
+            },
             delete: {
                 open: false,
                 taskId: null
