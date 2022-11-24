@@ -252,7 +252,7 @@
 </div>
 
 <kern-modal [isOpen]="attributeCalculationModals.executeAttribute.open" closeButton="X"
-    [modalBoxStyle]="{'width':'45rem'}" [acceptButton]="{
+    [modalBoxStyle]="{'width':'40rem', 'text-align':'justify'}" [acceptButton]="{
     buttonCaption: 'Execute',
     disabled: !attributeCalculationModals.executeAttribute.canRunProject || hasUnsavedChanges() || testerRequestedSomething,
     emitObject: this, emitFunction: calculateUserAttributeAllRecords
@@ -266,8 +266,8 @@
     </div>
 </kern-modal>
 
-<kern-modal [isOpen]="attributeCalculationModals.attributeDetails.open" closeButton="X"
-    (optionClicked)="attributeCalculationModals.attributeDetails.open = false">
+<kern-modal [isOpen]="attributeCalculationModals.attributeDetails.open" [modalBoxStyle]="{'min-width':'30rem'}"
+    closeButton="X" (optionClicked)="attributeCalculationModals.attributeDetails.open = false">
     <h1 class="text-lg text-gray-900 mb-2 text-center">View details</h1>
     <div *ngIf=" attributeCalculationModals.attributeDetails.recordData else requestingData"
         class="text-sm text-gray-500 my-2" class="overflow-y-auto max-height-modal scrollable-size">
@@ -291,10 +291,10 @@
 </kern-modal>
 
 <kern-modal [isOpen]="attributeCalculationModals.deleteUserAttribute.open" closeButton="X"
-    [modalBoxStyle]="{'text-align':'center'}" [abortButton]="{
+    [modalBoxStyle]="{'width':'30rem','text-align':'center'}" [abortButton]="{
     buttonCaption: 'Delete',
     emitObject: this, emitFunction: deleteUserAttribute
-}">
+}" (optionClicked)="attributeCalculationModals.deleteUserAttribute.open = false">
     <h1 class="text-lg text-gray-900 mb-2">Delete attribute</h1>
     <div class="text-sm text-gray-500 my-2">
         Are you sure you want to delete this attribute?

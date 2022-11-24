@@ -783,7 +783,8 @@
     </div>
 </kern-modal>
 
-<kern-modal [isOpen]="settingModals.embedding.delete.open" [abortButton]="{
+<kern-modal [isOpen]="settingModals.embedding.delete.open" [modalBoxStyle]="{'width':'30rem','text-align':'center'}"
+    [abortButton]="{
     buttonCaption: 'Delete embedding',
     emitObject: this, emitFunction: deleteEmbedding
 }" closeButton="X" (optionClicked)="settingModals.embedding.delete.open = false">
@@ -906,7 +907,7 @@
 <kern-modal [isOpen]="settingModals.embedding.create.open" [modalBoxStyle]="{'overflow-x':'visible'}" closeButton="X"
     [acceptButton]="{
     buttonCaption: 'Add embedding',
-    disabled: settingModals.embedding.create.blocked,
+    disabled: settingModals.embedding.create.blocked || settingModals.embedding.create.embeddingCreationFormGroup.get('embeddingHandle').value == '',
     emitObject: this, emitFunction:addEmbedding
 }" (optionClicked)="settingModals.embedding.create.open = false">
     <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
@@ -978,18 +979,20 @@
     </div>
 </kern-modal>
 <div #hoverBox class="absolute top-0 w-fit h-fit card shadow bg-white" style="z-index: 1000;"
-    [ngClass]="currentEmbeddingHandle?null:'hidden'">
-    <ng-template [ngIf]="currentEmbeddingHandle">
+    [ngClass]="settingModals.embedding.create.currentEmbeddingHandle?null:'hidden'">
+    <ng-template [ngIf]="settingModals.embedding.create.currentEmbeddingHandle">
         <div class="card-body p-6 flex flex-col w-64">
             <div class="flex justify-center">
                 <span class="card-title mb-2 label-text">Info</span>
             </div>
-            <span class="label-text text-sm">{{currentEmbeddingHandle.description}}</span>
+            <span
+                class="label-text text-sm">{{settingModals.embedding.create.currentEmbeddingHandle.description}}</span>
         </div>
     </ng-template>
 </div>
 
-<kern-modal [isOpen]="settingModals.label.delete.open" closeButton="X" [abortButton]="{
+<kern-modal [isOpen]="settingModals.label.delete.open" closeButton="X"
+    [modalBoxStyle]="{'width':'30rem', 'text-align':'center'}" [abortButton]="{
     buttonCaption: 'Delete label',
     emitObject: this, emitFunction: removeLabel
 }" closeButton="X" (optionClicked)="settingModals.label.delete.open = false;">
@@ -1004,7 +1007,8 @@
         all data associated with it!</p>
 </kern-modal>
 
-<kern-modal [isOpen]="settingModals.label.create.open" closeButton="X" [acceptButton]="{
+<kern-modal [isOpen]="settingModals.label.create.open" closeButton="X" [modalBoxStyle]="{'width':'30rem'}"
+    [acceptButton]="{
     buttonCaption: 'Add label',
     disabled: !isLabelNameUnique(settingModals.label.create.taskId,labelName.value) || labelName.value == '',
     emitObject: this, emitFunction: addLabel
@@ -1017,7 +1021,8 @@
         (input)="checkAndModifyLabelName($event.target)" (keydown.enter)="addLabel()">
 </kern-modal>
 
-<kern-modal [isOpen]="settingModals.labelingTask.delete.open" closeButton="X" [abortButton]="{
+<kern-modal [isOpen]="settingModals.labelingTask.delete.open" closeButton="X"
+    [modalBoxStyle]="{'width':'30rem', 'text-align':'center'}" [abortButton]="{
     buttonCaption: 'Delete labeling task',
     emitObject: this, emitFunction: deleteLabelingTask
 }" (optionClicked)="settingModals.labelingTask.delete.open = false">

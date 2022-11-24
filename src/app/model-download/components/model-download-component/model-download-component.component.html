@@ -243,7 +243,8 @@
     </ng-template>
 </div>
 
-<kern-modal [isOpen]="downloadedModelsModals.deleteModel.open" closeButton="X" [abortButton]="{
+<kern-modal [isOpen]="downloadedModelsModals.deleteModel.open" closeButton="X"
+    [modalBoxStyle]="{'width':'30rem', 'text-align':'center'}" [abortButton]="{
     buttonCaption: 'Delete',
     emitObject: this,emitFunction: deleteModel
 }" (optionClicked)="downloadedModelsModals.deleteModel.open = false">

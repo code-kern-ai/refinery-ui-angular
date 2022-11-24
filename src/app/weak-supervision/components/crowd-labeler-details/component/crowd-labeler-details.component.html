@@ -357,8 +357,8 @@
     </div>
 </div>
 
-<kern-modal [isOpen]="crowdLabelerModals.deleteCrowdLabeler.open" [modalBoxStyle]="{'text-align':'center'}"
-    closeButton="X" [abortButton]="{
+<kern-modal [isOpen]="crowdLabelerModals.deleteCrowdLabeler.open"
+    [modalBoxStyle]="{'width':'30rem','text-align':'center'}" closeButton="X" [abortButton]="{
     buttonCaption: 'Delete',
     emitObject: this, emitFunction: deleteInformationSource
 }" (optionClicked)="crowdLabelerModals.deleteCrowdLabeler.open = false">

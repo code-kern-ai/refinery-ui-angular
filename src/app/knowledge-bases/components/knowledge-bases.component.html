@@ -137,8 +137,8 @@
     </ng-container>
 </div>
 
-<kern-modal [isOpen]="lookuplistsModals.deleteSelected.open" closeButton="X" [modalBoxStyle]="{'text-align':'center'}"
-    [abortButton]="{
+<kern-modal [isOpen]="lookuplistsModals.deleteSelected.open" closeButton="X"
+    [modalBoxStyle]="{'width':'30rem', 'text-align':'center'}" [abortButton]="{
     buttonCaption: 'Delete',
     emitObject: this, emitFunction: deleteSelectedLookupLists
 }" (optionClicked)="lookuplistsModals.deleteSelected.open = false">

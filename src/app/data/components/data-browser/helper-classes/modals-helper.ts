@@ -56,7 +56,7 @@ export function createDefaultDataBrowserModals(): DataBrowserModals {
         },
         filter: {
             open: false,
-            name: null,
+            name: '',
             sliceNameExists: false,
             displayStaticNotAllowedWarning: false
         },

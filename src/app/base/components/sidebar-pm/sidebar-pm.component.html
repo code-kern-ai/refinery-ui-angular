@@ -325,33 +325,33 @@
 
 </kern-modal>
 
-<kern-modal [isOpen]="sideBarPmModals.steps.open" closeButton="X" [backButton]="{
+<kern-modal [isOpen]="sideBarPmModals.steps.open" closeButton="X" [modalBoxStyle]="{'width':'45rem'}" [backButton]="{
     buttonCaptiion: 'Back',
     emitObject: this, emitFunction: back
-}">
+}" (optionClicked)="sideBarPmModals.steps.open = false">
     <div class="text-center justify-center text-lg leading-6 text-gray-900 font-medium">
         How to update
     </div>
 
     <div class="flex border-b-2 border-b-gray-200 max-w-full text-center overflow-visible">
         <div (click)="toggleTabs(0)"
-            [ngClass]="this.sideBarPmModals.steps.openTab == 0 ? 'text-indigo-700 border-bottom' : 'text-gray-500' "
+            [ngClass]="sideBarPmModals.steps.openTab == 0 ? 'text-indigo-700 border-bottom' : 'text-gray-500' "
             class="text-sm leading-5 font-medium mr-10 cursor-help py-3">
             <span class="tooltip tooltip-bottom tooltip-margin border-dotted" data-tip="Linux/Mac">Bash users</span>
         </div>
         <div (click)="toggleTabs(1)"
-            [ngClass]="this.sideBarPmModals.steps.openTab == 1 ? 'text-indigo-700 border-bottom' : 'text-gray-500' "
+            [ngClass]="sideBarPmModals.steps.openTab == 1 ? 'text-indigo-700 border-bottom' : 'text-gray-500' "
             class="text-sm leading-5 font-medium mr-10 cursor-help py-3">
             <span class="tooltip tooltip-bottom border-dotted" data-tip="Installed refinery with pip">CLI
                 users</span>
         </div>
         <div (click)="toggleTabs(2)"
-            [ngClass]="this.sideBarPmModals.steps.openTab == 2 ? 'text-indigo-700 border-bottom' : 'text-gray-500' "
+            [ngClass]="sideBarPmModals.steps.openTab == 2 ? 'text-indigo-700 border-bottom' : 'text-gray-500' "
             class="text-sm leading-5 font-medium mr-10 cursor-help py-3">
             <span class="tooltip tooltip-bottom border-dotted" data-tip="Windows terminal">cmd</span>
         </div>
         <div (click)="toggleTabs(3)"
-            [ngClass]="this.sideBarPmModals.steps.openTab == 3 ? 'text-indigo-700 border-bottom' : 'text-gray-500' "
+            [ngClass]="sideBarPmModals.steps.openTab == 3 ? 'text-indigo-700 border-bottom' : 'text-gray-500' "
             class="text-sm leading-5 font-medium mr-10 cursor-help py-3">
             <span class="tooltip tooltip-bottom border-dotted" data-tip="Windows from File Explorer">Executing from
                 explorer</span>

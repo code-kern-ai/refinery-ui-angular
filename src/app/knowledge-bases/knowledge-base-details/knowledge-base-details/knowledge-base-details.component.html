@@ -274,7 +274,7 @@
 </div>
 
 <kern-modal [isOpen]="lookupListDetailsModals.deleteLookupList.open" closeButton="X"
-    [modalBoxStyle]="{'text-align':'center'}" [abortButton]="{
+    [modalBoxStyle]="{'width':'30rem','text-align':'center'}" [abortButton]="{
     buttonCaption: 'Delete',
     emitObject: this, emitFunction: deleteKnowledgeBase
 }" (optionClicked)="lookupListDetailsModals.deleteLookupList.open = false">
@@ -295,7 +295,8 @@
         Upload data to your lookup list
     </div>
     <div>
-        <kern-upload [projectId]="projectId" (fileAttached)="getFile($event)">
+        <kern-upload *ngIf="lookupListDetailsModals.uploadLookupList.open" [projectId]="projectId"
+            (fileAttached)="getFile($event)">
         </kern-upload>
     </div>
 </kern-modal>

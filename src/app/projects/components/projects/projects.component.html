@@ -357,7 +357,8 @@
         Upload data from an existing project
     </div>
     <div>
-        <kern-upload [projectId]="null" [init]="true" (fileAttached)="getFile($event)">
+        <kern-upload *ngIf="projectsModals.uploadProject.open" [projectId]="null" [init]="true"
+            (fileAttached)="getFile($event)">
         </kern-upload>
     </div>
 </kern-modal>

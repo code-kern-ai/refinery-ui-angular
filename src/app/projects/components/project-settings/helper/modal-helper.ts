@@ -29,6 +29,7 @@ export type CreateEmbeddingModal = {
     open: boolean;
     blocked: boolean;
     embeddingCreationFormGroup: FormGroup;
+    currentEmbeddingHandle: any;
 };
 
 export type DeleteEmbeddingModal = {
@@ -83,7 +84,8 @@ export function createDefaultSettingModals(): SettingModals {
             create: {
                 open: false,
                 blocked: false,
-                embeddingCreationFormGroup: null
+                embeddingCreationFormGroup: null,
+                currentEmbeddingHandle: null
             },
             delete: {
                 open: false,

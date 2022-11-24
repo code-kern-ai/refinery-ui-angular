@@ -146,8 +146,8 @@
     </ng-container>
 </div>
 
-<kern-modal [isOpen]="modelCallbackModals.deleteSelected.open" closeButton="X" [modalBoxStyle]="{'text-align':'center'}"
-    [abortButton]="{
+<kern-modal [isOpen]="modelCallbackModals.deleteSelected.open" closeButton="X"
+    [modalBoxStyle]="{'width':'30rem','text-align':'center'}" [abortButton]="{
     buttonCaption: 'Delete',
     emitObject: this, emitFunction: deleteSelectedInformationSources
 }" (optionClicked)="modelCallbackModals.deleteSelected.open = false">

@@ -424,7 +424,7 @@
 
 
 <kern-modal [isOpen]="heuristicDetailsModals.deleteHeuristic.open" closeButton="X"
-    [modalBoxStyle]="{'text-align':'center'}" [abortButton]="{
+    [modalBoxStyle]="{'width':'30rem','text-align':'center'}" [abortButton]="{
     buttonCaption: 'Delete',
     emitObject: this, emitFunction: deleteInformationSource
 }" (optionClicked)="heuristicDetailsModals.deleteHeuristic.open = false;">
@@ -434,8 +434,8 @@
     </div>
 </kern-modal>
 
-<kern-modal [isOpen]="heuristicDetailsModals.attributeDetails.open" closeButton="X"
-    (optionClicked)="heuristicDetailsModals.attributeDetails.open = false;">
+<kern-modal [isOpen]="heuristicDetailsModals.attributeDetails.open" [modalBoxStyle]="{'min-width':'30rem'}"
+    closeButton="X" (optionClicked)="heuristicDetailsModals.attributeDetails.open = false;">
     <h1 class="text-lg text-gray-900 mb-2 text-center">View details</h1>
     <div *ngIf="heuristicDetailsModals.attributeDetails.currentRecordIdx != -1">
         <div *ngIf="sampleRecords.records[heuristicDetailsModals.attributeDetails.currentRecordIdx] as record">

@@ -840,7 +840,7 @@
                             </div>
                             <div *ngIf="attributes.get(attribute.key)"
                                 class="text-gray-800 text-sm mb-4 overflow-anywhere flex">
-                                <ng-template [ngIf]=" highlightText && isTextHighlightNeeded &&
+                                <ng-template [ngIf]=" dataBrowserModals.configuration.highlightText && isTextHighlightNeeded &&
                                     isTextHighlightNeeded.get(attribute.key) &&
                                     record.data[attributes.get(attribute.key).name]" [ngIfElse]="noHighlight">
                                     <ngx-highlight-words
@@ -874,7 +874,8 @@
                         <!--rla aggregation-->
                         <ng-template [ngIf]="record.rla_aggregation">
                             <div class="mt-2 flex flex-col">
-                                <div *ngIf="weakSupervisionRelated && record.wsHint" class="text-gray-800 text-sm">
+                                <div *ngIf="dataBrowserModals.configuration.weakSupervisionRelated && record.wsHint"
+                                    class="text-gray-800 text-sm">
                                     {{record.wsHint}}</div>
                                 <div class="overflow-x-auto">
                                     <div class="inline-block min-w-full align-middle">
@@ -902,7 +903,7 @@
                                                 </thead>
                                                 <tbody class="divide-y divide-gray-200 bg-white">
                                                     <tr *ngFor="let aggregation of record.rla_aggregation | keyvalue; let i = index"
-                                                        [ngClass]="(i%2!=0 ? 'bg-gray-50':'bg-white') + (!weakSupervisionRelated || (weakSupervisionRelated && aggregation.value.isWSRelated)?'':' hidden')">
+                                                        [ngClass]="(i%2!=0 ? 'bg-gray-50':'bg-white') + (!dataBrowserModals.configuration.weakSupervisionRelated || (dataBrowserModals.configuration.weakSupervisionRelated && aggregation.value.isWSRelated)?'':' hidden')">
                                                         <td
                                                             class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
                                                             {{aggregation.value.type}}</td>
@@ -943,7 +944,8 @@
                                     </div>
                                 </ng-template>
                                 <ng-template [ngIf]="similarSearchHelper.embeddings?.length==1">
-                                    <label (click)="requestSimilarSearch(record.id)"
+                                    <label
+                                        (click)="dataBrowserModals.similaritySearch.recordId = record.id; requestSimilarSearch()"
                                         class="text-green-700 hover:text-green-500 text-sm font-medium cursor-pointer">
                                         <span class="leading-5">Find similar
                                             records
@@ -1023,7 +1025,7 @@
 
 
 
-<kern-modal [isOpen]="dataBrowserModals.userInfo.open" [modalBoxStyle]="{'width':'20rem'}" closeButton="X"
+<kern-modal [isOpen]="dataBrowserModals.userInfo.open" closeButton="X"
     (optionClicked)="dataBrowserModals.userInfo.open = false">
     <h1 class="text-lg text-gray-900 mb-2 text-center">Info</h1>
     <div class="flex-grow items-center flex flex-col mb-2" *ngIf="dataBrowserModals.userInfo.current">
@@ -1047,6 +1049,7 @@
 
 <kern-modal [isOpen]="dataBrowserModals.filter.open" closeButton="X" [modalBoxStyle]="{'width':'45rem'}" [acceptButton]="{
     buttonCaption: dataBrowserModals.filter.sliceNameExists? 'Update filter':'Save filter',
+    disabled: dataBrowserModals.filter.name == '',
     emitObject: this, emitFunction: dataBrowserModals.filter.sliceNameExists? updateSliceByName :createSlice
 }" (optionClicked)="dataBrowserModals.filter.open = false">
     <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
@@ -1233,12 +1236,13 @@
 </ng-template>
 
 
-<kern-modal [isOpen]="dataBrowserModals.deleteSlice.open" closeButton="X" [abortButton]="{
+<kern-modal [isOpen]="dataBrowserModals.deleteSlice.open" closeButton="X" [modalBoxStyle]="{'width':'30rem'}"
+    [abortButton]="{
     buttonCaption: 'Delete',
     emitObject: this, emitFunction: deleteSlice
 }" (optionClicked)="dataBrowserModals.deleteSlice.open = false">
     <h1 class="text-lg text-gray-900 mb-2 text-center">Delete data slice</h1>
-    <div class="text-sm text-gray-500 my-2">
+    <div class="text-sm text-gray-500 my-2 text-center">
         Are you sure you want to delete selected slice?
     </div>
 </kern-modal>

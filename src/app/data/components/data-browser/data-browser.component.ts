@@ -1398,6 +1398,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       .pipe(first()).subscribe(data => {
         const id = data["data"]["createDataSlice"]["id"];
         if (id != "") this.lastActiveSliceId = id;
+        this.dataBrowserModals.filter.name = "";
       });
 
     this.displayOutdatedWarning = false;
@@ -1439,7 +1440,8 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
             this.refreshDataSlice();
             timer.unsubscribe();
           }
-        })
+        });
+        this.dataBrowserModals.filter.name = "";
       });
     this.displayOutdatedWarning = false;
 

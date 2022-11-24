@@ -58,7 +58,6 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
   embeddings: any;
   embeddingQuery$: any;
   forceEmbeddingRefresh: boolean = true;
-  currentEmbeddingHandle;
   requestTimeOut: boolean = false;
   projectUpdateDisabled: boolean = true;
   isTaskNameUnique: boolean = true;
@@ -680,7 +679,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
   }
 
   setCurrentEmbeddingHandle(embeddingHandle, hoverBox: HTMLElement, listElement: HTMLElement) {
-    this.currentEmbeddingHandle = embeddingHandle;
+    this.settingModals.embedding.create.currentEmbeddingHandle = embeddingHandle;
     if (embeddingHandle) {
       const dataBoundingBox: DOMRect = listElement.getBoundingClientRect();
       hoverBox.style.top = (dataBoundingBox.top) + "px"

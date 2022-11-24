@@ -941,8 +941,7 @@
         record</span>
 </ng-template>
 
-<kern-modal [isOpen]="labelingModals.goldStar.open" closeButton="X"
-    (optionClicked)="labelingModals.goldStar.open = false">
+<kern-modal [isOpen]="labelingModals.goldStar.open" [modalBoxStyle]="{'text-align':'center'}">
     <h1 class="text-lg text-gray-900 mb-2 text-center">Warning
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block text-yellow-400" viewBox="0 0 20 20"
             fill="currentColor">
@@ -960,14 +959,17 @@
             <b>once</b> after acessing the labeling tab.
         </div>
     </div>
+    <button (click)="labelingModals.goldStar.open = false"
+        class="ml-2 bg-green-100 text-green-700 border border-green-400 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer hover:bg-green-200 focus:outline-none">Accept</button>
 </kern-modal>
 
-<kern-modal [isOpen]="labelingModals.deleteRecord.open" closeButton="X" [abortButton]="{
+<kern-modal [isOpen]="labelingModals.deleteRecord.open" closeButton="X" [modalBoxStyle]="{'width':'30rem'}"
+    [abortButton]="{
     buttonCaption: 'Delete',
     emitObject: this, emitFunction: deleteRecord
 }" (optionClicked)="labelingModals.deleteRecord.open = false">
     <h1 class="text-lg text-gray-900 mb-2 text-center">Delete record</h1>
-    <div class="text-sm text-gray-500 my-2">
+    <div class="text-sm text-gray-500 my-2 text-center">
         Are you sure you want to delete selected record?
     </div>
 </kern-modal>
