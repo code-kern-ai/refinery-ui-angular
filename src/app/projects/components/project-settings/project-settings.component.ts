@@ -15,7 +15,7 @@ import { ConfigManager } from 'src/app/base/services/config-service';
 import { UserManager } from 'src/app/util/user-manager';
 import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
 import { dataTypes } from 'src/app/util/data-types';
-import { toPythonFunctionName } from 'src/app/util/helper-functions';
+import { copyToClipboard, toPythonFunctionName } from 'src/app/util/helper-functions';
 import { LabelHelper } from './helper/label-helper';
 
 @Component({
@@ -65,7 +65,10 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
   projectUpdateDisabled: boolean = true;
   isTaskNameUnique: boolean = true;
   tokenizationProgress: Number;
-
+  personalAccessTokens: any;
+  personalAccessTokensQuery$: any;
+  newToken: string;
+  tokenCopied: bool = false;
   downloadMessage: DownloadState = DownloadState.NONE;
   downloadPrepareMessage: DownloadState = DownloadState.NONE;
   projectSize: any[];
@@ -159,6 +162,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     preparationTasks$.push(this.prepareAttributesRequest(projectId));
     preparationTasks$.push(this.prepareLabelingTasksRequest(projectId));
     preparationTasks$.push(this.prepareEmbeddingsRequest(projectId));
+    preparationTasks$.push(this.preparePersonalAccessTokensRequest(projectId));
 
 
 
@@ -278,6 +282,14 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     }
 
   }
+
+  preparePersonalAccessTokensRequest(projectId: string) {
+    let personalAccessTokens$;
+    [this.personalAccessTokensQuery$, personalAccessTokens$] = this.projectApolloService.getAllPersonalAccessTokens(projectId);
+    this.subscriptions$.push(personalAccessTokens$.subscribe((personalAccessTokens) => { this.personalAccessTokens = personalAccessTokens; console.log(this.personalAccessTokens) }));
+    return personalAccessTokens$;
+  }
+
 
   prepareEmbeddingsRequest(projectId: string) {
     let embeddings$;
@@ -498,6 +510,17 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
 
     this.router.navigate(['projects']);
   }
+
+  deletePersonalAccessToken(tokenId: string) {
+    this.projectApolloService
+      .deletePersonalAccessTokenById(this.project.id, tokenId)
+      .pipe(first()).subscribe();
+  }
+
+  createPersonalAccessToken(name: string, expiresAt: string, scope: string) {
+    this.projectApolloService.createPersonalAccessToken(this.project.id, name, expiresAt, scope).pipe(first()).subscribe((token) => this.newToken = token);
+  }
+
 
   ngOnDestroy(): void {
     this.subscriptions$.forEach((subscription) => subscription.unsubscribe());
@@ -962,5 +985,15 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
       if (match) counterList.push(parseInt(match[1]));
     }
     return "attribute_" + (counterList.length > 0 ? (Math.max(...counterList) + 1) : (this.attributes.length + 1));
+  }
+
+  copyToken() {
+    this.tokenCopied = true;
+    copyToClipboard(this.newToken);
+    timer(1000).subscribe(() => this.tokenCopied = false);
+  }
+
+  removeNewToken() {
+    this.newToken = null;
   }
 }

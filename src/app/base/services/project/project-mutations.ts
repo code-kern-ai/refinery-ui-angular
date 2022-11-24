@@ -253,6 +253,22 @@ mutation ($projectId: ID!, $uploadTaskId: ID!, $mappings: String!) {
   }
 }
 
+`,
+  DELETE_PERSONAL_ACCESS_TOKEN: gql`
+mutation ($projectId: ID!, $tokenId: ID!) {
+  deletePersonalAccessToken(projectId: $projectId, tokenId: $tokenId) {
+    ok
+  }
+}
+
+`,
+  CREATE_PERSONAL_ACCESS_TOKEN: gql`
+mutation ($projectId: ID!, $name: String!, $expiresAt: String!, $scope: String!) {
+  createPersonalAccessToken(projectId: $projectId, name: $name, expiresAt: $expiresAt, scope: $scope) {
+    token
+  }
+}
+
 `
 
 };

@@ -1269,4 +1269,62 @@ export class ProjectApolloService {
 
   }
 
+
+  getAllPersonalAccessTokens(projectId: string) {
+    const query = this.apollo
+      .watchQuery({
+        query: queries.GET_ALL_PERSONAL_ACCESS_TOKENS,
+        variables: {
+          projectId: projectId,
+        },
+        fetchPolicy: 'network-only',
+      });
+    const vc = query.valueChanges.pipe(
+      map((result) => {
+        console.log("result", result)
+        return result['data']['allPersonalAccessTokens']
+      })
+    );
+    return [query, vc]
+  }
+
+  deletePersonalAccessTokenById(projectId: string, tokenId: string) {
+    return this.apollo.mutate({
+      mutation: mutations.DELETE_PERSONAL_ACCESS_TOKEN,
+      variables: {
+        projectId: projectId,
+        tokenId: tokenId
+      }, refetchQueries: [
+        {
+          query: queries.GET_ALL_PERSONAL_ACCESS_TOKENS,
+          variables: {
+            projectId: projectId,
+          },
+        },
+      ],
+    });
+  }
+
+  createPersonalAccessToken(projectId: string, name: string, expiresAt: string, scope: string) {
+    return this.apollo
+      .mutate({
+        mutation: mutations.CREATE_PERSONAL_ACCESS_TOKEN,
+        variables: {
+          projectId: projectId,
+          name: name,
+          expiresAt: expiresAt,
+          scope: scope
+        }, refetchQueries: [
+          {
+            query: queries.GET_ALL_PERSONAL_ACCESS_TOKENS,
+            variables: {
+              projectId: projectId,
+            },
+          },
+        ],
+      })
+      .pipe(map((result) => result['data']['createPersonalAccessToken']['token']));
+  }
+
+
 }
