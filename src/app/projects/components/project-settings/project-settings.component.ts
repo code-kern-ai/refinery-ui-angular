@@ -69,6 +69,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
   personalAccessTokensQuery$: any;
   newToken: string;
   tokenCopied: boolean = false;
+  tokenNameIsDuplicated: boolean;
   downloadMessage: DownloadState = DownloadState.NONE;
   downloadPrepareMessage: DownloadState = DownloadState.NONE;
   projectSize: any[];
@@ -509,16 +510,6 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
       .pipe(first()).subscribe();
 
     this.router.navigate(['projects']);
-  }
-
-  deletePersonalAccessToken(tokenId: string) {
-    this.projectApolloService
-      .deletePersonalAccessTokenById(this.project.id, tokenId)
-      .pipe(first()).subscribe();
-  }
-
-  createPersonalAccessToken(name: string, expiresAt: string, scope: string) {
-    this.projectApolloService.createPersonalAccessToken(this.project.id, name, expiresAt, scope).pipe(first()).subscribe((token) => this.newToken = token);
   }
 
 
@@ -987,13 +978,47 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     return "attribute_" + (counterList.length > 0 ? (Math.max(...counterList) + 1) : (this.attributes.length + 1));
   }
 
+  deletePersonalAccessToken(tokenId: string) {
+    this.projectApolloService
+      .deletePersonalAccessTokenById(this.project.id, tokenId)
+      .pipe(first()).subscribe();
+  }
+
+  createPersonalAccessToken(name: string, expiresAt: string, scope: string) {
+    this.checkTokenNameIsDuplicated(name);
+    if (this.tokenNameIsDuplicated == false) this.projectApolloService.createPersonalAccessToken(this.project.id, name, expiresAt, scope).pipe(first()).subscribe((token) => this.newToken = token);
+  }
+
   copyToken() {
     this.tokenCopied = true;
     copyToClipboard(this.newToken);
     timer(1000).subscribe(() => this.tokenCopied = false);
   }
 
-  removeNewToken() {
+  closeTokenModal() {
     this.newToken = null;
+    this.tokenNameIsDuplicated = null;
+  }
+
+  checkTokenNameIsDuplicated(name: string) {
+    for (const token of this.personalAccessTokens) {
+      if (token.name === name) {
+        this.tokenNameIsDuplicated = true;
+        console.log("Token duplicated found")
+        return;
+      }
+    }
+    this.tokenNameIsDuplicated = false;
+  }
+
+  convertTokenScope(scope: string) {
+    if (scope == "READ") return "Read only";
+    else if (scope == "READ_WRITE") return "Read and write";
+    else return "Invalid";
+  }
+
+  convertTokenExpireDate(expireAt) {
+    if (expireAt == null) return "Never";
+    return new Date(expireAt).toDateString();
   }
 }
