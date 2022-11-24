@@ -51,6 +51,7 @@ export type ProjectExportModal = {
 export type CreateLabelModal = {
     open: boolean;
     taskId: string;
+    labelName: HTMLInputElement;
 };
 
 export type DeleteLabelModal = {
@@ -103,7 +104,8 @@ export function createDefaultSettingModals(): SettingModals {
         label: {
             create: {
                 open: false,
-                taskId: null
+                taskId: null,
+                labelName: null
             },
             delete: {
                 open: false,

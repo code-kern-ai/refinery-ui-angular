@@ -449,11 +449,12 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
       labelingTaskType = LabelingTask.NOT_SET;
 
     this.projectApolloService.addLabelingTask(this.project.id, labelingTask.name.trim(), labelingTaskType, labelingTask.taskId)
-      .pipe(first()).subscribe();
+      .pipe(first()).subscribe(() => {
+        this.settingModals.labelingTask.create.name = '';
+      });
 
     this.requestTimeOut = true;
     timer(100).subscribe(() => this.requestTimeOut = false);
-
     this.settingModals.labelingTask.create.open = false;
   }
 
@@ -476,8 +477,8 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     this.lh.removeLabel(this.project.id, labelDeleteData.taskId, labelDeleteData.label.id, labelDeleteData.label.color);
   }
 
-  addLabel(labelName?: HTMLInputElement): void {
-    this.lh.addLabel(this.project.id, this.settingModals.label.create.taskId, labelName);
+  addLabel(): void {
+    this.lh.addLabel(this.project.id, this.settingModals.label.create.taskId, this.settingModals.label.create.labelName);
   }
 
   deleteProject(projectId: string) {
@@ -675,6 +676,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
 
   checkAndModifyLabelName(eventTarget: HTMLInputElement) {
     eventTarget.value = eventTarget.value.replace("-", " ");
+    this.settingModals.label.create.labelName = eventTarget;
   }
 
   setCurrentEmbeddingHandle(embeddingHandle, hoverBox: HTMLElement, listElement: HTMLElement) {
