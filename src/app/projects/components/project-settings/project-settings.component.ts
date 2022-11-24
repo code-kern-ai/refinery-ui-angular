@@ -68,7 +68,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
   personalAccessTokens: any;
   personalAccessTokensQuery$: any;
   newToken: string;
-  tokenCopied: bool = false;
+  tokenCopied: boolean = false;
   downloadMessage: DownloadState = DownloadState.NONE;
   downloadPrepareMessage: DownloadState = DownloadState.NONE;
   projectSize: any[];
