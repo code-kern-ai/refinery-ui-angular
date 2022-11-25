@@ -893,7 +893,8 @@
             <div class="text-lg leading-6 text-gray-900 font-medium inline-block w-full">
                 <label>Personal Access Tokens</label>
                 <div class="mt-1">
-                    <div class="text-sm leading-5 font-medium text-gray-700 inline-block">Manage personal access tokens
+                    <div class="text-sm leading-5 font-medium text-gray-700 inline-block">Manage project-based personal
+                        access tokens
                         used to interact with refineries commercial proxy.
                     </div>
                     <div class="">
@@ -910,10 +911,16 @@
                                                 Scope</th>
                                             <th scope="col"
                                                 class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                                Created at</th>
+                                            <th scope="col"
+                                                class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
                                                 Expires at</th>
                                             <th scope="col"
                                                 class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
                                                 Last used</th>
+                                            <th scope="col"
+                                                class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-gray-200">
@@ -925,6 +932,9 @@
                                             </td>
                                             <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
                                                 {{convertTokenScope(tokenContainer.scope)}}
+                                            </td>
+                                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                                {{convertTokenDate(tokenContainer.createdAt)}}
                                             </td>
                                             <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
                                                 {{convertTokenDate(tokenContainer.expiresAt)}}
@@ -1040,14 +1050,14 @@
                                 <div class="flex items-center" data-tip="Copied"
                                     [ngClass]="tokenCopied?'tooltip tooltip-left':''">
                                     <button
-                                        class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block"
+                                        class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 inline-block"
                                         (click)="copyToken()">Copy
                                         to clipboard</button>
                                 </div>
                                 <button
-                                    class="bg-green-100 text-green-700 border border-green-400 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                                    class="bg-green-100 text-green-700 border border-green-400 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer hover:bg-green-200"
                                     (click)="createPersonalAccessToken(tokenName.value,tokenExpirationTime.value, tokenScope.value)"
-                                    [disabled]="tokenName.value == ''?true:null">Add
+                                    [ngClass]="!tokenName.value ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer'">Add
                                     token</button>
                                 <label for="my-modal-newPersonalAccessToken"
                                     class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block"
