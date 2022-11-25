@@ -508,8 +508,12 @@ query ($projectId: ID!, $exportOptions: JSONString) {
     checkRenameLabel(projectId: $projectId, labelId: $labelId, newName: $newName)
   }
   
+  `,
+
+  GET_RECORD_COMMENTS: gql`
+  query ($projectId: ID!, $recordIds: [ID]!) {
+    recordComments(projectId: $projectId, recordIds: $recordIds)
+  }
   `
-
-
 
 };

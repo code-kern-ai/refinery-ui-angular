@@ -1269,4 +1269,17 @@ export class ProjectApolloService {
 
   }
 
+  getRecordComments(projectId: string, recordIds: string[]) {
+    return this.apollo
+      .query({
+        query: queries.GET_RECORD_COMMENTS,
+        variables: {
+          projectId: projectId,
+          recordIds: recordIds,
+        },
+        fetchPolicy: 'no-cache'
+      }).pipe(
+        map((result) => result['data']['recordComments']));
+  }
+
 }

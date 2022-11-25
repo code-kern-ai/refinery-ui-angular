@@ -6,6 +6,7 @@ export type DataBrowserModals = {
     findOutliers: FindOutliersModal;
     similaritySearch: SimilaritySearchModal;
     deleteSlice: DeleteSliceModal;
+    recordComments: RecordCommentsModal;
 };
 
 export type UserInfoModal = {
@@ -48,6 +49,11 @@ export type DeleteSliceModal = {
     id: string;
 };
 
+export type RecordCommentsModal = {
+    open: boolean;
+    commentsData: any;
+};
+
 export function createDefaultDataBrowserModals(): DataBrowserModals {
     return {
         userInfo: {
@@ -82,6 +88,10 @@ export function createDefaultDataBrowserModals(): DataBrowserModals {
         deleteSlice: {
             open: false,
             id: null
+        },
+        recordComments: {
+            open: false,
+            commentsData: null
         }
     };
 }
