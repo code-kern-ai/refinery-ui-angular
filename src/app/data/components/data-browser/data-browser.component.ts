@@ -468,6 +468,25 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       );
     }
 
+    // comments
+    searchGroupContainer = getBasicSearchGroupContainer(
+      SearchGroup.COMMENTS,
+      (this.groupSortOrder += 100)
+    );
+    this.searchGroups.set(searchGroupContainer.key, searchGroupContainer);
+    this.fullSearch.set(
+      searchGroupContainer.key,
+      this.formBuilder.group({ groupElements: this.formBuilder.array([]) })
+    );
+    for (let baseItem of getBasicGroupItems(
+      searchGroupContainer.group,
+      searchGroupContainer.key
+    )) {
+      this.getSearchFormArray(searchGroupContainer.key).push(
+        this._commentsCreateSeachGroup(baseItem)
+      );
+    }
+
     //debounce
     let tasks$ = [];
     for (let [key, value] of this.fullSearch) {
@@ -509,7 +528,6 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     return group;
   }
 
-
   private _sortOrderSearchGroupItemChanged(
     group: FormGroup,
     next
@@ -545,6 +563,18 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     return false;
   }
 
+  _commentsCreateSeachGroup(item: SearchGroupItem): FormGroup {
+    console.log(item)
+    let group = this.formBuilder.group({
+      id: ++this.globalSearchGroupCount,
+      group: item.group,
+      groupKey: item.groupKey,
+      type: item.type,
+      name: item.defaultValue,
+      hasComments: item.hasComments,
+    });
+    return group;
+  }
 
   public onlyKeepUpdatedGroup(formItem: FormGroup | FormArray | FormControl, updatedValues: any,
     name?: string) {
@@ -1599,6 +1629,8 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
         this.processOrderByFilter(key, filters);
       } else if (key == SearchGroup.USER_FILTER) {
         this.userFilter.processUserFilters(key, filters);
+      } else if (key == SearchGroup.COMMENTS) {
+        this.processCommentsFilter(key, filters);
       }
       else {
         this.displayOutdatedWarning = true;
@@ -1674,6 +1706,13 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     const drillDown: FormGroup = this.fullSearch.get(key) as FormGroup;
     this.applyValuesToFormGroup(filterGroups[key], drillDown);
     this.updateSearchParameters.refreshSearchParams(drillDown.getRawValue());
+  }
+
+  processCommentsFilter(key: string, filterGroups: Object): void {
+    if (!this.fullSearch.has(key)) { this.displayOutdatedWarning = true; return; }
+    const comments: FormGroup = this.fullSearch.get(key) as FormGroup;
+    this.applyValuesToFormGroup(filterGroups[key], comments);
+    this.updateSearchParameters.refreshSearchParams(comments.getRawValue());
   }
 
   applyValuesToFormGroup(values: any, group: FormGroup): boolean {

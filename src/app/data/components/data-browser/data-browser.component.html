@@ -534,6 +534,14 @@
                                                             </div>
                                                         </div>
                                                     </ng-template>
+                                                    <ng-template [ngSwitchCase]="SearchGroupType.COMMENTS">
+                                                        Test comments
+                                                        <!-- <label>
+                                                            <input type="checkbox"
+                                                                [value]="groupItem.get('hasComments').controls">
+                                                            <label>Has comments</label>
+                                                        </label> -->
+                                                    </ng-template>
                                                 </container-element>
                                             </div>
                                         </ng-template>
