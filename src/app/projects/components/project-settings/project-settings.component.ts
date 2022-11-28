@@ -65,11 +65,6 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
   projectUpdateDisabled: boolean = true;
   isTaskNameUnique: boolean = true;
   tokenizationProgress: Number;
-  personalAccessTokens: any;
-  personalAccessTokensQuery$: any;
-  newToken: string;
-  tokenCopied: boolean = false;
-  tokenNameIsDuplicated: boolean;
   downloadMessage: DownloadState = DownloadState.NONE;
   downloadPrepareMessage: DownloadState = DownloadState.NONE;
   projectSize: any[];
@@ -163,7 +158,6 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     preparationTasks$.push(this.prepareAttributesRequest(projectId));
     preparationTasks$.push(this.prepareLabelingTasksRequest(projectId));
     preparationTasks$.push(this.prepareEmbeddingsRequest(projectId));
-    preparationTasks$.push(this.preparePersonalAccessTokensRequest(projectId));
 
 
 
@@ -282,13 +276,6 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
       }
     }
 
-  }
-
-  preparePersonalAccessTokensRequest(projectId: string) {
-    let personalAccessTokens$;
-    [this.personalAccessTokensQuery$, personalAccessTokens$] = this.projectApolloService.getAllPersonalAccessTokens(projectId);
-    this.subscriptions$.push(personalAccessTokens$.subscribe((personalAccessTokens) => { this.personalAccessTokens = personalAccessTokens; console.log(this.personalAccessTokens) }));
-    return personalAccessTokens$;
   }
 
 
@@ -976,49 +963,5 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
       if (match) counterList.push(parseInt(match[1]));
     }
     return "attribute_" + (counterList.length > 0 ? (Math.max(...counterList) + 1) : (this.attributes.length + 1));
-  }
-
-  deletePersonalAccessToken(tokenId: string) {
-    this.projectApolloService
-      .deletePersonalAccessTokenById(this.project.id, tokenId)
-      .pipe(first()).subscribe();
-  }
-
-  createPersonalAccessToken(name: string, expiresAt: string, scope: string) {
-    this.checkTokenNameIsDuplicated(name);
-    if (this.tokenNameIsDuplicated == false) this.projectApolloService.createPersonalAccessToken(this.project.id, name, expiresAt, scope).pipe(first()).subscribe((token) => this.newToken = token);
-  }
-
-  copyToken() {
-    this.tokenCopied = true;
-    copyToClipboard(this.newToken);
-    timer(1000).subscribe(() => this.tokenCopied = false);
-  }
-
-  closeTokenModal() {
-    this.newToken = null;
-    this.tokenNameIsDuplicated = null;
-  }
-
-  checkTokenNameIsDuplicated(name: string) {
-    for (const token of this.personalAccessTokens) {
-      if (token.name === name) {
-        this.tokenNameIsDuplicated = true;
-        console.log("Token duplicated found")
-        return;
-      }
-    }
-    this.tokenNameIsDuplicated = false;
-  }
-
-  convertTokenScope(scope: string) {
-    if (scope == "READ") return "Read only";
-    else if (scope == "READ_WRITE") return "Read and write";
-    else return "Invalid";
-  }
-
-  convertTokenDate(date) {
-    if (date == null) return "Never";
-    return new Date(date).toDateString();
   }
 }
