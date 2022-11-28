@@ -40,16 +40,16 @@
                                         {{tokenContainer.name}}
                                     </td>
                                     <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                        {{convertTokenScope(tokenContainer.scope)}}
+                                        {{tokenContainer.scope}}
                                     </td>
                                     <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                        {{convertTokenDate(tokenContainer.createdAt)}}
+                                        {{tokenContainer.createdAt}}
                                     </td>
                                     <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                        {{convertTokenDate(tokenContainer.expiresAt)}}
+                                        {{tokenContainer.expiresAt}}
                                     </td>
                                     <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                        {{convertTokenDate(tokenContainer.lastUsed)}}
+                                        {{tokenContainer.lastUsed}}
                                     </td>
                                     <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
                                         <label [for]="'my-modal-'+tokenContainer.id"

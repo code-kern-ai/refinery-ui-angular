@@ -70,7 +70,7 @@ export class ProjectAdminComponent implements OnInit {
   preparePersonalAccessTokensRequest(projectId: string) {
     let personalAccessTokens$;
     [this.personalAccessTokensQuery$, personalAccessTokens$] = this.projectApolloService.getAllPersonalAccessTokens(projectId);
-    this.subscriptions$.push(personalAccessTokens$.subscribe((personalAccessTokens) => { this.personalAccessTokens = personalAccessTokens; console.log(this.personalAccessTokens) }));
+    this.subscriptions$.push(personalAccessTokens$.subscribe((personalAccessTokens) => { this.personalAccessTokens = personalAccessTokens.map((token) => { return { ...token, scope: this.convertTokenScope(token.scope), expiresAt: this.convertTokenDate(token.expiresAt), createdAt: this.convertTokenDate(token.createdAt), lastUsed: this.convertTokenDate(token.lastUsed) } }) }));
     return personalAccessTokens$;
   }
 
