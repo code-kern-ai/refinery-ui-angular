@@ -8,15 +8,15 @@ import { ProjectApolloService } from 'src/app/base/services/project/project-apol
 import { RouteService } from 'src/app/base/services/route.service';
 import { UserManager } from 'src/app/util/user-manager';
 import { copyToClipboard } from 'src/app/util/helper-functions';
-import { ConfigManager } from '../base/services/config-service';
+import { ConfigManager } from 'src/app/base/services/config-service';
 
 @Component({
-  selector: 'kern-admin',
-  templateUrl: './admin.component.html',
-  styleUrls: ['./admin.component.scss']
+  selector: 'project-admin-admin',
+  templateUrl: './project-admin.component.html',
+  styleUrls: ['./project-admin.component.scss']
 })
 
-export class AdminComponent implements OnInit {
+export class ProjectAdminComponent implements OnInit {
 
   projectName = new FormControl('');
   project$: any;
