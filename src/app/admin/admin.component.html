@@ -1,0 +1,177 @@
+<div *ngIf="project$ | async as project" class="p-4 bg-gray-100 h-full overflow-y-auto flex-1 flex flex-col">
+    <div class="text-lg leading-6 text-gray-900 font-medium inline-block w-full">
+        <label>Personal Access Tokens</label>
+        <div class="mt-1">
+            <div class="text-sm leading-5 font-medium text-gray-700 inline-block">Manage project-based personal
+                access tokens
+                used to interact with refineries commercial proxy.
+            </div>
+            <div class="">
+                <div class="inline-block min-w-full align-middle">
+                    <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+                        <table class="min-w-full divide-y divide-gray-300">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col"
+                                        class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                        Name</th>
+                                    <th scope="col"
+                                        class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                        Scope</th>
+                                    <th scope="col"
+                                        class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                        Created at</th>
+                                    <th scope="col"
+                                        class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                        Expires at</th>
+                                    <th scope="col"
+                                        class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                        Last used</th>
+                                    <th scope="col"
+                                        class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+
+                                <tr *ngFor="let tokenContainer of personalAccessTokens; let j = index"
+                                    [ngClass]="j%2!=0 ? 'bg-gray-50':'bg-white'">
+                                    <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                        {{tokenContainer.name}}
+                                    </td>
+                                    <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                        {{convertTokenScope(tokenContainer.scope)}}
+                                    </td>
+                                    <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                        {{convertTokenDate(tokenContainer.createdAt)}}
+                                    </td>
+                                    <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                        {{convertTokenDate(tokenContainer.expiresAt)}}
+                                    </td>
+                                    <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                        {{convertTokenDate(tokenContainer.lastUsed)}}
+                                    </td>
+                                    <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                        <label [for]="'my-modal-'+tokenContainer.id"
+                                            class="modal-button btn btn-sm btn-ghost px-0">
+
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="inline-block w-6 h-6 stroke-current text-red-700" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            </svg>
+                                        </label>
+                                        <input type="checkbox" [id]="'my-modal-'+tokenContainer.id"
+                                            class="modal-toggle">
+                                        <div class="modal">
+                                            <div class="modal-box text-black bg-white justify-center">
+                                                <div
+                                                    class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
+                                                    Warning </div>
+                                                <p class="mt-2 text-gray-500 text-sm">Are you sure you want to
+                                                    delete
+                                                    this personal access token?</p>
+                                                <p class="text-gray-500 text-sm">This is not reversible and the
+                                                    token will not be longer usable!</p>
+                                                <div class="modal-action">
+                                                    <label [for]="'my-modal-'+tokenContainer.id"
+                                                        class="bg-red-100 text-red-700 border border-red-400 text-xs font-semibold mr-2 px-4 py-2 rounded flex cursor-pointer hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 inline-block"
+                                                        (click)="deletePersonalAccessToken(tokenContainer.id)">Delete
+                                                        personal access token</label>
+                                                    <label [for]="'my-modal-'+tokenContainer.id"
+                                                        class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-1">
+            <div class="tooltip tooltip-right" data-tip="Create a new personal access token">
+                <label for="my-modal-newPersonalAccessToken"
+                    class="inline-block items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 h-5 w-5 inline-block stroke-current" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Add token
+                </label>
+            </div>
+            <input #modalInput type="checkbox" id="my-modal-newPersonalAccessToken" class="modal-toggle">
+            <div class="modal">
+                <div class="modal-box text-black bg-white justify-center"
+                    style="width: fit-content; min-width:448px; max-width:80%">
+                    <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
+                        Add a personal access token </div>
+                    <div class="flex flex-row justify-between items-center mb-2">
+                        <div class="text-gray-500 text-xs font-normal">This token is created only
+                            once and can not be restored. Please keep it safe.</div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 items-center max-w-sm"
+                        style="grid-template-columns: max-content auto;">
+                        <div class="tooltip tooltip-right" data-tip="Choose scope of your token">
+                            <span class="cursor-help card-title mb-0 label-text flex"><span class="underline"
+                                    style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Scope</span></span>
+                        </div>
+                        <select #tokenScope class="select select-bordered select-sm">
+                            <option value="READ" selected="selected">Read only</option>
+                            <option value="READ_WRITE">Read and write</option>
+                        </select>
+                        <div class="tooltip tooltip-right" data-tip="Choose expiration time of your token">
+                            <span class="cursor-help card-title mb-0 label-text flex"><span class="underline"
+                                    style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Expiration
+                                    time</span></span>
+                        </div>
+                        <select #tokenExpirationTime class="select select-bordered select-sm">
+                            <option value="ONE_MONTH" selected="selected">1 Month</option>
+                            <option value="THREE_MONTHS">3 Months</option>
+                            <option value="NEVER">Unlimited</option>
+                        </select>
+                        <div class="tooltip tooltip-right" data-tip="Name of your token">
+                            <span class="cursor-help card-title mb-0 label-text flex"><span class="underline"
+                                    style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Name</span></span>
+                        </div>
+
+                        <input #tokenName name="tokenName" type="text" placeholder="Token name"
+                            class="input input-sm input-bordered">
+
+                        <div class="tooltip tooltip-right" data-tip="Value of the token">
+                            <span class="cursor-help card-title mb-0 label-text flex"><span class="underline"
+                                    style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Token</span></span>
+                        </div>
+                        <span type="text" #token
+                            class="text-xs block p-4 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">{{newToken}}</span>
+                    </div>
+                    <div *ngIf="tokenNameIsDuplicated" class="flex flex-row justify-between items-center my-2">
+                        <div class="text-red-500 text-xs font-normal">Token with name {{tokenName.value}}
+                            already exists.</div>
+                    </div>
+                    <div class="modal-action">
+                        <div class="flex items-center" data-tip="Copied"
+                            [ngClass]="tokenCopied?'tooltip tooltip-left':''">
+                            <button
+                                class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 inline-block"
+                                (click)="copyToken()">Copy
+                                to clipboard</button>
+                        </div>
+                        <button
+                            class="bg-green-100 text-green-700 border border-green-400 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer hover:bg-green-200"
+                            (click)="createPersonalAccessToken(tokenName.value,tokenExpirationTime.value, tokenScope.value)"
+                            [ngClass]="!tokenName.value ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer'">Add
+                            token</button>
+                        <label for="my-modal-newPersonalAccessToken"
+                            class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block"
+                            (click)="closeTokenModal()">Close</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -21,6 +21,7 @@ import { CreateNewAttributeComponent } from './projects/components/create-new-at
 import { ModelCallbackComponent } from './model-callbacks/components/model-callbacks.component';
 import { UsersComponent } from './users/components/users.component';
 import { CrowdLabelerDetailsComponent } from './weak-supervision/components/crowd-labeler-details/component/crowd-labeler-details.component';
+import { AdminComponent } from './admin/admin.component';
 
 const routes: Routes = [
   {
@@ -57,6 +58,7 @@ const routes: Routes = [
       },
       { path: 'data', component: DataBrowserComponent, data: { name: 'DataBrowserComponent' } },
       { path: 'settings', component: ProjectSettingsComponent, data: { name: 'ProjectSettingsComponent' } },
+      { path: 'admin', component: AdminComponent, data: { name: 'AdminComponent' } },
       { path: 'labeling', component: LabelingComponent, data: { name: 'LabelingComponent' } },
       { path: 'labeling/:id', component: LabelingComponent, data: { name: 'LabelingComponent' } },
       { path: 'record-ide/:id', component: RecordIDEComponent, data: { name: 'RecordIDEComponent' } },

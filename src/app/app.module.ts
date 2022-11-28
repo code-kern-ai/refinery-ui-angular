@@ -26,9 +26,10 @@ import { RecordIDEModule } from './record-ide/record-ide.module';
 import { ModelDownloadModule } from './model-download/model-download.module';
 import { ModelCallbackModule } from './model-callbacks/model-callbacks.module';
 import { UsersModule } from './users/users.module';
+import { AdminComponent } from './admin/admin.component';
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [AppComponent, AdminComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
