@@ -1281,7 +1281,6 @@ export class ProjectApolloService {
       });
     const vc = query.valueChanges.pipe(
       map((result) => {
-        console.log("result", result)
         return result['data']['allPersonalAccessTokens']
       })
     );
