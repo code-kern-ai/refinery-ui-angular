@@ -117,10 +117,7 @@ export class SidebarPmComponent implements OnInit, OnDestroy {
       timer(250).subscribe(() => this.checkUserIsAdmin());
       return;
     }
-
-    if (ConfigManager.getIsAdmin()) {
-      this.isAdmin = true;
-    }
+    this.isAdmin = ConfigManager.getIsAdmin();
   }
 
   requestVersionOverview() {

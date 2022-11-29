@@ -110,7 +110,6 @@ export class ProjectAdminComponent implements OnInit {
     for (const token of this.personalAccessTokens) {
       if (token.name === name) {
         this.tokenNameIsDuplicated = true;
-        console.log("Token duplicated found")
         return;
       }
     }
