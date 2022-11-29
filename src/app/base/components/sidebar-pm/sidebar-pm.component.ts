@@ -66,6 +66,7 @@ export class SidebarPmComponent implements OnInit, OnDestroy {
   @ViewChild('stepsUpdate', { read: ElementRef }) stepsUpdate: ElementRef;
   openTab: number = 0;
   isManaged: boolean = true;
+  isAdmin: boolean = false;
   hasUpdates: boolean;
   private static initialConfigRequest: boolean = false;
 
@@ -90,6 +91,7 @@ export class SidebarPmComponent implements OnInit, OnDestroy {
       [this.projectQuery$, this.project$] = this.projectApolloService.getProjectByIdQuery(this.projectId);
     }
 
+    this.checkUserIsAdmin();
     this.firstName.emit(this.user$);
     this.logoutUrl$ = this.auth.getLogoutOut();
     this.subscriptions$.push(this.organizationService
@@ -108,6 +110,17 @@ export class SidebarPmComponent implements OnInit, OnDestroy {
     this.checkIfManagedVersion();
     this.routeColor = RouteManager.routeColor;
 
+  }
+
+  private checkUserIsAdmin() {
+    if (!ConfigManager.isInit()) {
+      timer(250).subscribe(() => this.checkUserIsAdmin());
+      return;
+    }
+
+    if (ConfigManager.getIsAdmin()) {
+      this.isAdmin = true;
+    }
   }
 
   requestVersionOverview() {
