@@ -1,6 +1,6 @@
 
 import { HttpClient } from '@angular/common/http';
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { timer } from 'rxjs';
 import { first } from 'rxjs/operators';
@@ -33,6 +33,7 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
   @Input() labelingTaskId: string;
   @Output() preparedCode = new EventEmitter<string | any>();
 
+  @ViewChild("searchInput") searchInput: ElementRef;
 
   config: BricksIntegratorConfig;
   codeParser: BricksCodeParser;
@@ -59,6 +60,7 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
     this.config.modalOpen = true;
     this.checkCanAccept();
     this.requestSearch();
+    this.searchInput.nativeElement.value = "";
   }
 
   initConfig() {
