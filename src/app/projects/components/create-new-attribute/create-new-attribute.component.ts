@@ -63,6 +63,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
 
   dataTypesArray = dataTypes;
   attributeDataType: string;
+  nextUpdateReplace: boolean = false;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -170,11 +171,13 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
       if (this.currentAttribute?.sourceCode == null) {
         this.codeFormCtrl.setValue(AttributeCodeLookup.getAttributeCalculationTemplate(AttributeCalculationExamples.AC_EMPTY_TEMPLATE, this.currentAttribute.dataType).code);
       } else {
-        if (!this.codeFormCtrl.value || this.codeFormCtrl.value.includes("def ac(record)")) {
+        if (!this.codeFormCtrl.value || this.codeFormCtrl.value.includes("def ac(record)") || this.nextUpdateReplace) {
           this.codeFormCtrl.setValue(this.currentAttribute.sourceCode.replace(
             'def ac(record):',
             'def ' + this.currentAttribute.name + '(record):'
           ));
+          if (this.nextUpdateReplace) this.nextUpdateReplace = false;
+
         }
 
       }
@@ -228,10 +231,13 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
   saveAttribute(projectId: string) {
     if (this.updatedThroughWebsocket) return;
     const getCodeToSave = this.getPythonFunctionToSave(this.codeFormCtrl.value);
+    this.nextUpdateReplace = true;
     this.projectApolloService
       .updateAttribute(projectId, this.currentAttribute.id, this.currentAttribute.dataType, this.currentAttribute.isPrimaryKey, this.attributeName, getCodeToSave)
       .pipe(first())
-      .subscribe(() => this.duplicateNameExists = false);
+      .subscribe(() => {
+        this.duplicateNameExists = false;
+      });
   }
 
   changeAttributeName(event) {

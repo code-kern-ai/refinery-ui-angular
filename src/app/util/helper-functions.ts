@@ -99,7 +99,7 @@ export type enumToArrayOptions = {
 
 export function enumToArray(e: Object, options: enumToArrayOptions = null): any[] {
     const arr = Object.values(e);
-    if (!options) return sortByEnumPos(e, arr.map(x => ({ name: x, value: x })));
+    if (!options) return sortByEnumPos(e, arr);
     let func;
     if (options.caseType == caseType.LOWER) func = (x) => x.toLowerCase();
     else if (options.caseType == caseType.UPPER) func = (x) => x.toUpperCase();

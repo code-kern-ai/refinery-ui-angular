@@ -1,0 +1,332 @@
+<div class="flex items-center">
+    <div class="tooltip tooltip-left" data-tip="Open the bricks integrator">
+        <label (click)="openBricksIntegrator()"
+            class="cursor-pointer bg-white text-gray-700 text-xs font-semibold  px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none">
+            Search in bricks
+        </label>
+    </div>
+</div>
+<kern-modal [isOpen]="config.modalOpen" closeButton="X" [acceptButton]="{
+        closeAfterClick:false,
+        buttonCaption:config.page == IntegratorPageType.INTEGRATION?'Finish up':'Proceed',        
+        disabled:!config.canAccept
+}" [modalBoxStyle]="{'overflow-x':'visible'}" (optionClicked)="optionClicked($event)">
+    <div class="flex flex-row items-center justify-center gap-x-2">
+
+        <span class="text-lg leading-6 text-gray-900 font-medium">
+            Bricks Integrator
+        </span>
+
+    </div>
+    <div class="flex justify-center">
+        <div class="sm:block">
+            <div class="border-b border-gray-200">
+                <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                    <button (click)="config.page= IntegratorPageType.SEARCH"
+                        [ngClass]="config.page == IntegratorPageType.SEARCH ? 'border-indigo-500 text-indigo-600':'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                        class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">Search</button>
+                    <button
+                        (click)="(config.api.requesting || config.api.data)?config.page= IntegratorPageType.OVERVIEW:null"
+                        [ngClass]="[config.page == IntegratorPageType.OVERVIEW ? 'border-indigo-500 text-indigo-600':'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', (config.api.requesting || config.api.data)?'cursor-pointer':'cursor-not-allowed']"
+                        class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">Overview</button>
+                    <button
+                        (click)="(config.api.requesting || config.api.data)?config.page = IntegratorPageType.INPUT_EXAMPLE:null"
+                        [ngClass]="[config.page == IntegratorPageType.INPUT_EXAMPLE ? 'border-indigo-500 text-indigo-600':'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', (config.api.requesting || config.api.data)?'cursor-pointer':'cursor-not-allowed']"
+                        class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">Input Example</button>
+                    <button
+                        (click)="(config.api.requesting || config.api.data)?config.page = IntegratorPageType.INTEGRATION:null"
+                        [ngClass]="[config.page == IntegratorPageType.INTEGRATION ? 'border-indigo-500 text-indigo-600':'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', (config.api.requesting || config.api.data)?'cursor-pointer':'cursor-not-allowed']"
+                        class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">Integration</button>
+
+                </nav>
+            </div>
+        </div>
+    </div>
+    <!--PageSearch-->
+    <div [ngClass]="config.page != IntegratorPageType.SEARCH ? 'hidden':''"
+        class="flex flex-col gap-y-2 items-center my-4" style="height:28rem;width:30rem">
+        <div
+            class="w-full max-w-xl transform divide-y divide-gray-100 overflow-hidden rounded-xl bg-white shadow-2xl transition-all">
+            <div class="relative">
+                <svg class="pointer-events-none absolute top-3.5 left-4 h-5 w-5 text-gray-400"
+                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd"
+                        d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z"
+                        clip-rule="evenodd" />
+                </svg>
+                <input #searchInput type="text"
+                    class="h-12 w-full border-0 bg-transparent pl-11 pr-4 text-gray-800 placeholder-gray-400 outline-none"
+                    placeholder="Search..." role="combobox" aria-expanded="false" aria-controls="options"
+                    (keyup)="requestSearchDebounce(searchInput.value)">
+                <div *ngIf="config.search.requesting" class="absolute right-0 top-3">
+                    <kern-loading></kern-loading>
+                </div>
+            </div>
+            <!-- Empty state, show/hide based on command palette state -->
+            <ng-template [ngIf]="config.search.nothingMatches" [ngIfElse]="showResults">
+
+                <div class="py-14 px-6 text-center text-sm sm:px-14">
+                    <svg class="mx-auto h-6 w-6 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                    </svg>
+                    <p class="mt-4 font-semibold text-gray-900">No results found</p>
+                    <p class="mt-2 text-gray-500">No components found for this search term. Please try again.</p>
+                </div>
+            </ng-template>
+            <ng-template #showResults>
+                <ul class="max-h-96 scroll-py-3 overflow-y-auto p-3" style="max-height:24rem" id="options"
+                    role="listbox">
+                    <li *ngFor="let result of config.search.results; let i = index"
+                        [ngClass]="result.visible ? '':'hidden'" (click)="selectSearchResult(result.id)"
+                        class="group flex cursor-pointer select-none rounded-xl p-3 hover:bg-gray-100" id="option-1"
+                        role="option" tabindex="-1">
+                        <div class="ml-4 flex-auto">
+                            <p class="text-sm font-bold text-gray-700">{{result.attributes.name}}</p>
+                            <p class="text-sm text-gray-500">{{result.attributes.description}}</p>
+                        </div>
+                    </li>
+                </ul>
+            </ng-template>
+        </div>
+    </div>
+    <!--Page Overview-->
+    <div [ngClass]="config.page != IntegratorPageType.OVERVIEW ? 'hidden':''"
+        class="flex flex-col gap-y-2 justify-center items-center my-4">
+        <ng-template [ngIf]="config.api.requesting" [ngIfElse]="displayOverview">
+            <kern-loading></kern-loading>
+        </ng-template>
+        <ng-template #displayOverview>
+            <ng-template [ngIf]="config.api.data">
+                <div class="grid grid-cols-2 grid-cols-2-max  gap-x-2 gap-y-2 items-center">
+                    <div class="font-bold">Module Id</div>
+                    <label>{{config.api.data.data.id}}</label>
+                    <div class="font-bold">Module Name</div>
+                    <label>{{config.api.data.data.attributes.name}}</label>
+                    <div class="font-bold">Description</div>
+                    <label style="max-width:25rem">{{config.api.data.data.attributes.description}}</label>
+                    <div class="font-bold">Execution Type</div>
+                    <label>{{config.api.data.data.attributes.executionType}}</label>
+                    <div class="font-bold">Module Type</div>
+                    <label>{{config.api.data.data.attributes.moduleType}}</label>
+                    <div class="col-start-1 col-span-full">
+                        <div class="flex flex-row justify-between cursor-pointer items-center"
+                            (click)="config.overviewCodeOpen=!config.overviewCodeOpen">
+                            <label class="text-base font-bold text-gray-900 cursor-pointer">Source Code<span
+                                    class="text-sm font-normal">(guided integration through tab
+                                    integration)</span></label>
+                            <div [ngClass]="config.overviewCodeOpen?'rotate-transform':null">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="icon icon-tabler icon-tabler-chevrons-down" width="24" height="24"
+                                    viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <polyline points="7 7 12 12 17 7"></polyline>
+                                    <polyline points="7 13 12 18 17 13"></polyline>
+                                </svg>
+                            </div>
+                        </div>
+                        <div [ngClass]="config.overviewCodeOpen?'':'hidden'" class="flex flex-col mt-1">
+
+                            <div class="overflow-y-auto" style="max-height:15rem;max-width: 35rem; overflow-x:hidden">
+                                <pre class="editor-pre">{{config.api.data.data.attributes.sourceCode}}</pre>
+                            </div>
+                            <div class="mt-2 tooltip" [attr.data-tip]="config.copied?'Copied':'Click to copy raw code'">
+
+                                <button (click)="copyToClipboard(config.api.data.data.attributes.sourceCode)"
+                                    type="button"
+                                    class="bg-indigo-700 text-white text-xs font-semibold px-4 py-2 rounded-md border hover:bg-indigo-800 focus:outline-none">Copy</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+        </ng-template>
+    </div>
+    <!--Page Input Example-->
+    <div [ngClass]="config.page != IntegratorPageType.INPUT_EXAMPLE ? 'hidden':''"
+        class="flex flex-col gap-y-2 justify-center items-center my-4">
+        <label>Input data:</label>
+
+
+        <textarea #exampleInput
+            class="textarea placeholder-italic w-full p-2 line-height-textarea h-20 focus:outline-none border border-gray-300"
+            placeholder="Example Input Data" [value]="config.example.requestData"
+            [ngStyle]="{'height':(exampleInput.scrollHeight+2) + 'px','overflow-y':exampleInput.scrollHeight < 400 ? 'hidden':'auto'}"></textarea>
+        <div class="flex flex-row justify-between items-center w-full">
+            <button
+                (click)="exampleInput.value=config.api.data.data.attributes.inputExample; config.example.returnData=null;"
+                type="button"
+                class="bg-indigo-700 text-white text-xs font-semibold px-4 py-2 rounded-md border hover:bg-indigo-800 focus:outline-none">Reset
+                to default</button>
+            <button (click)="config.example.requestData=exampleInput.value;requestExample();" type="button"
+                class="bg-indigo-700 text-white text-xs font-semibold px-4 py-2 rounded-md border hover:bg-indigo-800 focus:outline-none">Request
+                Example</button>
+        </div>
+        <ng-template [ngIf]="config.example.requesting" [ngIfElse]="displayExample">
+            <kern-loading></kern-loading>
+        </ng-template>
+        <ng-template #displayExample>
+            <ng-template [ngIf]="config.example.returnData">
+
+                <textarea disabled #exampleOutput
+                    class="textarea placeholder-italic w-full p-2 line-height-textarea focus:outline-none border border-gray-300 bg-gray-200"
+                    [ngStyle]="{'height':(exampleOutput.scrollHeight+2) + 'px','overflow-y':exampleOutput.scrollHeight < 400 ? 'hidden':'auto'}">{{config.example.returnData}}</textarea>
+            </ng-template>
+        </ng-template>
+    </div>
+    <!--Page Integration-->
+    <div [ngClass]="config.page != IntegratorPageType.INTEGRATION ? 'hidden':''"
+        class="flex flex-col gap-y-2 justify-center items-center my-4">
+        <ng-template [ngIf]="codeParser?.errors.length>0">
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative flex flex-col"
+                role="alert">
+                <div class="self-center flex flex-row flex-nowrap items-center -mt-1 mb-1">
+                    <strong class="font-bold">Couldn't parse code</strong>
+                    <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                        fill="currentColor" aria-hidden="true">
+                        <path fill-rule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <pre class="text-sm overflow-x-auto">{{codeParser.errors.join("\n")}}</pre>
+            </div>
+        </ng-template>
+        <ng-template [ngIf]="codeParser?.variables.length == 0" [ngIfElse]="displaySelectionHelper">
+            <label>Nothing to parse, code can be used without changes</label>
+        </ng-template>
+        <ng-template #displaySelectionHelper>
+
+            <div class="grid grid-cols-2-max gap-x-2 gap-y-2 items-center pb-4 px-4">
+
+                <label class="font-bold">Variable</label>
+                <label class="font-bold">Value</label>
+                <div class="contents" *ngFor="let v of codeParser.variables;let i = index">
+                    <label class="text-sm">{{v.displayName}}</label>
+                    <ng-container class="contents" [ngTemplateOutlet]="variableSelect"
+                        [ngTemplateOutletContext]="{variable:v,j:i}">
+                    </ng-container>
+
+                </div>
+            </div>
+        </ng-template>
+        <div class="w-full">
+            <div class="flex flex-row justify-between cursor-pointer items-center"
+                (click)="config.integratorCodeOpen=!config.integratorCodeOpen">
+                <label class="text-base font-bold text-gray-900 cursor-pointer">Final Code</label>
+                <div [ngClass]="config.integratorCodeOpen?'rotate-transform':null">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevrons-down"
+                        width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                        <polyline points="7 7 12 12 17 7"></polyline>
+                        <polyline points="7 13 12 18 17 13"></polyline>
+                    </svg>
+                </div>
+            </div>
+            <div [ngClass]="config.integratorCodeOpen?'':'hidden'" class="flex flex-col mt-1">
+                <div class="overflow-y-auto" style="max-height:15rem;max-width: 35rem; overflow-x:hidden">
+                    <pre class="editor-pre">{{config.preparedCode}}</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</kern-modal>
+
+
+
+<ng-template #variableSelect let-variable="variable" let-j="j">
+    <div class="col-start-2 flex flex-row flex-nowrap items-center gap-x-2"
+        *ngFor="let value of variable.values;let i=index">
+        <ng-container [ngSwitch]="variable.type">
+            <ng-template ngSwitchDefault>
+                Unknown Variable Type
+            </ng-template>
+            <ng-template ngSwitchCase="ATTRIBUTE">
+                <kern-dropdown [dropdownOptions]="{
+                optionArray:variable.allowedValues,
+                buttonCaption:variable.values[i]?variable.values[i]:'Select Attribute',
+                emitIndex:true
+            }" (optionClicked)="variable.values[i] = variable.allowedValues[$event].name;codeParser.replaceVariables()">
+                </kern-dropdown>
+            </ng-template>
+            <ng-template ngSwitchCase="LANGUAGE">
+                <kern-dropdown [dropdownOptions]="{
+                optionArray:variable.allowedValues,
+                buttonCaption:variable.values[i]?variable.values[i]:'Select Language',
+                emitIndex:true
+            }" (optionClicked)="variable.values[i] = variable.allowedValues[$event].code;codeParser.replaceVariables()">
+                </kern-dropdown>
+            </ng-template>
+            <ng-template ngSwitchCase="LABELING_TASK">
+                <kern-dropdown [dropdownOptions]="{
+                optionArray:variable.allowedValues,
+                buttonCaption:variable.values[i]?variable.values[i]:'Select Task',
+                emitIndex:true
+            }" (optionClicked)="variable.values[i] = variable.allowedValues[$event].name;codeParser.replaceVariables()">
+                </kern-dropdown>
+            </ng-template>
+            <ng-template ngSwitchCase="LABEL">
+                <kern-dropdown [dropdownOptions]="{
+                    optionArray:variable.allowedValues,
+                    buttonCaption:variable.values[i]?variable.values[i]:'Select label',
+                    emitIndex:true
+                }"
+                    (optionClicked)="variable.values[i] = variable.allowedValues[$event].name;codeParser.replaceVariables()">
+                </kern-dropdown>
+            </ng-template>
+            <ng-template ngSwitchCase="EMBEDDING">
+                <kern-dropdown [dropdownOptions]="{
+                    optionArray:variable.allowedValues,
+                    buttonCaption:variable.values[i]?variable.values[i]:'Select Embedding',
+                    emitIndex:true
+                }"
+                    (optionClicked)="variable.values[i] = variable.allowedValues[$event].name;codeParser.replaceVariables()">
+                </kern-dropdown>
+            </ng-template>
+            <ng-template ngSwitchCase="GENERIC_STRING">
+                <input #genText type="text" class="input input-bordered input-sm" style="outline:none; box-shadow:none;"
+                    [value]="variable.values[i]" [id]="'GENERIC_STRING_'+j+'_'+i"
+                    (keyup)="debounceSetGeneric(variable,i,genText);">
+            </ng-template>
+            <ng-template ngSwitchCase="GENERIC_INT">
+                <input #genInt type="number" step="1" style="outline:none; box-shadow:none;"
+                    class="input input-bordered w-20 input-sm" [value]="variable.values[i]"
+                    [id]="'GENERIC_INT_'+j + '_' + i" (keyup)="debounceSetGeneric(variable,i,genInt);">
+            </ng-template>
+            <ng-template ngSwitchCase="GENERIC_FLOAT">
+                <input #genFloat type="number" step="0.01" class="input input-bordered w-20 input-sm"
+                    style="outline:none; box-shadow:none;" [value]="variable.values[i]"
+                    [id]="'GENERIC_FLOAT_'+j + '_' + i" (keyup)="debounceSetGeneric(variable,i,genFloat);">
+            </ng-template>
+            <ng-template ngSwitchCase="GENERIC_BOOLEAN">
+                <div class="mr-2 h-4 w-4 border-gray-300 border rounded cursor-pointer hover:bg-gray-200"
+                    [id]="'GENERIC_BOOLEAN_'+j + '_' + i" (click)="setActiveNegateColorAndValue(variable,i)"
+                    [ngStyle]="{'background-color':variable.options.colors[i], 'border-color':variable.options.colors[i]}">
+                </div>
+            </ng-template>
+        </ng-container>
+        <div *ngIf="variable.values.length > 1" (click)="removeValueEntry(variable,i)"
+            class="cursor-pointer btn hover:border-transparent hover:bg-transparent border-transparent bg-transparent btn-xs px-0">
+            <svg xmlns="http://www.w3.org/2000/svg" class="text-black inline-block w-4 h-4 stroke-current" fill="none"
+                viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+        </div>
+        <label *ngIf="variable.canMultipleValues && i==variable.values.length-1"
+            class="inline-flex items-center px-0.5 py-0.5 border border-gray-200 shadow-sm text-xs font-medium rounded text-gray-700 bg-white focus:outline-none cursor-pointer"
+            [ngClass]="{'bg-gray-200':!!genericDebounceTimer}"
+            (click)="!!genericDebounceTimer ? null:variable.values.push(null);codeParser.replaceVariables();">
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+            </div>
+        </label>
+    </div>
+</ng-template>

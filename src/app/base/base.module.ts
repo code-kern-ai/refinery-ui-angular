@@ -21,6 +21,8 @@ import { PercentRoundPipe } from './pipes/decimal-round.pipe';
 import { HeaderComponent } from './components/header/header.component';
 import { DropdownComponent } from './components/dropdown/dropdown.component';
 import { CommentComponent } from './components/comment/comment.component';
+import { BricksIntegratorComponent } from './components/bricks-integrator/bricks-integrator.component';
+
 import { HeuristicStatusesComponent } from './components/heuristic-statuses/heuristic-statuses.component';
 import { LogsComponent } from './components/logs/logs.component';
 
@@ -39,6 +41,7 @@ import { LogsComponent } from './components/logs/logs.component';
     HeaderComponent,
     DropdownComponent,
     CommentComponent,
+    BricksIntegratorComponent,
     HeuristicStatusesComponent,
     LogsComponent
   ],
@@ -67,6 +70,7 @@ import { LogsComponent } from './components/logs/logs.component';
     HeaderComponent,
     DropdownComponent,
     CommentComponent,
+    BricksIntegratorComponent,
     HeuristicStatusesComponent,
     LogsComponent
   ],

@@ -132,6 +132,7 @@ module.exports = {
       gridTemplateColumns: {
         '1-max': 'max-content',
         '2-max': 'max-content max-content',
+        '3-max': 'max-content max-content max-content',
         '4-max': 'max-content max-content max-content max-content',
       },
       zIndex: {
