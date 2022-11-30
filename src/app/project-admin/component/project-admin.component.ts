@@ -75,9 +75,9 @@ export class ProjectAdminComponent implements OnInit, OnDestroy {
 
   handleWebsocketNotification(msgParts) {
     if (msgParts[1] == 'pat') {
-      let id = msgParts[2];
-      let access_token_ids = this.personalAccessTokens.map((token) => token.id);
-      if (access_token_ids.includes(id)) {
+      const id = msgParts[2];
+      const accessTokenIds = this.personalAccessTokens.map((token) => token.id);
+      if (accessTokenIds.includes(id)) {
         this.personalAccessTokensQuery$.refetch();
       }
     }
