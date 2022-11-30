@@ -5,6 +5,7 @@ import { ActivatedRoute } from '@angular/router';
 import { timer } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { findProjectIdFromRoute } from 'src/app/util/helper-functions';
+import { KnowledgeBasesApolloService } from '../../services/knowledge-bases/knowledge-bases-apollo.service';
 import { ProjectApolloService } from '../../services/project/project-apollo.service';
 import { BricksCodeParser } from './helper/code-parser';
 import { BricksDataRequestor } from './helper/data-requestor';
@@ -19,7 +20,7 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
   static httpBaseLink: string = "https://cms.bricks.kern.ai/api/modules/";
   static httpBaseLinkExample: string = "https://api.bricks.kern.ai/"
 
-  static httpBaseLinkFilter: string = "https://cms.bricks.kern.ai/api/modules" //?filters[moduleType][$eq]=" // will be changed after search api is published
+  static httpBaseLinkFilter: string = "https://cms.bricks.kern.ai/api/modules" // will be changed after search api is published
 
   get IntegratorPageType(): typeof IntegratorPage {
     return IntegratorPage;
@@ -43,14 +44,14 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
   //to be deleted
   private debugNoSearchRequery: boolean = true;
 
-  constructor(private http: HttpClient, private projectApolloService: ProjectApolloService,
+  constructor(private http: HttpClient, private projectApolloService: ProjectApolloService, private knowledgeBaseApollo: KnowledgeBasesApolloService,
     private activatedRoute: ActivatedRoute,) {
   }
   ngOnInit(): void {
     this.initConfig();
     this.codeParser = new BricksCodeParser(this);
     const projectId = findProjectIdFromRoute(this.activatedRoute)
-    this.dataRequestor = new BricksDataRequestor(this.projectApolloService, projectId);
+    this.dataRequestor = new BricksDataRequestor(this.projectApolloService, this.knowledgeBaseApollo, projectId);
   }
   ngOnDestroy(): void {
     this.dataRequestor.unsubscribeFromWebsocket();
@@ -99,9 +100,10 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
 
   private buildSearchUrl(): string {
     let url = BricksIntegratorComponent.httpBaseLinkFilter;
-    if (this.moduleTypeFilter) url += "?filters[moduleType][$eq]=" + this.moduleTypeFilter;
-    if (this.executionTypeFilter) url += "&filters[executionType][$eq]=" + this.executionTypeFilter;
-    return url;
+    let filter = "";
+    if (this.moduleTypeFilter) filter += (filter == "" ? '?' : '&') + "filters[moduleType][$eq]=" + this.moduleTypeFilter;
+    if (this.executionTypeFilter) filter += (filter == "" ? '?' : '&') + "filters[executionType][$eq]=" + this.executionTypeFilter;
+    return url + filter;
   }
 
   selectSearchResult(id: number) {
@@ -263,10 +265,10 @@ const DUMMY_CODE = `
 from sklearn.ensemble import RandomForestClassifier
 # you can find further models here: https://scikit-learn.org/stable/supervised_learning.html#supervised-learning
 
-YOUR_GEN_STR:str = "hello"
-YOUR_GEN_STR_2:list[str] = "hello"
-YOUR_GEN_INT:int = 0
-YOUR_GEN_INT_2:list[int] = 0
+YOUR_REGEX: str = r"hello"
+YOUR_LOOKUP_LIST:str = "hello"
+YOUR_REGEX_2: list[str] = r"hello"
+YOUR_LOOKUP_LIST_2:list[str] = "hello"
 
 class MyRF(LearningClassifier):
 

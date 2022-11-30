@@ -49,7 +49,7 @@ export class BricksCodeParser {
 
     private prepareReplaceLine(variable: BricksVariable) {
         variable.replacedLine = variable.baseName;
-        if (variable.pythonType) variable.replacedLine += ":" + variable.pythonType;
+        if (variable.pythonType) variable.replacedLine += ": " + variable.pythonType;
         variable.replacedLine += " = " + this.getValueString(variable);
         if (variable.comment) variable.replacedLine += " #" + variable.comment;
 
@@ -59,16 +59,18 @@ export class BricksCodeParser {
         const realValues = variable.values.filter(v => v != null);
         if (realValues.length == 0) return "None";
         if (realValues.length == 1) {
-            const v = this.getPythonVariable(realValues[0], variable.pythonType);
+            const v = this.getPythonVariable(realValues[0], variable.pythonType, variable.type);
             if (variable.canMultipleValues) return "[" + v + "]";
             return v;
         }
-        return "[" + realValues.map(x => this.getPythonVariable(x, variable.pythonType)).join(",") + "]";
+        return "[" + realValues.map(x => this.getPythonVariable(x, variable.pythonType, variable.type)).join(",") + "]";
     }
 
-    private getPythonVariable(value: string, type: string) {
+    private getPythonVariable(value: string, pythonType: string, bricksType: BricksVariableType) {
         if (value == null) return "None";
-        if (type.includes("str")) return "\"" + value + "\"";
+        if (bricksType == BricksVariableType.LOOKUP_LIST) return "knowledge." + value;
+        if (bricksType == BricksVariableType.REGEX) return "r\"" + value + "\"";
+        if (pythonType.includes("str")) return "\"" + value + "\"";
         return value;
     }
 
@@ -159,6 +161,8 @@ export class BricksCodeParser {
                     return this.base.dataRequestor.getEmbeddings();
                 }
                 return this.base.dataRequestor.getEmbeddings(this.base.labelingTaskId);
+            case BricksVariableType.LOOKUP_LIST:
+                return this.base.dataRequestor.getLookupLists();
             default:
                 return null;
         }

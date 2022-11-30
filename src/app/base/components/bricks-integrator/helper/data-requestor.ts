@@ -1,5 +1,6 @@
 import { first } from "rxjs/operators";
 import { LabelingTask, LabelingTaskTarget } from "src/app/base/enum/graphql-enums";
+import { KnowledgeBasesApolloService } from "src/app/base/services/knowledge-bases/knowledge-bases-apollo.service";
 import { NotificationService } from "src/app/base/services/notification.service";
 import { ProjectApolloService } from "src/app/base/services/project/project-apollo.service";
 import { isoCodes, mostRelevant } from "./language-iso";
@@ -7,13 +8,16 @@ import { isoCodes, mostRelevant } from "./language-iso";
 
 export class BricksDataRequestor {
     private projectApolloService: ProjectApolloService;
+    private knowledgeBaseApollo: KnowledgeBasesApolloService;
     private projectId: string;
     private attributes: any[];
     private labelingTasks: any[];
     private embeddings: any[];
+    private lookupLists: any[];
 
-    constructor(projectApolloService: ProjectApolloService, projectId: string) {
+    constructor(projectApolloService: ProjectApolloService, knowledgeBaseApollo: KnowledgeBasesApolloService, projectId: string) {
         this.projectApolloService = projectApolloService;
+        this.knowledgeBaseApollo = knowledgeBaseApollo;
         this.projectId = projectId;
 
         NotificationService.subscribeToNotification(this, {
@@ -24,12 +28,15 @@ export class BricksDataRequestor {
         this.fetchAttributes();
         this.fetchLabelingTasks();
         this.fetchEmbeddings();
+        this.fetchLookupLists();
     }
 
     private getWebsocketWhitelist(): string[] {
         const toReturn = ['attributes_updated', 'calculate_attribute'];
         toReturn.push(...['label_created', 'label_deleted', 'labeling_task_deleted', 'labeling_task_updated', 'labeling_task_created']);
         toReturn.push(...['embedding', 'embedding_deleted']);
+        toReturn.push(...['knowledge_base_deleted', 'knowledge_base_created']);
+
         return toReturn;
     }
 
@@ -53,6 +60,11 @@ export class BricksDataRequestor {
         let q, vc;
         [q, vc] = this.projectApolloService.getEmbeddingSchema(this.projectId);
         vc.pipe(first()).subscribe(e => this.embeddings = e);
+    }
+    private fetchLookupLists() {
+        let q, vc;
+        [q, vc] = this.knowledgeBaseApollo.getKnowledgeBasesByProjectId(this.projectId);
+        vc.pipe(first()).subscribe(ll => this.lookupLists = ll);
     }
 
     public getAttributes(typeFilter: string = 'TEXT', stateFilter: string[] = ["UPLOADED", "USABLE", "AUTOMATICALLY_CREATED"]): any[] {
@@ -106,6 +118,14 @@ export class BricksDataRequestor {
         if (filtered && filtered.length > 0) return filtered;
         else return ['No useable embeddings'];
     }
+    public getLookupLists(): any[] {
+        if (!this.lookupLists) {
+            console.log("lookup lists not yet loaded");
+            return null;
+        }
+        if (this.lookupLists.length > 0) return this.lookupLists;
+        else return ['No useable lookup lists'];
+    }
 
     public getIsoCodes(onlyMostRelevant: boolean = true): { code: string, name: string }[] {
         return isoCodes.filter(e => !onlyMostRelevant || mostRelevant.includes(e.code));
@@ -121,6 +141,9 @@ export class BricksDataRequestor {
             this.fetchEmbeddings();
         } else if (msgParts[1] == 'embedding' && msgParts[3] == "state" && msgParts[4] == "FINISHED") {
             this.fetchEmbeddings();
+        } else if (['knowledge_base_deleted', 'knowledge_base_created'].includes(msgParts[1])) {
+            this.fetchLookupLists();
         }
+
     }
 }

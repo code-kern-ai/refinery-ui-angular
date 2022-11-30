@@ -248,7 +248,7 @@
             <ng-template ngSwitchCase="ATTRIBUTE">
                 <kern-dropdown [dropdownOptions]="{
                 optionArray:variable.allowedValues,
-                buttonCaption:variable.values[i]?variable.values[i]:'Select Attribute',
+                buttonCaption:variable.values[i]?variable.values[i]:'Select attribute',
                 emitIndex:true
             }" (optionClicked)="variable.values[i] = variable.allowedValues[$event].name;codeParser.replaceVariables()">
                 </kern-dropdown>
@@ -256,7 +256,7 @@
             <ng-template ngSwitchCase="LANGUAGE">
                 <kern-dropdown [dropdownOptions]="{
                 optionArray:variable.allowedValues,
-                buttonCaption:variable.values[i]?variable.values[i]:'Select Language',
+                buttonCaption:variable.values[i]?variable.values[i]:'Select language',
                 emitIndex:true
             }" (optionClicked)="variable.values[i] = variable.allowedValues[$event].code;codeParser.replaceVariables()">
                 </kern-dropdown>
@@ -264,7 +264,7 @@
             <ng-template ngSwitchCase="LABELING_TASK">
                 <kern-dropdown [dropdownOptions]="{
                 optionArray:variable.allowedValues,
-                buttonCaption:variable.values[i]?variable.values[i]:'Select Task',
+                buttonCaption:variable.values[i]?variable.values[i]:'Select task',
                 emitIndex:true
             }" (optionClicked)="variable.values[i] = variable.allowedValues[$event].name;codeParser.replaceVariables()">
                 </kern-dropdown>
@@ -281,12 +281,27 @@
             <ng-template ngSwitchCase="EMBEDDING">
                 <kern-dropdown [dropdownOptions]="{
                     optionArray:variable.allowedValues,
-                    buttonCaption:variable.values[i]?variable.values[i]:'Select Embedding',
+                    buttonCaption:variable.values[i]?variable.values[i]:'Select embedding',
                     emitIndex:true
                 }"
                     (optionClicked)="variable.values[i] = variable.allowedValues[$event].name;codeParser.replaceVariables()">
                 </kern-dropdown>
             </ng-template>
+            <ng-template ngSwitchCase="LOOKUP_LIST">
+                <kern-dropdown [dropdownOptions]="{
+                    optionArray:variable.allowedValues,
+                    buttonCaption:variable.values[i]?variable.values[i]:'Select lookup list',
+                    emitIndex:true
+                }"
+                    (optionClicked)="variable.values[i] = variable.allowedValues[$event].pythonVariable;codeParser.replaceVariables()">
+                </kern-dropdown>
+            </ng-template>
+            <ng-template ngSwitchCase="REGEX">
+                <input #regex type="text" class="input input-bordered input-sm" style="outline:none; box-shadow:none;"
+                    [value]="variable.values[i]" [id]="'REGEX_'+j+'_'+i"
+                    (keyup)="debounceSetGeneric(variable,i,regex);">
+            </ng-template>
+
             <ng-template ngSwitchCase="GENERIC_STRING">
                 <input #genText type="text" class="input input-bordered input-sm" style="outline:none; box-shadow:none;"
                     [value]="variable.values[i]" [id]="'GENERIC_STRING_'+j+'_'+i"
