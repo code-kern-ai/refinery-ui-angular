@@ -190,7 +190,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   colorsAttributes: string[] = [];
   updateSearchParameters: UpdateSearchParameters;
   dataBrowserModals: DataBrowserModals = createDefaultDataBrowserModals();
-  recordComments: any[] = [];
+  recordComments: any = {};
 
   getSearchFormArray(groupKey: string): FormArray {
     return this.fullSearch.get(groupKey).get('groupElements') as FormArray;
@@ -564,7 +564,6 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   }
 
   _commentsCreateSeachGroup(item: SearchGroupItem): FormGroup {
-    console.log(item)
     let group = this.formBuilder.group({
       id: ++this.globalSearchGroupCount,
       group: item.group,
@@ -1149,7 +1148,6 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     this.extendedRecords.fullCount = queryResults.fullCount;
     this.extendedRecords.sessionId = queryResults.sessionId;
     let parsedRecordData = queryResults.recordList.map((record) => JSON.parse(record.recordData));
-    parsedRecordData.forEach((record) => this.recordComments.push(record.record_id));
     this.parseRecordData(parsedRecordData);
     if (extend) {
       this.extendedRecords.recordList = [
@@ -1160,10 +1158,14 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       this.extendedRecords.recordList = parsedRecordData;
     }
 
-    this.projectApolloService.getRecordComments(this.projectId, this.recordComments).pipe(first()).subscribe((comments) => {
-      this.extendedRecords.recordList.forEach((record) => {
-        record.comments = [...JSON.parse(comments).filter((comment) => comment.record_id == record.record_id)];
-        record.comments.sort((a, b) => { a.order_key > b.order_key ? 1 : -1 });
+    const currentRecordIds = parsedRecordData?.map((record) => record.id);
+    if (!currentRecordIds || currentRecordIds.length == 0) return;
+
+    this.projectApolloService.getRecordComments(this.projectId, currentRecordIds).pipe(first()).subscribe((comments) => {
+      if (!comments) return;
+      JSON.parse(comments).forEach((comment) => {
+        if (!this.recordComments[comment.record_id]) this.recordComments[comment.record_id] = [];
+        this.recordComments[comment.record_id].push(comment);
       });
     });
   }
