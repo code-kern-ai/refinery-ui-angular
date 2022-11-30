@@ -6,8 +6,7 @@ import { first } from 'rxjs/operators';
 import { NotificationService } from 'src/app/base/services/notification.service';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { RouteService } from 'src/app/base/services/route.service';
-import { UserManager } from 'src/app/util/user-manager';
-import { copyToClipboard } from 'src/app/util/helper-functions';
+import { copyToClipboard, dateAsUTCDate } from 'src/app/util/helper-functions';
 import { ConfigManager } from 'src/app/base/services/config-service';
 
 @Component({
@@ -20,14 +19,19 @@ export class ProjectAdminComponent implements OnInit, OnDestroy {
 
   projectName = new FormControl('');
   projectId: any;
-  projectQuery$: any;
-  project: any;
   personalAccessTokens: any;
   personalAccessTokensQuery$: any;
   newToken: string;
   tokenCopied: boolean = false;
   tokenNameIsDuplicated: boolean;
   subscriptions$: Subscription[] = [];
+
+
+  modals = {
+    deleteTokenOpen: false,
+    deleteTokenContainerId: null,
+    createTokenOpen: false,
+  }
 
   constructor(
     private routeService: RouteService,
@@ -39,8 +43,7 @@ export class ProjectAdminComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions$.forEach((subscription) => subscription.unsubscribe());
-    const projectId = this.project?.id ? this.project.id : this.activatedRoute.parent.snapshot.paramMap.get('projectId');
-    NotificationService.unsubscribeFromNotification(this, projectId);
+    NotificationService.unsubscribeFromNotification(this, this.projectId);
   }
 
   ngOnInit(): void {
@@ -57,7 +60,11 @@ export class ProjectAdminComponent implements OnInit, OnDestroy {
 
     let personalAccessTokens$;
     [this.personalAccessTokensQuery$, personalAccessTokens$] = this.projectApolloService.getAllPersonalAccessTokens(this.projectId);
-    this.subscriptions$.push(personalAccessTokens$.subscribe((personalAccessTokens) => { this.personalAccessTokens = personalAccessTokens.map((token) => { return { ...token, scope: this.convertTokenScope(token.scope), expiresAt: this.convertTokenDate(token.expiresAt), createdAt: this.convertTokenDate(token.createdAt), lastUsed: this.convertTokenDate(token.lastUsed) } }) }));
+    this.subscriptions$.push(personalAccessTokens$.subscribe((personalAccessTokens) => {
+      this.personalAccessTokens = personalAccessTokens.map((token) => {
+        return { ...token, scope: this.convertTokenScope(token.scope), expiresAt: this.convertTokenDate(token.expiresAt), createdAt: this.convertTokenDate(token.createdAt), lastUsed: this.convertTokenDate(token.lastUsed) }
+      })
+    }));
 
   }
 
@@ -75,23 +82,23 @@ export class ProjectAdminComponent implements OnInit, OnDestroy {
 
   handleWebsocketNotification(msgParts) {
     if (msgParts[1] == 'pat') {
+      if (!this.personalAccessTokens) return; // to ensure the program doesn't crash if the data wasn't loaded yet but the websocket already tells us to refetch
       const id = msgParts[2];
-      const accessTokenIds = this.personalAccessTokens.map((token) => token.id);
-      if (accessTokenIds.includes(id)) {
+      if (this.personalAccessTokens.find(p => p.id == id)) {
         this.personalAccessTokensQuery$.refetch();
       }
     }
   }
 
-  deletePersonalAccessToken(tokenId: string) {
+  deletePersonalAccessToken() {
+    if (!this.modals.deleteTokenContainerId) return;
     this.projectApolloService
-      .deletePersonalAccessTokenById(this.project.id, tokenId)
+      .deletePersonalAccessTokenById(this.projectId, this.modals.deleteTokenContainerId)
       .pipe(first()).subscribe();
   }
 
   createPersonalAccessToken(name: string, expiresAt: string, scope: string) {
-    this.checkTokenNameIsDuplicated(name);
-    if (this.tokenNameIsDuplicated == false) this.projectApolloService.createPersonalAccessToken(this.project.id, name, expiresAt, scope).pipe(first()).subscribe((token) => this.newToken = token);
+    if (!this.isTokenNameDuplicated(name)) this.projectApolloService.createPersonalAccessToken(this.projectId, name, expiresAt, scope).pipe(first()).subscribe((token) => this.newToken = token);
   }
 
   copyToken() {
@@ -102,27 +109,22 @@ export class ProjectAdminComponent implements OnInit, OnDestroy {
 
   closeTokenModal() {
     this.newToken = null;
+    this.modals.createTokenOpen = false;
     this.tokenNameIsDuplicated = null;
   }
 
-  checkTokenNameIsDuplicated(name: string) {
-    for (const token of this.personalAccessTokens) {
-      if (token.name === name) {
-        this.tokenNameIsDuplicated = true;
-        return;
-      }
-    }
-    this.tokenNameIsDuplicated = false;
+  isTokenNameDuplicated(name: string): boolean {
+    return this.personalAccessTokens.some((token) => token.name === name);
   }
 
-  convertTokenScope(scope: string) {
+  convertTokenScope(scope: string): string {
     if (scope == "READ") return "Read only";
     else if (scope == "READ_WRITE") return "Read and write";
     else return "Invalid";
   }
 
-  convertTokenDate(date) {
+  convertTokenDate(date: string): string {
     if (date == null) return "Never";
-    return new Date(date).toDateString();
+    return dateAsUTCDate(new Date(date)).toLocaleDateString();
   }
 }
