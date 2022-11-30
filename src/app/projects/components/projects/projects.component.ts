@@ -322,6 +322,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   }
 
   importExistingProject() {
+    this.projectsModals.uploadProject.doingSomething = true;
     this.uploadComponent.createEmptyProject().subscribe((project: Project) => {
       this.projectApolloService
         .changeProjectTokenizer(project.id, this.selectedTokenizer)
@@ -337,10 +338,12 @@ export class ProjectsComponent implements OnInit, OnDestroy {
       this.uploadComponent.projectId = null;
       this.uploadComponent.reSubscribeToNotifications();
       this.uploadComponent.projectId = project.id;
-      this.uploadComponent.reloadOnFinish = true;
       this.uploadComponent.uploadStarted = true;
       this.uploadComponent.finishUpUpload(this.file?.name, '');
-
+      this.uploadComponent.executeOnFinish = () => {
+        this.projectsModals.uploadProject.open = false;
+        this.projectsModals.uploadProject.doingSomething = false;
+      }
     });
   }
 
