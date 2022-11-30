@@ -907,7 +907,7 @@
 <kern-modal [isOpen]="settingModals.embedding.create.open" [modalBoxStyle]="{'overflow-x':'visible'}" closeButton="X"
     [acceptButton]="{
     buttonCaption: 'Add embedding',
-    disabled: settingModals.embedding.create.blocked || settingModals.embedding.create.embeddingCreationFormGroup.get('embeddingHandle').value == '',
+    disabled: settingModals.embedding.create.blocked || settingModals.embedding.create.embeddingCreationFormGroup?.get('embeddingHandle').value == '',
     emitObject: this, emitFunction:addEmbedding
 }" (optionClicked)="settingModals.embedding.create.open = false">
     <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
