@@ -23,6 +23,7 @@ import { DropdownComponent } from './components/dropdown/dropdown.component';
 import { CommentComponent } from './components/comment/comment.component';
 import { HeuristicStatusesComponent } from './components/heuristic-statuses/heuristic-statuses.component';
 import { LogsComponent } from './components/logs/logs.component';
+import { DefaultOrderKeyvaluePipe } from './pipes/default-order-key-value.pipe';
 
 @NgModule({
   declarations: [
@@ -40,7 +41,8 @@ import { LogsComponent } from './components/logs/logs.component';
     DropdownComponent,
     CommentComponent,
     HeuristicStatusesComponent,
-    LogsComponent
+    LogsComponent,
+    DefaultOrderKeyvaluePipe
   ],
   imports: [CommonModule, AppRoutingModule, HighlightModule],
   exports: [
@@ -68,7 +70,8 @@ import { LogsComponent } from './components/logs/logs.component';
     DropdownComponent,
     CommentComponent,
     HeuristicStatusesComponent,
-    LogsComponent
+    LogsComponent,
+    DefaultOrderKeyvaluePipe
   ],
   providers: [
     {

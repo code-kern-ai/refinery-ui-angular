@@ -1030,11 +1030,11 @@
     </div>
 </kern-modal>
 
-<kern-modal [isOpen]="dataBrowserModals.filter.open" closeButton="X" [modalBoxStyle]="{'width':'45rem'}" [acceptButton]="{
+<kern-modal [isOpen]="dataBrowserModals.filter.open" closeButton="X" [modalBoxStyle]="{'width':'35rem'}" [acceptButton]="{
     buttonCaption: dataBrowserModals.filter.sliceNameExists? 'Update filter':'Save filter',
-    disabled: dataBrowserModals.filter.name == '',
-    emitObject: this, emitFunction: dataBrowserModals.filter.sliceNameExists? updateSliceByName :createSlice
-}" (optionClicked)="dataBrowserModals.filter.open = false">
+    disabled: inputSliceName.value == ''
+}"
+    (optionClicked)="dataBrowserModals.filter.open = false; dataBrowserModals.filter.sliceNameExists? updateSliceByName(inputSliceName.value) :createSlice(inputSliceName.value);inputSliceName.value=''">
     <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
         Filter creation</div>
     <div class="mb-2 flex flex-grow justify-center text-sm">
@@ -1082,11 +1082,10 @@
             </div>
         </div>
         <div class="flex w-full justify-between mt-2">
-            <input #inputSliceName type="text" class="w-1/2 input input-bordered input-sm" placeholder="Enter name"
+            <input #inputSliceName type="text" class="w-full input input-bordered input-sm" placeholder="Enter name"
                 name="dataSliceName" [value]="dataBrowserModals.filter.name"
-                (input)="setFilterName(inputSliceName.value)" (keyup)="checkNameExists(inputSliceName.value)"
-                (keydown.enter)="dataBrowserModals.filter.open = false; dataBrowserModals.filter.sliceNameExists ?
-            updateSliceByName():createSlice()">
+                (keyup)="checkNameExists(inputSliceName.value)" (keydown.enter)="dataBrowserModals.filter.open = false; dataBrowserModals.filter.sliceNameExists ?
+            updateSliceByName(inputSliceName.value):createSlice(inputSliceName.value)">
         </div>
     </div>
 
@@ -1095,7 +1094,7 @@
 <kern-modal [isOpen]="dataBrowserModals.sliceInfo.open" closeButton="X"
     (optionClicked)="dataBrowserModals.sliceInfo.open = false">
     <div class="flex flex-grow justify-center mb-4 font-bold">Slice information</div>
-    <div *ngFor="let item of dataBrowserModals.sliceInfo.data | keyvalue : orderOriginal">
+    <div *ngFor="let item of dataBrowserModals.sliceInfo.data | defaultOrderKeyvalue">
         <ng-template [ngIf]="item.key == 'Link'" [ngIfElse]="normalDisplay">
             <div class="mt-3 flex rounded-md">
                 <span
@@ -1134,11 +1133,11 @@
             <div class="relative flex items-start">
                 <div class="flex items-center h-5">
                     <input id="comments" type="checkbox"
-                        class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
+                        class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded cursor-pointer"
                         (change)="toggleHighlightText()" [checked]="dataBrowserModals.configuration.highlightText">
                 </div>
-                <div class="ml-3 text-sm">
-                    <label class="font-medium text-gray-700">Highlight text</label>
+                <div class="ml-3 text-sm cursor-pointer" (click)="toggleHighlightText()">
+                    <label class="font-medium text-gray-700 cursor-pointer">Highlight text</label>
                     <p id="comments-description" class="text-gray-500">During search, you can remove
                         the text highlighting. This makes the search a bit faster.</p>
                 </div>
@@ -1146,12 +1145,12 @@
             <div class="relative flex items-start">
                 <div class="flex items-center h-5">
                     <input id="comments" type="checkbox"
-                        class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
+                        class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded cursor-pointer"
                         (change)="toggleWeakSupervisionRelated()"
                         [checked]="dataBrowserModals.configuration.weakSupervisionRelated">
                 </div>
-                <div class="ml-3 text-sm">
-                    <label class="font-medium text-gray-700">Only show weakly
+                <div class="ml-3 text-sm cursor-pointer" (click)="toggleWeakSupervisionRelated()">
+                    <label class="font-medium text-gray-700 cursor-pointer">Only show weakly
                         supervised-related</label>
                     <p id="comments-description" class="text-gray-500">If checked, the data-browser
                         will only show you heuristics that affect the weak supervision.</p>
