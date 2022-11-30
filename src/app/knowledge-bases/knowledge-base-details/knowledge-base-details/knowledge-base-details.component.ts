@@ -248,6 +248,7 @@ export class KnowledgeBaseDetailsComponent implements OnInit, AfterViewInit, OnD
       if (msgParts[1] == 'knowledge_base_updated') {
         this.knowledgeBaseQuery$.refetch();
       } else if (msgParts[1] == 'knowledge_base_deleted') {
+        alert('Lookup list was deleted');
         this.router.navigate(["../"], { relativeTo: this.activatedRoute });
       } else if (msgParts[1] == 'knowledge_base_term_updated') {
         this.termsQuery$.refetch();
@@ -260,6 +261,7 @@ export class KnowledgeBaseDetailsComponent implements OnInit, AfterViewInit, OnD
       .deleteKnowledgeBase(this.projectId, this.knowledgeBaseId)
       .pipe(first())
       .subscribe();
+    this.router.navigate(["../"], { relativeTo: this.activatedRoute });
   }
 
   prepareStickyObserver(element: HTMLElement) {
