@@ -313,6 +313,7 @@ export class CrowdLabelerDetailsComponent
     this.informationSourceApolloService
       .deleteInformationSource(this.project.id, this.informationSource.id).pipe(first())
       .subscribe();
+    this.router.navigate(["../../heuristics"], { relativeTo: this.activatedRoute });
   }
 
 

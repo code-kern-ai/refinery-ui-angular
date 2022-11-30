@@ -284,6 +284,7 @@ export class ZeroShotDetailsComponent
     this.informationSourceApolloService
       .deleteInformationSource(this.project.id, this.zeroShotModals.deleteZeroShot.zeroShotId).pipe(first())
       .subscribe();
+    this.router.navigate(["../../heuristics"], { relativeTo: this.activatedRoute });
   }
 
   saveInformationSource() {

@@ -421,6 +421,7 @@ export class WeakSourceDetailsComponent
     this.informationSourceApolloService
       .deleteInformationSource(this.project.id, this.informationSource.id).pipe(first())
       .subscribe();
+    this.router.navigate(["../"], { relativeTo: this.activatedRoute });
   }
 
 

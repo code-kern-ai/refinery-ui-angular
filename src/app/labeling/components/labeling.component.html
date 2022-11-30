@@ -965,11 +965,11 @@
 
 <kern-modal [isOpen]="labelingModals.deleteRecord.open" closeButton="X" [modalBoxStyle]="{'width':'30rem'}"
     [abortButton]="{
-    buttonCaption: 'Delete',
+    buttonCaption: 'Delete record',
     emitObject: this, emitFunction: deleteRecord
 }" (optionClicked)="labelingModals.deleteRecord.open = false">
-    <h1 class="text-lg text-gray-900 mb-2 text-center">Delete record</h1>
+    <h1 class="text-lg text-gray-900 mb-2 text-center">Warning</h1>
     <div class="text-sm text-gray-500 my-2 text-center">
-        Are you sure you want to delete selected record?
+        Are you sure you want to delete this record?
     </div>
 </kern-modal>

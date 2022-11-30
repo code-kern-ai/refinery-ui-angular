@@ -7,6 +7,7 @@ export type DataBrowserModals = {
     similaritySearch: SimilaritySearchModal;
     deleteSlice: DeleteSliceModal;
     recordComments: RecordCommentsModal;
+    displaySql: DisplaySqlModal;
 };
 
 export type UserInfoModal = {
@@ -54,6 +55,11 @@ export type RecordCommentsModal = {
     commentsData: any;
 };
 
+export type DisplaySqlModal = {
+    open: boolean;
+    extendedRecordsSql: any;
+};
+
 export function createDefaultDataBrowserModals(): DataBrowserModals {
     return {
         userInfo: {
@@ -92,6 +98,10 @@ export function createDefaultDataBrowserModals(): DataBrowserModals {
         recordComments: {
             open: false,
             commentsData: null
+        },
+        displaySql: {
+            open: false,
+            extendedRecordsSql: null
         }
     };
 }

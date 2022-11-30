@@ -4,12 +4,14 @@ export type ProjectsModals = {
 
 export type UploadProjectModal = {
     open: boolean;
+    doingSomething: boolean;
 };
 
 export function createDefaultProjectsModals(): ProjectsModals {
     return {
         uploadProject: {
             open: false,
+            doingSomething: false,
         },
     };
 }

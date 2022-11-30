@@ -14,7 +14,7 @@ import { ConfigManager } from 'src/app/base/services/config-service';
 import { UserManager } from 'src/app/util/user-manager';
 import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
 import { dataTypes } from 'src/app/util/data-types';
-import { toPythonFunctionName } from 'src/app/util/helper-functions';
+import { copyToClipboard, toPythonFunctionName } from 'src/app/util/helper-functions';
 import { LabelHelper } from './helper/label-helper';
 import { createDefaultSettingModals, SettingModals } from './helper/modal-helper';
 
@@ -62,7 +62,6 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
   projectUpdateDisabled: boolean = true;
   isTaskNameUnique: boolean = true;
   tokenizationProgress: Number;
-
   downloadMessage: DownloadState = DownloadState.NONE;
 
   get DownloadStateType(): typeof DownloadState {
@@ -274,6 +273,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     }
 
   }
+
 
   prepareEmbeddingsRequest(projectId: string) {
     let embeddings$;
@@ -487,6 +487,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
 
     this.router.navigate(['projects']);
   }
+
 
   ngOnDestroy(): void {
     this.subscriptions$.forEach((subscription) => subscription.unsubscribe());

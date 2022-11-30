@@ -1427,8 +1427,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     }
   }
 
-  createSlice() {
-    const name = this.dataBrowserModals.filter.name;
+  createSlice(name: string) {
     if (!name) return;
 
     this.projectApolloService.createDataSlice(this.projectId,
@@ -1454,7 +1453,8 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   }
 
 
-  updateSliceByName() {
+  updateSliceByName(name: string) {
+    this.dataBrowserModals.filter.name = name;
     for (let value of this.slicesById.values()) {
       if (value.name == this.dataBrowserModals.filter.name) {
         this.activeSlice = value;
@@ -1598,12 +1598,6 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       sliceInfo["Link"] = this.buildFullLink("/projects/" + this.projectId + "/labeling/" + sliceId);
     }
     this.dataBrowserModals.sliceInfo.data = sliceInfo;
-  }
-
-
-
-  orderOriginal(a: KeyValue<number, string>, b: KeyValue<number, string>): number {
-    return 0
   }
 
   parseUTC(utc: string, forOutlier: boolean = false) {
@@ -2142,10 +2136,6 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     }
   }
 
-  setFilterName(name: string) {
-    this.dataBrowserModals.filter.name = name;
-  }
-
   setEmbeddingId(selectedValue: string) {
     this.dataBrowserModals.findOutliers.embeddingId = this.similarSearchHelper.embeddings[selectedValue].id;
   }
@@ -2154,7 +2144,3 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     this.dataBrowserModals.similaritySearch.embeddingId = this.similarSearchHelper.embeddings[selectedValue].id;
   }
 }
-function createDataBrowserModals(): DataBrowserModals {
-  throw new Error('Function not implemented.');
-}
-

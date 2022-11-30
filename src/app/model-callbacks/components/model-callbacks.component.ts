@@ -34,7 +34,6 @@ export class ModelCallbackComponent implements OnInit, OnDestroy {
   labelingTasksQuery$: any;
 
   modalOpen: boolean = false;
-  // selectedInformationSources = [];
   informationSourcesArray = [];
   filteredSourcesList = [];
 
@@ -42,7 +41,6 @@ export class ModelCallbackComponent implements OnInit, OnDestroy {
   functionName: string = '';
   labelingTaskId: any;
   description: string;
-  // selectionList: string = "";
   modelCallbackModals: ModelCallbacksModals = createDefaultModelCallbacksModals();
 
   constructor(

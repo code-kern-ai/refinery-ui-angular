@@ -130,14 +130,14 @@
                                 </div>
                                 <div class="mt-8 pb-8">
                                     <div class="text-gray-900 text-lg leading-6 font-medium">Danger zone</div>
-                                    <div class="text-sm leading-5 font-normal mt-2 text-gray-500 inline-block">This
+                                    <div class="text-sm leading-5 font-normal my-2 mr-2 text-gray-500 inline-block">This
                                         action can not be
                                         reversed.
                                         Are you sure you want to delete this heuristic?</div>
 
                                     <div data-tip="This can't be reverted!" class="tooltip tooltip-right">
                                         <label (click)="crowdLabelerModals.deleteCrowdLabeler.open = true"
-                                            class="bg-red-100 text-red-700 border border-red-400 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer ml-6 h-9 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                                            class="bg-red-100 text-red-700 border border-red-400 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer h-9 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
                                             Delete {{informationSource.name}}
                                         </label>
                                     </div>
@@ -359,10 +359,10 @@
 
 <kern-modal [isOpen]="crowdLabelerModals.deleteCrowdLabeler.open"
     [modalBoxStyle]="{'width':'30rem','text-align':'center'}" closeButton="X" [abortButton]="{
-    buttonCaption: 'Delete',
+    buttonCaption: 'Delete heuristic',
     emitObject: this, emitFunction: deleteInformationSource
 }" (optionClicked)="crowdLabelerModals.deleteCrowdLabeler.open = false">
-    <h1 class="text-lg text-gray-900 mb-2">Delete heuristic</h1>
+    <h1 class="text-lg text-gray-900 mb-2">Warning</h1>
     <div class="text-sm text-gray-500 my-2">
         Are you sure you want to delete this heuristic?
     </div>

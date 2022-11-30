@@ -292,10 +292,10 @@
 
 <kern-modal [isOpen]="attributeCalculationModals.deleteUserAttribute.open" closeButton="X"
     [modalBoxStyle]="{'width':'30rem','text-align':'center'}" [abortButton]="{
-    buttonCaption: 'Delete',
+    buttonCaption: 'Delete attribute',
     emitObject: this, emitFunction: deleteUserAttribute
 }" (optionClicked)="attributeCalculationModals.deleteUserAttribute.open = false">
-    <h1 class="text-lg text-gray-900 mb-2">Delete attribute</h1>
+    <h1 class="text-lg text-gray-900 mb-2">Warning</h1>
     <div class="text-sm text-gray-500 my-2">
         Are you sure you want to delete this attribute?
         <p>This will delete all data associated with it, including labeling tasks.</p>

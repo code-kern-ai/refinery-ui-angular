@@ -148,13 +148,11 @@
 
 <kern-modal [isOpen]="modelCallbackModals.deleteSelected.open" closeButton="X"
     [modalBoxStyle]="{'width':'30rem','text-align':'center'}" [abortButton]="{
-    buttonCaption: 'Delete',
+    buttonCaption: 'Delete callback' + (modelCallbackModals.deleteSelected.selectedInformationSources.length > 1 ? 's' : ''),
     emitObject: this, emitFunction: deleteSelectedInformationSources
 }" (optionClicked)="modelCallbackModals.deleteSelected.open = false">
 
-    <h1 class="text-lg text-gray-900 mb-2">Delete {{
-        modelCallbackModals.deleteSelected.selectedInformationSources.length == 1 ?
-        'callback' : 'callbacks' }}</h1>
+    <h1 class="text-lg text-gray-900 mb-2">Warning</h1>
     <div class="text-sm text-gray-500 my-2 flex flex-col">
         <span>Are you sure you want to delete selected {{
             modelCallbackModals.deleteSelected.selectedInformationSources.length == 1
