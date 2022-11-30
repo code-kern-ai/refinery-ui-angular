@@ -1150,10 +1150,11 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
 
     this.projectApolloService.getRecordComments(this.projectId, currentRecordIds).pipe(first()).subscribe((comments) => {
       if (!comments) return;
-      JSON.parse(comments).forEach((comment) => {
-        if (!this.recordComments[comment.record_id]) this.recordComments[comment.record_id] = [];
-        this.recordComments[comment.record_id].push(comment);
-      });
+      this.recordComments = JSON.parse(comments).reduce(function (r, a) {
+        r[a.record_id] = r[a.record_id] || [];
+        r[a.record_id].push(a);
+        return r;
+      }, Object.create(null));
     });
   }
 
