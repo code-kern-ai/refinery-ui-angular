@@ -23,6 +23,7 @@ export class RouteManager {
         labeling: { active: false, checkFor: ['labeling', 'record-ide'] },
         heuristics: { active: false, checkFor: ['heuristics', 'lookup-lists', 'model-callbacks', 'zero-shot', 'crowd-labeler'] },
         settings: { active: false, checkFor: ['settings', 'attributes', 'add'] },
+        admin: { active: false, checkFor: ['admin'] },
     }
 
     //needs to be called once from app (because of the http injection)

@@ -26,6 +26,7 @@ import { RecordIDEModule } from './record-ide/record-ide.module';
 import { ModelDownloadModule } from './model-download/model-download.module';
 import { ModelCallbackModule } from './model-callbacks/model-callbacks.module';
 import { UsersModule } from './users/users.module';
+import { ProjectAdminModule } from './project-admin/project-admin.module';
 
 @NgModule({
   declarations: [AppComponent],
@@ -49,6 +50,7 @@ import { UsersModule } from './users/users.module';
     ModelCallbackModule,
     ModelDownloadModule,
     NotificationCenterModule,
+    ProjectAdminModule,
     MonacoEditorModule.forRoot(),
     KnowledgeBasesModule,
     ConfigModule,

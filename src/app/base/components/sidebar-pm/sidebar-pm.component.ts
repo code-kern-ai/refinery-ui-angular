@@ -63,6 +63,7 @@ export class SidebarPmComponent implements OnInit, OnDestroy {
   @Output() firstName = new EventEmitter<Observable<any>>();
   toggleClass = 'ft-maximize';
   isManaged: boolean = true;
+  isAdmin: boolean = false;
   hasUpdates: boolean;
   private static initialConfigRequest: boolean = false;
   routeColor: any;
@@ -87,6 +88,7 @@ export class SidebarPmComponent implements OnInit, OnDestroy {
       [this.projectQuery$, this.project$] = this.projectApolloService.getProjectByIdQuery(this.projectId);
     }
 
+    this.checkUserIsAdmin();
     this.firstName.emit(this.user$);
     this.logoutUrl$ = this.auth.getLogoutOut();
     this.subscriptions$.push(this.organizationService
@@ -105,6 +107,14 @@ export class SidebarPmComponent implements OnInit, OnDestroy {
     this.checkIfManagedVersion();
     this.routeColor = RouteManager.routeColor;
 
+  }
+
+  private checkUserIsAdmin() {
+    if (!ConfigManager.isInit()) {
+      timer(250).subscribe(() => this.checkUserIsAdmin());
+      return;
+    }
+    this.isAdmin = ConfigManager.getIsAdmin();
   }
 
   requestVersionOverview() {
