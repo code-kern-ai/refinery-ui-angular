@@ -653,29 +653,12 @@
             <ng-template [ngIf]="extendedRecords">
                 <div>
                     <ng-template [ngIf]="extendedRecords.sql">
-                        <label for="displaySQL" class="modal-button cursor-pointer">
+                        <label
+                            (click)="dataBrowserModals.displaySql = {open: true, extendedRecordsSql: extendedRecords.sql}"
+                            class="modal-button cursor-pointer">
                             <ng-container [ngTemplateOutlet]="countDisplay">
                             </ng-container>
                         </label>
-                        <input type="checkbox" id="displaySQL" class="modal-toggle">
-                        <div class="modal">
-                            <div class="modal-box text-black bg-white justify-center"
-                                style="max-width: 80%; width:fit-content;height:fit-content;max-height: 90%;">
-                                <div class="flex flex-grow justify-center">
-                                    <div data-tip="Copy to clipboard" class="tooltip">
-                                        <div class="cursor-pointer" (click)="copyToClipboard(extendedRecords.sql)">
-                                            Info
-                                        </div>
-                                    </div>
-                                </div>
-                                <pre class="mt-6 text-left"
-                                    style="white-space: pre-wrap; overflow: auto; max-height: 700px; ">{{extendedRecords.sql}}</pre>
-                                <div class="modal-action">
-                                    <label for="displaySQL"
-                                        class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
-                                </div>
-                            </div>
-                        </div>
                     </ng-template>
                     <ng-template [ngIf]="!extendedRecords.sql">
                         <ng-container [ngTemplateOutlet]="countDisplay">
@@ -1245,4 +1228,17 @@
     <div class="text-sm text-gray-500 my-2 text-center">
         Are you sure you want to delete selected slice?
     </div>
+</kern-modal>
+
+<kern-modal [isOpen]="dataBrowserModals.displaySql.open" closeButton="X"
+    (optionClicked)="dataBrowserModals.displaySql.open = false">
+    <div class="flex flex-grow justify-center">
+        <div data-tip="Copy to clipboard" class="tooltip">
+            <div class="cursor-pointer" (click)="copyToClipboard(dataBrowserModals.displaySql.extendedRecordsSql)">
+                Info
+            </div>
+        </div>
+    </div>
+    <pre class="mt-6 text-left"
+        style="white-space: pre-wrap; overflow: auto; max-height: 700px; ">{{dataBrowserModals.displaySql.extendedRecordsSql}}</pre>
 </kern-modal>
