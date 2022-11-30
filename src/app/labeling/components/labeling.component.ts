@@ -321,6 +321,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
   }
 
   stillInLabeling() {
+    if (!RouteManager.currentUrl) return true;
     return RouteManager.currentUrl.includes("labeling");
   }
 
