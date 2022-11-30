@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription, timer } from 'rxjs';
@@ -16,10 +16,10 @@ import { ConfigManager } from 'src/app/base/services/config-service';
   styleUrls: ['./project-admin.component.scss']
 })
 
-export class ProjectAdminComponent implements OnInit {
+export class ProjectAdminComponent implements OnInit, OnDestroy {
 
   projectName = new FormControl('');
-  project$: any;
+  projectId: any;
   projectQuery$: any;
   project: any;
   personalAccessTokens: any;
@@ -36,22 +36,27 @@ export class ProjectAdminComponent implements OnInit {
     private router: Router
   ) { }
 
+
+  ngOnDestroy(): void {
+    this.subscriptions$.forEach((subscription) => subscription.unsubscribe());
+    const projectId = this.project?.id ? this.project.id : this.activatedRoute.parent.snapshot.paramMap.get('projectId');
+    NotificationService.unsubscribeFromNotification(this, projectId);
+  }
+
   ngOnInit(): void {
     this.checkUserIsAuthorized();
     this.routeService.updateActivatedRoute(this.activatedRoute);
 
-    const projectId = this.activatedRoute.parent.snapshot.paramMap.get('projectId');
-    [this.projectQuery$, this.project$] = this.projectApolloService.getProjectByIdQuery(projectId);
-    this.project$.subscribe((project) => this.project = project);
+    this.projectId = this.activatedRoute.parent.snapshot.paramMap.get('projectId');
 
     NotificationService.subscribeToNotification(this, {
-      projectId: projectId,
+      projectId: this.projectId,
       whitelist: ["pat"],
       func: this.handleWebsocketNotification
     });
 
     let preparationTasks$ = [];
-    preparationTasks$.push(this.preparePersonalAccessTokensRequest(projectId));
+    preparationTasks$.push(this.preparePersonalAccessTokensRequest(this.projectId));
 
   }
 
