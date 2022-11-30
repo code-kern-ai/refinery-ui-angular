@@ -58,6 +58,7 @@ import { CommentDataManager, CommentType } from 'src/app/base/components/comment
 import { UpdateSearchParameters } from './helper-classes/update-search-parameters';
 import { getAttributeType, getSearchOperatorTooltip, SearchOperator } from './helper-classes/search-operators';
 import { createDefaultDataBrowserModals, DataBrowserModals } from './helper-classes/modals-helper';
+import { CommentsFilter } from './helper-classes/comments-filter';
 
 
 type DataSlice = {
@@ -191,6 +192,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   updateSearchParameters: UpdateSearchParameters;
   dataBrowserModals: DataBrowserModals = createDefaultDataBrowserModals();
   recordComments: any = {};
+  commentsFilter: CommentsFilter;
 
   getSearchFormArray(groupKey: string): FormArray {
     return this.fullSearch.get(groupKey).get('groupElements') as FormArray;
@@ -229,6 +231,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     this.filterParser = new DataBrowserFilterParser(this);
     this.userFilter = new UserFilter(this, this.organizationApolloService);
     this.updateSearchParameters = new UpdateSearchParameters(this);
+    this.commentsFilter = new CommentsFilter(this, this.organizationApolloService);
 
     let preparationTasks$ = [];
     preparationTasks$.push(this.userFilter.prepareUserRequest());
@@ -469,23 +472,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     }
 
     // comments
-    searchGroupContainer = getBasicSearchGroupContainer(
-      SearchGroup.COMMENTS,
-      (this.groupSortOrder += 100)
-    );
-    this.searchGroups.set(searchGroupContainer.key, searchGroupContainer);
-    this.fullSearch.set(
-      searchGroupContainer.key,
-      this.formBuilder.group({ groupElements: this.formBuilder.array([]) })
-    );
-    for (let baseItem of getBasicGroupItems(
-      searchGroupContainer.group,
-      searchGroupContainer.key
-    )) {
-      this.getSearchFormArray(searchGroupContainer.key).push(
-        this._commentsCreateSeachGroup(baseItem)
-      );
-    }
+    this.commentsFilter.addSearchGroup();
 
     //debounce
     let tasks$ = [];
@@ -1626,7 +1613,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       } else if (key == SearchGroup.USER_FILTER) {
         this.userFilter.processUserFilters(key, filters);
       } else if (key == SearchGroup.COMMENTS) {
-        this.processCommentsFilter(key, filters);
+        this.commentsFilter.processCommentsFilter(key, filters);
       }
       else {
         this.displayOutdatedWarning = true;

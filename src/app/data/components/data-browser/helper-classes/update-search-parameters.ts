@@ -100,6 +100,10 @@ export class UpdateSearchParameters {
             );
 
             this.dataBrowser.staticSliceOrderActive = searchElement.searchText.replace("ORDER BY ", "");
+        } else if (searchElement.values.type == SearchItemType.COMMENTS) {
+            searchElement.searchText = this.dataBrowser.commentsFilter.buildSearchParamText(
+                searchElement.values
+            );
         }
     }
 

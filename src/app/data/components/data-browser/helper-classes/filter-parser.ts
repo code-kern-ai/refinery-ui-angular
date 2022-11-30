@@ -299,7 +299,7 @@ export class DataBrowserFilterParser {
 
     private appendBlackAndWhiteListComments(appendTo: string[], searchElement: any): any {
         let element = {
-            SUBQUERY_TYPE: 'BLACKLIST' || 'WHITELIST',
+            SUBQUERY_TYPE: searchElement.values.hasComments[0].negate ? 'BLACKLIST' : 'WHITELIST',
             SUBQUERIES: [{
                 QUERY_TEMPLATE: 'SUBQUERY_HAS_COMMENTS',
                 VALUES: [UserManager.getUser().id],

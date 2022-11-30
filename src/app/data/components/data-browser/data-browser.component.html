@@ -535,12 +535,30 @@
                                                         </div>
                                                     </ng-template>
                                                     <ng-template [ngSwitchCase]="SearchGroupType.COMMENTS">
-                                                        Test comments
-                                                        <!-- <label>
-                                                            <input type="checkbox"
-                                                                [value]="groupItem.get('hasComments').controls">
-                                                            <label>Has comments</label>
-                                                        </label> -->
+                                                        <div class="flex flex-row items-center mt-4">
+                                                            <div class="flex-grow flex">
+                                                                <div class="flex flex-col">
+                                                                    <div *ngFor="let cObj of groupItem.get('hasComments').controls; let k = index"
+                                                                        class="my-1">
+                                                                        <div
+                                                                            class="form-control flex flex-row flex-nowrap">
+                                                                            <label formArrayName="hasComments"
+                                                                                (click)="setActiveNegateGroup(cObj)"
+                                                                                class="label p-0 search_reduced_item_width flex justify-start items-center">
+                                                                                <div class="mr-2 h-4 w-4 border-gray-300 border rounded cursor-pointer hover:bg-gray-200"
+                                                                                    [ngStyle]="{'background-color':getActiveNegateGroupColor(cObj), 'border-color':getActiveNegateGroupColor(cObj)}">
+                                                                                </div>
+                                                                                <span
+                                                                                    class="label-text truncate">Records
+                                                                                    with comments
+                                                                                </span>
+                                                                            </label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                            </div>
+                                                        </div>
                                                     </ng-template>
                                                 </container-element>
                                             </div>
