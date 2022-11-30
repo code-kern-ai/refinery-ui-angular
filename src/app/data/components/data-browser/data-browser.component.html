@@ -1221,12 +1221,12 @@
 
 <kern-modal [isOpen]="dataBrowserModals.deleteSlice.open" closeButton="X" [modalBoxStyle]="{'width':'30rem'}"
     [abortButton]="{
-    buttonCaption: 'Delete',
+    buttonCaption: 'Delete data slice',
     emitObject: this, emitFunction: deleteSlice
 }" (optionClicked)="dataBrowserModals.deleteSlice.open = false">
-    <h1 class="text-lg text-gray-900 mb-2 text-center">Delete data slice</h1>
+    <h1 class="text-lg text-gray-900 mb-2 text-center">Warning</h1>
     <div class="text-sm text-gray-500 my-2 text-center">
-        Are you sure you want to delete selected slice?
+        Are you sure you want to delete this data slice?
     </div>
 </kern-modal>
 

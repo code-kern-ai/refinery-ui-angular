@@ -359,10 +359,10 @@
 
 <kern-modal [isOpen]="crowdLabelerModals.deleteCrowdLabeler.open"
     [modalBoxStyle]="{'width':'30rem','text-align':'center'}" closeButton="X" [abortButton]="{
-    buttonCaption: 'Delete',
+    buttonCaption: 'Delete heuristic',
     emitObject: this, emitFunction: deleteInformationSource
 }" (optionClicked)="crowdLabelerModals.deleteCrowdLabeler.open = false">
-    <h1 class="text-lg text-gray-900 mb-2">Delete heuristic</h1>
+    <h1 class="text-lg text-gray-900 mb-2">Warning</h1>
     <div class="text-sm text-gray-500 my-2">
         Are you sure you want to delete this heuristic?
     </div>
