@@ -55,8 +55,9 @@ export class ProjectAdminComponent implements OnInit, OnDestroy {
       func: this.handleWebsocketNotification
     });
 
-    let preparationTasks$ = [];
-    preparationTasks$.push(this.preparePersonalAccessTokensRequest(this.projectId));
+    let personalAccessTokens$;
+    [this.personalAccessTokensQuery$, personalAccessTokens$] = this.projectApolloService.getAllPersonalAccessTokens(this.projectId);
+    this.subscriptions$.push(personalAccessTokens$.subscribe((personalAccessTokens) => { this.personalAccessTokens = personalAccessTokens.map((token) => { return { ...token, scope: this.convertTokenScope(token.scope), expiresAt: this.convertTokenDate(token.expiresAt), createdAt: this.convertTokenDate(token.createdAt), lastUsed: this.convertTokenDate(token.lastUsed) } }) }));
 
   }
 
@@ -70,13 +71,6 @@ export class ProjectAdminComponent implements OnInit, OnDestroy {
       console.log("you shouldn't be here")
       this.router.navigate(["projects"])
     }
-  }
-
-  preparePersonalAccessTokensRequest(projectId: string) {
-    let personalAccessTokens$;
-    [this.personalAccessTokensQuery$, personalAccessTokens$] = this.projectApolloService.getAllPersonalAccessTokens(projectId);
-    this.subscriptions$.push(personalAccessTokens$.subscribe((personalAccessTokens) => { this.personalAccessTokens = personalAccessTokens.map((token) => { return { ...token, scope: this.convertTokenScope(token.scope), expiresAt: this.convertTokenDate(token.expiresAt), createdAt: this.convertTokenDate(token.createdAt), lastUsed: this.convertTokenDate(token.lastUsed) } }) }));
-    return personalAccessTokens$;
   }
 
   handleWebsocketNotification(msgParts) {
