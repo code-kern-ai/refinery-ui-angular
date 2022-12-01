@@ -1,7 +1,7 @@
 <header class="sticky top-0 z-50 w-full">
     <div
         class="relative z-10 flex-shrink-0 h-16 bg-white border-b border-gray-200 shadow-sm flex justify-between items-center">
-        <div *ngIf="hideLogout"
+        <div *ngIf="isDemo"
             class="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center pointer-events-none">
             <span class="inline-flex items-center px-2 py-0.5 rounded font-medium bg-red-100 text-red-800">
                 <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-play-card mr-2" width="24"
@@ -143,11 +143,10 @@
                             </path>
                         </svg>&nbsp;<span>Star on GitHub</span></a></div>
             </div>
-            <div class="flex justify-center overflow-visible" *ngIf="!hideLogout">
+            <div class="flex justify-center overflow-visible">
                 <div *ngIf="user" class=" mr-4">
                     <kern-dropdown [dropdownOptions]="{
-                            optionArray: showConfigSettings ? ['Account Settings', 'Change config', 'Logout'] : ['Account Settings', 'Logout'],
-                            buttonVersion: 'userIcon',
+                            optionArray: isDemo? ['Logout']: showConfigSettings ? ['Account Settings', 'Change config', 'Logout'] : ['Account Settings', 'Logout'],                            buttonVersion: 'userIcon',
                             avatarUri: avatarUri
                         }" (optionClicked)="executeOption($event)"></kern-dropdown>
                 </div>
