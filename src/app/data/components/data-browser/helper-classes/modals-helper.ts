@@ -6,6 +6,7 @@ export type DataBrowserModals = {
     findOutliers: FindOutliersModal;
     similaritySearch: SimilaritySearchModal;
     deleteSlice: DeleteSliceModal;
+    recordComments: RecordCommentsModal;
     displaySql: DisplaySqlModal;
 };
 
@@ -49,6 +50,11 @@ export type DeleteSliceModal = {
     id: string;
 };
 
+export type RecordCommentsModal = {
+    open: boolean;
+    commentsData: any;
+};
+
 export type DisplaySqlModal = {
     open: boolean;
     extendedRecordsSql: any;
@@ -88,6 +94,10 @@ export function createDefaultDataBrowserModals(): DataBrowserModals {
         deleteSlice: {
             open: false,
             id: null
+        },
+        recordComments: {
+            open: false,
+            commentsData: null
         },
         displaySql: {
             open: false,

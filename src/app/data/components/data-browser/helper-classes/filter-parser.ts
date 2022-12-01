@@ -1,4 +1,5 @@
 import { LabelSource } from "src/app/base/enum/graphql-enums";
+import { UserManager } from "src/app/util/user-manager";
 import { DataBrowserComponent } from "../data-browser.component";
 import { getAttributeType, parseFilterElements, prepareFilterElements, prepareOperator, SearchOperator } from "./search-operators";
 import { SearchGroup, StaticOrderByKeys } from "./search-parameters";
@@ -35,6 +36,8 @@ export class DataBrowserFilterParser {
                 this.appendBlackAndWhiteListUser(toReturn, searchElement);
             } else if (searchElement.values.group == SearchGroup.ORDER_STATEMENTS) {
                 this.appendActiveOrderBy(searchElement.values, orderBy);
+            } else if (searchElement.values.group == SearchGroup.COMMENTS) {
+                this.appendBlackAndWhiteListComments(toReturn, searchElement);
             }
         }
         if (orderBy.ORDER_BY.length > 0) {
@@ -292,6 +295,18 @@ export class DataBrowserFilterParser {
             appendTo.push(JSON.stringify(whitelist));
         if (blacklist.SUBQUERIES.length > 0)
             appendTo.push(JSON.stringify(blacklist));
+    }
+
+    private appendBlackAndWhiteListComments(appendTo: string[], searchElement: any): any {
+        const hasCommentsObj = searchElement.values.hasComments[0];
+        let element = {
+            SUBQUERY_TYPE: hasCommentsObj.negate ? 'BLACKLIST' : 'WHITELIST',
+            SUBQUERIES: [{
+                QUERY_TEMPLATE: 'SUBQUERY_HAS_COMMENTS',
+                VALUES: [UserManager.getUser().id],
+            }],
+        };
+        return hasCommentsObj.active ? appendTo.push(JSON.stringify(element)) : appendTo;
     }
 
     private buildFilterRecordCategory(first: boolean) {

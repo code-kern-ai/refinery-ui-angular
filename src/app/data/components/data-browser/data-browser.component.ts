@@ -58,6 +58,7 @@ import { CommentDataManager, CommentType } from 'src/app/base/components/comment
 import { UpdateSearchParameters } from './helper-classes/update-search-parameters';
 import { getAttributeType, getSearchOperatorTooltip, SearchOperator } from './helper-classes/search-operators';
 import { createDefaultDataBrowserModals, DataBrowserModals } from './helper-classes/modals-helper';
+import { CommentsFilter } from './helper-classes/comments-filter';
 
 
 type DataSlice = {
@@ -190,6 +191,8 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   colorsAttributes: string[] = [];
   updateSearchParameters: UpdateSearchParameters;
   dataBrowserModals: DataBrowserModals = createDefaultDataBrowserModals();
+  recordComments: any = {};
+  commentsFilter: CommentsFilter;
 
   getSearchFormArray(groupKey: string): FormArray {
     return this.fullSearch.get(groupKey).get('groupElements') as FormArray;
@@ -228,6 +231,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     this.filterParser = new DataBrowserFilterParser(this);
     this.userFilter = new UserFilter(this, this.organizationApolloService);
     this.updateSearchParameters = new UpdateSearchParameters(this);
+    this.commentsFilter = new CommentsFilter(this, this.projectApolloService);
 
     let preparationTasks$ = [];
     preparationTasks$.push(this.userFilter.prepareUserRequest());
@@ -467,6 +471,9 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       );
     }
 
+    // comments
+    this.commentsFilter.addSearchGroup();
+
     //debounce
     let tasks$ = [];
     for (let [key, value] of this.fullSearch) {
@@ -508,7 +515,6 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     return group;
   }
 
-
   private _sortOrderSearchGroupItemChanged(
     group: FormGroup,
     next
@@ -543,7 +549,6 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     }
     return false;
   }
-
 
   public onlyKeepUpdatedGroup(formItem: FormGroup | FormArray | FormControl, updatedValues: any,
     name?: string) {
@@ -1126,7 +1131,10 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       ];
     } else {
       this.extendedRecords.recordList = parsedRecordData;
+      this.recordComments = {};
     }
+
+    this.commentsFilter.collectRecordComments(parsedRecordData);
   }
 
   parseRecordData(newRecordData) {
@@ -1584,6 +1592,8 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
         this.processOrderByFilter(key, filters);
       } else if (key == SearchGroup.USER_FILTER) {
         this.userFilter.processUserFilters(key, filters);
+      } else if (key == SearchGroup.COMMENTS) {
+        this.commentsFilter.processCommentsFilter(key, filters);
       }
       else {
         this.displayOutdatedWarning = true;
