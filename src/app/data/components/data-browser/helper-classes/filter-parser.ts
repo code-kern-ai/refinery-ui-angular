@@ -298,14 +298,15 @@ export class DataBrowserFilterParser {
     }
 
     private appendBlackAndWhiteListComments(appendTo: string[], searchElement: any): any {
+        const hasCommentsObj = searchElement.values.hasComments[0];
         let element = {
-            SUBQUERY_TYPE: searchElement.values.hasComments[0].negate ? 'BLACKLIST' : 'WHITELIST',
+            SUBQUERY_TYPE: hasCommentsObj.negate ? 'BLACKLIST' : 'WHITELIST',
             SUBQUERIES: [{
                 QUERY_TEMPLATE: 'SUBQUERY_HAS_COMMENTS',
                 VALUES: [UserManager.getUser().id],
             }],
         };
-        return appendTo.push(JSON.stringify(element));
+        return hasCommentsObj.active ? appendTo.push(JSON.stringify(element)) : appendTo;
     }
 
     private buildFilterRecordCategory(first: boolean) {

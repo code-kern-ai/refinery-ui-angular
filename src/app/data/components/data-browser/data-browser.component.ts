@@ -231,7 +231,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     this.filterParser = new DataBrowserFilterParser(this);
     this.userFilter = new UserFilter(this, this.organizationApolloService);
     this.updateSearchParameters = new UpdateSearchParameters(this);
-    this.commentsFilter = new CommentsFilter(this, this.organizationApolloService);
+    this.commentsFilter = new CommentsFilter(this, this.projectApolloService);
 
     let preparationTasks$ = [];
     preparationTasks$.push(this.userFilter.prepareUserRequest());
@@ -548,18 +548,6 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       if (element.active) return true;
     }
     return false;
-  }
-
-  _commentsCreateSeachGroup(item: SearchGroupItem): FormGroup {
-    let group = this.formBuilder.group({
-      id: ++this.globalSearchGroupCount,
-      group: item.group,
-      groupKey: item.groupKey,
-      type: item.type,
-      name: item.defaultValue,
-      hasComments: item.hasComments,
-    });
-    return group;
   }
 
   public onlyKeepUpdatedGroup(formItem: FormGroup | FormArray | FormControl, updatedValues: any,
@@ -1143,19 +1131,10 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       ];
     } else {
       this.extendedRecords.recordList = parsedRecordData;
+      this.recordComments = {};
     }
 
-    const currentRecordIds = parsedRecordData?.map((record) => record.id);
-    if (!currentRecordIds || currentRecordIds.length == 0) return;
-
-    this.projectApolloService.getRecordComments(this.projectId, currentRecordIds).pipe(first()).subscribe((comments) => {
-      if (!comments) return;
-      this.recordComments = JSON.parse(comments).reduce(function (r, a) {
-        r[a.record_id] = r[a.record_id] || [];
-        r[a.record_id].push(a);
-        return r;
-      }, Object.create(null));
-    });
+    this.commentsFilter.collectRecordComments(parsedRecordData);
   }
 
   parseRecordData(newRecordData) {
@@ -1690,13 +1669,6 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     const drillDown: FormGroup = this.fullSearch.get(key) as FormGroup;
     this.applyValuesToFormGroup(filterGroups[key], drillDown);
     this.updateSearchParameters.refreshSearchParams(drillDown.getRawValue());
-  }
-
-  processCommentsFilter(key: string, filterGroups: Object): void {
-    if (!this.fullSearch.has(key)) { this.displayOutdatedWarning = true; return; }
-    const comments: FormGroup = this.fullSearch.get(key) as FormGroup;
-    this.applyValuesToFormGroup(filterGroups[key], comments);
-    this.updateSearchParameters.refreshSearchParams(comments.getRawValue());
   }
 
   applyValuesToFormGroup(values: any, group: FormGroup): boolean {

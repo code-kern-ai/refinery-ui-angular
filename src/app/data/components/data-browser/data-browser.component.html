@@ -549,7 +549,7 @@
                                                                                     [ngStyle]="{'background-color':getActiveNegateGroupColor(cObj), 'border-color':getActiveNegateGroupColor(cObj)}">
                                                                                 </div>
                                                                                 <span
-                                                                                    class="label-text truncate">Records
+                                                                                    class="label-text truncate cursor-pointer">Records
                                                                                     with comments
                                                                                 </span>
                                                                             </label>
@@ -790,7 +790,7 @@
                         Configuration
                     </button>
                 </div>
-                <kern-export [sessionId]="extendedRecords?.sessionId"></kern-export>
+                <kern-export [sessionId]="extendedRecords?.sessionId" class="mr-3"></kern-export>
             </div>
         </div>
         <div class="flex flex-row flex-wrap mt-4" *ngIf="!(activeSlice?.static)">
@@ -1282,13 +1282,14 @@
         style="white-space: pre-wrap; overflow: auto; max-height: 700px; ">{{dataBrowserModals.displaySql.extendedRecordsSql}}</pre>
 </kern-modal>
 
-<kern-modal [isOpen]="dataBrowserModals.recordComments.open" closeButton="X" [modalBoxStyle]="{'min-width':'25rem'}"
+<kern-modal [isOpen]="dataBrowserModals.recordComments.open" closeButton="X"
+    [modalBoxStyle]="{'min-width':'25rem', 'max-width':'40rem'}"
     (optionClicked)="dataBrowserModals.recordComments.open = false">
     <h1 class="text-lg text-gray-900 mb-2 text-center">Record comments</h1>
 
-    <div *ngFor="let cObj of dataBrowserModals.recordComments.commentsData; let i = index">
+    <div *ngFor="let cObj of dataBrowserModals.recordComments.commentsData; let i = index" class="break-words">
         <div class="flex flex-grow justify-between gap-8">
-            <p style="min-width: 100px;">Comment {{i+1}}</p>
+            <p style="min-width: 100px;" class="font-bold">Comment {{i+1}}</p>
             <p class="text-gray-500">{{cObj.comment}}</p>
         </div>
     </div>

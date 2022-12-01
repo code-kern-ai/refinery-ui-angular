@@ -1,18 +1,17 @@
 import { FormArray, FormGroup } from "@angular/forms";
-import { Observable } from "rxjs";
 import { distinctUntilChanged, first, pairwise, startWith } from "rxjs/operators";
-import { labelSourceToString } from "src/app/base/enum/graphql-enums";
-import { OrganizationApolloService } from "src/app/base/services/organization/organization-apollo.service";
+import { ProjectApolloService } from "src/app/base/services/project/project-apollo.service";
+import { tryParseJSON } from "src/app/util/helper-functions";
 import { DataBrowserComponent } from "../data-browser.component";
 import { getBasicGroupItems, getBasicSearchGroup, SearchGroup, SearchGroupItem } from "./search-parameters";
 
 export class CommentsFilter {
     private dataBrowser: DataBrowserComponent;
-    private organizationApolloService: OrganizationApolloService;
+    private projectApolloService: ProjectApolloService;
 
-    constructor(dataBrowser: DataBrowserComponent, organizationApolloSerivce: OrganizationApolloService) {
+    constructor(dataBrowser: DataBrowserComponent, projectApolloService: ProjectApolloService) {
         this.dataBrowser = dataBrowser;
-        this.organizationApolloService = organizationApolloSerivce;
+        this.projectApolloService = projectApolloService;
     }
 
     public addSearchGroup() {
@@ -121,5 +120,19 @@ export class CommentsFilter {
             commentGroup.get("updateDummy").setValue(true);
             this.dataBrowser.toggleGroupMenu(key, this.dataBrowser.getSearchGroupsHTMLByName(key), true);
         }
+    }
+
+    public collectRecordComments(parsedRecordData) {
+        const currentRecordIds = parsedRecordData?.map((record) => record.id);
+        if (!currentRecordIds || currentRecordIds.length == 0) return;
+        this.projectApolloService.getRecordComments(this.dataBrowser.projectId, currentRecordIds).pipe(first()).subscribe((comments) => {
+            if (!comments) return;
+            const commentsParsed = tryParseJSON(comments);
+            if (!commentsParsed) return;
+            commentsParsed.forEach(e => {
+                if (!this.dataBrowser.recordComments[e.record_id]) this.dataBrowser.recordComments[e.record_id] = [];
+                this.dataBrowser.recordComments[e.record_id].push(e);
+            });
+        });
     }
 }
