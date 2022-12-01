@@ -153,13 +153,11 @@
                 </div>
             </div>
             <div class="flex justify-center overflow-visible" *ngIf="hideLogout">
-                <div *ngIf="user" class=" mr-4">
-                    <kern-dropdown [dropdownOptions]="{
-                            optionArray: ['Logout'],
-                            buttonVersion: 'userIcon',
-                            avatarUri: avatarUri
-                        }" (optionClicked)="executeOption($event)"></kern-dropdown>
-                </div>
+                <kern-dropdown class="mr-4" [dropdownOptions]="{
+                    optionArray: ['Logout'],
+                    buttonVersion: 'userIcon',
+                    avatarUri: avatarUri
+                }" (optionClicked)="executeOption($event)"></kern-dropdown>
             </div>
         </div>
     </div>
