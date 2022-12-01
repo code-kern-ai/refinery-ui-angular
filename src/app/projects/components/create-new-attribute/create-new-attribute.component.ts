@@ -15,8 +15,9 @@ import { AttributeCalculationExamples, AttributeCodeLookup } from './new-attribu
 import { RecordApolloService } from 'src/app/base/services/record/record-apollo.service';
 import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
 import { dataTypes } from 'src/app/util/data-types';
-import { getColorForDataType, toPythonFunctionName } from 'src/app/util/helper-functions';
+import { getColorForDataType, isStringTrue, toPythonFunctionName } from 'src/app/util/helper-functions';
 import { KnowledgeBasesApolloService } from 'src/app/base/services/knowledge-bases/knowledge-bases-apollo.service';
+import { AttributeCalculationModals, createDefaultAttributeCalculationModals } from './create-new-attribute-helper';
 
 @Component({
   selector: 'kern-create-new-attribute',
@@ -41,29 +42,24 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
   editorOptions = { theme: 'vs-light', language: 'python', readOnly: false };
   attributeLogs: any;
   testerRequestedSomething: boolean = false;
-  canRunProject: boolean = false;
   sampleRecords: any;
-  @ViewChild('calculateAttribute', { read: ElementRef }) calculateAttribute: ElementRef;
-  @ViewChild('deleteAttribute', { read: ElementRef }) deleteAttribute: ElementRef;
   updatedThroughWebsocket: boolean = false;
-  checkIfNewAttribute: string;
+  checkIfNewAttribute: boolean;
   attributesQuery$: any;
   attributes: any[];
   knowledgeBases: any;
   knowledgeBasesQuery$: any;
-  recordData: any;
-  currentRecordId: string;
-  currentRecordIdx: number = -1;
   checkIfAtLeastRunning: boolean = false;
   attributesUsableUploaded: any;
   tokenizationProgress: Number = 0;
   isDeleting: boolean = false;
   duplicateNameExists: boolean = false;
   runOn10HasError: boolean = false;
-
   dataTypesArray = dataTypes;
   attributeDataType: string;
   nextUpdateReplace: boolean = false;
+
+  attributeCalculationModals: AttributeCalculationModals = createDefaultAttributeCalculationModals();
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -77,7 +73,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
     this.routeService.updateActivatedRoute(this.activatedRoute);
     const projectId = this.activatedRoute.parent.snapshot.paramMap.get('projectId');
     const attributeId = this.activatedRoute.snapshot.paramMap.get('attributeId');
-    this.checkIfNewAttribute = JSON.parse(localStorage.getItem("isNewAttribute"));
+    this.checkIfNewAttribute = isStringTrue(localStorage.getItem("isNewAttribute"));
     const project$ = this.projectApolloService.getProjectById(projectId);
 
     let tasks$ = [];
@@ -183,7 +179,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
       }
 
       this.attributeLogs = attribute?.logs;
-      this.canRunProject = this.currentAttribute?.sourceCode !== '';
+      this.attributeCalculationModals.executeAttribute.canRunProject = this.currentAttribute?.sourceCode !== '';
       if (this.currentAttribute?.state == 'FAILED') {
         this.editorOptions = { ...this.editorOptions, readOnly: false };
       }
@@ -291,14 +287,14 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
     return false;
   }
 
-  deleteUserAttribute(projectId, attributeId) {
+  deleteUserAttribute() {
     this.isDeleting = true;
     this.projectApolloService
-      .deleteUserAttribute(projectId, attributeId)
+      .deleteUserAttribute(this.project.id, this.currentAttribute.id)
       .pipe(first())
       .subscribe(() => {
         this.isDeleting = false;
-        this.deleteAttribute.nativeElement.checked = false;
+        this.attributeCalculationModals.deleteUserAttribute.open = false
         this.router.navigate(["../../settings"], { relativeTo: this.activatedRoute });
       });
   }
@@ -324,7 +320,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
       .calculateUserAttributeAllRecords(this.project.id, this.currentAttribute.id)
       .pipe(first())
       .subscribe(() => {
-        this.calculateAttribute.nativeElement.checked = false;
+        this.attributeCalculationModals.executeAttribute.open = false;
         this.duplicateNameExists = false;
       });
   }
@@ -404,13 +400,12 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
   }
 
   getRecordByRecordId(recordId: string, index: number) {
-    this.currentRecordId = recordId;
-    this.currentRecordIdx = index;
+    this.attributeCalculationModals.attributeDetails.currentRecordIdx = index;
     this.recordApolloService
       .getRecordByRecordId(this.project.id, recordId)
       .pipe(first())
       .subscribe((record) => {
-        this.recordData = record.data;
+        this.attributeCalculationModals.attributeDetails.recordData = record.data;
       });
   }
 

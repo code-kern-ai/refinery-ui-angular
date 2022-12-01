@@ -114,60 +114,6 @@
                         Add new attibute
                     </label>
                 </div>
-                <input #newAttributeModal type="checkbox" id="new-attribute-modal" class="modal-toggle">
-                <div class="modal">
-                    <div class="modal-box modal_content text-black bg-white justify-center"
-                        style="overflow-y:visible;overflow-x:unset;width: 448px;">
-                        <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
-                            Add new attribute </div>
-                        <div class="mb-2 flex flex-grow justify-center text-sm text-gray-500">
-                            Choose a name for your attribute and pick a datatype you want to use</div>
-
-                        <div class="grid grid-cols-2  gap-2 items-center"
-                            style="grid-template-columns: max-content auto;">
-
-                            <span data-tip="Enter an attribute name"
-                                class="cursor-help tooltip tooltip-right card-title mb-0 label-text font-normal"><span
-                                    class="underline"
-                                    style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Attribute
-                                    name</span></span>
-                            <input [(ngModel)]="attributeName" placeholder="Enter an attribute name..."
-                                (input)="changeAttributeName($event)"
-                                class="input input-sm input-bordered placeholder-italic" />
-
-                            <ng-template [ngIf]="duplicateNameExists">
-                                <span></span>
-                                <span class="text-red-700 text-xs mt-2">
-                                    Attribute name exists
-                                </span>
-                            </ng-template>
-
-                            <span data-tip="Select an attribute type"
-                                class="cursor-help tooltip tooltip-right card-title mb-0 label-text font-normal"><span
-                                    class="underline"
-                                    style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Attribute
-                                    type</span></span>
-                            <kern-dropdown [dropdownOptions]="{
-                                        optionArray: dataTypesArray,
-                                        buttonCaption: attributeType,
-                                        hasFullWidth: true
-                                    }" (optionClicked)="updateDataType($event)"></kern-dropdown>
-                        </div>
-
-                        <div class="modal-action">
-                            <div
-                                [ngClass]="attributeName == '' || attributeType == '' || duplicateNameExists? 'cursor-not-allowed' : ''">
-                                <label
-                                    [ngClass]="attributeName == '' || attributeType == '' || duplicateNameExists ? 'opacity-50 cursor-not-allowed pointer-events-none':'cursor-pointer opacity-100'"
-                                    class="bg-green-100 text-green-700 border border-green-400 text-white text-xs font-semibold mr-2 px-4 py-2 rounded-md cursor-pointer hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block"
-                                    (click)="createUserAttribute()">Add attribute</label>
-                            </div>
-
-                            <label for="new-attribute-modal"
-                                class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded-md border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
-                        </div>
-                    </div>
-                </div>
 
 
                 <div class="tooltip tooltip-bottom" data-tip="Upload more records to the project">
@@ -184,7 +130,9 @@
                 <kern-export></kern-export>
 
 
-                <label for="projectExportModal" class="modal-button cursor-pointer inline-block">
+                <label
+                    (click)="settingModals.projectExport.open = true; requestProjectSize(); requestProjectExportCredentials();"
+                    class="modal-button cursor-pointer inline-block">
                     <div class="tooltip tooltip-bottom"
                         data-tip="Creates a snapshot compressed file of your current project">
                         <div
@@ -203,120 +151,6 @@
                         </div>
                     </div>
                 </label>
-                <input type="checkbox" id="projectExportModal" class="modal-toggle"
-                    (click)="requestProjectSize();requestProjectExportCredentials()">
-                <div class="modal">
-                    <div class="modal-box text-black bg-white justify-center mb-4"
-                        style="max-width: 80%; width:fit-content;">
-                        <div class="text-lg leading-6 text-gray-900 font-medium text-center">
-                            Project export </div>
-                        <div class="mt-1 text-sm leading-5 font-medium text-gray-700">See the size of each
-                            export item.</div>
-                        <div class="flex flex-col">
-                            <ng-template [ngIf]="projectSize" [ngIfElse]="sizeNotYetLoaded">
-                                <form [formGroup]="projectExportSchema">
-                                    <div formArrayName="attributes" class="grid items-center p-2 gap-x-4"
-                                        style="grid-template-columns: auto 25px auto auto;">
-                                        <!--headline-->
-                                        <div class="flex">
-                                            <span class="card-title mb-0 label-text">Name</span>
-                                        </div>
-                                        <div>
-                                            <!--info hover-->
-                                        </div>
-                                        <div class="flex">
-                                            <span class="card-title mb-0 label-text">Size estimate</span>
-                                        </div>
-                                        <div class="flex flex-row justify-center items-center gap-2">
-                                            <span class="card-title mb-0 label-text">Export</span>
-                                        </div>
-                                        <!--content-->
-                                        <ng-template ngFor let-attribute [ngForOf]="projectExportArray.controls"
-                                            let-i="index">
-                                            <div [formGroupName]="i" class="contents">
-                                                <div class="flex">
-                                                    <p class="break-words cursor-default capitalize-first"
-                                                        [ngClass]="attribute.get('moveRight').value?'ml-4':null">
-                                                        {{attribute.get("name").value}}</p>
-                                                </div>
-                                                <div class="flex items-center justify-items-center">
-                                                    <ng-template [ngIf]="attribute.get('desc').value">
-                                                        <div [attr.data-tip]="attribute.get('desc').value"
-                                                            class="tooltip tooltip-top">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
-                                                                fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                                                                stroke-width="2">
-                                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                            </svg>
-                                                        </div>
-                                                    </ng-template>
-                                                </div>
-                                                <div class="flex">
-                                                    <p class="break-words cursor-default">
-                                                        {{attribute.get("sizeReadable").value}}
-                                                    </p>
-                                                </div>
-                                                <div class="flex justify-center">
-                                                    <div class="form-control">
-                                                        <label class="card-title mb-0 cursor-pointer label p-0">
-                                                            <input formControlName="export" type="checkbox"
-                                                                class="cursor-pointer">
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </ng-template>
-                                    </div>
-                                </form>
-                            </ng-template>
-                            <ng-template #sizeNotYetLoaded>
-                                <div class="flex flex-col items-center justify-items-center mb-8 mt-4">
-                                    <kern-loading></kern-loading>
-                                </div>
-                            </ng-template>
-                        </div>
-                        <div *ngIf="projectSize" class="mt-4 flex flex-row justify-between "
-                            style="border-top: 1px solid #ddd;">
-                            <!-- Final size-->
-                            <div></div>
-                            <div class="mt-4 mr-2 flex flex-row flex-nowrap">
-                                <div class="flex">
-                                    <span class="card-title mb-0 label-text">Final size estimate:</span>
-                                </div>
-                                <div class="flex ml-2">
-                                    <span class="card-title mb-0 label-text">{{downloadSizeText}}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal-action">
-                            <label *ngIf="projectExportCredentials?.downloadFileName as fileName"
-                                data-tip="Latest prepared export file" for="projectExportModal"
-                                (click)="exportViaFile(false)"
-                                class="tooltip bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded-md border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 h-4 w-4 inline-block" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                </svg>
-                                {{fileName}}
-                            </label>
-                            <label (click)="prepareDownload(project.id)"
-                                [ngClass]="downloadPrepareMessage== DownloadStateType.PREPARATION||downloadPrepareMessage == DownloadStateType.DOWNLOAD?'opacity-50 cursor-not-allowed py-1' : 'opacity-100 cursor-pointer py-2'"
-                                class="bg-green-100 text-green-700 border border-green-400 text-xs font-semibold px-4 rounded-md cursor-pointer hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-                                type="submit">
-                                Prepare download
-                                <kern-loading color="green"
-                                    *ngIf="downloadPrepareMessage == DownloadStateType.PREPARATION || downloadPrepareMessage == DownloadStateType.DOWNLOAD">
-                                </kern-loading>
-                            </label>
-                            <label for="projectExportModal"
-                                class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                Close
-                            </label>
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <div class="text-left lg:text-right">
@@ -441,7 +275,8 @@
                                             {{embeddingContainer.count}}
                                         </td>
                                         <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                            <label [for]="'my-modal-'+embeddingContainer.id"
+                                            <label
+                                                (click)="settingModals.embedding.delete = {open: true, id: embeddingContainer.id};"
                                                 class="modal-button btn btn-sm btn-ghost px-0">
 
                                                 <svg xmlns="http://www.w3.org/2000/svg"
@@ -452,29 +287,6 @@
                                                         d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                                 </svg>
                                             </label>
-                                            <input type="checkbox" [id]="'my-modal-'+embeddingContainer.id"
-                                                class="modal-toggle">
-                                            <div class="modal">
-                                                <div class="modal-box text-black bg-white justify-center">
-                                                    <div
-                                                        class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
-                                                        Warning </div>
-                                                    <p class="mt-2 text-gray-500 text-sm">Are you sure you want to
-                                                        delete
-                                                        this embedding?</p>
-                                                    <p class="text-gray-500 text-sm">This will delete all
-                                                        corresponding
-                                                        tensors!</p>
-                                                    <div class="modal-action">
-                                                        <label [for]="'my-modal-'+embeddingContainer.id"
-                                                            class="bg-red-100 text-red-700 border border-red-400 text-xs font-semibold mr-2 px-4 py-2 rounded flex cursor-pointer hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 inline-block"
-                                                            (click)="deleteEmbedding(embeddingContainer.id)">Delete
-                                                            embedding</label>
-                                                        <label [for]="'my-modal-'+embeddingContainer.id"
-                                                            class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
-                                                    </div>
-                                                </div>
-                                            </div>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -486,7 +298,7 @@
             <div class="mt-1">
                 <div class="tooltip tooltip-right"
                     data-tip="Vectorize your attributes. Integration to Hugging Face available">
-                    <label for="my-modal-newEmbedding"
+                    <label (click)="settingModals.embedding.create.open = true;"
                         class="inline-block items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none cursor-pointer">
                         <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 h-5 w-5 inline-block stroke-current"
                             fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -494,110 +306,6 @@
                         </svg>
                         Generate embedding
                     </label>
-                </div>
-                <input #modalInputEmbedding type="checkbox" id="my-modal-newEmbedding" class="modal-toggle">
-                <div class="modal">
-                    <div class="modal-box modal_content text-black bg-white justify-center"
-                        style="overflow-y:visible;overflow-x:unset;width: fit-content; min-width:448px; max-width:80%">
-                        <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
-                            Add an embedding </div>
-                        <div class="mb-2 flex flex-grow justify-center text-sm text-gray-500">
-                            Pick from the below solutions to build a vector representation</div>
-
-                        <div *ngIf="attributesArray && embeddingCreationFormGroup">
-                            <form [formGroup]="embeddingCreationFormGroup" class="grid grid-cols-2  gap-2 items-center"
-                                style="grid-template-columns: max-content auto;">
-                                <div class="tooltip tooltip-right" data-tip="Choose attribute that will be encoded">
-                                    <span class="card-title mb-0 label-text flex"><span class="cursor-help underline"
-                                            style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Target
-                                            Attribute</span></span>
-                                </div>
-                                <select formControlName="targetAttribute"
-                                    class="select select-bordered select-sm max-w-xs"
-                                    data-intercom-target="Settings Page Embedding Mask Target Attribute Selector">
-                                    <option *ngFor="let attribute of attributesArrayTextUsableUploaded"
-                                        [value]="attribute.id">
-                                        {{attribute.name}}
-                                    </option>
-                                </select>
-                                <div class="tooltip tooltip-right" data-tip="One embedding per record vs. per token">
-                                    <span class="card-title mb-0 label-text flex"><span class="cursor-help underline"
-                                            style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Granularity</span></span>
-                                </div><select formControlName="granularity"
-                                    class="select select-bordered select-sm max-w-xs"
-                                    data-intercom-target="Settings Page Embedding Mask Granularity Selector"
-                                    (change)="checkForceHiddenHandles()">
-                                    <option *ngFor="let granularity of granularityTypesArray"
-                                        [value]="granularity.value">
-                                        {{granularity.name}}
-                                    </option>
-                                </select>
-                                <div class="tooltip tooltip-right" data-tip="Name of your Hugging Face model">
-                                    <span class="card-title mb-0 label-text flex"><span class="cursor-help underline"
-                                            style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Configuration</span></span>
-                                </div>
-                                <div class="dropdown"
-                                    data-intercom-target="Settings Page Embedding Mask Handle Selector With Suggestions"
-                                    *ngIf="embeddingHandlesMap.get(embeddingCreationFormGroup.get('targetAttribute').value) as suggestions;else noSuggestions">
-                                    <div tabindex="0" class="flex flex-row select select-bordered select-sm pl-0 pr-8">
-                                        <input #inputEmbeddingHandle type="text" placeholder="Type to search..."
-                                            class="w-full font-bold input input-sm"
-                                            style="outline:none; box-shadow:none;height:1.9rem;"
-                                            [value]="embeddingCreationFormGroup.get('embeddingHandle').value"
-                                            (focus)="$event.target.select()"
-                                            (keydown.enter)="selectFirstUnhiddenEmbeddingHandle(inputEmbeddingHandle)"
-                                            (input)="checkEmbeddingHandles($event.target)">
-                                    </div>
-                                    <ul tabindex="0"
-                                        class="p-2 w-full menu dropdown-content bg-base-100 shadow max-h-80 overflow-y-auto">
-                                        <li #me *ngFor="let embeddingHandle of suggestions; let k = index"
-                                            [ngClass]="embeddingHandle.hidden || embeddingHandle.forceHidden?'hidden':null"
-                                            (mouseenter)="setCurrentEmbeddingHandle(embeddingHandle,hoverBox,me)"
-                                            (mouseleave)="setCurrentEmbeddingHandle(null)">
-
-                                            <label class="cursor-pointer label"
-                                                [ngClass]="checkIfModelIsDownloaded(embeddingHandle.configString) ? 'text-green-700' : ''"
-                                                (click)="selectEmbeddingHandle(embeddingHandle,inputEmbeddingHandle,hoverBox)">
-                                                {{embeddingHandle.configString}}
-                                            </label>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <ng-template #noSuggestions>
-                                    <div class="flex flex-row select select-bordered select-sm pl-0 pr-8"
-                                        data-intercom-target="Settings Page Embedding Mask Handle Selector Without Suggestions">
-                                        <input #inputEmbeddingHandle type="text" placeholder="Enter config string..."
-                                            class="w-full font-bold input input-sm"
-                                            style="outline:none; box-shadow:none;height:1.9rem;"
-                                            [value]="embeddingCreationFormGroup.get('embeddingHandle').value"
-                                            (focus)="$event.target.select()"
-                                            (input)="checkEmbeddingHandles($event.target)">
-                                    </div>
-                                </ng-template>
-                            </form>
-                        </div>
-                        <div class="modal-action">
-                            <button [for]="'my-modal-newEmbedding'" [disabled]="embeddingCreationBlocked?true:null"
-                                [ngClass]="embeddingCreationBlocked ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
-                                class="bg-green-100 text-green-700 border border-green-400 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-                                (click)="addEmbedding(project.id,modalInputEmbedding)"
-                                data-intercom-target="Settings Page Embedding Mask Add Embedding Button">Add
-                                embedding</button>
-                            <label for="my-modal-newEmbedding"
-                                class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
-                        </div>
-                    </div>
-                </div>
-                <div #hoverBox class="absolute top-0 w-fit h-fit card shadow bg-white" style="z-index: 1000;"
-                    [ngClass]="currentEmbeddingHandle?null:'hidden'">
-                    <ng-template [ngIf]="currentEmbeddingHandle">
-                        <div class="card-body p-6 flex flex-col w-64">
-                            <div class="flex justify-center">
-                                <span class="card-title mb-2 label-text">Info</span>
-                            </div>
-                            <span class="label-text text-sm">{{currentEmbeddingHandle.description}}</span>
-                        </div>
-                    </ng-template>
                 </div>
                 <div class="tooltip tooltip-right"
                     [attr.data-tip]="!isManaged ? 'Check out our hosted version to use this function' : 'See which models are downloaded'">
@@ -713,7 +421,8 @@
                                                     <span>{{label.name}}</span>
                                                     <kbd *ngIf="label.hotkey"
                                                         class="ml-2 uppercase inline-flex items-center border bg-white border-gray-200 rounded px-2 text-sm font-sans font-medium text-gray-400">{{label.hotkey}}</kbd>
-                                                    <label [for]="'my-modal-'+label.id"
+                                                    <label
+                                                        (click)="settingModals.label.delete = {open: true, label: label, taskId: labelingTaskContainer.get('id').value}"
                                                         class="modal-button cursor-pointer inline-block ml-2">
                                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
                                                             fill="none" viewBox="0 0 24 24" stroke="currentColor"
@@ -722,35 +431,11 @@
                                                                 d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                                         </svg>
                                                     </label>
-                                                    <input type="checkbox" [id]="'my-modal-'+label.id"
-                                                        class="modal-toggle">
-                                                    <div class="modal">
-                                                        <div class="modal-box text-black bg-white justify-center">
-                                                            <div
-                                                                class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
-                                                                Warning </div>
-                                                            <p class="mt-2 text-gray-500 text-sm text-center">Are
-                                                                you
-                                                                sure
-                                                                you want to delete this label?</p>
-                                                            <p class="text-gray-500 text-sm text-center">This will
-                                                                delete
-                                                                all data associated with it!</p>
-                                                            <div class="modal-action">
-                                                                <label [for]="'my-modal-'+label.id"
-                                                                    class="bg-red-100 text-red-700 border border-red-400 text-xs font-semibold mr-2 px-4 py-2 rounded flex cursor-pointer hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 inline-block"
-                                                                    (click)="removeLabel(project.id, labelingTaskContainer.get('id').value, label.id, label.color)">Delete
-                                                                    label</label>
-                                                                <label [for]="'my-modal-'+label.id"
-                                                                    class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
-                                                            </div>
-                                                        </div>
-                                                    </div>
                                                 </div>
                                             </div>
                                             <label class="ml-2"
                                                 [ngClass]="labelingTaskContainer.get('taskType').value == LabelingTaskType.NOT_SET ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
-                                                [for]="'my-modal-labelCreation'+labelingTaskContainer.get('id').value">
+                                                (click)="settingModals.label.create = {open: true, taskId: labelingTaskContainer.get('id').value};focusModalInputBox($event,'labelName')">
                                                 <span
                                                     class="bg-gray-100 text-gray-800 cursor-pointer modal-button btn btn-sm btn-ghost px-1">
                                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
@@ -760,38 +445,10 @@
                                                     </svg>
                                                 </span>
                                             </label>
-                                            <input type="checkbox"
-                                                [id]="'my-modal-labelCreation'+labelingTaskContainer.get('id').value"
-                                                class="modal-toggle" (change)="focusModalInputBox($event,'labelName')">
-                                            <div class="modal">
-                                                <div class="modal-box text-black bg-white justify-center">
-                                                    <div
-                                                        class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
-                                                        Enter your labels </div>
-                                                    <div
-                                                        class="mb-2 flex flex-grow justify-center text-sm text-gray-500">
-                                                        You can add press enter to add a label</div>
-                                                    <input #labelName name="labelName" type="text"
-                                                        placeholder="Label Name"
-                                                        class="w-full input input-sm input-bordered"
-                                                        (input)="checkAndModifyLabelName($event.target)"
-                                                        (keydown.enter)="addLabel(project.id,labelingTaskContainer.get('id').value, labelName)">
-                                                    <div class="modal-action">
-                                                        <button
-                                                            [disabled]="!isLabelNameUnique(labelingTaskContainer.get('id').value,labelName.value)"
-                                                            [ngClass]="!isLabelNameUnique(labelingTaskContainer.get('id').value,labelName.value) ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
-                                                            class="bg-green-100 text-green-700 border border-green-400 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-                                                            (click)="addLabel(project.id,labelingTaskContainer.get('id').value, labelName)">Add
-                                                            label</button>
-                                                        <label
-                                                            [for]="'my-modal-labelCreation'+labelingTaskContainer.get('id').value"
-                                                            class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
-                                                    </div>
-                                                </div>
-                                            </div>
                                         </td>
                                         <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                            <label [for]="'my-modal-'+labelingTaskContainer.get('id').value"
+                                            <label
+                                                (click)="settingModals.labelingTask.delete = {open: true, taskId: labelingTaskContainer.get('id').value}"
                                                 class="modal-button btn btn-sm btn-ghost px-0">
 
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-700"
@@ -801,32 +458,6 @@
                                                         d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                                 </svg>
                                             </label>
-                                            <input type="checkbox"
-                                                [id]="'my-modal-'+labelingTaskContainer.get('id').value"
-                                                class="modal-toggle">
-                                            <div class="modal">
-                                                <div class="modal-box text-black bg-white justify-center">
-                                                    <div
-                                                        class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
-                                                        Warning </div>
-                                                    <p class="mt-2 text-gray-500 text-sm">Are you sure you want to
-                                                        delete
-                                                        this labeling task?</p>
-                                                    <p class="text-gray-500 text-sm">This will delete all data
-                                                        associated
-                                                        with it,</p>
-                                                    <p class="text-gray-500 text-sm">including heuristics and
-                                                        labels!</p>
-                                                    <div class="modal-action">
-                                                        <label [for]="'my-modal-'+labelingTaskContainer.get('id').value"
-                                                            class="bg-red-100 text-red-700 border border-red-400 text-xs font-semibold mr-2 px-4 py-2 rounded flex cursor-pointer hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 inline-block"
-                                                            (click)="deleteLabelingTask(project.id,labelingTaskContainer.get('id').value)">Delete
-                                                            labeling task</label>
-                                                        <label [for]="'my-modal-'+labelingTaskContainer.get('id').value"
-                                                            class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
-                                                    </div>
-                                                </div>
-                                            </div>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -839,7 +470,8 @@
     </div>
     <div class="mt-1">
         <div class="tooltip tooltip-right" data-tip="Currently supporting classifications and extractions">
-            <label for="my-modal-newRecordTask"
+            <label
+                (click)="settingModals.labelingTask.create.open = true; focusModalInputBox($event,'labelingTaskName')"
                 class="inline-block items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none cursor-pointer">
                 <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 h-5 w-5 inline-block stroke-current" fill="none"
                     viewBox="0 0 24 24" stroke="currentColor">
@@ -847,46 +479,6 @@
                 </svg>
                 Add labeling task
             </label>
-        </div>
-        <input #modalInput type="checkbox" id="my-modal-newRecordTask" class="modal-toggle"
-            (change)="focusModalInputBox($event,'labelingTaskName')">
-        <div class="modal">
-            <div class="modal-box text-black bg-white justify-center"
-                style="width: fit-content; min-width:448px; max-width:80%">
-                <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
-                    Add a labeling task </div>
-                <div class="mb-2 flex flex-grow justify-center text-sm text-gray-500">
-                    Afterward, you can select the label task type depending on the target type</div>
-                <div class="grid grid-cols-2 gap-2 items-center max-w-sm"
-                    style="grid-template-columns: max-content auto;">
-                    <div class="tooltip tooltip-right" data-tip="Choose attribute to be labeled">
-                        <span class="cursor-help card-title mb-0 label-text flex"><span class="underline"
-                                style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Target
-                                attribute</span></span>
-                    </div>
-                    <select #labelingTaskTarget class="select select-bordered select-sm">
-                        <option value="@@NO_ATTRIBUTE@@" selected="selected">Full Record</option>
-                        <option *ngFor="let attribute of attributesArrayUsableUploaded" [value]="attribute.id">
-                            {{attribute.name}}
-                        </option>
-                    </select>
-                    <div class="tooltip tooltip-right" data-tip="Name of your labeling task">
-                        <span class="cursor-help card-title mb-0 label-text flex"><span class="underline"
-                                style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Name</span></span>
-                    </div><input #labelingTaskName name="labelingTaskName" type="text" placeholder="Labeling task name"
-                        class="input input-sm input-bordered" (input)="checkLabelingTaskName($event.target)"
-                        (keydown.enter)="addLabelingTask(project.id,modalInput,labelingTaskName.value,labelingTaskTarget.value);labelingTaskName.value=''">
-                </div>
-                <div class="modal-action">
-                    <button [disabled]="!isTaskNameUnique || labelingTaskName.value ==''"
-                        [ngClass]="!isTaskNameUnique || labelingTaskName.value=='' ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
-                        class="bg-green-100 text-green-700 border border-green-400 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-                        (click)="addLabelingTask(project.id,modalInput,labelingTaskName.value,labelingTaskTarget.value);labelingTaskName.value=''">Add
-                        labeling task</button>
-                    <label for="my-modal-newRecordTask"
-                        class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">Close</label>
-                </div>
-            </div>
         </div>
 
         <div class="mt-8">
@@ -1156,3 +748,330 @@
     </kern-modal>
 
 </ng-template>
+
+<kern-modal [isOpen]="settingModals.attribute.open" closeButton="X" [acceptButton]="{
+    buttonCaption: 'Add attibute',
+    disabled:settingModals.attribute.name == '' || settingModals.attribute.type == '' || settingModals.attribute.duplicateNameExists,
+    emitObject:this,emitFunction:createUserAttribute
+}" [modalBoxStyle]="{'overflow-x':'visible'}" (optionClicked)="settingModals.attribute.open = false">
+    <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
+        Add new attribute </div>
+    <div class="mb-2 flex flex-grow justify-center text-sm text-gray-500">
+        Choose a name for your attribute and pick a datatype you want to use</div>
+
+    <div class="grid grid-cols-2  gap-2 items-center" style="grid-template-columns: max-content auto;">
+
+        <span data-tip="Enter an attribute name"
+            class="cursor-help tooltip tooltip-right card-title mb-0 label-text font-normal"><span class="underline"
+                style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Attribute
+                name</span></span>
+        <input [value]="settingModals.attribute.name" placeholder="Enter an attribute name..."
+            (input)="changeAttributeName($event)" class="input input-sm input-bordered placeholder-italic" />
+
+        <ng-template [ngIf]="settingModals.attribute.duplicateNameExists">
+            <span></span>
+            <span class="text-red-700 text-xs mt-2">
+                Attribute name exists
+            </span>
+        </ng-template>
+
+        <span data-tip="Select an attribute type"
+            class="cursor-help tooltip tooltip-right card-title mb-0 label-text font-normal"><span class="underline"
+                style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Attribute
+                type</span></span>
+        <kern-dropdown [dropdownOptions]="{
+                    optionArray: dataTypesArray,
+                    buttonCaption: settingModals.attribute.type,
+                    hasFullWidth: true
+                }" (optionClicked)="updateDataType($event)"></kern-dropdown>
+    </div>
+</kern-modal>
+
+<kern-modal [isOpen]="settingModals.embedding.delete.open" [modalBoxStyle]="{'width':'30rem','text-align':'center'}"
+    [abortButton]="{
+    buttonCaption: 'Delete embedding',
+    emitObject: this, emitFunction: deleteEmbedding
+}" closeButton="X" (optionClicked)="settingModals.embedding.delete.open = false">
+    <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
+        Warning </div>
+    <p class="mt-2 text-gray-500 text-sm">Are you sure you want to
+        delete
+        this embedding?</p>
+    <p class="text-gray-500 text-sm">This will delete all
+        corresponding
+        tensors!</p>
+</kern-modal>
+
+<kern-modal [isOpen]="settingModals.projectExport.open" (optionClicked)="settingModals.projectExport.open = false">
+    <div class="text-lg leading-6 text-gray-900 font-medium text-center">
+        Project export </div>
+    <div class="mt-1 text-sm leading-5 font-medium text-gray-700">See the size of each
+        export item.</div>
+    <div class="flex flex-col">
+        <ng-template [ngIf]="settingModals.projectExport.projectSize" [ngIfElse]="sizeNotYetLoaded">
+            <form [formGroup]="settingModals.projectExport.projectExportSchema">
+                <div formArrayName="attributes" class="grid items-center p-2 gap-x-4"
+                    style="grid-template-columns: auto 25px auto auto;">
+                    <!--headline-->
+                    <div class="flex">
+                        <span class="card-title mb-0 label-text">Name</span>
+                    </div>
+                    <div>
+                        <!--info hover-->
+                    </div>
+                    <div class="flex">
+                        <span class="card-title mb-0 label-text">Size estimate</span>
+                    </div>
+                    <div class="flex flex-row justify-center items-center gap-2">
+                        <span class="card-title mb-0 label-text">Export</span>
+                    </div>
+                    <!--content-->
+                    <ng-template ngFor let-attribute [ngForOf]="projectExportArray.controls" let-i="index">
+                        <div [formGroupName]="i" class="contents">
+                            <div class="flex">
+                                <p class="break-words cursor-default capitalize-first"
+                                    [ngClass]="attribute.get('moveRight').value?'ml-4':null">
+                                    {{attribute.get("name").value}}</p>
+                            </div>
+                            <div class="flex items-center justify-items-center">
+                                <ng-template [ngIf]="attribute.get('desc').value">
+                                    <div [attr.data-tip]="attribute.get('desc').value" class="tooltip tooltip-top">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    </div>
+                                </ng-template>
+                            </div>
+                            <div class="flex">
+                                <p class="break-words cursor-default">
+                                    {{attribute.get("sizeReadable").value}}
+                                </p>
+                            </div>
+                            <div class="flex justify-center">
+                                <div class="form-control">
+                                    <label class="card-title mb-0 cursor-pointer label p-0">
+                                        <input formControlName="export" type="checkbox" class="cursor-pointer">
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-template>
+                </div>
+            </form>
+        </ng-template>
+        <ng-template #sizeNotYetLoaded>
+            <div class="flex flex-col items-center justify-items-center mb-8 mt-4">
+                <kern-loading></kern-loading>
+            </div>
+        </ng-template>
+    </div>
+    <div *ngIf="settingModals.projectExport.projectSize" class="mt-4 flex flex-row justify-between "
+        style="border-top: 1px solid #ddd;">
+        <!-- Final size-->
+        <div></div>
+        <div class="mt-4 mr-2 flex flex-row flex-nowrap">
+            <div class="flex">
+                <span class="card-title mb-0 label-text">Final size estimate:</span>
+            </div>
+            <div class="flex ml-2">
+                <span class="card-title mb-0 label-text">{{settingModals.projectExport.downloadSizeText}}</span>
+            </div>
+        </div>
+    </div>
+    <div class="modal-action">
+        <label *ngIf="settingModals.projectExport.projectExportCredentials?.downloadFileName as fileName"
+            data-tip="Latest prepared export file"
+            (click)="exportViaFile(false); settingModals.projectExport.open = false"
+            class="tooltip bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded-md border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 h-4 w-4 inline-block" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            {{fileName}}
+        </label>
+        <label (click)="prepareDownload(project.id)"
+            [ngClass]="settingModals.projectExport.downloadPrepareMessage== DownloadStateType.PREPARATION|| settingModals.projectExport.downloadPrepareMessage == DownloadStateType.DOWNLOAD?'opacity-50 cursor-not-allowed py-1' : 'opacity-100 cursor-pointer py-2'"
+            class="bg-green-100 text-green-700 border border-green-400 text-xs font-semibold px-4 rounded-md cursor-pointer hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+            type="submit">
+            Prepare download
+            <kern-loading color="green"
+                *ngIf="settingModals.projectExport.downloadPrepareMessage == DownloadStateType.PREPARATION || settingModals.projectExport.downloadPrepareMessage == DownloadStateType.DOWNLOAD">
+            </kern-loading>
+        </label>
+        <label (click)="settingModals.projectExport.open = false"
+            class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            Close
+        </label>
+    </div>
+</kern-modal>
+
+<kern-modal [isOpen]="settingModals.embedding.create.open" [modalBoxStyle]="{'overflow-x':'visible'}" closeButton="X"
+    [acceptButton]="{
+    buttonCaption: 'Add embedding',
+    disabled: settingModals.embedding.create.blocked || settingModals.embedding.create.embeddingCreationFormGroup?.get('embeddingHandle').value == '',
+    emitObject: this, emitFunction:addEmbedding
+}" (optionClicked)="settingModals.embedding.create.open = false">
+    <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
+        Add an embedding </div>
+    <div class="mb-2 flex flex-grow justify-center text-sm text-gray-500">
+        Pick from the below solutions to build a vector representation</div>
+    <div *ngIf="attributesArray && settingModals.embedding.create.embeddingCreationFormGroup">
+        <form [formGroup]="settingModals.embedding.create.embeddingCreationFormGroup"
+            class="grid grid-cols-2  gap-2 items-center" style="grid-template-columns: max-content auto;">
+            <div class="tooltip tooltip-right" data-tip="Choose attribute that will be encoded">
+                <span class="card-title mb-0 label-text flex"><span class="cursor-help underline"
+                        style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Target
+                        Attribute</span></span>
+            </div>
+            <select formControlName="targetAttribute" class="select select-bordered select-sm max-w-xs"
+                data-intercom-target="Settings Page Embedding Mask Target Attribute Selector">
+                <option *ngFor="let attribute of attributesArrayTextUsableUploaded" [value]="attribute.id">
+                    {{attribute.name}}
+                </option>
+            </select>
+            <div class="tooltip tooltip-right" data-tip="One embedding per record vs. per token">
+                <span class="card-title mb-0 label-text flex"><span class="cursor-help underline"
+                        style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Granularity</span></span>
+            </div><select formControlName="granularity" class="select select-bordered select-sm max-w-xs"
+                data-intercom-target="Settings Page Embedding Mask Granularity Selector"
+                (change)="checkForceHiddenHandles()">
+                <option *ngFor="let granularity of granularityTypesArray" [value]="granularity.value">
+                    {{granularity.name}}
+                </option>
+            </select>
+            <div class="tooltip tooltip-right" data-tip="Name of your Hugging Face model">
+                <span class="card-title mb-0 label-text flex"><span class="cursor-help underline"
+                        style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Configuration</span></span>
+            </div>
+            <div class="dropdown" data-intercom-target="Settings Page Embedding Mask Handle Selector With Suggestions"
+                *ngIf="embeddingHandlesMap.get(settingModals.embedding.create.embeddingCreationFormGroup.get('targetAttribute').value) as suggestions;else noSuggestions">
+                <div tabindex="0" class="flex flex-row select select-bordered select-sm pl-0 pr-8">
+                    <input #inputEmbeddingHandle type="text" placeholder="Type to search..."
+                        class="w-full font-bold input input-sm" style="outline:none; box-shadow:none;height:1.9rem;"
+                        [value]="settingModals.embedding.create.embeddingCreationFormGroup.get('embeddingHandle').value"
+                        (focus)="$event.target.select()"
+                        (keydown.enter)="selectFirstUnhiddenEmbeddingHandle(inputEmbeddingHandle)"
+                        (input)="checkEmbeddingHandles($event.target)">
+                </div>
+                <ul tabindex="0" class="p-2 w-full menu dropdown-content bg-base-100 shadow max-h-80 overflow-y-auto">
+                    <li #me *ngFor="let embeddingHandle of suggestions; let k = index"
+                        [ngClass]="embeddingHandle.hidden || embeddingHandle.forceHidden?'hidden':null"
+                        (mouseenter)="setCurrentEmbeddingHandle(embeddingHandle,hoverBox,me)"
+                        (mouseleave)="setCurrentEmbeddingHandle(null)">
+
+                        <label class="cursor-pointer label"
+                            [ngClass]="checkIfModelIsDownloaded(embeddingHandle.configString) ? 'text-green-700' : ''"
+                            (click)="selectEmbeddingHandle(embeddingHandle,inputEmbeddingHandle,hoverBox)">
+                            {{embeddingHandle.configString}}
+                        </label>
+                    </li>
+                </ul>
+            </div>
+            <ng-template #noSuggestions>
+                <div class="flex flex-row select select-bordered select-sm pl-0 pr-8"
+                    data-intercom-target="Settings Page Embedding Mask Handle Selector Without Suggestions">
+                    <input #inputEmbeddingHandle type="text" placeholder="Enter config string..."
+                        class="w-full font-bold input input-sm" style="outline:none; box-shadow:none;height:1.9rem;"
+                        [value]="settingModals.embedding.create.embeddingCreationFormGroup.get('embeddingHandle').value"
+                        (focus)="$event.target.select()" (input)="checkEmbeddingHandles($event.target)">
+                </div>
+            </ng-template>
+        </form>
+    </div>
+</kern-modal>
+<div #hoverBox class="absolute top-0 w-fit h-fit card shadow bg-white" style="z-index: 1000;"
+    [ngClass]="settingModals.embedding.create.currentEmbeddingHandle?null:'hidden'">
+    <ng-template [ngIf]="settingModals.embedding.create.currentEmbeddingHandle">
+        <div class="card-body p-6 flex flex-col w-64">
+            <div class="flex justify-center">
+                <span class="card-title mb-2 label-text">Info</span>
+            </div>
+            <span
+                class="label-text text-sm">{{settingModals.embedding.create.currentEmbeddingHandle.description}}</span>
+        </div>
+    </ng-template>
+</div>
+
+<kern-modal [isOpen]="settingModals.label.delete.open" closeButton="X"
+    [modalBoxStyle]="{'width':'30rem', 'text-align':'center'}" [abortButton]="{
+    buttonCaption: 'Delete label',
+    emitObject: this, emitFunction: removeLabel
+}" closeButton="X" (optionClicked)="settingModals.label.delete.open = false;">
+    <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
+        Warning </div>
+    <p class="mt-2 text-gray-500 text-sm text-center">Are
+        you
+        sure
+        you want to delete this label?</p>
+    <p class="text-gray-500 text-sm text-center">This will
+        delete
+        all data associated with it!</p>
+</kern-modal>
+
+<kern-modal [isOpen]="settingModals.label.create.open" closeButton="X" [modalBoxStyle]="{'width':'30rem'}"
+    [acceptButton]="{
+    buttonCaption: 'Add label',
+    disabled: !isLabelNameUnique(settingModals.label.create.taskId,labelName.value) || labelName.value == '',
+    emitObject: this, emitFunction: addLabel
+}" (optionClicked)="settingModals.label.create.open = false">
+    <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
+        Enter your labels </div>
+    <div class="mb-2 flex flex-grow justify-center text-sm text-gray-500">
+        You can add press enter to add a label</div>
+    <input #labelName name="labelName" type="text" placeholder="Label Name" class="w-full input input-sm input-bordered"
+        (input)="checkAndModifyLabelName($event.target)" (keydown.enter)="addLabel()">
+</kern-modal>
+
+<kern-modal [isOpen]="settingModals.labelingTask.delete.open" closeButton="X"
+    [modalBoxStyle]="{'width':'30rem', 'text-align':'center'}" [abortButton]="{
+    buttonCaption: 'Delete labeling task',
+    emitObject: this, emitFunction: deleteLabelingTask
+}" (optionClicked)="settingModals.labelingTask.delete.open = false">
+    <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
+        Warning </div>
+    <p class="mt-2 text-gray-500 text-sm">Are you sure you want to
+        delete
+        this labeling task?</p>
+    <p class="text-gray-500 text-sm">This will delete all data
+        associated
+        with it,</p>
+    <p class="text-gray-500 text-sm">including heuristics and
+        labels!</p>
+</kern-modal>
+
+<kern-modal [isOpen]="settingModals.labelingTask.create.open" closeButton="X" [acceptButton]="{
+    buttonCaption: 'Add labeling task',
+    disabled: settingModals.labelingTask.create.name == '' || settingModals.labelingTask.create.name == null || !isTaskNameUniqueCheck(settingModals.labelingTask.create.name),
+    emitObject: this, emitFunction: addLabelingTask
+}" (optionClicked)="settingModals.labelingTask.create.open = false">
+
+    <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
+        Add a labeling task </div>
+    <div class="mb-2 flex flex-grow justify-center text-sm text-gray-500">
+        Afterward, you can select the label task type depending on the target type</div>
+    <div class="grid grid-cols-2 gap-2 items-center max-w-sm" style="grid-template-columns: max-content auto;">
+        <div class="tooltip tooltip-right" data-tip="Choose attribute to be labeled">
+            <span class="cursor-help card-title mb-0 label-text flex"><span class="underline"
+                    style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Target
+                    attribute</span></span>
+        </div>
+        <select #labelingTaskTarget class="select select-bordered select-sm"
+            (change)="setLabelingTaskTarget(labelingTaskTarget.value)">
+            <option value="@@NO_ATTRIBUTE@@" selected="selected">Full Record</option>
+            <option *ngFor="let attribute of attributesArrayUsableUploaded" [value]="attribute.id">
+                {{attribute.name}}
+            </option>
+        </select>
+        <div class="tooltip tooltip-right" data-tip="Name of your labeling task">
+            <span class="cursor-help card-title mb-0 label-text flex"><span class="underline"
+                    style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Name</span></span>
+        </div><input #labelingTaskName name="labelingTaskName" type="text" placeholder="Labeling task name"
+            class="input input-sm input-bordered" (input)="checkLabelingTaskName($event.target)"
+            (keydown.enter)="addLabelingTask();labelingTaskName.value=''"
+            [value]="settingModals.labelingTask.create.name">
+    </div>
+
+</kern-modal>

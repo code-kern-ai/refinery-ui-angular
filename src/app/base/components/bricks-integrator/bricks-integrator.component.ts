@@ -143,7 +143,7 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
     this.config.api.requesting = true;
     this.http.get(this.config.api.requestUrl).pipe(first()).subscribe((c: BricksAPIData) => {
       this.config.api.data = c;
-      // this.config.api.data.data.attributes.sourceCode = DUMMY_CODE;
+      // this.config.api.data.data.attributes.sourceCode = DUMMY_CODE_2;
       this.config.api.requesting = false;
       this.config.example.requestData = this.config.api.data.data.attributes.inputExample;
       this.codeParser.prepareCode();
@@ -260,7 +260,27 @@ YOUR_GEN_INT_2:list[int] = 0
 YOUR_GEN_BOOL:bool = True
 YOUR_GEN_BOOL_2:list[bool] = True
 */
+const DUMMY_CODE_2 = `
+from typing import List
+import knowledge
 
+YOUR_ATTRIBUTE: str = "text" # only text attributes
+YOUR_LABEL: str = "PERSON"
+YOUR_LOOKUP_LISTS: List[str] = [knowledge.my_lookup_list] #either lookup list or lookup values or both
+YOUR_LOOKUP_VALUES: List[str] = ["Max"]
+
+final_list = []
+if YOUR_LOOKUP_LISTS:
+    for list in YOUR_LOOKUP_LISTS:
+        final_list += list
+if YOUR_LOOKUP_VALUES:
+    final_list += YOUR_LOOKUP_VALUES
+
+def gazetter(record):
+    for chunk in record[YOUR_ATTRIBUTE].noun_chunks:
+        if any([chunk.text in trie or trie in chunk.text for trie in final_list]):
+            yield YOUR_LABEL, chunk.start, chunk.end
+`
 const DUMMY_CODE = `
 from sklearn.ensemble import RandomForestClassifier
 # you can find further models here: https://scikit-learn.org/stable/supervised_learning.html#supervised-learning

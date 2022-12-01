@@ -21,6 +21,7 @@ import { UploadComponent } from 'src/app/import/components/upload/upload.compone
 import { ProjectStatus } from 'src/app/projects/enums/project-status.enum';
 import { dateAsUTCDate, getUserAvatarUri, isStringTrue } from 'src/app/util/helper-functions';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { createDefaultProjectsModals, ProjectsModals } from './projects-helper';
 
 @Component({
   selector: 'kern-projects',
@@ -96,6 +97,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     prjDeleteModalOpen: false,
     prjDeleteProject: null as Project,
   }
+  projectsModals: ProjectsModals = createDefaultProjectsModals();
 
   constructor(
     private projectApolloService: ProjectApolloService,
@@ -320,6 +322,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   }
 
   importExistingProject() {
+    this.projectsModals.uploadProject.doingSomething = true;
     this.uploadComponent.createEmptyProject().subscribe((project: Project) => {
       this.projectApolloService
         .changeProjectTokenizer(project.id, this.selectedTokenizer)
@@ -335,10 +338,12 @@ export class ProjectsComponent implements OnInit, OnDestroy {
       this.uploadComponent.projectId = null;
       this.uploadComponent.reSubscribeToNotifications();
       this.uploadComponent.projectId = project.id;
-      this.uploadComponent.reloadOnFinish = true;
       this.uploadComponent.uploadStarted = true;
       this.uploadComponent.finishUpUpload(this.file?.name, '');
-
+      this.uploadComponent.executeOnFinish = () => {
+        this.projectsModals.uploadProject.open = false;
+        this.projectsModals.uploadProject.doingSomething = false;
+      }
     });
   }
 

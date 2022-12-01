@@ -121,377 +121,354 @@
                             [executionTypeFilter]="informationSource.informationSourceType == 'LABELING_FUNCTION'? 'pythonFunction':'activeLearner'"
                             [labelingTaskId]="labelingTaskControl.value">
                         </kern-bricks-integrator>
-                        <div class="flex items-center justify-center ml-2"
+                        <div class="flex items-center justify-center"
                             *ngIf="informationSource.informationSourceType == 'LABELING_FUNCTION'">
-                            <div class="flex flex-row flex-nowrap">
-                                <div class="tooltip tooltip-left" data-tip="Go to GitHub repository">
+                            <div class="tooltip tooltip-left" data-tip="Go to GitHub repository">
 
-                                    <a href="https://github.com/code-kern-ai/template-functions" target="_blank"
-                                        class="bg-white text-gray-700 text-xs font-semibold  px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none">
-                                        See function templates
-                                    </a>
-                                </div>
-                                <div data-tip="See available libraries for this labeling function"
-                                    class="tooltip tooltip-left">
-
-                                    <a href="https://github.com/code-kern-ai/refinery-lf-exec-env/blob/dev/requirements.txt"
-                                        target="_blank"
-                                        class="ml-2 bg-white text-gray-700 text-xs font-semibold  px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none">
-                                        See installed libraries
-                                    </a>
-                                </div>
+                                <a href="https://github.com/code-kern-ai/template-functions" target="_blank"
+                                    class="ml-2 bg-white text-gray-700 text-xs font-semibold  px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none">
+                                    See function templates
+                                </a>
                             </div>
-                            <div class="flex items-center justify-center"
-                                *ngIf="informationSource.informationSourceType == 'ACTIVE_LEARNING'">
+                            <div data-tip="See available libraries for this labeling function"
+                                class="tooltip tooltip-left">
 
-                                <ng-container *ngIf="embeddings; else embeddingNotFinished">
-                                    <ng-template [ngIf]="embeddingsFiltered?.length" [ngIfElse]="noMatchingEmbeddings">
-                                        <ng-container *ngFor="let embedding of embeddingsFiltered;">
-                                            <ng-container [ngSwitch]="embedding.state">
-                                                <div *ngSwitchCase="'FINISHED'" data-tip="Click to copy" class="tooltip"
-                                                    (click)="copyToClipboard(embedding.name)">
-                                                    <span
-                                                        class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800 cursor-pointer"
-                                                        [ngClass]="embeddingsFiltered.length > 0 ? 'mr-4' : ''">
-                                                        {{embedding.name}}
-                                                    </span>
-                                                </div>
-                                                <div *ngSwitchCase="'FAILED'"
-                                                    data-tip="Click to copy - embedding failed" class="tooltip"
-                                                    (click)="copyToClipboard(embedding.name)">
-                                                    <span
-                                                        class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800 cursor-pointer"
-                                                        [ngClass]="embeddingsFiltered.length > 0 ? 'mr-4' : ''">
-                                                        {{embedding.name}}
-                                                    </span>
-                                                </div>
-                                                <div *ngSwitchDefault
-                                                    data-tip="Click to copy - embedding not finished yet"
-                                                    class="tooltip" (click)="copyToClipboard(embedding.name)">
-                                                    <span
-                                                        class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800 cursor-pointer"
-                                                        [ngClass]="embeddingsFiltered.length > 0 ? 'mr-4' : ''">
-                                                        {{embedding.name}}
-                                                    </span>
-                                                </div>
-                                            </ng-container>
+                                <a href="https://github.com/code-kern-ai/refinery-lf-exec-env/blob/dev/requirements.txt"
+                                    target="_blank"
+                                    class="ml-2 bg-white text-gray-700 text-xs font-semibold  px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none">
+                                    See installed libraries
+                                </a>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-center"
+                            *ngIf="informationSource.informationSourceType == 'ACTIVE_LEARNING'">
+                            <ng-container *ngIf="embeddings; else embeddingNotFinished">
+                                <ng-template [ngIf]="embeddingsFiltered?.length" [ngIfElse]="noMatchingEmbeddings">
+                                    <ng-container *ngFor="let embedding of embeddingsFiltered;">
+                                        <ng-container [ngSwitch]="embedding.state">
+                                            <div *ngSwitchCase="'FINISHED'" data-tip="Click to copy" class="tooltip"
+                                                (click)="copyToClipboard(embedding.name)">
+                                                <span
+                                                    class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800 cursor-pointer"
+                                                    [ngClass]="embeddingsFiltered.length > 0 ? 'mr-4' : ''">
+                                                    {{embedding.name}}
+                                                </span>
+                                            </div>
+                                            <div *ngSwitchCase="'FAILED'" data-tip="Click to copy - embedding failed"
+                                                class="tooltip" (click)="copyToClipboard(embedding.name)">
+                                                <span
+                                                    class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800 cursor-pointer"
+                                                    [ngClass]="embeddingsFiltered.length > 0 ? 'mr-4' : ''">
+                                                    {{embedding.name}}
+                                                </span>
+                                            </div>
+                                            <div *ngSwitchDefault data-tip="Click to copy - embedding not finished yet"
+                                                class="tooltip" (click)="copyToClipboard(embedding.name)">
+                                                <span
+                                                    class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800 cursor-pointer"
+                                                    [ngClass]="embeddingsFiltered.length > 0 ? 'mr-4' : ''">
+                                                    {{embedding.name}}
+                                                </span>
+                                            </div>
                                         </ng-container>
-                                    </ng-template>
-                                    <ng-template #noMatchingEmbeddings>
-                                        <div class="text-sm font-normal text-gray-500">No matching embeddings found
-                                        </div>
-                                    </ng-template>
-                                </ng-container>
-                                <ng-template #noEmbeddings>
-                                    <div class="text-sm font-normal text-gray-500">No embeddings for project</div>
+                                    </ng-container>
                                 </ng-template>
-                            </div>
+                                <ng-template #noMatchingEmbeddings>
+                                    <div class="text-sm font-normal text-gray-500">No matching embeddings found</div>
+                                </ng-template>
+                            </ng-container>
+                            <ng-template #noEmbeddings>
+                                <div class="text-sm font-normal text-gray-500">No embeddings for project</div>
+                            </ng-template>
                         </div>
                     </div>
                 </div>
-                <div class="border">
-                    <ngx-monaco-editor class="w-full" style="height: 400px;" [options]="editorOptions"
-                        (onInit)="initEditor($event,project.id)" [formControl]="codeFormCtrl">
-                    </ngx-monaco-editor>
-                </div>
+            </div>
 
-                <div class="mt-2 flex flex-grow justify-between items-center float-right">
-                    <div class="flex items-center">
-                        <div *ngIf="hasUnsavedChanges()" class="flex items-center">
-                            <div class="text-sm font-normal text-gray-500">Saving...</div>
-                            <kern-loading color="indigo"></kern-loading>
-                        </div>
-                        <div *ngIf="justClickedRun" class="flex items-center">
-                            <kern-loading color="indigo"></kern-loading>
-                        </div>
-                        <div class="flex items-center mr-2"
-                            *ngIf="informationSource.informationSourceType == 'LABELING_FUNCTION'">
-                            <kern-dropdown [dropdownOptions]="{
+            <div class="border">
+                <ngx-monaco-editor class="w-full" style="height: 400px;" [options]="editorOptions"
+                    (onInit)="initEditor($event,project.id)" [formControl]="codeFormCtrl">
+                </ngx-monaco-editor>
+            </div>
+
+            <div class="mt-2 flex flex-grow justify-between items-center float-right">
+                <div class="flex items-center">
+                    <div *ngIf="hasUnsavedChanges()" class="flex items-center">
+                        <div class="text-sm font-normal text-gray-500">Saving...</div>
+                        <kern-loading color="indigo"></kern-loading>
+                    </div>
+                    <div *ngIf="justClickedRun" class="flex items-center">
+                        <kern-loading color="indigo"></kern-loading>
+                    </div>
+                    <div class="flex items-center mr-2"
+                        *ngIf="informationSource.informationSourceType == 'LABELING_FUNCTION'">
+                        <kern-dropdown [dropdownOptions]="{
                             optionArray: attributes,
                             buttonCaption:selectedAttribute ? selectedAttribute : 'Select display attribute'
                         }" (optionClicked)="selectedAttribute = $event">
-                            </kern-dropdown>
-                        </div>
-                        <div [attr.data-tip]="hasUnsavedChanges() ? 'Unsaved Changes detected': selectedAttribute == '' ? 'Select an attribute' : 'Runs function on 10 records'"
-                            class="tooltip tooltip-left"
-                            *ngIf="informationSource.informationSourceType == 'LABELING_FUNCTION'">
-                            <button (click)="getLabelingFunctionOn10Records(project.id)"
-                                [ngClass]="hasUnsavedChanges() || justClickedRun || selectedAttribute =='' ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
-                                [disabled]="hasUnsavedChanges() || justClickedRun || selectedAttribute ==''"
-                                class="bg-white text-gray-700 text-xs font-semibold px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none">
-                                Run on 10
-                            </button>
-                        </div>
-                        <div [attr.data-tip]="hasUnsavedChanges() ? 'Unsaved Changes detected':'Creates a task to run the function'"
-                            class="tooltip tooltip-left">
-                            <button (click)="runInformationSource(project.id)"
-                                [ngClass]="hasUnsavedChanges() || !canStartISRun() ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
-                                [disabled]="hasUnsavedChanges() || !canStartISRun()"
-                                class="ml-2 text-xs font-medium px-4 py-2 rounded-md border border-blue-300 text-blue-700 bg-blue-50 hover:bg-blue-100 focus:outline-none">
-                                Run
-                            </button>
-                        </div>
-                        <div data-tip="Run weak supervision on current labeling task" class="tooltip tooltip-left">
-                            <button (click)="runInformationSourceAndWeaklySupervise(project.id)"
-                                [ngClass]="hasUnsavedChanges() || !canStartISRun() ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
-                                [disabled]="hasUnsavedChanges() || !canStartISRun()"
-                                class="ml-2 text-white text-xs font-medium px-4 py-2 rounded-md border bg-indigo-700 hover:bg-indigo-800 focus:outline-none">
-                                Run + weakly supervise
-                            </button>
+                        </kern-dropdown>
+                    </div>
+                    <div [attr.data-tip]="hasUnsavedChanges() ? 'Unsaved Changes detected': selectedAttribute == '' ? 'Select an attribute' : 'Runs function on 10 records'"
+                        class="tooltip tooltip-left"
+                        *ngIf="informationSource.informationSourceType == 'LABELING_FUNCTION'">
+                        <button (click)="getLabelingFunctionOn10Records(project.id)"
+                            [ngClass]="hasUnsavedChanges() || justClickedRun || selectedAttribute =='' ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
+                            [disabled]="hasUnsavedChanges() || justClickedRun || selectedAttribute ==''"
+                            class="bg-white text-gray-700 text-xs font-semibold px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none">
+                            Run on 10
+                        </button>
+                    </div>
+                    <div [attr.data-tip]="hasUnsavedChanges() ? 'Unsaved Changes detected':'Creates a task to run the function'"
+                        class="tooltip tooltip-left">
+                        <button (click)="runInformationSource(project.id)"
+                            [ngClass]="hasUnsavedChanges() || !canStartISRun() ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
+                            [disabled]="hasUnsavedChanges() || !canStartISRun()"
+                            class="ml-2 text-xs font-medium px-4 py-2 rounded-md border border-blue-300 text-blue-700 bg-blue-50 hover:bg-blue-100 focus:outline-none">
+                            Run
+                        </button>
+                    </div>
+                    <div data-tip="Run weak supervision on current labeling task" class="tooltip tooltip-left">
+                        <button (click)="runInformationSourceAndWeaklySupervise(project.id)"
+                            [ngClass]="hasUnsavedChanges() || !canStartISRun() ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
+                            [disabled]="hasUnsavedChanges() || !canStartISRun()"
+                            class="ml-2 text-white text-xs font-medium px-4 py-2 rounded-md border bg-indigo-700 hover:bg-indigo-800 focus:outline-none">
+                            Run + weakly supervise
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div *ngIf="sampleRecords && sampleRecords.records.length > 0 && !sampleRecords.codeHasErrors"
+                class="mt-12 flex flex-col">
+                <div class="overflow-x-auto">
+                    <div class="inline-block min-w-full align-middle">
+                        <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+                            <table class="min-w-full border divide-y divide-gray-300">
+                                <div class="divide-y divide-gray-200 bg-white"
+                                    *ngFor="let record of sampleRecords.records; let i = index">
+                                    <div
+                                        class="flex-shrink-0 border-b border-gray-200 shadow-sm flex justify-between items-center">
+                                        <div class="flex items-center text-xs leading-5 text-gray-500 font-normal mx-4 my-3"
+                                            style="text-align: justify;">
+                                            {{record.fullRecordData[selectedAttribute]}}
+                                        </div>
+                                        <div class="flex items-center justify-center mr-5 ml-auto">
+                                            <div *ngFor="let kv of record.calculatedLabelsResult | keyvalue"
+                                                class="ml-2 flex flex-row flex-nowrap items-center">
+                                                <span *ngIf="kv.value.displayAmount"
+                                                    class="text-xs text-gray-500 font-normal">
+                                                    {{kv.value.count}}x
+                                                </span>
+                                                <label
+                                                    [ngClass]="[getBackground(kv.value.color), getText(kv.value.color), getBorder(kv.value.color), getHover(kv.value.color)]"
+                                                    class="border inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border">
+                                                    {{kv.value.label}}
+                                                </label>
+                                            </div>
+
+                                        </div>
+                                        <div class="flex items-center justify-center mr-5">
+                                            <label
+                                                (click)="heuristicDetailsModals.attributeDetails.open = true; heuristicDetailsModals.attributeDetails.currentRecordIdx = i"
+                                                class="text-xs bg-white text-gray-700 text-xs font-semibold px-4 py-1 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none inline-block">
+                                                View
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </table>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <div *ngIf="sampleRecords && sampleRecords.records.length > 0 && !sampleRecords.codeHasErrors"
-                    class="mt-12 flex flex-col">
-                    <div class="overflow-x-auto">
-                        <div class="inline-block min-w-full align-middle">
+            <div class="mt-16 text-sm leading-5">
+                <div class="font-medium text-gray-700 inline-block">Container Logs</div>
+                <div class="inline-block">
+                    <button *ngIf="lastTask$ | async as task; else disabledIcon"
+                        [ngClass]="task ? 'tooltip tooltip-top' : ''" [attr.data-tip]="task? 'Click to copy' : ''"
+                        (click)="copyToClipboard(task.logs.join('\n'),0)">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                            class="transition-all duration-500 ease-in-out  h-6 w-6 text-gray-600 cursor-pointer inline-block"
+                            viewBox="0 0 20 20" fill="currentColor" [ngClass]="copyClicked == 0 ? 'opacity-0' : null">
+                            <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
+                            <path
+                                d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
+                        </svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="currentColor"
+                            class="-ml-6 top-0 transition-all duration-500 ease-in-out opacity-0 h-6 w-6 text-gray-600 inline-block"
+                            fill="none" [ngClass]="copyClicked == 0 ? 'opacity-100' : null">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                    </button>
+                    <ng-template #disabledIcon>
+                        <div data-tip="No runs to copy" class="tooltip tooltip-top">
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                class="transition-all duration-500 ease-in-out  h-6 w-6 text-gray-600 cursor-pointer inline-block"
+                                viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
+                                <path
+                                    d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
+                            </svg>
+                        </div>
+                    </ng-template>
+                </div>
+                <div class="inline-block font-normal text-gray-500">Please send this log to the support if you face
+                    problems
+                    with your heuristic</div>
+
+            </div>
+            <div *ngIf="displayLogWarning" class="text-sm inline-block font-normal text-gray-500">
+                This is a temporary log from your last "Run on 10" execution. It will vanish once you leave/reload the
+                page or
+                "Run" the heuristic.
+            </div>
+            <kern-logs [logs]="lastTaskLogs"></kern-logs>
+
+            <div class="mt-8">
+                <div class="text-sm leading-5 font-medium text-gray-700 inline-block">Statistics</div>
+                <div class="mt-1 flex flex-col">
+                    <div class="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                        <div class="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
                             <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
                                 <table class="min-w-full border divide-y divide-gray-300">
-                                    <div class="divide-y divide-gray-200 bg-white"
-                                        *ngFor="let record of sampleRecords.records; let i = index">
-                                        <div
-                                            class="flex-shrink-0 border-b border-gray-200 shadow-sm flex justify-between items-center">
-                                            <div class="flex items-center text-xs leading-5 text-gray-500 font-normal mx-4 my-3"
-                                                style="text-align: justify;">
-                                                {{record.fullRecordData[selectedAttribute]}}
-                                            </div>
-                                            <div class="flex items-center justify-center mr-5 ml-auto">
-                                                <div *ngFor="let kv of record.calculatedLabelsResult | keyvalue"
-                                                    class="ml-2 flex flex-row flex-nowrap items-center">
-                                                    <span *ngIf="kv.value.displayAmount"
-                                                        class="text-xs text-gray-500 font-normal">
-                                                        {{kv.value.count}}x
-                                                    </span>
-                                                    <label
-                                                        [ngClass]="[getBackground(kv.value.color), getText(kv.value.color), getBorder(kv.value.color), getHover(kv.value.color)]"
-                                                        class="border inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border">
-                                                        {{kv.value.label}}
-                                                    </label>
-                                                </div>
-
-                                            </div>
-                                            <div class="flex items-center justify-center mr-5">
-                                                <label (click)="currentRecordIdx = i" for="attribute-details"
-                                                    class="text-xs bg-white text-gray-700 text-xs font-semibold px-4 py-1 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none inline-block">
-                                                    View
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th scope="col"
+                                                class="py-2 pl-4 pr-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500 sm:pl-6">
+                                                Label</th>
+                                            <th scope="col"
+                                                class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                                <span class="tooltip-text-smaller tooltip tooltip-right"
+                                                    data-tip="True positives / (True positives + False positives) for the reference data you labeled">Est.
+                                                    Precision</span>
+                                            </th>
+                                            <th *ngIf="informationSource.returnType == 'YIELD'" scope="col"
+                                                class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                                <span class="tooltip-text-smaller tooltip tooltip-right"
+                                                    data-tip="True positives / (True positives + False negatives) for the reference data you labeled">Est.
+                                                    Recall</span>
+                                            </th>
+                                            <th scope="col"
+                                                class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                                <span class="tooltip-text-smaller tooltip tooltip-left"
+                                                    data-tip="How many records does this heuristic generally hit?">Coverage</span>
+                                            </th>
+                                            <th scope="col"
+                                                class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                                <span class="tooltip-text-no-margin tooltip tooltip-left"
+                                                    data-tip="How many spans are hit by this heuristic?">Hits</span>
+                                            </th>
+                                            <th scope="col"
+                                                class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                                <span class="tooltip-text-bigger tooltip tooltip-left"
+                                                    data-tip="On how many records (or spans) does this heuristic create conflicting expressions to other heuristics?">Conflicts</span>
+                                            </th>
+                                            <th scope="col"
+                                                class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                                <span class="tooltip-text-bigger tooltip tooltip-left"
+                                                    data-tip="On how many records (or spans) does this heuristic create overlapping expressions to other heuristics?">Overlaps</span>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-200">
+                                        <tr *ngFor="let sourceContainer of informationSource.stats; let j = index"
+                                            [ngClass]="j%2!=0 ? 'bg-gray-50':'bg-white'">
+                                            <td
+                                                class="whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                                                <span
+                                                    [ngClass]="[getBackground(sourceContainer.color), getText(sourceContainer.color), getBorder(sourceContainer.color)]"
+                                                    class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border">
+                                                    {{sourceContainer.label}}
+                                                </span>
+                                            </td>
+                                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                                {{sourceContainer.values.Precision | percentRound: 2 }}
+                                            </td>
+                                            <td *ngIf="informationSource.returnType == 'YIELD'"
+                                                class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                                {{sourceContainer.values.Recall | percentRound: 2}}
+                                            </td>
+                                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                                {{sourceContainer.values.Coverage}}
+                                            </td>
+                                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                                {{sourceContainer.values.TotalHits}}
+                                            </td>
+                                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                                {{sourceContainer.values.Conflicts}}
+                                            </td>
+                                            <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                                {{sourceContainer.values.Overlaps}}
+                                            </td>
+                                        </tr>
+                                    </tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <div class="mt-16 text-sm leading-5">
-                    <div class="font-medium text-gray-700 inline-block">Container Logs</div>
-                    <div class="inline-block">
-                        <button *ngIf="lastTask$ | async as task; else disabledIcon"
-                            [ngClass]="task ? 'tooltip tooltip-top' : ''" [attr.data-tip]="task? 'Click to copy' : ''"
-                            (click)="copyToClipboard(task.logs.join('\n'),0)">
-                            <svg xmlns="http://www.w3.org/2000/svg"
-                                class="transition-all duration-500 ease-in-out  h-6 w-6 text-gray-600 cursor-pointer inline-block"
-                                viewBox="0 0 20 20" fill="currentColor"
-                                [ngClass]="copyClicked == 0 ? 'opacity-0' : null">
-                                <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
-                                <path
-                                    d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
-                            </svg>
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="currentColor"
-                                class="-ml-6 top-0 transition-all duration-500 ease-in-out opacity-0 h-6 w-6 text-gray-600 inline-block"
-                                fill="none" [ngClass]="copyClicked == 0 ? 'opacity-100' : null">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M5 13l4 4L19 7" />
-                            </svg>
-                        </button>
-                        <ng-template #disabledIcon>
-                            <div data-tip="No runs to copy" class="tooltip tooltip-top">
-                                <svg xmlns="http://www.w3.org/2000/svg"
-                                    class="transition-all duration-500 ease-in-out  h-6 w-6 text-gray-600 cursor-pointer inline-block"
-                                    viewBox="0 0 20 20" fill="currentColor">
-                                    <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
-                                    <path
-                                        d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
-                                </svg>
-                            </div>
-                        </ng-template>
-                    </div>
-                    <div class="inline-block font-normal text-gray-500">Please send this log to the support if you face
-                        problems
-                        with your heuristic</div>
+            <div class="mt-8 pb-4">
+                <div class="text-gray-900 text-lg leading-6 font-medium">Danger zone</div>
+                <div class="text-sm leading-5 font-normal mt-2 text-gray-500 inline-block">This action can not be
+                    reversed.
+                    Are you sure you want to delete this heuristics?</div>
 
+                <div data-tip="This can't be reverted!" class="tooltip tooltip-right">
+                    <label (click)="heuristicDetailsModals.deleteHeuristic.open = true;"
+                        class="bg-red-100 text-red-700 border border-red-400 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer ml-6 h-9 hover:bg-red-200 focus:outline-none">
+                        Delete {{ informationSource.name}}
+                    </label>
                 </div>
-                <div *ngIf="displayLogWarning" class="text-sm inline-block font-normal text-gray-500">
-                    This is a temporary log from your last "Run on 10" execution. It will vanish once you leave/reload
-                    the
-                    page or
-                    "Run" the heuristic.
-                </div>
-                <kern-logs [logs]="lastTaskLogs"></kern-logs>
+            </div>
+        </div>
+    </div>
+</div>
 
-                <div class="mt-8">
-                    <div class="text-sm leading-5 font-medium text-gray-700 inline-block">Statistics</div>
-                    <div class="mt-1 flex flex-col">
-                        <div class="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                            <div class="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-                                <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-                                    <table class="min-w-full border divide-y divide-gray-300">
-                                        <thead class="bg-gray-50">
-                                            <tr>
-                                                <th scope="col"
-                                                    class="py-2 pl-4 pr-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500 sm:pl-6">
-                                                    Label</th>
-                                                <th scope="col"
-                                                    class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                                    <span class="tooltip-text-smaller tooltip tooltip-right"
-                                                        data-tip="True positives / (True positives + False positives) for the reference data you labeled">Est.
-                                                        Precision</span>
-                                                </th>
-                                                <th *ngIf="informationSource.returnType == 'YIELD'" scope="col"
-                                                    class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                                    <span class="tooltip-text-smaller tooltip tooltip-right"
-                                                        data-tip="True positives / (True positives + False negatives) for the reference data you labeled">Est.
-                                                        Recall</span>
-                                                </th>
-                                                <th scope="col"
-                                                    class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                                    <span class="tooltip-text-smaller tooltip tooltip-left"
-                                                        data-tip="How many records does this heuristic generally hit?">Coverage</span>
-                                                </th>
-                                                <th scope="col"
-                                                    class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                                    <span class="tooltip-text-no-margin tooltip tooltip-left"
-                                                        data-tip="How many spans are hit by this heuristic?">Hits</span>
-                                                </th>
-                                                <th scope="col"
-                                                    class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                                    <span class="tooltip-text-bigger tooltip tooltip-left"
-                                                        data-tip="On how many records (or spans) does this heuristic create conflicting expressions to other heuristics?">Conflicts</span>
-                                                </th>
-                                                <th scope="col"
-                                                    class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                                    <span class="tooltip-text-bigger tooltip tooltip-left"
-                                                        data-tip="On how many records (or spans) does this heuristic create overlapping expressions to other heuristics?">Overlaps</span>
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="divide-y divide-gray-200">
-                                            <tr *ngFor="let sourceContainer of informationSource.stats; let j = index"
-                                                [ngClass]="j%2!=0 ? 'bg-gray-50':'bg-white'">
-                                                <td
-                                                    class="whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-                                                    <span
-                                                        [ngClass]="[getBackground(sourceContainer.color), getText(sourceContainer.color), getBorder(sourceContainer.color)]"
-                                                        class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border">
-                                                        {{sourceContainer.label}}
-                                                    </span>
-                                                </td>
-                                                <td
-                                                    class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                                    {{sourceContainer.values.Precision | percentRound: 2 }}
-                                                </td>
-                                                <td *ngIf="informationSource.returnType == 'YIELD'"
-                                                    class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                                    {{sourceContainer.values.Recall | percentRound: 2}}
-                                                </td>
-                                                <td
-                                                    class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                                    {{sourceContainer.values.Coverage}}
-                                                </td>
-                                                <td
-                                                    class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                                    {{sourceContainer.values.TotalHits}}
-                                                </td>
-                                                <td
-                                                    class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                                    {{sourceContainer.values.Conflicts}}
-                                                </td>
-                                                <td
-                                                    class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                                    {{sourceContainer.values.Overlaps}}
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
+
+<kern-modal [isOpen]="heuristicDetailsModals.deleteHeuristic.open" closeButton="X"
+    [modalBoxStyle]="{'width':'30rem','text-align':'center'}" [abortButton]="{
+    buttonCaption: 'Delete heuristic',
+    emitObject: this, emitFunction: deleteInformationSource
+}" (optionClicked)="heuristicDetailsModals.deleteHeuristic.open = false;">
+    <h1 class="text-lg text-gray-900 mb-2">Warning</h1>
+    <div class="text-sm text-gray-500 my-2">
+        Are you sure you want to delete this heuristic?
+    </div>
+</kern-modal>
+
+<kern-modal [isOpen]="heuristicDetailsModals.attributeDetails.open" [modalBoxStyle]="{'min-width':'30rem'}"
+    closeButton="X" (optionClicked)="heuristicDetailsModals.attributeDetails.open = false;">
+    <h1 class="text-lg text-gray-900 mb-2 text-center">View details</h1>
+    <div *ngIf="heuristicDetailsModals.attributeDetails.currentRecordIdx != -1">
+        <div *ngIf="sampleRecords.records[heuristicDetailsModals.attributeDetails.currentRecordIdx] as record">
+            <div class="text-sm text-gray-500 my-2" class="overflow-y-auto max-height-modal scrollable-size">
+                <div *ngFor="let att of attributes" class="text-sm leading-5 text-left my-3">
+                    <div class="text-gray-900 font-bold">{{att.name}}</div>
+                    <div class="text-gray-500 font-normal">
+                        {{record.fullRecordData[att.name]}}
                     </div>
                 </div>
+                <div class="text-sm leading-5 text-left text-gray-900 font-bold">
+                    Label data
 
-                <div class="mt-8 pb-4">
-                    <div class="text-gray-900 text-lg leading-6 font-medium">Danger zone</div>
-                    <div class="text-sm leading-5 font-normal mt-2 text-gray-500 inline-block">This action can not be
-                        reversed.
-                        Are you sure you want to delete this heuristics?</div>
-
-                    <div data-tip="This can't be reverted!" class="tooltip tooltip-right">
-                        <label [for]="'delete-modal-'+informationSource.id"
-                            class="bg-red-100 text-red-700 border border-red-400 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer ml-6 h-9 hover:bg-red-200 focus:outline-none">
-                            Delete {{ informationSource.name}}
-                        </label>
-                    </div>
-                    <input type="checkbox" [id]="'delete-modal-'+informationSource.id" class="modal-toggle">
-                    <div class="modal text-center items-center">
-                        <div class="modal-box">
-                            <h1 class="text-lg text-gray-900 mb-2">Delete heuristic</h1>
-                            <div class="text-sm text-gray-500 my-2">
-                                Are you sure you want to delete this heuristic?
-                            </div>
-
-                            <div class="modal-action text-center mt-0">
-                                <label [for]="'delete-modal-'+informationSource.id"
-                                    class="bg-red-100 text-red-700 border border-red-400 text-xs font-semibold mr-2 px-4 py-2 rounded flex cursor-pointer inline-block hover:bg-red-200 focus:outline-none"
-                                    [routerLink]="['../']"
-                                    (click)="deleteInformationSource(project.id, informationSource.id)">Delete</label>
-                                <label [for]="'delete-modal-'+informationSource.id"
-                                    class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer inline-block hover:bg-gray-50 focus:outline-none">Close</label>
-                            </div>
+                    <div class="flex flex-row items-center">
+                        <div *ngFor="let kv of record.calculatedLabelsResult | keyvalue"
+                            class="mr-2 flex flex-row flex-nowrap items-center">
+                            <span *ngIf="kv.value.displayAmount" class="text-xs text-gray-500 font-normal">
+                                {{kv.value.count}}x
+                            </span>
+                            <label
+                                [ngClass]="[getBackground(kv.value.color), getText(kv.value.color), getBorder(kv.value.color), getHover(kv.value.color)]"
+                                class="border inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border">
+                                {{kv.value.label}}
+                            </label>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-
-    <input type="checkbox" id="attribute-details" class="modal-toggle">
-    <div class="modal text-center items-center">
-        <div *ngIf="currentRecordIdx != -1" class="modal-box" style="max-width: 48rem;">
-            <div *ngIf="sampleRecords.records[currentRecordIdx] as record">
-                <h1 class="text-lg text-gray-900 mb-2">View details</h1>
-                <div class="text-sm text-gray-500 my-2" class="overflow-y-auto max-height-modal scrollable-size">
-                    <div *ngFor="let att of attributes" class="text-sm leading-5 text-left my-3">
-                        <div class="text-gray-900 font-bold">{{att.name}}</div>
-                        <div class="text-gray-500 font-normal">
-                            {{record.fullRecordData[att.name]}}
-                        </div>
-                    </div>
-                    <div class="text-sm leading-5 text-left text-gray-900 font-bold">
-                        Label data
-
-                        <div class="flex flex-row items-center">
-                            <div *ngFor="let kv of record.calculatedLabelsResult | keyvalue"
-                                class="mr-2 flex flex-row flex-nowrap items-center">
-                                <span *ngIf="kv.value.displayAmount" class="text-xs text-gray-500 font-normal">
-                                    {{kv.value.count}}x
-                                </span>
-                                <label
-                                    [ngClass]="[getBackground(kv.value.color), getText(kv.value.color), getBorder(kv.value.color), getHover(kv.value.color)]"
-                                    class="border inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border">
-                                    {{kv.value.label}}
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="modal-action text-center">
-                    <label for="attribute-details"
-                        class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none inline-block">Close</label>
-                </div>
-            </div>
-        </div>
-    </div>
+</kern-modal>

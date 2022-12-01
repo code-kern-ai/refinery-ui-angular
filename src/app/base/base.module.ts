@@ -25,6 +25,7 @@ import { BricksIntegratorComponent } from './components/bricks-integrator/bricks
 
 import { HeuristicStatusesComponent } from './components/heuristic-statuses/heuristic-statuses.component';
 import { LogsComponent } from './components/logs/logs.component';
+import { DefaultOrderKeyvaluePipe } from './pipes/default-order-key-value.pipe';
 
 @NgModule({
   declarations: [
@@ -43,7 +44,8 @@ import { LogsComponent } from './components/logs/logs.component';
     CommentComponent,
     BricksIntegratorComponent,
     HeuristicStatusesComponent,
-    LogsComponent
+    LogsComponent,
+    DefaultOrderKeyvaluePipe
   ],
   imports: [CommonModule, AppRoutingModule, HighlightModule],
   exports: [
@@ -72,7 +74,8 @@ import { LogsComponent } from './components/logs/logs.component';
     CommentComponent,
     BricksIntegratorComponent,
     HeuristicStatusesComponent,
-    LogsComponent
+    LogsComponent,
+    DefaultOrderKeyvaluePipe
   ],
   providers: [
     {

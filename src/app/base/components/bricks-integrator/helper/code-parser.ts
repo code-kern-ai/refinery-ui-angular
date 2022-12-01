@@ -82,7 +82,7 @@ export class BricksCodeParser {
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i];
             if (line.startsWith("def ")) break;
-            if (line.includes("YOUR_")) variableLines.push(line);
+            if (line.startsWith("YOUR_")) variableLines.push(line);
         }
         return variableLines;
     }

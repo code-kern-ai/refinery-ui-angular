@@ -57,6 +57,8 @@ import { labelingLinkType } from 'src/app/labeling/components/helper/labeling-he
 import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
 import { UpdateSearchParameters } from './helper-classes/update-search-parameters';
 import { getAttributeType, getSearchOperatorTooltip, SearchOperator } from './helper-classes/search-operators';
+import { createDefaultDataBrowserModals, DataBrowserModals } from './helper-classes/modals-helper';
+import { CommentsFilter } from './helper-classes/comments-filter';
 
 
 type DataSlice = {
@@ -158,19 +160,14 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   activeSlice: DataSlice = null;
   dataSliceFilter: string = "";
   lastActiveSliceId: string = ""; // used for activating correct slice after refetching
-  sliceNameExists: boolean = false;
-  sliceInfo = {};
   anyRecordManuallyLabeled: boolean = false;
   initializingFilter: Boolean = false;
   displayOutdatedWarning: Boolean = false;
   displayChangedValuesWarning: Boolean = false;
-  displayStaticNotAllowedWarning: Boolean = false;
 
   subscriptions$: Subscription[] = [];
 
   lastSearchParams;
-  highlightText: boolean = true;
-  weakSupervisionRelated: boolean = false;
   isTextHighlightNeeded: Map<string, boolean> = new Map<string, boolean>();
   textHighlightArray: Map<string, string[]> = new Map<string, string[]>();
 
@@ -192,8 +189,10 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   tooltipsArray: string[] = [];
   saveDropdonwAttribute: string = "";
   colorsAttributes: string[] = [];
-  separator: string = ",";
   updateSearchParameters: UpdateSearchParameters;
+  dataBrowserModals: DataBrowserModals = createDefaultDataBrowserModals();
+  recordComments: any = {};
+  commentsFilter: CommentsFilter;
 
   getSearchFormArray(groupKey: string): FormArray {
     return this.fullSearch.get(groupKey).get('groupElements') as FormArray;
@@ -232,6 +231,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     this.filterParser = new DataBrowserFilterParser(this);
     this.userFilter = new UserFilter(this, this.organizationApolloService);
     this.updateSearchParameters = new UpdateSearchParameters(this);
+    this.commentsFilter = new CommentsFilter(this, this.projectApolloService);
 
     let preparationTasks$ = [];
     preparationTasks$.push(this.userFilter.prepareUserRequest());
@@ -471,6 +471,9 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       );
     }
 
+    // comments
+    this.commentsFilter.addSearchGroup();
+
     //debounce
     let tasks$ = [];
     for (let [key, value] of this.fullSearch) {
@@ -512,7 +515,6 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     return group;
   }
 
-
   private _sortOrderSearchGroupItemChanged(
     group: FormGroup,
     next
@@ -547,7 +549,6 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     }
     return false;
   }
-
 
   public onlyKeepUpdatedGroup(formItem: FormGroup | FormArray | FormControl, updatedValues: any,
     name?: string) {
@@ -1008,12 +1009,16 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     return false;
   }
 
-  requestSimilarSearch(recordId: string, embeddingId: string = null) {
-    this.similarSearchHelper.requestSimilarSearch(embeddingId, recordId);
+  requestSimilarSearch() {
+    const saveSimilaritySeach = this.dataBrowserModals.similaritySearch;
+    this.similarSearchHelper.requestSimilarSearch(saveSimilaritySeach.embeddingId, saveSimilaritySeach.recordId);
   }
 
-  requestOutlierSlice(embedding_id: string = null) {
-    this.similarSearchHelper.requestOutlierSlice(embedding_id);
+  requestOutlierSlice() {
+    if (this.similarSearchHelper.embeddings?.length == 1) {
+      this.dataBrowserModals.findOutliers.embeddingId = this.similarSearchHelper.embeddings[0].id;
+    }
+    this.similarSearchHelper.requestOutlierSlice(this.dataBrowserModals.findOutliers.embeddingId);
   }
 
   requestExtendedSearch(force: boolean = false) {
@@ -1126,7 +1131,10 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       ];
     } else {
       this.extendedRecords.recordList = parsedRecordData;
+      this.recordComments = {};
     }
+
+    this.commentsFilter.collectRecordComments(parsedRecordData);
   }
 
   parseRecordData(newRecordData) {
@@ -1326,11 +1334,11 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   }
 
   toggleHighlightText() {
-    this.highlightText = !this.highlightText;
+    this.dataBrowserModals.configuration.highlightText = !this.dataBrowserModals.configuration.highlightText;
   }
 
   toggleWeakSupervisionRelated() {
-    this.weakSupervisionRelated = !this.weakSupervisionRelated;
+    this.dataBrowserModals.configuration.weakSupervisionRelated = !this.dataBrowserModals.configuration.weakSupervisionRelated;
   }
 
   setSortForControl(control: AbstractControl) {
@@ -1397,6 +1405,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       .pipe(first()).subscribe(data => {
         const id = data["data"]["createDataSlice"]["id"];
         if (id != "") this.lastActiveSliceId = id;
+        this.dataBrowserModals.filter.name = "";
       });
 
     this.displayOutdatedWarning = false;
@@ -1412,8 +1421,9 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
 
 
   updateSliceByName(name: string) {
+    this.dataBrowserModals.filter.name = name;
     for (let value of this.slicesById.values()) {
-      if (value.name == name) {
+      if (value.name == this.dataBrowserModals.filter.name) {
         this.activeSlice = value;
         this.updateSlice(this.isStaticDataSlice);
         break;
@@ -1438,17 +1448,18 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
             this.refreshDataSlice();
             timer.unsubscribe();
           }
-        })
+        });
+        this.dataBrowserModals.filter.name = "";
       });
     this.displayOutdatedWarning = false;
 
   }
 
 
-  deleteSlice(id: string = "") {
+  deleteSlice() {
     let idToDelete = "";
-    if (id != "") {
-      idToDelete = id;
+    if (this.dataBrowserModals.deleteSlice.id != "") {
+      idToDelete = this.dataBrowserModals.deleteSlice.id;
       this.lastActiveSliceId = this.activeSlice ? this.activeSlice.id : this.lastActiveSliceId;
     }
     else if (this.activeSlice) {
@@ -1522,7 +1533,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
 
   updateSliceInfo(sliceId: string) {
     if (!this.slicesById.has(sliceId)) {
-      this.sliceInfo = [{ fieldName: "Error", fieldValue: "Slice does not exist!" }];
+      this.dataBrowserModals.sliceInfo.data = [{ fieldName: "Error", fieldValue: "Slice does not exist!" }];
     }
     const slice = this.slicesById.get(sliceId);
 
@@ -1553,13 +1564,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       sliceInfo["Link"] = "/projects/" + this.projectId + "/labeling/" + sliceId;
       sliceInfo["Link"] = this.buildFullLink("/projects/" + this.projectId + "/labeling/" + sliceId);
     }
-    this.sliceInfo = sliceInfo;
-  }
-
-
-
-  orderOriginal(a: KeyValue<number, string>, b: KeyValue<number, string>): number {
-    return 0
+    this.dataBrowserModals.sliceInfo.data = sliceInfo;
   }
 
   parseUTC(utc: string, forOutlier: boolean = false) {
@@ -1587,6 +1592,8 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
         this.processOrderByFilter(key, filters);
       } else if (key == SearchGroup.USER_FILTER) {
         this.userFilter.processUserFilters(key, filters);
+      } else if (key == SearchGroup.COMMENTS) {
+        this.commentsFilter.processCommentsFilter(key, filters);
       }
       else {
         this.displayOutdatedWarning = true;
@@ -1865,7 +1872,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   }
 
   checkNameExists(value: string) {
-    this.sliceNameExists = this.sliceNames.has(value);
+    this.dataBrowserModals.filter.sliceNameExists = this.sliceNames.has(value);
   }
 
   checkAndDisplayDisplayValuesChangedWarning() {
@@ -1880,7 +1887,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     let allowed = (this.extendedRecords != undefined && this.extendedRecords.fullCount && this.extendedRecords.fullCount < 10000);
     if (!allowed) {
       this.isStaticDataSlice = false;
-      this.displayStaticNotAllowedWarning = true;
+      this.dataBrowserModals.filter.displayStaticNotAllowedWarning = true;
     }
   }
   setStatic(htmlDynamic: HTMLInputElement, htmlStatic: HTMLInputElement, isStatic: boolean) {
@@ -2069,14 +2076,14 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       const operatorValue = this.getSearchFormArray(key).controls[i].get("operator").value;
       let pattern;
       if (attributeType == "INTEGER") {
-        if (this.separator == '-') {
+        if (this.dataBrowserModals.configuration.separator == '-') {
           pattern = operatorValue == 'IN' ? /^[0-9-]$/i : operatorValue == 'IN WC' ? /^[0-9_%-*?]$/i : /^[0-9]$/i;
         } else {
           pattern = operatorValue == 'IN' ? /^[0-9,]$/i : operatorValue == 'IN WC' ? /^[0-9,_%*?]$/i : /^[0-9]$/i;
         }
 
       } else {
-        if (this.separator == '-') {
+        if (this.dataBrowserModals.configuration.separator == '-') {
           pattern = operatorValue == 'IN' ? /^[0-9.-]$/i : operatorValue == 'IN WC' ? /^[0-9._%-*?]$/i : /^[0-9.]$/i;
         } else {
           pattern = operatorValue == 'IN' ? /^[0-9.,]$/i : operatorValue == 'IN WC' ? /^[0-9.,_%*?]$/i : /^[0-9.]$/i;
@@ -2087,5 +2094,13 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
         return;
       }
     }
+  }
+
+  setEmbeddingId(selectedValue: string) {
+    this.dataBrowserModals.findOutliers.embeddingId = this.similarSearchHelper.embeddings[selectedValue].id;
+  }
+
+  setEmbeddingIdSS(selectedValue: string) {
+    this.dataBrowserModals.similaritySearch.embeddingId = this.similarSearchHelper.embeddings[selectedValue].id;
   }
 }

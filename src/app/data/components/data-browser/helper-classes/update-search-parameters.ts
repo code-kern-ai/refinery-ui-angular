@@ -59,7 +59,7 @@ export class UpdateSearchParameters {
                         " (" +
                         searchElement.values.searchValue + ")";
                 } else {
-                    const splitTextBySeparator = searchElement.values.searchValue.split(this.dataBrowser.separator).filter(i => i);
+                    const splitTextBySeparator = searchElement.values.searchValue.split(this.dataBrowser.dataBrowserModals.configuration.separator).filter(i => i);
                     searchElement.searchText = searchElement.values.name + ' ' + searchElement.values.operator + " (" + splitTextBySeparator.map(x => "'" + x + "'").join(", ") + ")";
                 }
             }
@@ -84,7 +84,7 @@ export class UpdateSearchParameters {
             }
             if (searchElement.values.negate)
                 searchElement.searchText = 'NOT (' + searchElement.searchText + ')';
-            if (this.dataBrowser.separator == "-")
+            if (this.dataBrowser.dataBrowserModals.configuration.separator == "-")
                 searchElement.searchText = searchElement.searchText.replaceAll("-", ",");
         } else if (searchElement.values.type == SearchItemType.LABELING_TASK) {
             searchElement.searchText = this.dataBrowser._labelingTaskBuildSearchParamText(
@@ -100,6 +100,10 @@ export class UpdateSearchParameters {
             );
 
             this.dataBrowser.staticSliceOrderActive = searchElement.searchText.replace("ORDER BY ", "");
+        } else if (searchElement.values.type == SearchItemType.COMMENTS) {
+            searchElement.searchText = this.dataBrowser.commentsFilter.buildSearchParamText(
+                searchElement.values
+            );
         }
     }
 
