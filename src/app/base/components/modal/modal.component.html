@@ -1,5 +1,5 @@
-<div class="relative z-modal-container" [ngClass]="isOpen?null:'pointer-events-none'" aria-labelledby="modal-title"
-    role="dialog" aria-modal="true">
+<div class="relative z-modal-container" [ngClass]="isOpen?null:'pointer-events-none hidden'"
+    aria-labelledby="modal-title" role="dialog" aria-modal="true">
     <div #backdrop class="fixed inset-0 bg-gray-500 bg-opacity-50 transition-opacity opacity-0"></div>
     <div class="fixed inset-0 z-modal overflow-y-auto">
         <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
@@ -8,7 +8,7 @@
                 [ngStyle]="modalBoxStyle">
                 <div>
                     <ng-content></ng-content>
-                    <div *ngIf="closeButton?.useButton || acceptButton?.useButton|| abortButton?.useButton"
+                    <div *ngIf="closeButton?.useButton || acceptButton?.useButton|| abortButton?.useButton || backButton?.useButton"
                         class="mt-2 flex flex-row-reverse justify-start">
                         <!--close button-->
                         <button *ngIf="closeButton.useButton" (click)="clickButton(closeButton)"
@@ -25,7 +25,11 @@
                             [attr.disabled]="abortButton.disabled?true:null"
                             [ngClass]="abortButton.disabled ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
                             class="ml-2 bg-red-100 border border-red-400 text-red-700 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer hover:bg-red-200 focus:outline-none">{{abortButton.buttonCaption}}</button>
-
+                        <!--back button-->
+                        <button *ngIf="backButton.useButton" (click)="clickButton(backButton)"
+                            [attr.disabled]="backButton.disabled?true:null"
+                            [ngClass]="backButton.disabled ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
+                            class="ml-2 bg-white text-gray-700 border border-gray-300 text-xs font-semibold px-4 py-2 rounded cursor-pointer hover:bg-gray-50 focus:outline-none">{{backButton.buttonCaption}}</button>
                     </div>
                 </div>
             </div>

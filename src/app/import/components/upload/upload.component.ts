@@ -176,7 +176,7 @@ export class UploadComponent implements OnDestroy, OnInit, AfterViewInit {
     this.uploadTask$ = this.uploadTask$.subscribe((task) => {
       this.uploadTask = task;
       this.fileUploaded.nativeElement.classList.add('hidden');
-      if (task.state == UploadStates.DONE) {
+      if (task.state == UploadStates.DONE || task.progress == 100) {
         this.clearUploadTask();
         if (this.reloadOnFinish) location.reload();
         else this.uploadStarted = false;
@@ -230,7 +230,10 @@ export class UploadComponent implements OnDestroy, OnInit, AfterViewInit {
         this.uploadTask.state = UploadStates[msgParts[4]]
       };
     }
-    else if (msgParts[3] == 'progress') this.uploadTask.progress = Number(msgParts[4]);
+    else if (msgParts[3] == 'progress') {
+      if (msgParts[4] == "100") this.uploadTaskQuery$.refetch();
+      else this.uploadTask.progress = Number(msgParts[4]);
+    }
     else {
       console.log("unknown websocket message in part 3:" + msgParts[3], "full message:", msgParts)
     }

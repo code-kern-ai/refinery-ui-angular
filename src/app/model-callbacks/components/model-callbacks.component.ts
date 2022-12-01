@@ -9,6 +9,7 @@ import { RouteService } from 'src/app/base/services/route.service';
 import { WeakSourceApolloService } from 'src/app/base/services/weak-source/weak-source-apollo.service';
 import { dateAsUTCDate } from 'src/app/util/helper-functions';
 import { UserManager } from 'src/app/util/user-manager';
+import { createDefaultModelCallbacksModals, ModelCallbacksModals } from './model-callbacks-helper';
 
 @Component({
   selector: 'model-callbacks',
@@ -33,7 +34,6 @@ export class ModelCallbackComponent implements OnInit, OnDestroy {
   labelingTasksQuery$: any;
 
   modalOpen: boolean = false;
-  selectedInformationSources = [];
   informationSourcesArray = [];
   filteredSourcesList = [];
 
@@ -41,8 +41,7 @@ export class ModelCallbackComponent implements OnInit, OnDestroy {
   functionName: string = '';
   labelingTaskId: any;
   description: string;
-  selectionList: string = "";
-  @ViewChild("deleteSelectedHeuristics") deleteSelectedHeuristics: ElementRef;
+  modelCallbackModals: ModelCallbacksModals = createDefaultModelCallbacksModals();
 
   constructor(
     private router: Router,
@@ -66,7 +65,7 @@ export class ModelCallbackComponent implements OnInit, OnDestroy {
 
     [this.informationSourcesQuery$, this.informationSources$] = this.informationSourceApolloService.getModelCallbacksOverviewData(projectId);
     this.subscriptions$.push(this.informationSources$.subscribe((sources) => {
-      this.selectedInformationSources = sources.filter((i) => i.selected);
+      this.modelCallbackModals.deleteSelected.selectedInformationSources = sources.filter((i) => i.selected);
       this.informationSourcesArray = sources;
       const currentTaskFilter = this.labelingTasks && this.openTab != -1 ? this.labelingTasks[this.openTab] : null;
       this.toggleTabs(this.openTab, currentTaskFilter);
@@ -109,9 +108,9 @@ export class ModelCallbackComponent implements OnInit, OnDestroy {
   }
 
 
-  deleteSelectedInformationSources(projectId: string) {
-    this.selectedInformationSources.forEach(el => {
-      this.deleteInformationSource(projectId, el.id);
+  deleteSelectedInformationSources() {
+    this.modelCallbackModals.deleteSelected.selectedInformationSources.forEach(el => {
+      this.deleteInformationSource(this.project.id, el.id);
     })
   }
 
@@ -185,10 +184,10 @@ export class ModelCallbackComponent implements OnInit, OnDestroy {
 
 
   prepareSelectionList() {
-    this.selectionList = "";
-    this.selectedInformationSources.forEach(el => {
-      if (this.selectionList) this.selectionList += "\n";
-      this.selectionList += el.name;
+    this.modelCallbackModals.deleteSelected.selectionList = "";
+    this.modelCallbackModals.deleteSelected.selectedInformationSources.forEach(el => {
+      if (this.modelCallbackModals.deleteSelected.selectionList) this.modelCallbackModals.deleteSelected.selectionList += "\n";
+      this.modelCallbackModals.deleteSelected.selectionList += el.name;
     })
 
   }
@@ -209,7 +208,7 @@ export class ModelCallbackComponent implements OnInit, OnDestroy {
         this.setAllInformationSources(false);
         break;
       case 'Delete selected':
-        this.deleteSelectedHeuristics.nativeElement.checked = true;
+        this.modelCallbackModals.deleteSelected.open = true;
         this.prepareSelectionList();
         break;
     }

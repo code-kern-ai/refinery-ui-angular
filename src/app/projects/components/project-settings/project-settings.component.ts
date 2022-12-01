@@ -8,7 +8,6 @@ import { NotificationService } from 'src/app/base/services/notification.service'
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { RouteService } from 'src/app/base/services/route.service';
 import { DownloadState } from 'src/app/import/services/s3.enums';
-import { HttpClient } from '@angular/common/http';
 import { S3Service } from 'src/app/import/services/s3.service';
 import { WeakSourceApolloService } from 'src/app/base/services/weak-source/weak-source-apollo.service';
 import { ConfigManager } from 'src/app/base/services/config-service';
@@ -17,6 +16,7 @@ import { CommentDataManager, CommentType } from 'src/app/base/components/comment
 import { dataTypes } from 'src/app/util/data-types';
 import { copyToClipboard, toPythonFunctionName } from 'src/app/util/helper-functions';
 import { LabelHelper } from './helper/label-helper';
+import { createDefaultSettingModals, SettingModals } from './helper/modal-helper';
 
 @Component({
   selector: 'kern-project-settings',
@@ -57,34 +57,15 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
   subscriptions$: Subscription[] = [];
   embeddings: any;
   embeddingQuery$: any;
-  embeddingCreationFormGroup: FormGroup;
-  embeddingCreationBlocked: boolean = true;
   forceEmbeddingRefresh: boolean = true;
-  currentEmbeddingHandle;
   requestTimeOut: boolean = false;
   projectUpdateDisabled: boolean = true;
   isTaskNameUnique: boolean = true;
   tokenizationProgress: Number;
   downloadMessage: DownloadState = DownloadState.NONE;
-  downloadPrepareMessage: DownloadState = DownloadState.NONE;
-  projectSize: any[];
-  downloadSizeText: string;
-  projectExportSchema = this.formBuilder.group({
-    attributes: this.formBuilder.array([]),
-  });
-  get projectExportArray() {
-    return this.projectExportSchema.get('attributes') as FormArray;
-  }
 
   get DownloadStateType(): typeof DownloadState {
     return DownloadState;
-  }
-
-  attributesSchema = this.formBuilder.group({
-    attributes: this.formBuilder.array([]),
-  });
-  get attributesArray() {
-    return this.attributesSchema.get('attributes') as FormArray;
   }
 
   attributesArrayTextUsableUploaded: { id: string, name: string }[] = [];
@@ -92,7 +73,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
   attributes;
   pKeyCheckTimer;
   pKeyValid: boolean = null;
-  projectExportCredentials: any;
+  attributesSchema: FormGroup;
 
   labelingTasksSchema = this.formBuilder.group({
     labelingTasks: this.formBuilder.array([]),
@@ -101,16 +82,21 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     return this.labelingTasksSchema.get('labelingTasks') as FormArray;
   }
   @ViewChild('modalInput', { read: ElementRef }) myModalnewRecordTask: ElementRef;
-  @ViewChild('newAttributeModal', { read: ElementRef }) newAttributeModal: ElementRef;
   downloadedModelsList$: any;
   downloadedModelsQuery$: any;
   downloadedModels: any[];
   isManaged: boolean = true;
-  attributeName: string = '';
-  attributeType: string = 'Text';
-  duplicateNameExists: boolean = false;
 
   lh: LabelHelper;
+  settingModals: SettingModals = createDefaultSettingModals();
+
+  get projectExportArray() {
+    return this.settingModals.projectExport.projectExportSchema.get('attributes') as FormArray;
+  }
+
+  get attributesArray() {
+    return this.attributesSchema.get('attributes') as FormArray;
+  }
 
   constructor(
     private routeService: RouteService,
@@ -173,6 +159,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     }
     this.checkIfManagedVersion();
     this.lh = new LabelHelper(this, this.projectApolloService);
+    this.initForms();
   }
   private setUpCommentRequests(projectId: string) {
     const requests = [];
@@ -181,6 +168,15 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     requests.push({ commentType: CommentType.EMBEDDING, projectId: projectId });
     requests.push({ commentType: CommentType.LABEL, projectId: projectId });
     CommentDataManager.registerCommentRequests(this, requests);
+  }
+
+  private initForms() {
+    this.settingModals.projectExport.projectExportSchema = this.formBuilder.group({
+      attributes: this.formBuilder.array([]),
+    });
+    this.attributesSchema = this.formBuilder.group({
+      attributes: this.formBuilder.array([]),
+    });
   }
 
   checkIfManagedVersion() {
@@ -193,13 +189,13 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
 
   prepareEmbeddingFormGroup(attributes) {
     if (attributes.length > 0) {
-      this.embeddingCreationFormGroup = this.formBuilder.group({
+      this.settingModals.embedding.create.embeddingCreationFormGroup = this.formBuilder.group({
         targetAttribute: attributes[0].id,
         embeddingHandle: "",
         granularity: this.granularityTypesArray[0].value
       });
-      this.embeddingCreationFormGroup.valueChanges.pipe(debounceTime(200)).subscribe(() =>
-        this.embeddingCreationBlocked = !this.canCreateEmbedding()
+      this.settingModals.embedding.create.embeddingCreationFormGroup.valueChanges.pipe(debounceTime(200)).subscribe(() =>
+        this.settingModals.embedding.create.blocked = !this.canCreateEmbedding()
       )
     }
   }
@@ -211,7 +207,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
   }
 
   buildExpectedEmbeddingName(): string {
-    const values = this.embeddingCreationFormGroup.getRawValue();
+    const values = this.settingModals.embedding.create.embeddingCreationFormGroup.getRawValue();
     let toReturn = this.getAttributeArrayAttribute(values.targetAttribute, 'name');
     toReturn += "-" + (values.granularity == 'ON_ATTRIBUTE' ? 'classification' : 'extraction');
     toReturn += "-" + values.embeddingHandle;
@@ -223,7 +219,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     const currentName = this.buildExpectedEmbeddingName();
     if (currentName.slice(-1) == "-") return false;
     else {
-      this.embeddingCreationBlocked = true;
+      this.settingModals.embedding.create.blocked = true;
       for (const embedding of this.embeddings) {
         if (embedding.name == currentName) return false;
       }
@@ -263,8 +259,8 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
   }
 
   checkForceHiddenHandles() {
-    const granularity = this.embeddingCreationFormGroup.get('granularity').value;
-    const attId = this.embeddingCreationFormGroup.get('targetAttribute').value;
+    const granularity = this.settingModals.embedding.create.embeddingCreationFormGroup.get('granularity').value;
+    const attId = this.settingModals.embedding.create.embeddingCreationFormGroup.get('targetAttribute').value;
 
     const suggestionList = this.embeddingHandlesMap.get(attId)
     for (let element of suggestionList) {
@@ -438,31 +434,27 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
   }
 
 
-  addLabelingTask(
-    projectId: string,
-    modalInputToClose: HTMLInputElement,
-    taskName: string,
-    taskTargetId: string = null
-  ) {
+  addLabelingTask() {
+    const labelingTask = this.settingModals.labelingTask.create;
     if (this.requestTimeOut) return;
-    if (taskName.trim().length == 0) return;
-    if (!this.isTaskNameUniqueCheck(taskName)) return;
-    if (taskTargetId == "@@NO_ATTRIBUTE@@") taskTargetId = null;
+    if (labelingTask.name.trim().length == 0) return;
+    if (!this.isTaskNameUniqueCheck(labelingTask.name)) return;
+    if (labelingTask.taskId == "@@NO_ATTRIBUTE@@") labelingTask.taskId = null;
     let labelingTaskType = LabelingTask.MULTICLASS_CLASSIFICATION;
     if (
-      taskTargetId &&
-      this.getAttributeArrayAttribute(taskTargetId, 'dataType') == 'TEXT'
+      labelingTask.taskId &&
+      this.getAttributeArrayAttribute(labelingTask.taskId, 'dataType') == 'TEXT'
     )
       labelingTaskType = LabelingTask.NOT_SET;
 
-    this.projectApolloService.addLabelingTask(projectId, taskName.trim(), labelingTaskType, taskTargetId)
-      .pipe(first()).subscribe();
+    this.projectApolloService.addLabelingTask(this.project.id, labelingTask.name.trim(), labelingTaskType, labelingTask.taskId)
+      .pipe(first()).subscribe(() => {
+        this.settingModals.labelingTask.create.name = '';
+      });
 
     this.requestTimeOut = true;
     timer(100).subscribe(() => this.requestTimeOut = false);
-
-
-    modalInputToClose.checked = false;
+    this.settingModals.labelingTask.create.open = false;
   }
 
   getAttributeArrayAttribute(attributeId: string, valueID: string) {
@@ -479,16 +471,13 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     return 'UNKNOWN';
   }
 
-  removeLabel(projectId: string, taskId: string, labelId: string, labelColor: string) {
-    this.lh.removeLabel(projectId, taskId, labelId, labelColor);
+  removeLabel() {
+    const labelDeleteData = this.settingModals.label.delete;
+    this.lh.removeLabel(this.project.id, labelDeleteData.taskId, labelDeleteData.label.id, labelDeleteData.label.color);
   }
 
-  addLabel(
-    projectId: string,
-    taskId: string,
-    labelInput: HTMLInputElement
-  ): void {
-    this.lh.addLabel(projectId, taskId, labelInput);
+  addLabel(): void {
+    this.lh.addLabel(this.project.id, this.settingModals.label.create.taskId, this.settingModals.label.create.labelName);
   }
 
   deleteProject(projectId: string) {
@@ -531,9 +520,9 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     return this.labelingTasksDropdownArray;
   }
 
-  deleteLabelingTask(projectId: string, taskId: string) {
+  deleteLabelingTask() {
     this.projectApolloService
-      .deleteLabelingTask(projectId, taskId).pipe(first())
+      .deleteLabelingTask(this.project.id, this.settingModals.labelingTask.delete.taskId).pipe(first())
       .subscribe((x) => this.removeOverviewLocalStorageValues());
   }
 
@@ -625,27 +614,29 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     return false;
   }
 
-  deleteEmbedding(embeddingId: string) {
+  deleteEmbedding() {
+    const embeddingId = this.settingModals.embedding.delete.id;
+    if (!embeddingId) return;
     this.projectApolloService
       .deleteEmbedding(this.project.id, embeddingId).pipe(first())
       .subscribe(() => {
         this.embeddings = this.embeddings.filter(e => e.id != embeddingId);
-        this.embeddingCreationBlocked = !this.canCreateEmbedding();
+        this.settingModals.embedding.create.blocked = !this.canCreateEmbedding();
       });
   }
 
-  addEmbedding(projectId: string, modalInputToClose: HTMLInputElement) {
+  addEmbedding() {
     if (!this.canCreateEmbedding()) return;
-    const embeddingHandle = this.embeddingCreationFormGroup.get("embeddingHandle").value;
-    const attributeId = this.embeddingCreationFormGroup.get("targetAttribute").value;
-    const granularity = this.embeddingCreationFormGroup.get("granularity").value;
+    const embeddingForm = this.settingModals.embedding.create.embeddingCreationFormGroup;
+    const embeddingHandle = embeddingForm.get("embeddingHandle").value;
+    const attributeId = embeddingForm.get("targetAttribute").value;
+    const granularity = embeddingForm.get("granularity").value;
 
-    this.projectApolloService.createEmbedding(projectId, attributeId, embeddingHandle, granularity.substring(3)).pipe(first()).subscribe();
-    modalInputToClose.checked = false;
+    this.projectApolloService.createEmbedding(this.project.id, attributeId, embeddingHandle, granularity.substring(3)).pipe(first()).subscribe();
   }
 
   selectFirstUnhiddenEmbeddingHandle(inputElement: HTMLInputElement) {
-    const suggestionList = this.embeddingHandlesMap.get(this.embeddingCreationFormGroup.get("targetAttribute").value)
+    const suggestionList = this.embeddingHandlesMap.get(this.settingModals.embedding.create.embeddingCreationFormGroup.get("targetAttribute").value)
     for (let embeddingHandle of suggestionList) {
       if (!embeddingHandle.hidden && !embeddingHandle.forceHidden) {
         this.selectEmbeddingHandle(embeddingHandle, inputElement);
@@ -665,8 +656,9 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
   }
 
   checkEmbeddingHandles(eventTarget: HTMLInputElement,) {
-    this.embeddingCreationFormGroup.get('embeddingHandle').setValue(eventTarget.value);
-    const suggestionList = this.embeddingHandlesMap.get(this.embeddingCreationFormGroup.get("targetAttribute").value);
+    const embeddingForm = this.settingModals.embedding.create.embeddingCreationFormGroup;
+    embeddingForm.get('embeddingHandle').setValue(eventTarget.value);
+    const suggestionList = this.embeddingHandlesMap.get(embeddingForm.get("targetAttribute").value);
     if (!suggestionList || suggestionList.length == 0) return;
     const lowerEventValue = eventTarget.value.toLowerCase();
     let suggestionsSave = [];
@@ -674,19 +666,21 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
       embeddingHandle = { ...embeddingHandle, hidden: !embeddingHandle.configString.toLowerCase().includes(lowerEventValue) };
       suggestionsSave.push(embeddingHandle)
     }
-    this.embeddingHandlesMap.set(this.embeddingCreationFormGroup.get("targetAttribute").value, suggestionsSave);
+    this.embeddingHandlesMap.set(embeddingForm.get("targetAttribute").value, suggestionsSave);
   }
 
   checkLabelingTaskName(eventTarget: HTMLInputElement) {
     this.isTaskNameUnique = this.isTaskNameUniqueCheck(eventTarget.value);
+    this.settingModals.labelingTask.create.name = eventTarget.value;
   }
 
   checkAndModifyLabelName(eventTarget: HTMLInputElement) {
-    eventTarget.value = eventTarget.value.replace("-", " ")
+    eventTarget.value = eventTarget.value.replace("-", " ");
+    this.settingModals.label.create.labelName = eventTarget;
   }
 
   setCurrentEmbeddingHandle(embeddingHandle, hoverBox: HTMLElement, listElement: HTMLElement) {
-    this.currentEmbeddingHandle = embeddingHandle;
+    this.settingModals.embedding.create.currentEmbeddingHandle = embeddingHandle;
     if (embeddingHandle) {
       const dataBoundingBox: DOMRect = listElement.getBoundingClientRect();
       hoverBox.style.top = (dataBoundingBox.top) + "px"
@@ -738,7 +732,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     } else if ('project_update' == msgParts[1]) {
       this.projectQuery$.refetch();
     } else if (msgParts[1] == 'project_export') {
-      this.downloadPrepareMessage = DownloadState.NONE;
+      this.settingModals.projectExport.downloadPrepareMessage = DownloadState.NONE;
       this.requestProjectExportCredentials();
     } else if (msgParts[1] == 'calculate_attribute') {
       this.attributesQuery$.refetch();
@@ -787,33 +781,33 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
 
   requestProjectExportCredentials() {
     this.projectApolloService.getLastProjectExportCredentials(this.project.id).pipe(first()).subscribe((c) => {
-      if (!c) this.projectExportCredentials = null;
+      if (!c) this.settingModals.projectExport.projectExportCredentials = null;
       else {
-        this.projectExportCredentials = JSON.parse(c);
-        const parts = this.projectExportCredentials.objectName.split("/");
-        this.projectExportCredentials.downloadFileName = parts[parts.length - 1];
+        this.settingModals.projectExport.projectExportCredentials = JSON.parse(c);
+        const parts = this.settingModals.projectExport.projectExportCredentials.objectName.split("/");
+        this.settingModals.projectExport.projectExportCredentials.downloadFileName = parts[parts.length - 1];
       }
     });
   }
 
 
   prepareDownload(projectId: string) {
-    if (this.downloadPrepareMessage == DownloadState.PREPARATION || this.downloadPrepareMessage == DownloadState.DOWNLOAD) return;
-    this.downloadPrepareMessage = DownloadState.PREPARATION;
+    if (this.settingModals.projectExport.downloadPrepareMessage == DownloadState.PREPARATION || this.settingModals.projectExport.downloadPrepareMessage == DownloadState.DOWNLOAD) return;
+    this.settingModals.projectExport.downloadPrepareMessage = DownloadState.PREPARATION;
     const exportOptions = this.buildJsonExportOptions();
     this.projectApolloService.prepareProjectExport(projectId, exportOptions).pipe(first()).subscribe();
-    this.projectExportCredentials = null;
+    this.settingModals.projectExport.projectExportCredentials = null;
   }
 
   exportViaFile(isText: boolean) {
-    if (!this.projectExportCredentials) return;
-    this.downloadPrepareMessage = DownloadState.DOWNLOAD;
-    const fileName = this.projectExportCredentials.downloadFileName;
-    this.s3Service.downloadFile(this.projectExportCredentials, isText).subscribe((data) => {
+    if (!this.settingModals.projectExport.projectExportCredentials) return;
+    this.settingModals.projectExport.downloadPrepareMessage = DownloadState.DOWNLOAD;
+    const fileName = this.settingModals.projectExport.projectExportCredentials.downloadFileName;
+    this.s3Service.downloadFile(this.settingModals.projectExport.projectExportCredentials, isText).subscribe((data) => {
       if (isText) this.downloadText(fileName, data);
       else this.downloadBlob(data, fileName);
       timer(5000).subscribe(
-        () => (this.downloadPrepareMessage = DownloadState.NONE)
+        () => (this.settingModals.projectExport.downloadPrepareMessage = DownloadState.NONE)
       );
     });
   }
@@ -832,7 +826,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
   }
 
   requestProjectSize() {
-    this.projectSize = null;
+    this.settingModals.projectExport.projectSize = null;
     this.projectExportArray.clear();
     this.prepareProjectDownload(this.project.id);
   }
@@ -854,9 +848,9 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     }
     if (downloadSize) {
       var i = Math.floor(Math.log(downloadSize) / Math.log(1024));
-      this.downloadSizeText = Number((downloadSize / Math.pow(1024, i)).toFixed(2)) * 1 + ' ' + ['bytes', 'kB', 'MB', 'GB', 'TB'][i];
+      this.settingModals.projectExport.downloadSizeText = Number((downloadSize / Math.pow(1024, i)).toFixed(2)) * 1 + ' ' + ['bytes', 'kB', 'MB', 'GB', 'TB'][i];
     } else {
-      this.downloadSizeText = "0 bytes";
+      this.settingModals.projectExport.downloadSizeText = "0 bytes";
     }
   }
 
@@ -873,7 +867,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
 
   prepareProjectDownload(projectId: string) {
     this.projectApolloService.getProjectSize(projectId).pipe(first()).subscribe((size) => {
-      this.projectSize = size;
+      this.settingModals.projectExport.projectSize = size;
       size.forEach((element) => {
         let group = this.formBuilder.group({
           export: element.default,
@@ -922,18 +916,17 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
   }
 
   createUserAttribute() {
-    const attributeType = this.dataTypesArray.find((type) => type.name === this.attributeType).value;
+    const attributeType = this.dataTypesArray.find((type) => type.name === this.settingModals.attribute.type).value;
 
-    if (this.duplicateNameExists) return;
+    if (this.settingModals.attribute.duplicateNameExists) return;
 
     this.projectApolloService
-      .createUserAttribute(this.project.id, this.attributeName, attributeType)
+      .createUserAttribute(this.project.id, this.settingModals.attribute.name, attributeType)
       .pipe(first())
       .subscribe((res) => {
-        this.newAttributeModal.nativeElement.checked = true;
         const id = res?.data?.createUserAttribute.attributeId;
         if (id) {
-          localStorage.setItem("isNewAttribute", "true");
+          localStorage.setItem("isNewAttribute", "X");
           this.router.navigate(['../attributes/' + id],
             {
               relativeTo: this.activatedRoute
@@ -942,17 +935,17 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
       });
   }
   updateDataType(dataType: string) {
-    this.attributeType = dataType;
+    this.settingModals.attribute.type = dataType;
   }
   changeAttributeName(event: any) {
-    this.attributeName = toPythonFunctionName(event.target.value);
+    this.settingModals.attribute.name = toPythonFunctionName(event.target.value);
     const findDuplicate = this.attributes.find(att => att.name == event.target.value);
-    this.duplicateNameExists = findDuplicate != undefined ? true : false;
+    this.settingModals.attribute.duplicateNameExists = findDuplicate != undefined ? true : false;
   }
 
   openModalAttribute() {
-    this.newAttributeModal.nativeElement.checked = true;
-    this.attributeName = this.findFreeAttributeName();
+    this.settingModals.attribute.open = true;
+    this.settingModals.attribute.name = this.findFreeAttributeName();
   }
 
   findFreeAttributeName(): string {
@@ -963,5 +956,9 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
       if (match) counterList.push(parseInt(match[1]));
     }
     return "attribute_" + (counterList.length > 0 ? (Math.max(...counterList) + 1) : (this.attributes.length + 1));
+  }
+
+  setLabelingTaskTarget(id: string) {
+    this.settingModals.labelingTask.create.taskId = id;
   }
 }

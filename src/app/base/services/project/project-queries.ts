@@ -524,8 +524,13 @@ query ($projectId: ID!, $exportOptions: JSONString) {
     }
   }
   
+  `,
+
+
+  GET_RECORD_COMMENTS: gql`
+  query ($projectId: ID!, $recordIds: [ID]!) {
+    recordComments(projectId: $projectId, recordIds: $recordIds)
+  }
   `
-
-
 
 };

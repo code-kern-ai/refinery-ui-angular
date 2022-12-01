@@ -28,6 +28,7 @@ import { ConfigManager } from 'src/app/base/services/config-service';
 import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
 import { UserManager } from 'src/app/util/user-manager';
 import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
+import { createDefaultCrowdLabelersModals, CrowdLabelersModals } from './crowd-labeler-details-helper';
 
 @Component({
   selector: 'kern-crowd-labeler-details',
@@ -93,6 +94,7 @@ export class CrowdLabelerDetailsComponent
   dataSlices: any[];
   sliceLookup: {};
   private fromCreation: boolean = false;
+  crowdLabelerModals: CrowdLabelersModals = createDefaultCrowdLabelersModals();
 
   constructor(
     private router: Router,
@@ -307,10 +309,11 @@ export class CrowdLabelerDetailsComponent
     return vc.pipe(first());
   }
 
-  deleteInformationSource(projectId: string, informationSourceId: string) {
+  deleteInformationSource() {
     this.informationSourceApolloService
-      .deleteInformationSource(projectId, informationSourceId).pipe(first())
+      .deleteInformationSource(this.project.id, this.informationSource.id).pipe(first())
       .subscribe();
+    this.router.navigate(["../../heuristics"], { relativeTo: this.activatedRoute });
   }
 
 

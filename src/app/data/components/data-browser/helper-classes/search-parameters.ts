@@ -13,6 +13,8 @@ export function getBasicGroupItems(
       return [getBasicSearchItem(SearchItemType.LABELING_TASK, groupKey)];
     case SearchGroup.ORDER_STATEMENTS:
       return [getBasicSearchItem(SearchItemType.ORDER_BY, groupKey)];
+    case SearchGroup.COMMENTS:
+      return [getBasicSearchItem(SearchItemType.COMMENTS, groupKey)];
   }
 }
 
@@ -51,6 +53,13 @@ export function getBasicSearchItem(
         groupKey: groupKey,
         addText: 'Random sampling',
       };
+    case SearchItemType.COMMENTS:
+      return {
+        type: SearchItemType.COMMENTS,
+        group: SearchGroup.COMMENTS,
+        groupKey: groupKey,
+        addText: 'much question, so wow',
+      };
   }
 }
 
@@ -82,6 +91,8 @@ function getNameForGroupKey(group: SearchGroup): string {
       return 'Labeling task:';
     case SearchGroup.ORDER_STATEMENTS:
       return 'Result Order';
+    case SearchGroup.COMMENTS:
+      return 'Comments';
   }
   return '';
 }
@@ -96,6 +107,8 @@ function getSubTextForGroupKey(group: SearchGroup): string {
       return 'Choose from anything related to';
     case SearchGroup.ORDER_STATEMENTS:
       return 'Order your results';
+    case SearchGroup.COMMENTS:
+      return 'Filter on comments';
   }
   return '';
 }
@@ -124,6 +137,7 @@ export type SearchGroupItem = {
   groupKey: string;
   addText: string;
   operator?: SearchOperator;
+  hasComments?: boolean;
 };
 
 export enum SearchItemType {
@@ -131,6 +145,7 @@ export enum SearchItemType {
   USER = 'USER',
   LABELING_TASK = 'LABELING_TASK',
   ORDER_BY = 'ORDER_BY',
+  COMMENTS = 'COMMENTS'
 }
 
 export enum SearchGroup {
@@ -138,6 +153,7 @@ export enum SearchGroup {
   LABELING_TASKS = 'LABELING_TASKS',
   ORDER_STATEMENTS = 'ORDER_STATEMENTS',
   USER_FILTER = 'USER_FILTER',
+  COMMENTS = 'COMMENTS'
 }
 
 export enum StaticOrderByKeys {

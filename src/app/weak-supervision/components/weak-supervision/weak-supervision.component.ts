@@ -13,6 +13,7 @@ import { WeakSourceApolloService } from 'src/app/base/services/weak-source/weak-
 import { dateAsUTCDate, toPythonFunctionName } from 'src/app/util/helper-functions';
 import { UserManager } from 'src/app/util/user-manager';
 import { InformationSourceCodeLookup, InformationSourceExamples } from '../information-sources-code-lookup';
+import { createDefaultHeuristicsModals, HeuristicsModals } from './weak-supervision-helper';
 
 @Component({
   selector: 'kern-weak-supervision',
@@ -37,23 +38,17 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
 
   currentWeakSupervisionRun$: any;
   currentWeakSupervisionRunQuery$: any;
-  currentWeakSupervisionRun: any;
   subscriptions$: Subscription[] = [];
   labelingTasks;
   labelingTasksClassification;
   labelingTasksQuery$: any;
   attributes;
   attributesQuery$: any;
-  hideZeroShotAttribute: boolean = null;
-  zeroShotRecommendations: any;
-  currentRecommendation: any;
   requestTimeOut: boolean = false;
   justClickedRun: boolean = false;
   modalOpen: boolean = false;
-  selectedInformationSources = [];
   informationSourcesArray = [];
   filteredSourcesList = [];
-
 
   confidenceControl = new FormControl(0.01);
   confidenceList = [
@@ -63,24 +58,16 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
   ];
   enoughInformationSources = false;
   openTab: number = -1;
-  functionName: string = '';
   embeddings: any;
   embeddingsFiltered: any;
   labelingTaskId: any;
-  embedding: string;
   embeddingQuery$: any;
-  description: string;
-  selectionList: string = "";
   isManaged: boolean = false;
-  @ViewChild("modalCreateLF") modalCreateLF: ElementRef;
-  @ViewChild("modalCreateAL") modalCreateAL: ElementRef;
-  @ViewChild("modalCreateZS") modalCreateZS: ElementRef;
-  @ViewChild("modalCreateCL") modalCreateCL: ElementRef;
-
-  @ViewChild("deleteSelectedHeuristics") deleteSelectedHeuristics: ElementRef;
   downloadedModelsList$: any;
   downloadedModelsQuery$: any;
   downloadedModels: any[];
+
+  heuristicsModals: HeuristicsModals = createDefaultHeuristicsModals();
 
   constructor(
     private router: Router,
@@ -106,7 +93,7 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
     [this.informationSourcesQuery$, this.informationSources$] = this.informationSourceApolloService.getInformationSourcesOverviewData(projectId);
     this.subscriptions$.push(this.informationSources$.subscribe((sources) => {
       this.justClickedRun = false;
-      this.selectedInformationSources = sources.filter((i) => i.selected);
+      this.heuristicsModals.selectedInformationSources = sources.filter((i) => i.selected);
       this.informationSourcesArray = sources;
       this.informationSourcesArray.forEach(s => {
         if (s.informationSourceType == 'ZERO_SHOT') s.routerLink = '../zero-shot/' + s.id;
@@ -156,16 +143,18 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
     [this.currentWeakSupervisionRunQuery$, this.currentWeakSupervisionRun$] = this.projectApolloService.getCurrentWeakSupervisionRun(projectId);
     this.subscriptions$.push(this.currentWeakSupervisionRun$.subscribe((run) => {
       if (run == null) {
-        this.currentWeakSupervisionRun = { state: "NOT_YET_RUN" };
+        this.heuristicsModals.lastWeakSupervision.currentWeakSupervisionRun = { state: "NOT_YET_RUN" };
       } else {
-        this.currentWeakSupervisionRun = run;
-        if (run.user.firstName) this.currentWeakSupervisionRun.displayName = run.user.firstName[0] + '. ' + run.user.lastName;
-        else this.currentWeakSupervisionRun.displayName = "Unknown";
-        this.currentWeakSupervisionRun.createdAtDisplay = this.parseUTC(this.currentWeakSupervisionRun.createdAt);
-        if (this.currentWeakSupervisionRun.finishedAt) {
-          this.currentWeakSupervisionRun.finishedAtDisplay = this.parseUTC(this.currentWeakSupervisionRun.finishedAt);
+        this.heuristicsModals.lastWeakSupervision.currentWeakSupervisionRun = run;
+        const currentWeakSupervisionRun = this.heuristicsModals.lastWeakSupervision.currentWeakSupervisionRun;
+
+        if (run.user.firstName) currentWeakSupervisionRun.displayName = run.user.firstName[0] + '. ' + run.user.lastName;
+        else currentWeakSupervisionRun.displayName = "Unknown";
+        currentWeakSupervisionRun.createdAtDisplay = this.parseUTC(currentWeakSupervisionRun.createdAt);
+        if (currentWeakSupervisionRun.finishedAt) {
+          currentWeakSupervisionRun.finishedAtDisplay = this.parseUTC(currentWeakSupervisionRun.finishedAt);
         } else {
-          this.currentWeakSupervisionRun.finishedAtDisplay = "Not finished";
+          currentWeakSupervisionRun.finishedAtDisplay = "Not finished";
         }
       }
     }));
@@ -193,7 +182,7 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
         labelIds.push(...task.labels.map((label) => label.id));
       });
       if (this.labelingTasksClassification.length) {
-        this.hideZeroShotAttribute = this.labelingTasksClassification[0].taskTarget == 'ON_ATTRIBUTE'
+        this.heuristicsModals.createZeroShot.hideZeroShotAttribute = this.labelingTasksClassification[0].taskTarget == 'ON_ATTRIBUTE'
       }
       labelIds.push("-");
       if (this.labelingTasks.length > 0) this.labelingTaskId = this.labelingTasks[0].id;
@@ -213,7 +202,7 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
     vc.pipe(first()).subscribe((r) => {
       if (r) r.forEach(e => e.hidden = false);
       r.sort((a, b) => a.prio - b.prio);
-      this.zeroShotRecommendations = r;
+      this.heuristicsModals.createZeroShot.zeroShotRecommendations = r;
     });
 
   }
@@ -225,7 +214,7 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
   }
 
   runSelectedInformationSources(projectId: string) {
-    this.selectedInformationSources.forEach(el => {
+    this.heuristicsModals.selectedInformationSources.forEach(el => {
       if (this.canStartISRun(el)) {
         this.runInformationSource(projectId, el.id, el.informationSourceType, true);
       }
@@ -252,9 +241,9 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
     }
   }
 
-  deleteSelectedInformationSources(projectId: string) {
-    this.selectedInformationSources.forEach(el => {
-      this.deleteInformationSource(projectId, el.id);
+  deleteSelectedInformationSources() {
+    this.heuristicsModals.selectedInformationSources.forEach(el => {
+      this.deleteInformationSource(this.project.id, el.id);
     })
   }
 
@@ -284,16 +273,16 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
     return code;
   }
 
-  createInformationSource(projectId: string, type: InformationSourceType) {
+  createInformationSource(type: InformationSourceType) {
     if (type == InformationSourceType.LABELING_FUNCTION || type == InformationSourceType.ACTIVE_LEARNING) {
-      const codeData = this.getInformationSourceTemplate(type, this.embedding);
+      const codeData = this.getInformationSourceTemplate(type, this.heuristicsModals.createActiveLearning.embedding);
       if (!codeData) return;
-      const descriptionToUse = this.description ? this.description : 'provide some description for documentation'
+      const descriptionToUse = this.heuristicsModals.description ? this.heuristicsModals.description : 'provide some description for documentation';
       this.informationSourceApolloService
         .createInformationSource(
-          projectId,
+          this.project.id,
           this.labelingTaskId,
-          this.functionName,
+          this.heuristicsModals.functionName,
           descriptionToUse,
           codeData.code,
           type
@@ -316,13 +305,13 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
       console.log('currently only possible to create labeling functions & classification');
     }
   }
-  createCrowdLabelerInformationSource(projectId: string) {
+  createCrowdLabelerInformationSource() {
     this.informationSourceApolloService
       .createInformationSource(
-        projectId,
+        this.project.id,
         this.labelingTaskId,
-        this.functionName,
-        this.description,
+        this.heuristicsModals.functionName,
+        this.heuristicsModals.description,
         "",
         InformationSourceType.CROWD_LABELER
       )
@@ -338,15 +327,15 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
       });
 
   }
-  createZeroShotInformationSource(projectId: string) {
+  createZeroShotInformationSource() {
     const targetConfig = this.inputConfig.nativeElement.value;
     const labelingTaskId = this.labelingTasksSelect.nativeElement.options[this.labelingTasksSelect.nativeElement.selectedIndex].value;
     if (!labelingTaskId) return;
-    const attributeId = this.hideZeroShotAttribute ? '' : this.attributesSelect.nativeElement.options[this.attributesSelect.nativeElement.selectedIndex].value;
+    const attributeId = this.heuristicsModals.createZeroShot.hideZeroShotAttribute ? '' : this.attributesSelect.nativeElement.options[this.attributesSelect.nativeElement.selectedIndex].value;
     if (!targetConfig) return;
     this.informationSourceApolloService
       .createZeroShotInformationSource(
-        projectId,
+        this.project.id,
         targetConfig,
         labelingTaskId,
         attributeId,
@@ -365,7 +354,7 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
   }
 
   setCurrentRecommendation(recommendation: any, hoverBox: HTMLElement, listElement: HTMLElement) {
-    this.currentRecommendation = recommendation;
+    this.heuristicsModals.createZeroShot.currentRecommendation = recommendation;
     if (recommendation) {
       const dataBoundingBox: DOMRect = listElement.getBoundingClientRect();
       hoverBox.style.top = (dataBoundingBox.top) + "px"
@@ -374,7 +363,7 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
   }
 
   selectFirstUnhiddenRecommendation(inputElement: HTMLInputElement) {
-    for (let recommendation of this.zeroShotRecommendations) {
+    for (let recommendation of this.heuristicsModals.createZeroShot.zeroShotRecommendations) {
       if (!recommendation.hidden) {
         this.selectRecommendation(recommendation, inputElement);
         return;
@@ -385,6 +374,7 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
 
   selectRecommendation(recommendation: any, inputElement: HTMLInputElement) {
     inputElement.value = recommendation.configString;
+    this.heuristicsModals.createZeroShot.value = inputElement.value;
     if (document.activeElement instanceof HTMLElement) {
       document.activeElement.blur();
     }
@@ -392,8 +382,9 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
   }
 
   checkRecommendation(eventTarget: HTMLInputElement) {
+    this.heuristicsModals.createZeroShot.value = eventTarget.value;
     const lowerEventValue = eventTarget.value.toLowerCase();
-    for (let recommendation of this.zeroShotRecommendations) {
+    for (let recommendation of this.heuristicsModals.createZeroShot.zeroShotRecommendations) {
       recommendation.hidden = !recommendation.configString.toLowerCase().includes(lowerEventValue)
     }
   }
@@ -422,7 +413,7 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
 
 
   startWeakSupervision(projectId: string) {
-    this.currentWeakSupervisionRun = null;
+    this.heuristicsModals.lastWeakSupervision.currentWeakSupervisionRun = null;
     this.informationSourceApolloService
       .triggerWeakSupervision(projectId).pipe(first()).subscribe();
   }
@@ -444,7 +435,7 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
       this.informationSourcesQuery$.refetch();
     }
     if (['weak_supervision_started', 'weak_supervision_finished'].includes(msgParts[1])) {
-      this.currentWeakSupervisionRun = null;
+      this.heuristicsModals.lastWeakSupervision.currentWeakSupervisionRun = null;
       this.currentWeakSupervisionRunQuery$.refetch();
     }
     if (msgParts[1] == 'embedding_deleted' || (msgParts[1] == 'embedding' && msgParts[3] == 'state')) {
@@ -454,18 +445,18 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
 
   modalChangeForCreation(checked: boolean, type: string) {
     if (checked) {
-      this.description = "provide some description for documentation";
+      this.heuristicsModals.description = "provide some description for documentation";
 
       if (this.labelingTasks.length > 0) this.labelingTaskId = this.labelingTasks[0].id;
       if (type == InformationSourceType.LABELING_FUNCTION)
-        this.functionName = "my_labeling_function";
+        this.heuristicsModals.functionName = "my_labeling_function";
       else if (type == InformationSourceType.ACTIVE_LEARNING) {
-        this.functionName = "MyActiveLearner";
+        this.heuristicsModals.functionName = "MyActiveLearner";
         this.filterEmbeddingsForCurrentTask();
       } else if (type == InformationSourceType.CROWD_LABELER) {
-        this.functionName = "Crowd Heuristic";
+        this.heuristicsModals.functionName = "Crowd Heuristic";
       }
-      else this.functionName = "Zero shot module";
+      else this.heuristicsModals.functionName = "Zero shot module";
     }
   }
 
@@ -529,21 +520,21 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
         this.embeddingsFiltered.push(e);
       }
     }
-    this.embedding = this.embeddingsFiltered.length !== 0 ? this.embeddingsFiltered[0].name : '';
+    this.heuristicsModals.createActiveLearning.embedding = this.embeddingsFiltered.length !== 0 ? this.embeddingsFiltered[0].name : '';
   }
 
   changeInformationSourceName(event) {
-    this.functionName = toPythonFunctionName(event.target.value);
-    if (this.functionName != event.target.value) {
-      event.target.value = this.functionName;
+    this.heuristicsModals.functionName = toPythonFunctionName(event.target.value);
+    if (this.heuristicsModals.functionName != event.target.value) {
+      event.target.value = this.heuristicsModals.functionName;
     }
   }
 
   prepareSelectionList() {
-    this.selectionList = "";
-    this.selectedInformationSources.forEach(el => {
-      if (this.selectionList) this.selectionList += "\n";
-      this.selectionList += el.name;
+    this.heuristicsModals.selectionList = "";
+    this.heuristicsModals.selectedInformationSources.forEach(el => {
+      if (this.heuristicsModals.selectionList) this.heuristicsModals.selectionList += "\n";
+      this.heuristicsModals.selectionList += el.name;
     })
 
   }
@@ -558,19 +549,19 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
   executeOption(value: string) {
     switch (value) {
       case 'Labeling function':
-        this.modalCreateLF.nativeElement.checked = true;
+        this.heuristicsModals.createLabelingFunction.open = true;
         this.modalChangeForCreation(true, InformationSourceType.LABELING_FUNCTION);
         break;
       case 'Active learning':
-        this.modalCreateAL.nativeElement.checked = true;
+        this.heuristicsModals.createActiveLearning.open = true;
         this.modalChangeForCreation(true, InformationSourceType.ACTIVE_LEARNING);
         break;
       case 'Zero-shot':
-        this.modalCreateZS.nativeElement.checked = true;
+        this.heuristicsModals.createZeroShot.open = true;
         this.modalChangeForCreation(true, InformationSourceType.ZERO_SHOT)
         break;
       case 'Crowd labeling':
-        this.modalCreateCL.nativeElement.checked = true;
+        this.heuristicsModals.createCrowdLabeling.open = true;
         this.modalChangeForCreation(true, InformationSourceType.CROWD_LABELER)
         break;
 
@@ -584,7 +575,7 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
         this.runSelectedInformationSources(this.project.id);
         break;
       case 'Delete selected':
-        this.deleteSelectedHeuristics.nativeElement.checked = true;
+        this.heuristicsModals.deleteSelected.open = true;
         this.prepareSelectionList();
         break;
     }
@@ -593,5 +584,13 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
   checkIfModelIsDownloaded(modelName: string) {
     const findModel = this.downloadedModels && this.downloadedModels.find(el => el.name === modelName);
     return findModel !== undefined ? true : false;
+  }
+
+  createLabelingFunction() {
+    this.createInformationSource(InformationSourceType.LABELING_FUNCTION);
+  }
+
+  createActiveLearning() {
+    this.createInformationSource(InformationSourceType.ACTIVE_LEARNING);
   }
 }

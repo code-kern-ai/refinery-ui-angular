@@ -263,7 +263,8 @@
 
                                         </div>
                                         <div class="flex items-center justify-center mr-5">
-                                            <label (click)="currentRecordIdx = i" for="attribute-details"
+                                            <label
+                                                (click)="heuristicDetailsModals.attributeDetails.open = true; heuristicDetailsModals.attributeDetails.currentRecordIdx = i"
                                                 class="text-xs bg-white text-gray-700 text-xs font-semibold px-4 py-1 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none inline-block">
                                                 View
                                             </label>
@@ -411,28 +412,10 @@
                     Are you sure you want to delete this heuristics?</div>
 
                 <div data-tip="This can't be reverted!" class="tooltip tooltip-right">
-                    <label [for]="'delete-modal-'+informationSource.id"
+                    <label (click)="heuristicDetailsModals.deleteHeuristic.open = true;"
                         class="bg-red-100 text-red-700 border border-red-400 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer ml-6 h-9 hover:bg-red-200 focus:outline-none">
                         Delete {{ informationSource.name}}
                     </label>
-                </div>
-                <input type="checkbox" [id]="'delete-modal-'+informationSource.id" class="modal-toggle">
-                <div class="modal text-center items-center">
-                    <div class="modal-box">
-                        <h1 class="text-lg text-gray-900 mb-2">Delete heuristic</h1>
-                        <div class="text-sm text-gray-500 my-2">
-                            Are you sure you want to delete this heuristic?
-                        </div>
-
-                        <div class="modal-action text-center mt-0">
-                            <label [for]="'delete-modal-'+informationSource.id"
-                                class="bg-red-100 text-red-700 border border-red-400 text-xs font-semibold mr-2 px-4 py-2 rounded flex cursor-pointer inline-block hover:bg-red-200 focus:outline-none"
-                                [routerLink]="['../']"
-                                (click)="deleteInformationSource(project.id, informationSource.id)">Delete</label>
-                            <label [for]="'delete-modal-'+informationSource.id"
-                                class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer inline-block hover:bg-gray-50 focus:outline-none">Close</label>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -440,11 +423,22 @@
 </div>
 
 
-<input type="checkbox" id="attribute-details" class="modal-toggle">
-<div class="modal text-center items-center">
-    <div *ngIf="currentRecordIdx != -1" class="modal-box" style="max-width: 48rem;">
-        <div *ngIf="sampleRecords.records[currentRecordIdx] as record">
-            <h1 class="text-lg text-gray-900 mb-2">View details</h1>
+<kern-modal [isOpen]="heuristicDetailsModals.deleteHeuristic.open" closeButton="X"
+    [modalBoxStyle]="{'width':'30rem','text-align':'center'}" [abortButton]="{
+    buttonCaption: 'Delete heuristic',
+    emitObject: this, emitFunction: deleteInformationSource
+}" (optionClicked)="heuristicDetailsModals.deleteHeuristic.open = false;">
+    <h1 class="text-lg text-gray-900 mb-2">Warning</h1>
+    <div class="text-sm text-gray-500 my-2">
+        Are you sure you want to delete this heuristic?
+    </div>
+</kern-modal>
+
+<kern-modal [isOpen]="heuristicDetailsModals.attributeDetails.open" [modalBoxStyle]="{'min-width':'30rem'}"
+    closeButton="X" (optionClicked)="heuristicDetailsModals.attributeDetails.open = false;">
+    <h1 class="text-lg text-gray-900 mb-2 text-center">View details</h1>
+    <div *ngIf="heuristicDetailsModals.attributeDetails.currentRecordIdx != -1">
+        <div *ngIf="sampleRecords.records[heuristicDetailsModals.attributeDetails.currentRecordIdx] as record">
             <div class="text-sm text-gray-500 my-2" class="overflow-y-auto max-height-modal scrollable-size">
                 <div *ngFor="let att of attributes" class="text-sm leading-5 text-left my-3">
                     <div class="text-gray-900 font-bold">{{att.name}}</div>
@@ -470,11 +464,6 @@
                     </div>
                 </div>
             </div>
-
-            <div class="modal-action text-center">
-                <label for="attribute-details"
-                    class="bg-white text-gray-700 text-xs font-semibold mr-4 px-4 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none inline-block">Close</label>
-            </div>
         </div>
     </div>
-</div>
+</kern-modal>

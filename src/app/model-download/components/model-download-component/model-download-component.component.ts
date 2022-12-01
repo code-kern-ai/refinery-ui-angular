@@ -11,6 +11,7 @@ import { WeakSourceApolloService } from 'src/app/base/services/weak-source/weak-
 import { dateAsUTCDate, formatBytes, getUserAvatarUri } from 'src/app/util/helper-functions';
 import { RouteManager } from 'src/app/util/route-manager';
 import { UserManager } from 'src/app/util/user-manager';
+import { createDefaultModelDownloadModals, ModelDownloadModals } from './model-download-helper';
 
 @Component({
   selector: 'kern-model-download-component',
@@ -21,18 +22,14 @@ export class ModelDownloadComponentComponent implements OnInit {
 
   downloadedModelsList$: any;
   downloadedModelsQuery$: any;
-  form: FormGroup;
   models: any[] = [];
   isManaged: boolean = true;
-  currentModelHandle: any;
   downloadedModels: any[];
   subscriptions$: Subscription[] = [];
-  currentModel: any;
-  indexSeparator: number;
   lastPage: string;
-
   loggedInUser: any;
   avatarUri: any;
+  downloadedModelsModals: ModelDownloadModals = createDefaultModelDownloadModals();
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -80,22 +77,24 @@ export class ModelDownloadComponentComponent implements OnInit {
   }
 
   initForm() {
-    this.form = this.formBuilder.group({
+    this.downloadedModelsModals.addNewModel.form = this.formBuilder.group({
       name: ['', Validators.required]
     })
   }
 
-  deleteModel(name: string) {
+  deleteModel() {
     this.informationSourceApolloService
-      .deleteModel(name)
+      .deleteModel(this.downloadedModelsModals.deleteModel.name)
       .pipe(first()).subscribe();
   }
 
   downloadModel() {
-    if (this.form.invalid) return;
+    if (this.downloadedModelsModals.addNewModel.form.invalid) return;
     this.informationSourceApolloService
-      .downloadModel(this.form.get('name').value)
-      .pipe(first()).subscribe();
+      .downloadModel(this.downloadedModelsModals.addNewModel.form.get('name').value)
+      .pipe(first()).subscribe(() => {
+        this.downloadedModelsModals.addNewModel.form.reset();
+      });
   }
 
   parseUTC(utc: string) {
@@ -113,7 +112,7 @@ export class ModelDownloadComponentComponent implements OnInit {
       this.models = models[0].filter(el =>
         el.configString != 'bag-of-characters' && el.configString != 'bag-of-words' && el.configString != 'tf-idf');
       models[1].sort((a, b) => a.prio - b.prio);
-      this.indexSeparator = this.models.length - 1;
+      this.downloadedModelsModals.addNewModel.indexSeparator = this.models.length - 1;
       this.models.push(...models[1]);
     });
   }
@@ -136,7 +135,7 @@ export class ModelDownloadComponentComponent implements OnInit {
   }
 
   checkEmbeddingHandles(eventTarget: HTMLInputElement) {
-    this.form.get('name').setValue(eventTarget.value);
+    this.downloadedModelsModals.addNewModel.form.get('name').setValue(eventTarget.value);
     if (!this.models || this.models.length == 0) return;
     const lowerEventValue = eventTarget.value.toLowerCase();
     for (let modelHandle of this.models) {
@@ -146,7 +145,7 @@ export class ModelDownloadComponentComponent implements OnInit {
   }
 
   setCurrentEmbeddingHandle(modelHandle, hoverBox: HTMLElement, listElement: HTMLElement) {
-    this.currentModelHandle = modelHandle;
+    this.downloadedModelsModals.deleteModel.currentModelHandle = modelHandle;
     if (modelHandle) {
       const dataBoundingBox: DOMRect = listElement.getBoundingClientRect();
       hoverBox.style.top = (dataBoundingBox.top) + "px"

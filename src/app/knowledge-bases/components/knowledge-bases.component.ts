@@ -7,6 +7,7 @@ import { NotificationService } from 'src/app/base/services/notification.service'
 import { Subscription } from 'rxjs';
 import { UserManager } from 'src/app/util/user-manager';
 import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
+import { createDefaultLookuplistsModals, LookuplistsModals } from './knowlegde-bases-helper';
 
 @Component({
   selector: 'kern-knowledge-bases',
@@ -17,12 +18,10 @@ export class KnowledgeBasesComponent implements OnInit, OnDestroy {
   knowledgeBases$: any;
   knowledgeBasesQuery$: any;
   projectId: string;
-  selectedLookupLists: any[] = [];
-  selectionList: string = "";
   lists: any[] = [];
   @ViewChildren("checkboxes") checkboxes: QueryList<ElementRef>;
-  @ViewChild("deleteSelectedLists") deleteSelectedLists: ElementRef;
   subscriptions$: Subscription[] = [];
+  lookuplistsModals: LookuplistsModals = createDefaultLookuplistsModals();
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -73,7 +72,7 @@ export class KnowledgeBasesComponent implements OnInit, OnDestroy {
       .deleteKnowledgeBase(project_id, knowledge_base_id)
       .pipe(first())
       .subscribe();
-    this.selectedLookupLists = [];
+    this.lookuplistsModals.deleteSelected.selectedLookupLists = [];
   }
 
   handleWebsocketNotification(msgParts) {
@@ -83,26 +82,26 @@ export class KnowledgeBasesComponent implements OnInit, OnDestroy {
   }
 
   deleteSelectedLookupLists() {
-    this.selectedLookupLists.forEach(el => {
+    this.lookuplistsModals.deleteSelected.selectedLookupLists.forEach(el => {
       this.deleteKnowledgeBase(this.projectId, el.id);
     })
   }
 
   prepareSelectionList() {
-    this.deleteSelectedLists.nativeElement.checked = true;
-    this.selectionList = "";
-    this.selectedLookupLists.forEach(el => {
-      if (this.selectionList) this.selectionList += "\n";
-      this.selectionList += el.name;
+    this.lookuplistsModals.deleteSelected.open = true;
+    this.lookuplistsModals.deleteSelected.selectionList = "";
+    this.lookuplistsModals.deleteSelected.selectedLookupLists.forEach(el => {
+      if (this.lookuplistsModals.deleteSelected.selectionList) this.lookuplistsModals.deleteSelected.selectionList += "\n";
+      this.lookuplistsModals.deleteSelected.selectionList += el.name;
     })
 
   }
 
   toggleCheckbox(base) {
-    if (this.selectedLookupLists.includes(base)) {
-      this.selectedLookupLists = this.selectedLookupLists.filter((x) => x.id != base.id);
+    if (this.lookuplistsModals.deleteSelected.selectedLookupLists.includes(base)) {
+      this.lookuplistsModals.deleteSelected.selectedLookupLists = this.lookuplistsModals.deleteSelected.selectedLookupLists.filter((x) => x.id != base.id);
     } else {
-      this.selectedLookupLists.push(base);
+      this.lookuplistsModals.deleteSelected.selectedLookupLists.push(base);
     }
   }
 
@@ -123,14 +122,13 @@ export class KnowledgeBasesComponent implements OnInit, OnDestroy {
   setAllLookupLists(value) {
     this.checkboxes.forEach((element) => {
       element.nativeElement.checked = value;
-
     });
     this.lists.forEach(list => {
       if (value) {
-        if (this.selectedLookupLists.includes(list)) return;
-        else this.selectedLookupLists.push(list);
+        if (this.lookuplistsModals.deleteSelected.selectedLookupLists.includes(list)) return;
+        else this.lookuplistsModals.deleteSelected.selectedLookupLists.push(list);
       }
-      else this.selectedLookupLists = [];
+      else this.lookuplistsModals.deleteSelected.selectedLookupLists = [];
     })
   }
 }
