@@ -105,7 +105,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-2 mt-1 align-top">
             <div class="items-center flex flex-row">
                 <div class="tooltip tooltip-bottom" data-tip="Add new attribute">
-                    <label (click)="openModalAttribute()"
+                    <label (click)="openModalAttribute(); focusModalInputBox($event, 'attributeName')"
                         class="mr-1 inline-flex items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none cursor-pointer">
                         <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 h-5 w-5 inline-block stroke-current"
                             fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -765,8 +765,9 @@
             class="cursor-help tooltip tooltip-right card-title mb-0 label-text font-normal"><span class="underline"
                 style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Attribute
                 name</span></span>
-        <input [value]="settingModals.attribute.name" placeholder="Enter an attribute name..."
-            (input)="changeAttributeName($event)" class="input input-sm input-bordered placeholder-italic" />
+        <input #attributeName name="attributeName" [value]="settingModals.attribute.name"
+            placeholder="Enter an attribute name..." (input)="changeAttributeName($event)"
+            class="input input-sm input-bordered placeholder-italic" />
 
         <ng-template [ngIf]="settingModals.attribute.duplicateNameExists">
             <span></span>
