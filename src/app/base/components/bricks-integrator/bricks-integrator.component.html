@@ -298,28 +298,29 @@
             </ng-template>
             <ng-template ngSwitchCase="REGEX">
                 <input #regex type="text" class="input input-bordered input-sm" style="outline:none; box-shadow:none;"
-                    [value]="variable.values[i]" [id]="'REGEX_'+j+'_'+i"
+                    [value]="variable.values[i]" [id]="'REGEX_'+j+'_'+i" autocomplete="off"
                     (keyup)="debounceSetGeneric(variable,i,regex);">
             </ng-template>
 
             <ng-template ngSwitchCase="GENERIC_STRING">
                 <input #genText type="text" class="input input-bordered input-sm" style="outline:none; box-shadow:none;"
-                    [value]="variable.values[i]" [id]="'GENERIC_STRING_'+j+'_'+i"
+                    [value]="variable.values[i]" [id]="'GENERIC_STRING_'+j+'_'+i" autocomplete="off"
                     (keyup)="debounceSetGeneric(variable,i,genText);">
             </ng-template>
             <ng-template ngSwitchCase="GENERIC_INT">
                 <input #genInt type="number" step="1" style="outline:none; box-shadow:none;"
-                    class="input input-bordered w-20 input-sm" [value]="variable.values[i]"
+                    class="input input-bordered w-20 input-sm" [value]="variable.values[i]" autocomplete="off"
                     [id]="'GENERIC_INT_'+j + '_' + i" (keyup)="debounceSetGeneric(variable,i,genInt);">
             </ng-template>
             <ng-template ngSwitchCase="GENERIC_FLOAT">
                 <input #genFloat type="number" step="0.01" class="input input-bordered w-20 input-sm"
-                    style="outline:none; box-shadow:none;" [value]="variable.values[i]"
+                    style="outline:none; box-shadow:none;" [value]="variable.values[i]" autocomplete="off"
                     [id]="'GENERIC_FLOAT_'+j + '_' + i" (keyup)="debounceSetGeneric(variable,i,genFloat);">
             </ng-template>
             <ng-template ngSwitchCase="GENERIC_BOOLEAN">
                 <div class="mr-2 h-4 w-4 border-gray-300 border rounded cursor-pointer hover:bg-gray-200"
                     [id]="'GENERIC_BOOLEAN_'+j + '_' + i" (click)="setActiveNegateColorAndValue(variable,i)"
+                    autocomplete="off"
                     [ngStyle]="{'background-color':variable.options.colors[i], 'border-color':variable.options.colors[i]}">
                 </div>
             </ng-template>
