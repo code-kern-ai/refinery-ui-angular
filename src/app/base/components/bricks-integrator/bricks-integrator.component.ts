@@ -62,6 +62,7 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
     this.checkCanAccept();
     this.requestSearch();
     this.searchInput.nativeElement.value = "";
+    this.searchInput.nativeElement.focus();
   }
 
   initConfig() {
@@ -94,6 +95,7 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
       this.config.search.results = c.data;
       this.config.search.results.forEach(e => e.visible = true);
       this.config.search.nothingMatches = this.config.search.results.length == 0;
+      this.searchInput.nativeElement.focus();
 
     });
   }

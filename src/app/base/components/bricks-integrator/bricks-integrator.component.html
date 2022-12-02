@@ -310,12 +310,12 @@
             <ng-template ngSwitchCase="GENERIC_INT">
                 <input #genInt type="number" step="1" style="outline:none; box-shadow:none;"
                     class="input input-bordered w-20 input-sm" [value]="variable.values[i]" autocomplete="off"
-                    [id]="'GENERIC_INT_'+j + '_' + i" (keyup)="debounceSetGeneric(variable,i,genInt);">
+                    [id]="'GENERIC_INT_'+j + '_' + i" (change)="debounceSetGeneric(variable,i,genInt);">
             </ng-template>
             <ng-template ngSwitchCase="GENERIC_FLOAT">
                 <input #genFloat type="number" step="0.01" class="input input-bordered w-20 input-sm"
                     style="outline:none; box-shadow:none;" [value]="variable.values[i]" autocomplete="off"
-                    [id]="'GENERIC_FLOAT_'+j + '_' + i" (keyup)="debounceSetGeneric(variable,i,genFloat);">
+                    [id]="'GENERIC_FLOAT_'+j + '_' + i" (change)="debounceSetGeneric(variable,i,genFloat);">
             </ng-template>
             <ng-template ngSwitchCase="GENERIC_BOOLEAN">
                 <div class="mr-2 h-4 w-4 border-gray-300 border rounded cursor-pointer hover:bg-gray-200"
