@@ -379,8 +379,8 @@
 </kern-modal>
 
 
-<kern-modal [isOpen]="heuristicsModals.lastWeakSupervision.open" closeButton="X"
-    (optionClicked)="heuristicsModals.lastWeakSupervision.open = false;">
+<kern-modal [isOpen]="heuristicsModals.lastWeakSupervision.open" [modalBoxStyle]="{'overflow':'visible'}"
+    closeButton="X" (optionClicked)="heuristicsModals.lastWeakSupervision.open = false;">
     <h1 class="text-lg text-gray-900 mb-2 text-center">Last Weak
         Supervision Run</h1>
     <div class=" flex flex-grow justify-center my-4"
