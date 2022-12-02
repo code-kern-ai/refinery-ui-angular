@@ -766,7 +766,7 @@
                 style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Attribute
                 name</span></span>
         <input #attributeName id="attributeName" name="attributeName" [value]="settingModals.attribute.name"
-            placeholder="Enter an attribute name..." (input)="changeAttributeName($event)"
+            placeholder="Enter an attribute name..." (input)="changeAttributeName($event)" autocomplete="off"
             class="input input-sm input-bordered placeholder-italic" />
 
         <ng-template [ngIf]="settingModals.attribute.duplicateNameExists">
@@ -1024,7 +1024,7 @@
         You can add press enter to add a label</div>
     <input #labelName id="labelName" name="labelName" type="text" placeholder="Label Name"
         class="w-full input input-sm input-bordered" (input)="checkAndModifyLabelName($event.target)"
-        (keydown.enter)="addLabel()">
+        (keydown.enter)="addLabel()" autocomplete="off">
 </kern-modal>
 
 <kern-modal [isOpen]="settingModals.labelingTask.delete.open" closeButton="X"
@@ -1073,7 +1073,7 @@
         </div><input #labelingTaskName id="labelingTaskName" name="labelingTaskName" type="text"
             placeholder="Labeling task name" class="input input-sm input-bordered"
             (input)="checkLabelingTaskName($event.target)" (keydown.enter)="addLabelingTask();labelingTaskName.value=''"
-            [value]="settingModals.labelingTask.create.name">
+            [value]="settingModals.labelingTask.create.name" autocomplete="off">
     </div>
 
 </kern-modal>
