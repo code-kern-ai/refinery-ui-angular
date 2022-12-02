@@ -555,18 +555,12 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
 
   focusModalInputBox(event: Event, inputBoxName: string) {
     event.preventDefault();
-    const inputChildren = document.getElementsByName(inputBoxName);
-    if (inputChildren.length > 0) {
-      const node = inputChildren[0];
-      if (
-        node instanceof HTMLElement &&
-        node.getAttribute('name') == inputBoxName
-      ) {
-        setTimeout(() => {
-          node.focus();
-        }, 0);
-        return;
-      }
+    const inputChildren = document.getElementById(inputBoxName);
+    if (inputChildren && inputChildren instanceof HTMLElement && inputChildren.getAttribute('name') == inputBoxName) {
+      setTimeout(() => {
+        inputChildren.focus();
+      }, 0);
+      return;
     }
   }
 
