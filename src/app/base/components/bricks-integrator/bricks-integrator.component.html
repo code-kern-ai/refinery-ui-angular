@@ -22,19 +22,16 @@
         <div class="sm:block">
             <div class="border-b border-gray-200">
                 <nav class="-mb-px flex space-x-8" aria-label="Tabs">
-                    <button (click)="config.page= IntegratorPageType.SEARCH"
+                    <button (click)="switchToPage(IntegratorPageType.SEARCH)"
                         [ngClass]="config.page == IntegratorPageType.SEARCH ? 'border-indigo-500 text-indigo-600':'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
                         class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">Search</button>
-                    <button
-                        (click)="(config.api.requesting || config.api.data)?config.page= IntegratorPageType.OVERVIEW:null"
+                    <button (click)="switchToPage(IntegratorPageType.OVERVIEW)"
                         [ngClass]="[config.page == IntegratorPageType.OVERVIEW ? 'border-indigo-500 text-indigo-600':'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', (config.api.requesting || config.api.data)?'cursor-pointer':'cursor-not-allowed']"
                         class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">Overview</button>
-                    <button
-                        (click)="(config.api.requesting || config.api.data)?config.page = IntegratorPageType.INPUT_EXAMPLE:null"
+                    <button (click)="switchToPage(IntegratorPageType.INPUT_EXAMPLE)"
                         [ngClass]="[config.page == IntegratorPageType.INPUT_EXAMPLE ? 'border-indigo-500 text-indigo-600':'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', (config.api.requesting || config.api.data)?'cursor-pointer':'cursor-not-allowed']"
                         class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">Input Example</button>
-                    <button
-                        (click)="(config.api.requesting || config.api.data)?config.page = IntegratorPageType.INTEGRATION:null"
+                    <button (click)="switchToPage(IntegratorPageType.INTEGRATION)"
                         [ngClass]="[config.page == IntegratorPageType.INTEGRATION ? 'border-indigo-500 text-indigo-600':'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', (config.api.requesting || config.api.data)?'cursor-pointer':'cursor-not-allowed']"
                         class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">Integration</button>
 
@@ -71,8 +68,15 @@
                         <path stroke-linecap="round" stroke-linejoin="round"
                             d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
                     </svg>
-                    <p class="mt-4 font-semibold text-gray-900">No results found</p>
-                    <p class="mt-2 text-gray-500">No components found for this search term. Please try again.</p>
+                    <ng-template [ngIf]="config.search.requesting" [ngIfElse]="noResultsBackend">
+                        <p class="mt-4 font-semibold text-gray-900">No preliminary results found</p>
+                        <p class="mt-2 text-gray-500">We also query the backend to provide you with a more sophisticated
+                            similarity search.</p>
+                    </ng-template>
+                    <ng-template #noResultsBackend>
+                        <p class="mt-4 font-semibold text-gray-900">No results found</p>
+                        <p class="mt-2 text-gray-500">No components found for this search term. Please try again.</p>
+                    </ng-template>
                 </div>
             </ng-template>
             <ng-template #showResults>
@@ -80,9 +84,39 @@
                     role="listbox">
                     <li *ngFor="let result of config.search.results; let i = index"
                         [ngClass]="result.visible ? '':'hidden'" (click)="selectSearchResult(result.id)"
-                        class="group flex cursor-pointer select-none rounded-xl p-3 hover:bg-gray-100" id="option-1"
-                        role="option" tabindex="-1">
-                        <div class="ml-4 flex-auto">
+                        class="group flex flex-row items-center cursor-pointer select-none rounded-xl p-3 hover:bg-gray-100"
+                        id="option-1" role="option" tabindex="-1">
+                        <svg *ngIf="result.attributes.moduleType == 'generator'" xmlns="http://www.w3.org/2000/svg"
+                            class="h-6 w-6 flex-none text-gray-900 text-opacity-40" width="24" height="24"
+                            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                            <path d="M12 12c2.76 0 5 -2.01 5 -4.5s-2.24 -4.5 -5 -4.5v9z"></path>
+                            <path d="M12 12c0 2.76 2.01 5 4.5 5s4.5 -2.24 4.5 -5h-9z"></path>
+                            <path d="M12 12c-2.76 0 -5 2.01 -5 4.5s2.24 4.5 5 4.5v-9z"></path>
+                            <path d="M12 12c0 -2.76 -2.01 -5 -4.5 -5s-4.5 2.24 -4.5 5h9z"></path>
+                        </svg>
+                        <svg *ngIf="result.attributes.moduleType == 'classifier'" xmlns="http://www.w3.org/2000/svg"
+                            class="h-6 w-6 flex-none text-gray-900 text-opacity-40" width="24" height="24"
+                            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                            <path d="M14 4h6v6h-6z"></path>
+                            <path d="M4 14h6v6h-6z"></path>
+                            <circle cx="17" cy="17" r="3"></circle>
+                            <circle cx="7" cy="7" r="3"></circle>
+                        </svg>
+                        <svg *ngIf="result.attributes.moduleType == 'extractor'" xmlns="http://www.w3.org/2000/svg"
+                            class="h-6 w-6 flex-none text-gray-900 text-opacity-40" width="24" height="24"
+                            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                            <path d="M3 19h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4"></path>
+                            <path d="M12.5 5.5l4 4"></path>
+                            <path d="M4.5 13.5l4 4"></path>
+                            <path d="M21 15v4h-8l4 -4z"></path>
+                        </svg>
+                        <div class="ml-2 flex-auto">
                             <p class="text-sm font-bold text-gray-700">{{result.attributes.name}}</p>
                             <p class="text-sm text-gray-500">{{result.attributes.description}}</p>
                         </div>
@@ -194,20 +228,50 @@
                 <pre class="text-sm overflow-x-auto">{{codeParser.errors.join("\n")}}</pre>
             </div>
         </ng-template>
+        <ng-template [ngIf]="codeParser?.globalComments && codeParser.globalComments.length>0">
+            <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded relative flex flex-col"
+                role="alert">
+                <div class="self-center flex flex-row flex-nowrap items-center -mt-1 mb-1">
+                    <strong class="font-bold">Information</strong>
+                    <svg class="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                        fill="currentColor" aria-hidden="true">
+                        <path fill-rule="evenodd"
+                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div class="flex flex-col" style="max-width:30rem">
+                    <span class="text-sm" *ngFor="let cLine of codeParser.globalComments">
+                        {{cLine}}
+                    </span>
+                </div>
+            </div>
+        </ng-template>
         <ng-template [ngIf]="codeParser?.variables.length == 0" [ngIfElse]="displaySelectionHelper">
             <label>Nothing to parse, code can be used without changes</label>
         </ng-template>
+
         <ng-template #displaySelectionHelper>
 
-            <div class="grid grid-cols-2-max gap-x-2 gap-y-2 items-center pb-4 px-4">
+            <div class="grid grid-cols-3-max gap-x-2 gap-y-2 items-center pb-4 px-4">
 
                 <label class="font-bold">Variable</label>
                 <label class="font-bold">Value</label>
                 <div class="contents" *ngFor="let v of codeParser.variables;let i = index">
-                    <label class="text-sm">{{v.displayName}}</label>
+                    <label class="text-sm col-start-1">{{v.displayName}}</label>
                     <ng-container class="contents" [ngTemplateOutlet]="variableSelect"
                         [ngTemplateOutletContext]="{variable:v,j:i}">
                     </ng-container>
+                    <div *ngIf="v.comment" class="tooltip" [attr.data-tip]="v.comment">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-info-circle"
+                            width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+                            fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                            <circle cx="12" cy="12" r="9"></circle>
+                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                            <polyline points="11 12 12 12 12 16 13 16"></polyline>
+                        </svg>
+                    </div>
 
                 </div>
             </div>
@@ -303,8 +367,10 @@
             </ng-template>
 
             <ng-template ngSwitchCase="GENERIC_STRING">
-                <input #genText type="text" class="input input-bordered input-sm" style="outline:none; box-shadow:none;"
-                    [value]="variable.values[i]" [id]="'GENERIC_STRING_'+j+'_'+i" autocomplete="off"
+                <input #genText type="text" class="input input-bordered input-sm"
+                    style="outline:none; box-shadow:none;min-width: 10rem;max-width: 25rem;"
+                    [ngClass]="variable.values[i].length>20?'w-60':'w-50'" [value]="variable.values[i]"
+                    [id]="'GENERIC_STRING_'+j+'_'+i" autocomplete="off"
                     (keyup)="debounceSetGeneric(variable,i,genText);">
             </ng-template>
             <ng-template ngSwitchCase="GENERIC_INT">

@@ -74,9 +74,11 @@ export type BricksIntegratorConfig = {
         requesting: boolean,
         searchValue: string,
         lastRequestUrl: string,
+        requestData: string,
         debounce: Subscription,
         results: BricksSearchData[],
         nothingMatches: boolean,
+        currentRequest: Subscription
     }
     codeFullyPrepared: boolean,
     preparedCode: string,
@@ -106,9 +108,11 @@ export function getEmptyBricksIntegratorConfig(): BricksIntegratorConfig {
             requesting: false,
             searchValue: null,
             lastRequestUrl: null,
+            requestData: null,
             debounce: null,
             results: [],
             nothingMatches: false,
+            currentRequest: null
         },
         codeFullyPrepared: false,
         preparedCode: null,
@@ -124,6 +128,7 @@ export type BricksVariable = {
     pythonType: string,
     canMultipleValues: boolean,
     comment: string,
+    optional: boolean,
     type: BricksVariableType
     options: {
         colors?: string[],
@@ -142,6 +147,7 @@ export function getEmptyBricksVariable(): BricksVariable {
         canMultipleValues: false,
         type: null,
         comment: null,
+        optional: false,
         options: {}
     }
 }

@@ -15,6 +15,9 @@ export enum BricksVariableComment {
     /** @member {string} */
     /** all iso codes are provided (usually only most common ["de", "en", "es", "fr", "it", "ja", "ko", "pt", "ru", "zh"]) */
     LANGUAGE_ALL = "all",
+    /** @member {string} */
+    /** no need to fill this variable to be considered finished. */
+    GLOBAL_OPTIONAL = "optional",
 }
 
 export function isCommentTrue(comment: string, commentLookup: BricksVariableComment): boolean {

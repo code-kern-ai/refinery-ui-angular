@@ -1,4 +1,4 @@
-import { capitalizeFirst, enumToArray } from "src/app/util/helper-functions"
+import { capitalizeFirst, enumToArray, isStringTrue } from "src/app/util/helper-functions"
 import { BricksIntegratorComponent } from "../bricks-integrator.component"
 import { BricksVariableComment, isCommentTrue } from "./comment-lookup";
 import { BricksVariable, BricksVariableType, getEmptyBricksVariable } from "./type-helper";
@@ -7,6 +7,7 @@ import { BricksVariable, BricksVariableType, getEmptyBricksVariable } from "./ty
 export class BricksCodeParser {
     errors: string[] = [];
     variables: BricksVariable[] = [];
+    globalComments: string[];
     baseCode: string;
     filterTypes: string[];
 
@@ -16,6 +17,7 @@ export class BricksCodeParser {
     public prepareCode() {
         this.errors = [];
         this.baseCode = this.base.config.api.data.data.attributes.sourceCode;
+        this.globalComments = this.collectGlobalComment();
         const variableLines = this.collectVariableLines();
         if (variableLines.length == 0) {
             this.base.config.preparedCode = this.baseCode;
@@ -42,9 +44,28 @@ export class BricksCodeParser {
         }
         this.base.config.preparedCode = replacedCode;
 
-        this.base.config.codeFullyPrepared = this.variables.every(v => v.values.length > 0 && v.values.every(va => va != null));
+        this.base.config.codeFullyPrepared = this.variables.every(v => v.optional || (v.values.length > 0 && v.values.every(va => va != null)));
         this.base.config.canAccept = this.base.config.codeFullyPrepared;
 
+    }
+
+    private collectGlobalComment(): string[] {
+        const lines = this.baseCode.split("\n");
+        const commentLines = [];
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i].trim();
+            if (line.startsWith("def ")) break;
+            if (line.startsWith("#")) {
+                const tmpLine = line.replace("#", "").trim();
+                const idx = tmpLine.indexOf("[");
+                if (idx > 0) {
+                    const parts = tmpLine.split("[").map((x, i) => (i == 0 ? x : "[" + x).trim());
+                    commentLines.push(...parts);
+                }
+                else commentLines.push(tmpLine);
+            }
+        }
+        return commentLines.filter(x => x.trim() != "");
     }
 
     private prepareReplaceLine(variable: BricksVariable) {
@@ -75,9 +96,8 @@ export class BricksCodeParser {
     }
 
     private collectVariableLines(): string[] {
-        const code = this.base.config.api.data.data.attributes.sourceCode;
 
-        const lines = code.split("\n");
+        const lines = this.baseCode.split("\n");
         const variableLines = [];
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i];
@@ -110,8 +130,33 @@ export class BricksCodeParser {
             variable.comment = comment.join("#");
         }
         variable.allowedValues = this.getAllowedValues(variable.type, variable.comment);
+        variable.optional = isCommentTrue(variable.comment, BricksVariableComment.GLOBAL_OPTIONAL);
+        variable.values = this.getValues(variable);
         this.setAddOptions(variable);
         return variable;
+    }
+
+    private getValues(variable: BricksVariable): any[] {
+        //parse variable value
+        if (variable.type.startsWith("GENERIC_") || variable.type == BricksVariableType.REGEX) {
+
+            const value = variable.line.split("=")[1].split("#")[0].trim();
+            if (value == "None") return [null];
+            if (value == "[]") return [null];
+            if (value.charAt(0) == "[") {
+                return value.substring(1, value.length - 1).split(",").map(x => this.parseValue(x, variable.pythonType));
+            } else {
+                return [this.parseValue(value, variable.pythonType)];
+            }
+        } else return [null];
+    }
+    private parseValue(value: string, pythonType: string): any {
+        if (value.startsWith("r\"")) value = value.substring(1); //remove r for regex
+        value = value.replace(/"/g, "").trim();
+        if (pythonType.includes("int")) return parseInt(value);
+        if (pythonType.includes("float")) return parseFloat(value);
+        if (pythonType.includes("bool")) return isStringTrue(value);
+        return value;
     }
 
     private setAddOptions(variable: BricksVariable) {
