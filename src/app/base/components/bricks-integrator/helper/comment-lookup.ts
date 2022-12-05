@@ -18,6 +18,7 @@ export enum BricksVariableComment {
 }
 
 export function isCommentTrue(comment: string, commentLookup: BricksVariableComment): boolean {
+    if (!comment) return false;
     return comment.includes(commentLookup);
 }
 
