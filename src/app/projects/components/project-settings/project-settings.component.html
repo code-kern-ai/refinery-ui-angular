@@ -86,12 +86,18 @@
                                         </kern-heuristic-statuses>
                                     </td>
                                     <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                        <kern-dropdown [dropdownOptions]="{
-                                            optionArray: attributeVisibilityStates,
-                                            buttonCaption: attributeContainer.get('visibility').value,
-                                            valuePropertyPath: 'value'
-                                        }" (optionClicked)="updateVisibilityAttributes($event, attributeContainer)">
-                                        </kern-dropdown>
+                                        <div class="inline-block">
+                                            <kern-dropdown [dropdownOptions]="{
+                                                optionArray: attributeVisibilityStates,
+                                                buttonCaption: attributeContainer.get('visibility').value,
+                                                valuePropertyPath: 'value',
+                                                hasFullWidth: true,
+                                                width: '170px'
+                                            }"
+                                                (optionClicked)="updateVisibilityAttributes($event, attributeContainer)">
+                                            </kern-dropdown>
+                                        </div>
+
                                     </td>
                                     <td class="text-center px-3 py-2 text-sm text-gray-500">
                                         <button type="button"
