@@ -58,6 +58,18 @@
             </div>
 
             <div class="w-full mt-8">
+                <div class="flex flex-row items-center mt-2">
+                    <div class="text-sm leading-5 font-medium text-gray-700 inline-block mr-2">Visibility of attributes
+                    </div>
+                    <div class="tooltip tooltip-right" data-tip="Change visibility of attributes">
+                        <kern-dropdown [dropdownOptions]="{
+                                optionArray: attributeVisibilityStates,
+                                buttonCaption: attributeVisibilityVal
+                            }" (optionClicked)="updateVisibilityAttributes($event)">
+                        </kern-dropdown>
+                    </div>
+                </div>
+
                 <div class="flex flex-row items-center">
                     <div class="text-sm leading-5 font-medium text-gray-700 inline-block mr-2">Attributes</div>
                     <ng-template [ngIf]="attributesUsableUploaded.length > 0" [ngIfElse]="noAttributes">
