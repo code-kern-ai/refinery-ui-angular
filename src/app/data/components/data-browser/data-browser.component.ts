@@ -303,7 +303,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     let firstReturn$ = vc$.pipe(first());
 
     this.subscriptions$.push(vc$.subscribe((attributes) => {
-      attributes = attributes.filter((a) => a.visibility != AttributeVisibility.HIDE);
+      attributes = attributes.filter((a) => a.visibility == AttributeVisibility.DO_NOT_HIDE);
       attributes.sort((a, b) => a.relativePosition - b.relativePosition);
       this.attributes.clear();
       this.attributesSortOrder = [];
