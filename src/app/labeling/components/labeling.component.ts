@@ -36,6 +36,7 @@ import { assumeUserRole, guessLinkType, labelingHuddle, labelingLinkData, labeli
 import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
 import { RouteManager } from 'src/app/util/route-manager';
 import { createDefaultLabelingModals, LabelingModals } from './helper/modals-helper';
+import { AttributeVisibility } from 'src/app/projects/components/create-new-attribute/attributes-visibility-helper';
 
 @Component({
   selector: 'kern-labeling',
@@ -472,6 +473,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
     const pipeFirst = vc$.pipe(first());
 
     this.subscriptions$.push(vc$.subscribe((attributes) => {
+      attributes = attributes.filter((a) => a.visibility == AttributeVisibility.DO_NOT_HIDE || a.visibility == AttributeVisibility.HIDE_ON_DATA_BROWSER);
       this.sortOrder = [];
       attributes.forEach((att) => {
         this.sortOrder.push({ key: att.name, order: att.relativePosition });

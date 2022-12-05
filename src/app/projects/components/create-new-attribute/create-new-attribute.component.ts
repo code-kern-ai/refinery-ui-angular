@@ -18,7 +18,7 @@ import { dataTypes } from 'src/app/util/data-types';
 import { getColorForDataType, isStringTrue, toPythonFunctionName } from 'src/app/util/helper-functions';
 import { KnowledgeBasesApolloService } from 'src/app/base/services/knowledge-bases/knowledge-bases-apollo.service';
 import { AttributeCalculationModals, createDefaultAttributeCalculationModals } from './create-new-attribute-helper';
-import { attributeVisibilityStates } from './attributes-visibility-helper';
+import { AttributeVisibility, attributeVisibilityStates } from './attributes-visibility-helper';
 
 @Component({
   selector: 'kern-create-new-attribute',
@@ -385,6 +385,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
     let attributes$;
     [this.attributesQuery$, attributes$] = this.projectApolloService.getAttributesByProjectId(projectId, ['ALL']);
     this.subscriptions$.push(attributes$.subscribe((attributes) => {
+      attributes = attributes.filter((a) => a.visibility != AttributeVisibility.HIDE);
       attributes.sort((a, b) => a.relativePosition - b.relativePosition);
       this.attributes = attributes;
       this.attributesUsableUploaded = this.attributes.filter((attribute) => attribute.state == 'UPLOADED' || attribute.state == 'USABLE' || attribute.state == 'AUTOMATICALLY_CREATED');

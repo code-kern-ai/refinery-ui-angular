@@ -58,6 +58,10 @@
                                     </th>
                                     <th scope="col"
                                         class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                        Visibility
+                                    </th>
+                                    <th scope="col"
+                                        class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
                                         Modify
                                     </th>
                                 </tr>
@@ -80,6 +84,14 @@
                                         <kern-heuristic-statuses [status]="attributeContainer.get('state').value"
                                             page="attributes" initialCaption="Registered">
                                         </kern-heuristic-statuses>
+                                    </td>
+                                    <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                        <kern-dropdown [dropdownOptions]="{
+                                            optionArray: attributeVisibilityStates,
+                                            buttonCaption: attributeContainer.get('visibility').value,
+                                            valuePropertyPath: 'value'
+                                        }" (optionClicked)="updateVisibilityAttributes($event, attributeContainer)">
+                                        </kern-dropdown>
                                     </td>
                                     <td class="text-center px-3 py-2 text-sm text-gray-500">
                                         <button type="button"
@@ -154,7 +166,7 @@
             </div>
 
             <div class="text-left lg:text-right">
-                <div [attr.data-tip]="project.tokenizer" class="z-10 tooltip tooltip-right font-medium inline-block">
+                <div [attr.data-tip]="project.tokenizer" class="tooltip tooltip-right font-medium inline-block">
                     <span class="cursor-help underline"
                         style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">
                         Tokenization</span>

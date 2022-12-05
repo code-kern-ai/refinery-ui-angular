@@ -17,6 +17,7 @@ import { dataTypes } from 'src/app/util/data-types';
 import { copyToClipboard, toPythonFunctionName } from 'src/app/util/helper-functions';
 import { LabelHelper } from './helper/label-helper';
 import { createDefaultSettingModals, SettingModals } from './helper/modal-helper';
+import { attributeVisibilityStates } from '../create-new-attribute/attributes-visibility-helper';
 
 @Component({
   selector: 'kern-project-settings',
@@ -86,6 +87,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
   downloadedModelsQuery$: any;
   downloadedModels: any[];
   isManaged: boolean = true;
+  attributeVisibilityStates = attributeVisibilityStates;
 
   lh: LabelHelper;
   settingModals: SettingModals = createDefaultSettingModals();
@@ -300,7 +302,8 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
           userCreated: att.userCreated,
           sourceCode: att.sourceCode,
           state: att.state,
-          dataTypeName: this.dataTypesArray.find((type) => type.value === att?.dataType).name
+          dataTypeName: this.dataTypesArray.find((type) => type.value === att?.dataType).name,
+          visibility: this.attributeVisibilityStates.find((type) => type.value === att?.visibility)?.name,
         });
 
         if (att.state == 'INITIAL' || att.state == 'FAILED') {
@@ -311,7 +314,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
           if (this.pKeyChanged()) this.requestPKeyCheck(this.project.id);
           if (this.attributeChangedToText()) this.createAttributeTokenStatistics(this.project.id, values.id);
           this.projectApolloService.
-            updateAttribute(this.project.id, values.id, values.dataType, values.isPrimaryKey).pipe(first()).subscribe();
+            updateAttribute(this.project.id, values.id, values.dataType, values.isPrimaryKey, values.visibility).pipe(first()).subscribe();
         });
         this.attributesArray.push(group);
         if (att.state == 'UPLOADED' || att.state == 'USABLE' || att.state == 'AUTOMATICALLY_CREATED') {
@@ -951,5 +954,9 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
 
   setLabelingTaskTarget(id: string) {
     this.settingModals.labelingTask.create.taskId = id;
+  }
+
+  updateVisibilityAttributes(value: string, attributeContainer: any) {
+    this.projectApolloService.updateAttribute(this.project.id, attributeContainer.get("id").value, attributeContainer.get("dataType").value, attributeContainer.get("isPrimaryKey").value, attributeContainer.get("name").value, attributeContainer.get("sourceCode").value, value).pipe(first()).subscribe();
   }
 }
