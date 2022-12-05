@@ -64,7 +64,8 @@
                     <div class="tooltip tooltip-right" data-tip="Change visibility of attributes">
                         <kern-dropdown [dropdownOptions]="{
                                 optionArray: attributeVisibilityStates,
-                                buttonCaption: attributeVisibilityVal
+                                buttonCaption: attributeVisibilityVal,
+                                valuePropertyPath: 'value'
                             }" (optionClicked)="updateVisibilityAttributes($event)">
                         </kern-dropdown>
                     </div>

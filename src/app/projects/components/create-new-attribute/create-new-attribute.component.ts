@@ -166,7 +166,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
       this.currentAttribute = attribute;
       this.attributeName = this.currentAttribute?.name;
       this.attributeDataType = this.dataTypesArray.find((type) => type.value === this.currentAttribute?.dataType).name;
-      this.attributeVisibilityVal = this.currentAttribute.visibility;
+      this.attributeVisibilityVal = this.attributeVisibilityStates.find((type) => type.value === this.currentAttribute?.visibility).name;
       if (this.currentAttribute?.sourceCode == null) {
         this.codeFormCtrl.setValue(AttributeCodeLookup.getAttributeCalculationTemplate(AttributeCalculationExamples.AC_EMPTY_TEMPLATE, this.currentAttribute.dataType).code);
       } else {
