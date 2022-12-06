@@ -18,6 +18,7 @@ import { dataTypes } from 'src/app/util/data-types';
 import { getColorForDataType, isStringTrue, toPythonFunctionName } from 'src/app/util/helper-functions';
 import { KnowledgeBasesApolloService } from 'src/app/base/services/knowledge-bases/knowledge-bases-apollo.service';
 import { AttributeCalculationModals, createDefaultAttributeCalculationModals } from './create-new-attribute-helper';
+import { AttributeVisibility, attributeVisibilityStates, getTooltipVisibilityState } from './attributes-visibility-helper';
 
 @Component({
   selector: 'kern-create-new-attribute',
@@ -57,6 +58,9 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
   runOn10HasError: boolean = false;
   dataTypesArray = dataTypes;
   attributeDataType: string;
+  attributeVisibilityStates = attributeVisibilityStates;
+  attributeVisibilityVal: string;
+  tooltipsArray: string[] = [];
 
   attributeCalculationModals: AttributeCalculationModals = createDefaultAttributeCalculationModals();
 
@@ -163,6 +167,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
       this.currentAttribute = attribute;
       this.attributeName = this.currentAttribute?.name;
       this.attributeDataType = this.dataTypesArray.find((type) => type.value === this.currentAttribute?.dataType).name;
+      this.attributeVisibilityVal = this.attributeVisibilityStates.find((type) => type.value === this.currentAttribute?.visibility).name;
       if (this.currentAttribute?.sourceCode == null) {
         this.codeFormCtrl.setValue(AttributeCodeLookup.getAttributeCalculationTemplate(AttributeCalculationExamples.AC_EMPTY_TEMPLATE, this.currentAttribute.dataType).code);
       } else {
@@ -184,6 +189,11 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
         this.editorOptions = { ...this.editorOptions, readOnly: true };
       }
       this.checkIfAtLeastRunning = this.checkIfSomethingRunning();
+
+      this.tooltipsArray = [];
+      this.attributeVisibilityStates.forEach((state) => {
+        this.tooltipsArray.push(getTooltipVisibilityState(state.value));
+      });
       timer(250).subscribe(() => this.updatedThroughWebsocket = false);
     }));
   }
@@ -225,7 +235,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
     if (this.updatedThroughWebsocket) return;
     const getCodeToSave = this.getPythonFunctionToSave(this.codeFormCtrl.value);
     this.projectApolloService
-      .updateAttribute(projectId, this.currentAttribute.id, this.currentAttribute.dataType, this.currentAttribute.isPrimaryKey, this.attributeName, getCodeToSave)
+      .updateAttribute(projectId, this.currentAttribute.id, this.currentAttribute.dataType, this.currentAttribute.isPrimaryKey, this.attributeName, getCodeToSave, this.currentAttribute.visibility)
       .pipe(first())
       .subscribe(() => this.duplicateNameExists = false);
   }
@@ -381,9 +391,11 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
     let attributes$;
     [this.attributesQuery$, attributes$] = this.projectApolloService.getAttributesByProjectId(projectId, ['ALL']);
     this.subscriptions$.push(attributes$.subscribe((attributes) => {
+      const attributesAll = attributes;
+      attributes = attributes.filter((a) => a.visibility != AttributeVisibility.HIDE);
       attributes.sort((a, b) => a.relativePosition - b.relativePosition);
       this.attributes = attributes;
-      this.attributesUsableUploaded = this.attributes.filter((attribute) => attribute.state == 'UPLOADED' || attribute.state == 'USABLE' || attribute.state == 'AUTOMATICALLY_CREATED');
+      this.attributesUsableUploaded = attributesAll.filter((attribute) => attribute.state == 'UPLOADED' || attribute.state == 'USABLE' || attribute.state == 'AUTOMATICALLY_CREATED');
       this.attributesUsableUploaded.forEach(attribute => {
         attribute.color = getColorForDataType(attribute.dataType);
         attribute.dataTypeName = this.dataTypesArray.find((type) => type.value === attribute.dataType).name;
@@ -423,5 +435,10 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
   copyImportToClipboard(pythonVariable: string) {
     const statement = "from knowledge import " + pythonVariable;
     navigator.clipboard.writeText(statement);
+  }
+
+  updateVisibilityAttributes(value: string) {
+    this.currentAttribute.visibility = value;
+    this.saveAttribute(this.project.id);
   }
 }

@@ -31,6 +31,7 @@ import { CommentDataManager, CommentType } from 'src/app/base/components/comment
 import { dataTypes } from 'src/app/util/data-types';
 import { KnowledgeBasesApolloService } from 'src/app/base/services/knowledge-bases/knowledge-bases-apollo.service';
 import { createDefaultHeuristicsDetailsModals, HeuristicsDetailsModals } from './weak-source-details-helper';
+import { AttributeVisibility } from 'src/app/projects/components/create-new-attribute/attributes-visibility-helper';
 
 @Component({
   selector: 'kern-weak-source-details',
@@ -88,13 +89,12 @@ export class WeakSourceDetailsComponent
   status: string;
   attributesQuery$: any;
   attributes: any;
-
+  attributesView: any[] = [];
   stickyObserver: IntersectionObserver;
   isHeaderNormal: boolean = true;
   sampleRecords: any;
   selectedAttribute: string = '';
   dataTypesArray = dataTypes;
-
   displayLogWarning: boolean = false;
 
   heuristicDetailsModals: HeuristicsDetailsModals = createDefaultHeuristicsDetailsModals();
@@ -645,6 +645,7 @@ export class WeakSourceDetailsComponent
     let attributes$;
     [this.attributesQuery$, attributes$] = this.projectApolloService.getAttributesByProjectId(projectId);
     this.subscriptions$.push(attributes$.subscribe((attributes) => {
+      this.attributesView = attributes.filter((a) => a.visibility != AttributeVisibility.HIDE);
       attributes.sort((a, b) => a.relativePosition - b.relativePosition);
       this.attributes = attributes;
       this.attributes.forEach(attribute => {

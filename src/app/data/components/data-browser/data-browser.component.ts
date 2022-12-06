@@ -59,6 +59,7 @@ import { UpdateSearchParameters } from './helper-classes/update-search-parameter
 import { getAttributeType, getSearchOperatorTooltip, SearchOperator } from './helper-classes/search-operators';
 import { createDefaultDataBrowserModals, DataBrowserModals } from './helper-classes/modals-helper';
 import { CommentsFilter } from './helper-classes/comments-filter';
+import { AttributeVisibility } from 'src/app/projects/components/create-new-attribute/attributes-visibility-helper';
 
 
 type DataSlice = {
@@ -302,6 +303,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     let firstReturn$ = vc$.pipe(first());
 
     this.subscriptions$.push(vc$.subscribe((attributes) => {
+      attributes = attributes.filter((a) => a.visibility == AttributeVisibility.DO_NOT_HIDE);
       attributes.sort((a, b) => a.relativePosition - b.relativePosition);
       this.attributes.clear();
       this.attributesSortOrder = [];
