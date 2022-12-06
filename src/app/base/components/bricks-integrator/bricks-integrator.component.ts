@@ -81,6 +81,8 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
       e.attributes.description.toLowerCase().includes(searchFor));
     this.config.search.nothingMatches = !this.config.search.results.find(e => e.visible)
 
+    //once real search is enabled remove return
+    return;
     this.config.search.requesting = true;
     if (this.config.search.debounce) this.config.search.debounce.unsubscribe();
     this.config.search.debounce = timer(500).subscribe(() => { this.requestSearch(searchFor); this.config.search.debounce = null; });
