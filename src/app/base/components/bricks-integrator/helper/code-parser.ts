@@ -52,7 +52,7 @@ export class BricksCodeParser {
         if (!this.base.forIde) return;
         if (this.functionName == null || this.functionName == "@@unknown@@") return;
         const isExtractor = this.base.config.api.data.data.attributes.moduleType == "extractor";
-        let printReturn = "\n\nprint(\"Record: \", record) \nprint(\"Result: \",";
+        let printReturn = "\n\nprint(\"Record: \", record) \nprint(\"Result: \", ";
         if (isExtractor) {
             printReturn += "[v for v in " + this.functionName + "(record)])"
         } else {
