@@ -459,7 +459,7 @@
     <div *ngIf="heuristicDetailsModals.attributeDetails.currentRecordIdx != -1">
         <div *ngIf="sampleRecords.records[heuristicDetailsModals.attributeDetails.currentRecordIdx] as record">
             <div class="text-sm text-gray-500 my-2" class="overflow-y-auto max-height-modal scrollable-size">
-                <div *ngFor="let att of attributes" class="text-sm leading-5 text-left my-3">
+                <div *ngFor="let att of attributesView" class="text-sm leading-5 text-left my-3">
                     <div class="text-gray-900 font-bold">{{att.name}}</div>
                     <div class="text-gray-500 font-normal">
                         {{record.fullRecordData[att.name]}}

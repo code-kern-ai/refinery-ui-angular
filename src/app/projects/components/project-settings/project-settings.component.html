@@ -58,6 +58,10 @@
                                     </th>
                                     <th scope="col"
                                         class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                        Visibility
+                                    </th>
+                                    <th scope="col"
+                                        class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
                                         Modify
                                     </th>
                                 </tr>
@@ -80,6 +84,23 @@
                                         <kern-heuristic-statuses [status]="attributeContainer.get('state').value"
                                             page="attributes" initialCaption="Registered">
                                         </kern-heuristic-statuses>
+                                    </td>
+                                    <td class="text-center px-3 py-2 text-sm text-gray-500">
+                                        <div class="inline-block">
+                                            <kern-dropdown [dropdownOptions]="{
+                                                optionArray: attributeVisibilityStates,
+                                                buttonCaption: attributeVisibilityStates[attributeContainer.get('visibilityIndex').value].name,
+                                                valuePropertyPath: 'value',
+                                                hasFullWidth: true,
+                                                width: '170px',
+                                                optionTooltips: tooltipsArray,
+                                                tooltipMaxWidthClass: 'tooltip_max_width_200',
+                                                emitIndex:true
+                                            }"
+                                                (optionClicked)="attributeContainer.get('visibilityIndex').setValue($event);">
+                                            </kern-dropdown>
+                                        </div>
+
                                     </td>
                                     <td class="text-center px-3 py-2 text-sm text-gray-500">
                                         <button type="button"
@@ -154,7 +175,7 @@
             </div>
 
             <div class="text-left lg:text-right">
-                <div [attr.data-tip]="project.tokenizer" class="z-10 tooltip tooltip-right font-medium inline-block">
+                <div [attr.data-tip]="project.tokenizer" class="tooltip tooltip-right font-medium inline-block">
                     <span class="cursor-help underline"
                         style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">
                         Tokenization</span>

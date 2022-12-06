@@ -259,7 +259,8 @@ export class ProjectApolloService {
             userCreated: data.userCreated,
             sourceCode: data.sourceCode,
             state: data.state,
-            logs: data.logs
+            logs: data.logs,
+            visibility: data.visibility,
           };
         });
       })
@@ -460,7 +461,8 @@ export class ProjectApolloService {
     dataType?: string,
     isPrimaryKey?: boolean,
     name?: string,
-    sourceCode?: string
+    sourceCode?: string,
+    visibility?: string
   ) {
     return this.apollo.mutate({
       mutation: mutations.UPDATE_ATTRIBUTE,
@@ -470,7 +472,8 @@ export class ProjectApolloService {
         dataType: dataType,
         isPrimaryKey: isPrimaryKey,
         name: name,
-        sourceCode: sourceCode
+        sourceCode: sourceCode,
+        visibility: visibility,
       },
       refetchQueries: [
         {

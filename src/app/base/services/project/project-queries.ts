@@ -138,6 +138,7 @@ export const queries = {
       sourceCode
       state
       logs
+      visibility
     }
   }  
   `,
@@ -391,6 +392,7 @@ export const queries = {
       sourceCode
       state
       logs
+      visibility
     }
   }
   `,
