@@ -645,7 +645,6 @@ export class WeakSourceDetailsComponent
     let attributes$;
     [this.attributesQuery$, attributes$] = this.projectApolloService.getAttributesByProjectId(projectId);
     this.subscriptions$.push(attributes$.subscribe((attributes) => {
-      this.attributesView = attributes;
       this.attributesView = attributes.filter((a) => a.visibility != AttributeVisibility.HIDE);
       attributes.sort((a, b) => a.relativePosition - b.relativePosition);
       this.attributes = attributes;
