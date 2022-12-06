@@ -190,3 +190,25 @@ export function tryParseJSON(str: string): any {
         return null;
     }
 }
+
+
+export function getPythonFunctionName(codeToCheck: string): string {
+    var regMatch: any = getPythonFunctionRegExMatch(codeToCheck);
+    if (!regMatch) return '@@unknown@@';
+    return regMatch[2];
+}
+
+export function getPythonFunctionRegExMatch(codeToCheck: string): any {
+    return /(def)\s(\w+)\([a-zA-Z0-9_:\[\]=, ]*\)/.exec(codeToCheck);
+}
+
+
+export function getPythonClassName(codeToCheck: string): string {
+    var regMatch: any = getPythonClassRegExMatch(codeToCheck);
+    if (!regMatch) return '@@unknown@@';
+    return regMatch[1];
+}
+
+export function getPythonClassRegExMatch(codeToCheck: string): any {
+    return /class ([\w]+)\([^)]+\):/.exec(codeToCheck);
+}

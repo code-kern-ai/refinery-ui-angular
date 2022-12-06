@@ -58,6 +58,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
   dataTypesArray = dataTypes;
   attributeDataType: string;
   nextUpdateReplace: boolean = false;
+  isInitial: boolean = null; //null as add state to differentiate between initial, not and unchecked
 
   attributeCalculationModals: AttributeCalculationModals = createDefaultAttributeCalculationModals();
 
@@ -124,6 +125,9 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
     NotificationService.unsubscribeFromNotification(this, this.project.id);
     CommentDataManager.unregisterAllCommentRequests(this);
   }
+  openBricksIntegrator() {
+    document.getElementById('bricks-integrator-open-button').click();
+  }
 
   getWhiteListNotificationService(): string[] {
     let toReturn = ['attributes_updated', 'calculate_attribute', 'tokenization',];
@@ -176,6 +180,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
 
         }
 
+        if (this.isInitial == null) this.isInitial = AttributeCodeLookup.isCodeStillTemplate(this.currentAttribute.sourceCode, this.currentAttribute.dataType);
       }
 
       this.attributeLogs = attribute?.logs;

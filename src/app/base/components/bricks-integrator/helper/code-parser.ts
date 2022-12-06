@@ -1,7 +1,7 @@
-import { capitalizeFirst, enumToArray, isStringTrue } from "src/app/util/helper-functions"
+import { capitalizeFirst, enumToArray, getPythonFunctionName, isStringTrue } from "src/app/util/helper-functions"
 import { BricksIntegratorComponent } from "../bricks-integrator.component"
 import { BricksVariableComment, isCommentTrue } from "./comment-lookup";
-import { BricksVariable, BricksVariableType, getEmptyBricksVariable } from "./type-helper";
+import { BricksVariable, bricksVariableNeedsTaskId, BricksVariableType, getEmptyBricksVariable } from "./type-helper";
 //currently included python types are: int, float, str, bool, list
 
 export class BricksCodeParser {
@@ -9,6 +9,7 @@ export class BricksCodeParser {
     variables: BricksVariable[] = [];
     globalComments: string[];
     baseCode: string;
+    functionName: string;
     filterTypes: string[];
 
     constructor(private base: BricksIntegratorComponent) {
@@ -18,6 +19,7 @@ export class BricksCodeParser {
         this.errors = [];
         this.baseCode = this.base.config.api.data.data.attributes.sourceCode;
         this.globalComments = this.collectGlobalComment();
+        this.functionName = getPythonFunctionName(this.baseCode);
         const variableLines = this.collectVariableLines();
         if (variableLines.length == 0) {
             this.base.config.preparedCode = this.baseCode;
@@ -26,13 +28,10 @@ export class BricksCodeParser {
         try {
             this.variables = this.parseVariableLines(variableLines);
             this.replaceVariables();
-
         } catch (error) {
             this.errors.push(error);
             console.log("couldn't parse code", error);
-
         }
-
     }
 
     public replaceVariables() {
@@ -43,10 +42,23 @@ export class BricksCodeParser {
             replacedCode = replacedCode.replace(variable.line, variable.replacedLine);
         }
         this.base.config.preparedCode = replacedCode;
-
+        this.extendCodeForRecordIde();
         this.base.config.codeFullyPrepared = this.variables.every(v => v.optional || (v.values.length > 0 && v.values.every(va => va != null)));
         this.base.config.canAccept = this.base.config.codeFullyPrepared;
 
+    }
+
+    private extendCodeForRecordIde() {
+        if (!this.base.forIde) return;
+        if (this.functionName == null || this.functionName == "@@unknown@@") return;
+        const isExtractor = this.base.config.api.data.data.attributes.moduleType == "extractor";
+        let printReturn = "\n\nprint(\"Record: \", record) \nprint(\"Result: \",";
+        if (isExtractor) {
+            printReturn += "[v for v in " + this.functionName + "(record)])"
+        } else {
+            printReturn += this.functionName + "(record))"
+        }
+        this.base.config.preparedCode += printReturn;
     }
 
     private collectGlobalComment(): string[] {
@@ -121,8 +133,8 @@ export class BricksCodeParser {
         variable.line = line;
         variable.baseName = variable.line.split("=")[0].split(":")[0].trim();
         variable.displayName = capitalizeFirst(variable.baseName.substring(5));
-        variable.pythonType = line.split(":")[1].split("=")[0].trim().toLocaleLowerCase();
-        variable.canMultipleValues = variable.pythonType.includes("list");
+        variable.pythonType = line.split(":")[1].split("=")[0].trim();
+        variable.canMultipleValues = variable.pythonType.toLowerCase().includes("list");
         variable.type = this.getVariableType(variable);
         const comment = line.split("#");
         if (comment.length > 1) {
@@ -170,6 +182,7 @@ export class BricksCodeParser {
         const types = this.filterTypes;
         for (let i = 0; i < types.length; i++) {
             const type = types[i];
+            if (!this.base.labelingTaskId && bricksVariableNeedsTaskId(type as BricksVariableType)) continue;
             if (variable.baseName.includes(type)) return type as BricksVariableType;
         }
         //if no specific type is found, try to find a generic type

@@ -116,7 +116,7 @@
                         </ng-container>
                     </div>
                     <div class="flex flex-row flex-nowrap items-center">
-                        <kern-bricks-integrator (preparedCode)="codeFormCtrl.setValue($event)"
+                        <kern-bricks-integrator (preparedCode)="codeFormCtrl.setValue($event);isInitialLf=false"
                             [moduleTypeFilter]="labelingTasks.get(labelingTaskControl.value).taskType == 'MULTICLASS_CLASSIFICATION' ?'classifier':'extractor'"
                             [executionTypeFilter]="informationSource.informationSourceType == 'LABELING_FUNCTION'? 'pythonFunction':'activeLearner'"
                             [labelingTaskId]="labelingTaskControl.value">
@@ -185,7 +185,21 @@
                 </div>
             </div>
 
-            <div class="border">
+            <div class="border relative">
+                <div *ngIf="isInitialLf"
+                    class="absolute top-0 bottom-0 left-0 right-0 bg-gray-200 flex items-center justify-center z-9"
+                    style="--tw-bg-opacity: 0.7;">
+                    <div class="flex flex-col gap-2">
+                        <button (click)="openBricksIntegrator()"
+                            class="bg-white text-gray-700 text font-semibold px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none">
+                            Search in bricks
+                        </button>
+                        <button (click)="isInitialLf = false"
+                            class="bg-white text-gray-700 text font-semibold px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none">
+                            Start from scratch
+                        </button>
+                    </div>
+                </div>
                 <ngx-monaco-editor class="w-full" style="height: 400px;" [options]="editorOptions"
                     (onInit)="initEditor($event,project.id)" [formControl]="codeFormCtrl">
                 </ngx-monaco-editor>

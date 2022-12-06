@@ -136,6 +136,7 @@ module.exports = {
         '4-max': 'max-content max-content max-content max-content',
       },
       zIndex: {
+        '9': 9,
         'modal-container': 900,
         'modal': 1000,
         'modal-tooltip': 1100,

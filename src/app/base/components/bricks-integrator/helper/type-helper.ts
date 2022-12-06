@@ -152,3 +152,13 @@ export function getEmptyBricksVariable(): BricksVariable {
     }
 }
 
+export function bricksVariableNeedsTaskId(variableType: BricksVariableType): boolean {
+    switch (variableType) {
+        case BricksVariableType.EMBEDDING:
+        case BricksVariableType.LABEL:
+            return true;
+        default:
+            return false;
+    }
+}
+

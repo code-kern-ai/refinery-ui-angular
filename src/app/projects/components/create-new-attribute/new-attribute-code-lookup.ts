@@ -52,4 +52,8 @@ export class AttributeCodeLookup {
         }
     }
 
+    static isCodeStillTemplate(code: string, dataType: string): boolean {
+
+        return AttributeCodeLookup.getAttributeCalculationTemplate(AttributeCalculationExamples.AC_EMPTY_TEMPLATE, dataType).code.trim() == code.trim();
+    }
 }

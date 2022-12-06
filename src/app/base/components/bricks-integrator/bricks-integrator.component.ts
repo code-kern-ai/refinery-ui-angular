@@ -4,7 +4,7 @@ import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, 
 import { ActivatedRoute } from '@angular/router';
 import { timer } from 'rxjs';
 import { first } from 'rxjs/operators';
-import { findProjectIdFromRoute } from 'src/app/util/helper-functions';
+import { findProjectIdFromRoute, isStringTrue } from 'src/app/util/helper-functions';
 import { KnowledgeBasesApolloService } from '../../services/knowledge-bases/knowledge-bases-apollo.service';
 import { ProjectApolloService } from '../../services/project/project-apollo.service';
 import { BricksCodeParser } from './helper/code-parser';
@@ -28,10 +28,11 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
     return IntegratorPage;
   }
 
+  @Input() forIde: string | boolean = false;
+
   //for search
   @Input() moduleTypeFilter: string; //generator, classifier or extractor
   @Input() executionTypeFilter: string; //activeLearner, pythonFunction or premium //currently not possible in search api so local post search filter
-
   //for values
   @Input() labelingTaskId: string;
   @Output() preparedCode = new EventEmitter<string | any>();
@@ -48,6 +49,7 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
     private activatedRoute: ActivatedRoute,) {
   }
   ngOnInit(): void {
+    if (typeof this.forIde == 'string') this.forIde = isStringTrue(this.forIde);
     this.initConfig();
     this.codeParser = new BricksCodeParser(this);
     const projectId = findProjectIdFromRoute(this.activatedRoute)
