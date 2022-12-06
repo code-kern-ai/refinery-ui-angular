@@ -61,12 +61,13 @@
                 <div class="flex flex-row items-center my-2">
                     <div class="text-sm leading-5 font-medium text-gray-700 inline-block mr-2">Visibility of attributes
                     </div>
-                    <div class="tooltip tooltip-right" data-tip="Change visibility of attributes">
+                    <div class="inline-block">
                         <kern-dropdown [dropdownOptions]="{
-                                optionArray: attributeVisibilityStates,
-                                buttonCaption: attributeVisibilityVal,
-                                valuePropertyPath: 'value'
-                            }" (optionClicked)="updateVisibilityAttributes($event)">
+                            optionArray: attributeVisibilityStates,
+                            buttonCaption: attributeVisibilityVal,
+                            valuePropertyPath: 'value',
+                            optionTooltips: tooltipsArray
+                        }" (optionClicked)="updateVisibilityAttributes($event)">
                         </kern-dropdown>
                     </div>
                 </div>

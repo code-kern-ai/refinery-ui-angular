@@ -17,7 +17,7 @@ import { dataTypes } from 'src/app/util/data-types';
 import { copyToClipboard, toPythonFunctionName } from 'src/app/util/helper-functions';
 import { LabelHelper } from './helper/label-helper';
 import { createDefaultSettingModals, SettingModals } from './helper/modal-helper';
-import { attributeVisibilityStates } from '../create-new-attribute/attributes-visibility-helper';
+import { attributeVisibilityStates, getTooltipVisibilityState } from '../create-new-attribute/attributes-visibility-helper';
 
 @Component({
   selector: 'kern-project-settings',
@@ -88,6 +88,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
   downloadedModels: any[];
   isManaged: boolean = true;
   attributeVisibilityStates = attributeVisibilityStates;
+  tooltipsArray: string[] = [];
 
   lh: LabelHelper;
   settingModals: SettingModals = createDefaultSettingModals();
@@ -303,18 +304,20 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
           sourceCode: att.sourceCode,
           state: att.state,
           dataTypeName: this.dataTypesArray.find((type) => type.value === att?.dataType).name,
-          visibility: this.attributeVisibilityStates.find((type) => type.value === att?.visibility)?.name,
+          visibilityShow: this.attributeVisibilityStates.find((type) => type.value === att?.visibility)?.name,
+          visibility: att.visibility,
         });
 
         if (att.state == 'INITIAL' || att.state == 'FAILED') {
           group.get('isPrimaryKey').disable();
         }
+
         group.valueChanges.pipe(distinctUntilChanged()).subscribe(() => {
-          let values = group.getRawValue(); //to ensure disabled will be returned as well          
+          let values = group.getRawValue(); //to ensure disabled will be returned as well      
           if (this.pKeyChanged()) this.requestPKeyCheck(this.project.id);
           if (this.attributeChangedToText()) this.createAttributeTokenStatistics(this.project.id, values.id);
           this.projectApolloService.
-            updateAttribute(this.project.id, values.id, values.dataType, values.isPrimaryKey, values.visibility).pipe(first()).subscribe();
+            updateAttribute(this.project.id, values.id, values.dataType, values.isPrimaryKey, values.name, values.sourceCode, values.visibility).pipe(first()).subscribe();
         });
         this.attributesArray.push(group);
         if (att.state == 'UPLOADED' || att.state == 'USABLE' || att.state == 'AUTOMATICALLY_CREATED') {
@@ -330,6 +333,10 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
       this.prepareEmbeddingFormGroup(onlyTextAttributes);
       this.prepareEmbeddingHandles(projectId, onlyTextAttributes);
 
+      this.tooltipsArray = [];
+      this.attributeVisibilityStates.forEach((state) => {
+        this.tooltipsArray.push(getTooltipVisibilityState(state.value));
+      });
     }));
     return attributes$;
   }
@@ -956,7 +963,10 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     this.settingModals.labelingTask.create.taskId = id;
   }
 
-  updateVisibilityAttributes(value: string, attributeContainer: any) {
-    this.projectApolloService.updateAttribute(this.project.id, attributeContainer.get("id").value, attributeContainer.get("dataType").value, attributeContainer.get("isPrimaryKey").value, attributeContainer.get("name").value, attributeContainer.get("sourceCode").value, value).pipe(first()).subscribe();
+  updateVisbility(value: string, attributeContainer: any) {
+    const find = this.attributeVisibilityStates.find(el => el.value == value).name;
+    attributeContainer.get('visibility').setValue(value);
+    attributeContainer.get('visibilityShow').setValue(find);
+
   }
 }

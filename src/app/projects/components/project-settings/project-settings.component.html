@@ -85,16 +85,17 @@
                                             page="attributes" initialCaption="Registered">
                                         </kern-heuristic-statuses>
                                     </td>
-                                    <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                    <td class="text-center px-3 py-2 text-sm text-gray-500">
                                         <div class="inline-block">
                                             <kern-dropdown [dropdownOptions]="{
                                                 optionArray: attributeVisibilityStates,
-                                                buttonCaption: attributeContainer.get('visibility').value,
+                                                buttonCaption: attributeContainer.get('visibilityShow').value,
                                                 valuePropertyPath: 'value',
                                                 hasFullWidth: true,
-                                                width: '170px'
-                                            }"
-                                                (optionClicked)="updateVisibilityAttributes($event, attributeContainer)">
+                                                width: '170px',
+                                                optionTooltips: tooltipsArray,
+                                                tooltipMaxWidthClass: 'tooltip_max_width_200'
+                                            }" (optionClicked)="updateVisbility($event, attributeContainer)">
                                             </kern-dropdown>
                                         </div>
 
