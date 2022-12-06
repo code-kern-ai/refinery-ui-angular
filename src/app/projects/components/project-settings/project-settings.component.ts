@@ -304,8 +304,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
           sourceCode: att.sourceCode,
           state: att.state,
           dataTypeName: this.dataTypesArray.find((type) => type.value === att?.dataType).name,
-          visibilityShow: this.attributeVisibilityStates.find((type) => type.value === att?.visibility)?.name,
-          visibility: att.visibility,
+          visibilityIndex: this.attributeVisibilityStates.findIndex((type) => type.value === att?.visibility),
         });
 
         if (att.state == 'INITIAL' || att.state == 'FAILED') {
@@ -316,8 +315,9 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
           let values = group.getRawValue(); //to ensure disabled will be returned as well      
           if (this.pKeyChanged()) this.requestPKeyCheck(this.project.id);
           if (this.attributeChangedToText()) this.createAttributeTokenStatistics(this.project.id, values.id);
+          const visibility = this.attributeVisibilityStates[values.visibilityIndex].value;
           this.projectApolloService.
-            updateAttribute(this.project.id, values.id, values.dataType, values.isPrimaryKey, values.name, values.sourceCode, values.visibility).pipe(first()).subscribe();
+            updateAttribute(this.project.id, values.id, values.dataType, values.isPrimaryKey, values.name, values.sourceCode, visibility).pipe(first()).subscribe();
         });
         this.attributesArray.push(group);
         if (att.state == 'UPLOADED' || att.state == 'USABLE' || att.state == 'AUTOMATICALLY_CREATED') {
@@ -961,12 +961,5 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
 
   setLabelingTaskTarget(id: string) {
     this.settingModals.labelingTask.create.taskId = id;
-  }
-
-  updateVisbility(value: string, attributeContainer: any) {
-    const find = this.attributeVisibilityStates.find(el => el.value == value).name;
-    attributeContainer.get('visibility').setValue(value);
-    attributeContainer.get('visibilityShow').setValue(find);
-
   }
 }

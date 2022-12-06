@@ -89,13 +89,15 @@
                                         <div class="inline-block">
                                             <kern-dropdown [dropdownOptions]="{
                                                 optionArray: attributeVisibilityStates,
-                                                buttonCaption: attributeContainer.get('visibilityShow').value,
+                                                buttonCaption: attributeVisibilityStates[attributeContainer.get('visibilityIndex').value].name,
                                                 valuePropertyPath: 'value',
                                                 hasFullWidth: true,
                                                 width: '170px',
                                                 optionTooltips: tooltipsArray,
-                                                tooltipMaxWidthClass: 'tooltip_max_width_200'
-                                            }" (optionClicked)="updateVisbility($event, attributeContainer)">
+                                                tooltipMaxWidthClass: 'tooltip_max_width_200',
+                                                emitIndex:true
+                                            }"
+                                                (optionClicked)="attributeContainer.get('visibilityIndex').setValue($event);">
                                             </kern-dropdown>
                                         </div>
 
