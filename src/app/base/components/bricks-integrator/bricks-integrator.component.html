@@ -258,6 +258,15 @@
 
                 <label class="font-bold">Variable</label>
                 <label class="font-bold">Value</label>
+                <ng-template [ngIf]="codeParser.labelingTaskName">
+                    <label class="text-sm col-start-1">Labeling Task</label>
+                    <kern-dropdown [dropdownOptions]="{
+                            optionArray:[],
+                            buttonCaption:codeParser.labelingTaskName,
+                            isDisabled:true
+                        }">
+                    </kern-dropdown>
+                </ng-template>
                 <div class="contents" *ngFor="let v of codeParser.variables;let i = index">
                     <label class="text-sm col-start-1">{{v.displayName}}</label>
                     <ng-container class="contents" [ngTemplateOutlet]="variableSelect"

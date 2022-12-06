@@ -95,6 +95,15 @@ export class BricksDataRequestor {
         return filtered;
     }
 
+    public getLabelingTaskName(labelingTaskId: string) {
+        if (!this.labelingTasks) {
+            console.log("labeling Tasks not yet loaded");
+            return null;
+        }
+        let filtered = this.labelingTasks.find(lt => lt.id == labelingTaskId);
+        if (filtered) return filtered.name;
+        else return null;
+    }
     public getLabels(labelingTaskId: string): any[] {
         if (!this.labelingTasks) {
             console.log("labeling Tasks not yet loaded");

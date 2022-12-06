@@ -11,6 +11,7 @@ export class BricksCodeParser {
     baseCode: string;
     functionName: string;
     filterTypes: string[];
+    labelingTaskName: string;
 
     constructor(private base: BricksIntegratorComponent) {
         this.filterTypes = enumToArray(BricksVariableType).filter(x => x != BricksVariableType.UNKNOWN && !x.startsWith("GENERIC"));
@@ -32,6 +33,9 @@ export class BricksCodeParser {
             this.errors.push(error);
             console.log("couldn't parse code", error);
         }
+
+        if (this.base.labelingTaskId) this.labelingTaskName = this.base.dataRequestor.getLabelingTaskName(this.base.labelingTaskId);
+
     }
 
     public replaceVariables() {
