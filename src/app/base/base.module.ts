@@ -24,6 +24,7 @@ import { CommentComponent } from './components/comment/comment.component';
 import { HeuristicStatusesComponent } from './components/heuristic-statuses/heuristic-statuses.component';
 import { LogsComponent } from './components/logs/logs.component';
 import { DefaultOrderKeyvaluePipe } from './pipes/default-order-key-value.pipe';
+import { NotificationCenterComponent } from './components/notification-center/notification-center.component';
 
 @NgModule({
   declarations: [
@@ -42,7 +43,8 @@ import { DefaultOrderKeyvaluePipe } from './pipes/default-order-key-value.pipe';
     CommentComponent,
     HeuristicStatusesComponent,
     LogsComponent,
-    DefaultOrderKeyvaluePipe
+    DefaultOrderKeyvaluePipe,
+    NotificationCenterComponent
   ],
   imports: [CommonModule, AppRoutingModule, HighlightModule],
   exports: [
@@ -71,7 +73,8 @@ import { DefaultOrderKeyvaluePipe } from './pipes/default-order-key-value.pipe';
     CommentComponent,
     HeuristicStatusesComponent,
     LogsComponent,
-    DefaultOrderKeyvaluePipe
+    DefaultOrderKeyvaluePipe,
+    NotificationCenterComponent
   ],
   providers: [
     {

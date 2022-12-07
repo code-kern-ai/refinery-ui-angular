@@ -3,12 +3,12 @@ import { NotificationApolloService } from 'src/app/base/services/notification/no
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { Router } from '@angular/router';
 import { interval, Subscription } from 'rxjs';
-import { dateAsUTCDate, getUserAvatarUri } from '../../util/helper-functions';
 import { first } from 'rxjs/operators';
 import { NotificationService } from 'src/app/base/services/notification.service';
 import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
 import { AuthApiService } from 'src/app/base/services/auth-api.service';
 import { UserManager } from 'src/app/util/user-manager';
+import { dateAsUTCDate, getUserAvatarUri } from 'src/app/util/helper-functions';
 
 @Component({
   selector: 'kern-notification-center',
