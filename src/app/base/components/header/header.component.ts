@@ -30,6 +30,9 @@ export class HeaderComponent implements OnInit {
 
   ngOnInit(): void {
     this.setShowConfig();
+    document.getElementById('notifications').addEventListener('click', () => {
+      this.headerModals.notifications.open = true;
+    });
   }
   setShowConfig() {
     if (!ConfigManager.isInit()) {
