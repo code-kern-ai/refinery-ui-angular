@@ -3,9 +3,10 @@
     -moz-transition: outline-color .7s ease-out;
     -o-transition: outline-color .7s ease-out;
     transition: outline-color .7s ease-out;
-    outline-color: #0000;
+    outline: 2px solid #0000;
 }
 
 .outline-kern {
-    outline: 2px solid #000;
+    outline: 2px solid #000F;
+    // outline-color: #000F;
 }
