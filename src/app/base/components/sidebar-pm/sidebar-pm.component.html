@@ -254,9 +254,9 @@
     </div>
 </div>
 
-<kern-modal [isOpen]="sideBarPmModals.versionOverview.open" closeButton="X" [modalBoxStyle]="{'text-align':'center'}"
-    [acceptButton]="{
-    buttonCaptiion: 'How to update',
+<kern-modal [isOpen]="sideBarPmModals.versionOverview.open" closeButton="X"
+    [modalBoxStyle]="{'text-align':'center','width':'45rem'}" [acceptButton]="{
+    buttonCaption: 'How to update',
     useButton: !isManaged,
     emitObject: this, emitFunction: howToUpdate 
 }" (optionClicked)="sideBarPmModals.versionOverview.open = false;">
@@ -346,7 +346,7 @@
 </kern-modal>
 
 <kern-modal [isOpen]="sideBarPmModals.steps.open" closeButton="X" [modalBoxStyle]="{'width':'45rem'}" [backButton]="{
-    buttonCaptiion: 'Back',
+    buttonCaption: 'Back',
     emitObject: this, emitFunction: back
 }" (optionClicked)="sideBarPmModals.steps.open = false">
     <div class="text-center justify-center text-lg leading-6 text-gray-900 font-medium">
