@@ -60,6 +60,7 @@ import { getAttributeType, getSearchOperatorTooltip, SearchOperator } from './he
 import { createDefaultDataBrowserModals, DataBrowserModals } from './helper-classes/modals-helper';
 import { CommentsFilter } from './helper-classes/comments-filter';
 import { AttributeVisibility } from 'src/app/projects/components/create-new-attribute/attributes-visibility-helper';
+import { HighlightSearch } from 'src/app/base/components/highlight/helper';
 
 
 type DataSlice = {
@@ -171,6 +172,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   lastSearchParams;
   isTextHighlightNeeded: Map<string, boolean> = new Map<string, boolean>();
   textHighlightArray: Map<string, string[]> = new Map<string, string[]>();
+  textHighlightArrayKern: { [key: string]: HighlightSearch[] } = {};
 
   activeSearchParams = [];
   requestedRecordCategory = "SCALE";
@@ -1304,31 +1306,27 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
             searchElement.values.searchValue = searchElement.values.searchValue.toString();
           }
           filter = this.getRegexFromFilter(searchElement);
-          if (filter != '') toSet.push(filter);
+          if (filter) toSet.push(filter);
         }
       }
     }
-    this.textHighlightArray.set(attributeKey, toSet);
+    this.textHighlightArrayKern[attributeKey] = toSet;
   }
-  private getRegexFromFilter(searchElement): string {
+  private getRegexFromFilter(searchElement): HighlightSearch {
+    if (searchElement.values.negate) return null; //would highlight everything
     let searchValue = searchElement.values.searchValue;
-    let searchValueBetween = searchElement.values.searchValueBetween;
     searchValue = searchValue.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
-    searchValueBetween = searchValueBetween.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
-    if (searchElement.values.negate) return ''; //would hightlight everything
     switch (searchElement.values.operator) {
       case SearchOperator.EQUAL:
-        return '^' + searchValue + '$';
+        return { searchFor: '^' + searchValue + '$', matchCase: searchElement.values.caseSensitive };
       case SearchOperator.BEGINS_WITH:
-        return '^' + searchValue;
+        return { searchFor: '^' + searchValue, matchCase: searchElement.values.caseSensitive }
       case SearchOperator.ENDS_WITH:
-        return searchValue + '$';
-      case SearchOperator.BETWEEN:
-        return searchValue + ' AND ' + searchValueBetween;
+        return { searchFor: searchValue + '$', matchCase: searchElement.values.caseSensitive };
       case SearchOperator.CONTAINS:
-        return searchValue;
+        return { searchFor: searchValue, matchCase: searchElement.values.caseSensitive };
     }
-    return '';
+    return null;
   }
 
   copyToClipboard(textToCopy: string) {

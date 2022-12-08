@@ -9,6 +9,7 @@ import { HoverGroupDirective } from './directives/hover-group.directive';
 import { HighlightModule, HIGHLIGHT_OPTIONS } from 'ngx-highlightjs';
 import { NgxFilesizeModule } from 'ngx-filesize';
 import { LoadingComponent } from './components/loading/loading.component';
+import { HighlightComponent } from './components/highlight/highlight.component';
 import { SnakeComponent } from './components/snake/snake.component';
 import { ModalComponent } from './components/modal/modal.component';
 import { ExportComponent } from './components/export/export.component';
@@ -31,6 +32,7 @@ import { DefaultOrderKeyvaluePipe } from './pipes/default-order-key-value.pipe';
   declarations: [
     SidebarPmComponent,
     LoadingComponent,
+    HighlightComponent,
     SnakeComponent,
     ModalComponent,
     ExportComponent,
@@ -60,6 +62,7 @@ import { DefaultOrderKeyvaluePipe } from './pipes/default-order-key-value.pipe';
     ReactiveFormsModule,
     NgxFilesizeModule,
     LoadingComponent,
+    HighlightComponent,
     SnakeComponent,
     ModalComponent,
     ExportComponent,

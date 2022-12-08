@@ -20,8 +20,7 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
   static httpBaseLink: string = "https://cms.bricks.kern.ai/api/modules/";
   static httpBaseLinkExample: string = "https://api.bricks.kern.ai/"
 
-  // static httpBaseLinkFilter: string = "https://cms.bricks.kern.ai/api/modules" // old version via Strapi
-  static httpBaseLinkFilter: string = "https://search.bricks.kern.ai/search"
+  static httpBaseLinkFilter: string = "https://cms.bricks.kern.ai/api/modules" // old version via Strapi
 
 
   get IntegratorPageType(): typeof IntegratorPage {
@@ -32,7 +31,7 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
 
   //for search
   @Input() moduleTypeFilter: string; //generator, classifier or extractor
-  @Input() executionTypeFilter: string; //activeLearner, pythonFunction or premium //currently not possible in search api so local post search filter
+  @Input() executionTypeFilter: string; //activeLearner, pythonFunction or premium 
   //for values
   @Input() labelingTaskId: string;
   @Output() preparedCode = new EventEmitter<string | any>();
@@ -89,14 +88,21 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
 
   }
 
+  private buildSearchUrl(): string {
+    let url = BricksIntegratorComponent.httpBaseLinkFilter;
+    let filter = "";
+    if (this.moduleTypeFilter) filter += (filter == "" ? '?' : '&') + "filters[moduleType][$eq]=" + this.moduleTypeFilter;
+    if (this.executionTypeFilter) filter += (filter == "" ? '?' : '&') + "filters[executionType][$eq]=" + this.executionTypeFilter;
+    return url + filter;
+  }
+
+
   requestSearch(value: string = "") {
     this.config.search.requesting = true;
     this.config.search.searchValue = value;
-    const headers = { "Content-Type": "application/json" };
-    this.config.search.lastRequestUrl = BricksIntegratorComponent.httpBaseLinkFilter;
-    this.config.search.requestData = this.buildSearchRequestData(value);
+    this.config.search.lastRequestUrl = this.buildSearchUrl();
     if (this.config.search.currentRequest) this.config.search.currentRequest.unsubscribe();
-    this.config.search.currentRequest = this.http.post(this.config.search.lastRequestUrl, this.config.search.requestData, { headers }).pipe(first()).subscribe({
+    this.config.search.currentRequest = this.http.get(this.config.search.lastRequestUrl).pipe(first()).subscribe({
       next: (data: any) => {
         this.config.search.requesting = false;
         this.config.search.currentRequest = null;
@@ -117,15 +123,6 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
     });
   }
 
-  private buildSearchRequestData(value: string): string {
-    const context = this.moduleTypeFilter ? this.moduleTypeFilter : "all";
-    const data = {
-      context: [context],
-      query: value,
-      similarityThreshold: 0.3,
-    }
-    return JSON.stringify(data);
-  }
 
   selectSearchResult(id: number) {
     this.config.api.moduleId = id;
