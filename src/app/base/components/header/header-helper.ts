@@ -10,7 +10,7 @@ export type NotificationsModal = {
 export function createDefaultHeaderModals(): HeaderModals {
     return {
         notifications: {
-            open: false
+            open: false,
         }
     };
 }

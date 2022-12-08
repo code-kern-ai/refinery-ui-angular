@@ -6,7 +6,7 @@
 <div class="absolute flex flex-col z-50 bottom-0 left-24 mb-7 cursor-pointer content-start" id="notifications">
     <div *ngFor="let notification of notificationList">
 
-        <div *ngIf="notification.level === 'INFO'">
+        <div *ngIf="notification.level === 'INFO'" (click)="onNotificationClick(notification)">
             <div class="bg-blue-50 border-l-4 border-blue-400 p-4">
                 <div class="flex">
                     <div class="flex-shrink-0">

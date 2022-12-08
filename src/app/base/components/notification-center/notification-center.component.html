@@ -2,8 +2,9 @@
     <div class="overflow-y-scroll h-full flex flex-col p-2">
         <div *ngFor="let notificationTypeList of notifications">
 
-            <div *ngIf="notificationTypeList[0].level === 'WARNING'"
-                class="mb-2 rounded-md border border-0 border-yellow-300 bg-yellow-50 p-3">
+            <div *ngIf="notificationTypeList.array[0].level === 'WARNING'"
+                [ngClass]="notificationTypeList.highlightMe ? 'outline-kern' : ''"
+                class="mb-2 rounded-md border border-0 border-yellow-300 bg-yellow-50 p-3 outline-fade">
 
                 <div class="flex">
                     <div class="flex-shrink-0">
@@ -15,14 +16,15 @@
                         </svg>
                     </div>
                     <ng-container [ngTemplateOutlet]="notificationData" [ngTemplateOutletContext]="{
-                                notificationTypeList:notificationTypeList,
+                                notificationTypeList:notificationTypeList.array,
                                 textColor:'yellow'}">
                     </ng-container>
                 </div>
             </div>
 
-            <div *ngIf="notificationTypeList[0].level === 'SUCCESS'"
-                class="mb-2 rounded-md border border-0 border-green-300 bg-green-50 p-3">
+            <div *ngIf="notificationTypeList.array[0].level === 'SUCCESS'"
+                [ngClass]="notificationTypeList.highlightMe ? 'outline-kern' : ''"
+                class="mb-2 rounded-md border border-0 border-green-300 bg-green-50 p-3 outline-fade">
                 <div class="flex">
                     <div class="flex-shrink-0">
                         <svg class="h-5 w-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
@@ -34,14 +36,15 @@
                     </div>
 
                     <ng-container [ngTemplateOutlet]="notificationData" [ngTemplateOutletContext]="{
-                                notificationTypeList:notificationTypeList,
+                                notificationTypeList:notificationTypeList.array,
                                 textColor:'green'}">
                     </ng-container>
                 </div>
             </div>
 
-            <div *ngIf="notificationTypeList[0].level === 'INFO'"
-                class="mb-2 rounded-md border border-0 border-blue-300 bg-blue-50 p-3">
+            <div *ngIf="notificationTypeList.array[0].level === 'INFO'"
+                [ngClass]="notificationTypeList.highlightMe ? 'outline-kern' : ''"
+                class="mb-2 rounded-md border border-0 border-blue-300 bg-blue-50 p-3 outline-fade">
                 <div class="flex">
                     <div class="flex-shrink-0">
                         <svg class="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
@@ -53,14 +56,15 @@
                     </div>
 
                     <ng-container [ngTemplateOutlet]="notificationData" [ngTemplateOutletContext]="{
-                                notificationTypeList:notificationTypeList,
+                                notificationTypeList:notificationTypeList.array,
                                 textColor:'blue'}">
                     </ng-container>
                 </div>
             </div>
 
-            <div *ngIf="notificationTypeList[0].level === 'ERROR'"
-                class="mb-2 rounded-md border border-0 border-red-300 bg-red-50 p-3">
+            <div *ngIf="notificationTypeList.array[0].level === 'ERROR'"
+                [ngClass]="notificationTypeList.highlightMe ? 'outline-kern' : ''"
+                class="mb-2 rounded-md border border-0 border-red-300 bg-red-50 p-3 outline-fade">
                 <div class="flex">
                     <div class="flex-shrink-0">
                         <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
@@ -71,7 +75,7 @@
                         </svg>
                     </div>
                     <ng-container [ngTemplateOutlet]="notificationData" [ngTemplateOutletContext]="{
-                                notificationTypeList:notificationTypeList,
+                                notificationTypeList:notificationTypeList.array,
                                 textColor:'red'}">
                     </ng-container>
                 </div>

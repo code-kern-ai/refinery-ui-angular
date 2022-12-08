@@ -13,6 +13,7 @@ import { ConfigApolloService } from './base/services/config/config-apollo.servic
 import { UserManager } from './util/user-manager';
 import { CommentDataManager } from './base/components/comment/comment-helper';
 import { RouteManager } from './util/route-manager';
+import { NotificationCenterComponent } from './base/components/notification-center/notification-center.component';
 
 @Component({
   selector: 'app-root',
@@ -200,5 +201,8 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
     }
   }
 
+  onNotificationClick(notification) {
+    NotificationCenterComponent.outlineSelectedNotification(notification.id);
+  }
 
 }
