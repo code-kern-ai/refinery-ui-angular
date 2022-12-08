@@ -6,7 +6,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
 import { DragAndDropDirective } from './directives/drag-and-drop.directive';
 import { HoverGroupDirective } from './directives/hover-group.directive';
-import { HighlightModule, HIGHLIGHT_OPTIONS } from 'ngx-highlightjs';
 import { NgxFilesizeModule } from 'ngx-filesize';
 import { LoadingComponent } from './components/loading/loading.component';
 import { HighlightComponent } from './components/highlight/highlight.component';
@@ -15,7 +14,6 @@ import { ModalComponent } from './components/modal/modal.component';
 import { ExportComponent } from './components/export/export.component';
 import { LabelStudioAssistantComponent } from './components/upload-assistant/label-studio/label-studio-assistant.component';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
-import { NgxHighlightWordsModule } from 'ngx-highlight-words';
 import { SidebarPmComponent } from './components/sidebar-pm/sidebar-pm.component';
 import { DropdownDirective } from './directives/dropdown.directive';
 import { PercentRoundPipe } from './pipes/decimal-round.pipe';
@@ -49,7 +47,7 @@ import { DefaultOrderKeyvaluePipe } from './pipes/default-order-key-value.pipe';
     LogsComponent,
     DefaultOrderKeyvaluePipe
   ],
-  imports: [CommonModule, AppRoutingModule, HighlightModule],
+  imports: [CommonModule, AppRoutingModule],
   exports: [
     AppRoutingModule,
     BrowserAnimationsModule,
@@ -68,8 +66,6 @@ import { DefaultOrderKeyvaluePipe } from './pipes/default-order-key-value.pipe';
     ExportComponent,
     LabelStudioAssistantComponent,
     InfiniteScrollModule,
-    HighlightModule,
-    NgxHighlightWordsModule,
     DropdownDirective,
     PercentRoundPipe,
     HeaderComponent,
@@ -79,17 +75,6 @@ import { DefaultOrderKeyvaluePipe } from './pipes/default-order-key-value.pipe';
     HeuristicStatusesComponent,
     LogsComponent,
     DefaultOrderKeyvaluePipe
-  ],
-  providers: [
-    {
-      provide: HIGHLIGHT_OPTIONS,
-      useValue: {
-        coreLibraryLoader: () => import('highlight.js/lib/core'),
-        languages: {
-          python: () => import('highlight.js/lib/languages/python'),
-        },
-      },
-    },
-  ],
+  ]
 })
 export class BaseModule { }
