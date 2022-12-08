@@ -21,7 +21,6 @@ import { LabelingModule } from './labeling/labeling.module';
 import { KnowledgeBasesModule } from './knowledge-bases/knowledge-bases.module';
 import { ConfigModule } from './config/config.module'
 import { IntercomModule } from 'ng-intercom';
-import { NotificationCenterModule } from './notification-center/notification-center.module';
 import { RecordIDEModule } from './record-ide/record-ide.module';
 import { ModelDownloadModule } from './model-download/model-download.module';
 import { ModelCallbackModule } from './model-callbacks/model-callbacks.module';
@@ -49,7 +48,6 @@ import { ProjectAdminModule } from './project-admin/project-admin.module';
     RecordIDEModule,
     ModelCallbackModule,
     ModelDownloadModule,
-    NotificationCenterModule,
     ProjectAdminModule,
     MonacoEditorModule.forRoot(),
     KnowledgeBasesModule,

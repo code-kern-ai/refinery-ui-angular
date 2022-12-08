@@ -1,0 +1,11 @@
+.outline-fade {
+    -webkit-transition: outline-color .7s ease-out;
+    -moz-transition: outline-color .7s ease-out;
+    -o-transition: outline-color .7s ease-out;
+    transition: outline-color .7s ease-out;
+    outline: 2px solid #0000;
+}
+
+.outline-kern {
+    outline: 2px solid #000F;
+}
