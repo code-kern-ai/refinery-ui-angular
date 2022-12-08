@@ -866,11 +866,8 @@
                                 <ng-template [ngIf]=" dataBrowserModals.configuration.highlightText && isTextHighlightNeeded &&
                                     isTextHighlightNeeded.get(attribute.key) &&
                                     record.data[attributes.get(attribute.key).name]" [ngIfElse]="noHighlight">
-                                    <ngx-highlight-words
-                                        [textToHighlight]="record.data[attributes.get(attribute.key).name].toString()"
-                                        [searchWords]="textHighlightArray.get(attribute.key)" [autoEscape]="false"
-                                        highlightClassName="bg-yellow-300">
-                                    </ngx-highlight-words>
+                                    <kern-highlight [text]="record.data[attributes.get(attribute.key).name].toString()"
+                                        [searchForExtended]="textHighlightArrayKern[attribute.key]"></kern-highlight>
                                 </ng-template>
                                 <ng-template #noHighlight>
                                     <span

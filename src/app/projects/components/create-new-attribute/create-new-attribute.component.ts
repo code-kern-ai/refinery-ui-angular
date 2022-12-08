@@ -58,6 +58,8 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
   runOn10HasError: boolean = false;
   dataTypesArray = dataTypes;
   attributeDataType: string;
+  nextUpdateReplace: boolean = false;
+  isInitial: boolean = null; //null as add state to differentiate between initial, not and unchecked
   attributeVisibilityStates = attributeVisibilityStates;
   attributeVisibilityVal: string;
   tooltipsArray: string[] = [];
@@ -127,6 +129,9 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
     NotificationService.unsubscribeFromNotification(this, this.project.id);
     CommentDataManager.unregisterAllCommentRequests(this);
   }
+  openBricksIntegrator() {
+    document.getElementById('bricks-integrator-open-button').click();
+  }
 
   getWhiteListNotificationService(): string[] {
     let toReturn = ['attributes_updated', 'calculate_attribute', 'tokenization',];
@@ -171,13 +176,16 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
       if (this.currentAttribute?.sourceCode == null) {
         this.codeFormCtrl.setValue(AttributeCodeLookup.getAttributeCalculationTemplate(AttributeCalculationExamples.AC_EMPTY_TEMPLATE, this.currentAttribute.dataType).code);
       } else {
-        if (!this.codeFormCtrl.value || this.codeFormCtrl.value.includes("def ac(record)")) {
+        if (!this.codeFormCtrl.value || this.codeFormCtrl.value.includes("def ac(record)") || this.nextUpdateReplace) {
           this.codeFormCtrl.setValue(this.currentAttribute.sourceCode.replace(
             'def ac(record):',
             'def ' + this.currentAttribute.name + '(record):'
           ));
+          if (this.nextUpdateReplace) this.nextUpdateReplace = false;
+
         }
 
+        if (this.isInitial == null) this.isInitial = AttributeCodeLookup.isCodeStillTemplate(this.currentAttribute.sourceCode, this.currentAttribute.dataType);
       }
 
       this.attributeLogs = attribute?.logs;
@@ -234,10 +242,13 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
   saveAttribute(projectId: string) {
     if (this.updatedThroughWebsocket) return;
     const getCodeToSave = this.getPythonFunctionToSave(this.codeFormCtrl.value);
+    this.nextUpdateReplace = true;
     this.projectApolloService
       .updateAttribute(projectId, this.currentAttribute.id, this.currentAttribute.dataType, this.currentAttribute.isPrimaryKey, this.attributeName, getCodeToSave, this.currentAttribute.visibility)
       .pipe(first())
-      .subscribe(() => this.duplicateNameExists = false);
+      .subscribe(() => {
+        this.duplicateNameExists = false;
+      });
   }
 
   changeAttributeName(event) {

@@ -738,21 +738,11 @@
                                                     Current source code:</a>
                                             </div>
                                         </span>
-                                        <pre class="editor-pre" style="max-height: 15rem;"><ngx-highlight-words
-                                                [textToHighlight]="warning.oldParsed"
-                                                highlightClassName="bg-yellow-400"
-                                                [searchWords]="warning.old_highlighting"
-                                                [autoEscape]="false"
-                                            >
-                                            </ngx-highlight-words></pre>
+                                        <pre class="editor-pre" style="max-height: 15rem;"><kern-highlight [text]="warning.oldParsed"
+                                        [searchFor]="warning.old_highlighting"></kern-highlight></pre>
                                         <span class="text-sm font-bold">Suggested changes:</span>
-                                        <pre class="editor-pre" style="max-height: 15rem;"><ngx-highlight-words
-                                                [textToHighlight]="warning.newParsed"
-                                                highlightClassName="bg-yellow-400"
-                                                [searchWords]="warning.new_highlighting"
-                                                [autoEscape]="false"
-                                            >
-                                            </ngx-highlight-words></pre>
+                                        <pre class="editor-pre" style="max-height: 15rem;"><kern-highlight [text]="warning.newParsed"
+                                            [searchFor]="warning.new_highlighting"></kern-highlight></pre>
                                     </div>
                                 </ng-template>
                                 <button (click)="lh.handleLabelRenameWarning(warning)"

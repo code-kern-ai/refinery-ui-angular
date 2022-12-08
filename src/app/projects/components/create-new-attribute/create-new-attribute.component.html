@@ -120,17 +120,37 @@
 
             <div class="flex flex-row items-center justify-between my-3">
                 <div class="text-sm leading-5 font-medium text-gray-700 inline-block mr-2">Editor</div>
-                <div class="tooltip tooltip-left" data-tip="See available libraries for this attribute calculation">
+                <div class="flex flex-row flex-nowrap">
+                    <kern-bricks-integrator (preparedCode)="codeFormCtrl.setValue($event);isInitial=false"
+                        moduleTypeFilter="generator">
+                    </kern-bricks-integrator>
+                    <div class="tooltip tooltip-left" data-tip="See available libraries for this attribute calculation">
 
-                    <a href="https://github.com/code-kern-ai/refinery-ac-exec-env/blob/dev/requirements.txt"
-                        target="_blank"
-                        class="ml-2 bg-white text-gray-700 text-xs font-semibold  px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none">
-                        See installed libraries
-                    </a>
+                        <a href="https://github.com/code-kern-ai/refinery-ac-exec-env/blob/dev/requirements.txt"
+                            target="_blank"
+                            class="ml-2 bg-white text-gray-700 text-xs font-semibold  px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none">
+                            See installed libraries
+                        </a>
+                    </div>
                 </div>
+
             </div>
 
-            <div class="border mt-1">
+            <div class="border mt-1 relative">
+                <div *ngIf="isInitial"
+                    class="absolute top-0 bottom-0 left-0 right-0 bg-gray-200 flex items-center justify-center z-9"
+                    style="--tw-bg-opacity: 0.7;">
+                    <div class="flex flex-col gap-2">
+                        <button (click)="openBricksIntegrator()"
+                            class="bg-white text-gray-700 text font-semibold px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none">
+                            Search in bricks
+                        </button>
+                        <button (click)="isInitial = false"
+                            class="bg-white text-gray-700 text font-semibold px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none">
+                            Start from scratch
+                        </button>
+                    </div>
+                </div>
                 <ngx-monaco-editor class="w-full" style="height: 400px;" [options]="editorOptions"
                     (onInit)="initEditor($event,project.id)" [formControl]="codeFormCtrl">
                 </ngx-monaco-editor>

@@ -1,0 +1,26 @@
+.tooltip::before {
+    z-index: 50;
+}
+
+.editor-pre {
+    line-height: 21px;
+    font-family: monospace;
+    padding: 0;
+    border: 0;
+    background: #f5f5f5;
+    color: rgb(55, 37, 255);
+    outline: none;
+    resize: none;
+    overflow-y: auto;
+    overflow-x: hidden;
+    text-align: left;
+}
+
+.rotate-transform svg {
+    transition: transform 0.15s ease-in-out;
+    transform: rotate(180deg);
+}
+
+.line-height-textarea {
+    line-height: 16px;
+}

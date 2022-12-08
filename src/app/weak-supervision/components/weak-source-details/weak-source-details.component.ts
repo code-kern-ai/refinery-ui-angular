@@ -21,7 +21,7 @@ import {
 import { combineLatest, forkJoin, Subscription, timer } from 'rxjs';
 import { InformationSourceType, informationSourceTypeToString, LabelingTask, LabelSource } from 'src/app/base/enum/graphql-enums';
 import { InformationSourceCodeLookup, InformationSourceExamples } from '../information-sources-code-lookup';
-import { asPythonVariable, dateAsUTCDate, getColorForDataType, toPythonFunctionName } from 'src/app/util/helper-functions';
+import { asPythonVariable, dateAsUTCDate, getColorForDataType, getPythonClassName, getPythonClassRegExMatch, getPythonFunctionName, getPythonFunctionRegExMatch, toPythonFunctionName } from 'src/app/util/helper-functions';
 import { NotificationService } from 'src/app/base/services/notification.service';
 import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
 import { schemeCategory24 } from 'src/app/util/colors';
@@ -96,7 +96,7 @@ export class WeakSourceDetailsComponent
   selectedAttribute: string = '';
   dataTypesArray = dataTypes;
   displayLogWarning: boolean = false;
-
+  isInitialLf: boolean = null; //null as add state to differentiate between initial, not and unchecked
   heuristicDetailsModals: HeuristicsDetailsModals = createDefaultHeuristicsDetailsModals();
 
   constructor(
@@ -250,6 +250,7 @@ export class WeakSourceDetailsComponent
       this.informationSource = informationSource;
       if (!this.codeFormCtrl.value) this.prepareSourceCode(projectId, informationSource);
       else this.checkLogs(projectId, informationSource);
+
       this.description = informationSource.description;
       this.informationSourceName = informationSource.name;
       this.justClickedRun = false;
@@ -311,10 +312,15 @@ export class WeakSourceDetailsComponent
         this.codeFormCtrl.setValue(informationSource.sourceCode.replace(this.getClassLine(), this.getClassLine(this.informationSource.name)));
       }
       else this.codeFormCtrl.setValue(informationSource.sourceCode);
+      if (this.isInitialLf == null) this.isInitialLf = InformationSourceCodeLookup.isCodeStillTemplate(this.informationSource.sourceCode) != null;
     }
     this.checkLogs(projectId, informationSource);
 
   }
+  openBricksIntegrator() {
+    document.getElementById('bricks-integrator-open-button').click();
+  }
+
   checkLogs(projectId: string, informationSource: any) {
     if (informationSource.lastTask) {
       [this.lastTaskQuery$, this.lastTask$] = this.informationSourceApolloService.getTaskByTaskId(
@@ -458,9 +464,9 @@ export class WeakSourceDetailsComponent
     if (sourceType == InformationSourceType.LABELING_FUNCTION || sourceType == InformationSourceType.ACTIVE_LEARNING) {
       let functionName: string = this.informationSourceName;
       if (sourceType == InformationSourceType.LABELING_FUNCTION) {
-        functionName = this.getPythonFunctionName(this.codeFormCtrl.value);
+        functionName = getPythonFunctionName(this.codeFormCtrl.value);
       } else {
-        functionName = this.getPythonClassName(this.codeFormCtrl.value);
+        functionName = getPythonClassName(this.codeFormCtrl.value);
       }
       if (functionName == '@@unknown@@') {
         console.log(
@@ -510,14 +516,14 @@ export class WeakSourceDetailsComponent
     if (!open && this.informationSourceName != this.informationSource.name) {
       if (sourceType == InformationSourceType.LABELING_FUNCTION) {
         //change name in code:
-        var regMatch: any = this.getPythonFunctionRegExMatch(this.codeFormCtrl.value);
+        var regMatch: any = getPythonFunctionRegExMatch(this.codeFormCtrl.value);
         if (!regMatch) return;
         this.codeFormCtrl.setValue(this.codeFormCtrl.value.replace(
           regMatch[0],
           'def ' + this.informationSourceName + '(record)'
         ));
       } else if (this.informationSource.informationSourceType == InformationSourceType.ACTIVE_LEARNING) {
-        var regMatch: any = this.getPythonClassRegExMatch(this.codeFormCtrl.value);
+        var regMatch: any = getPythonClassRegExMatch(this.codeFormCtrl.value);
         if (!regMatch) return;
 
         this.codeFormCtrl.setValue(this.codeFormCtrl.value.replace(regMatch[0], this.getClassLine(this.informationSourceName)));
@@ -575,13 +581,13 @@ export class WeakSourceDetailsComponent
       this.codeFormCtrl.setValue(this.codeFormCtrl.value.replace(/\t/g, '    '));
     }
     if (this.informationSource.informationSourceType == InformationSourceType.LABELING_FUNCTION) {
-      var regMatch: any = this.getPythonFunctionRegExMatch(codeToSave);
+      var regMatch: any = getPythonFunctionRegExMatch(codeToSave);
       if (!regMatch) return codeToSave;
 
       return codeToSave.replace(regMatch[0], 'def lf(record)');
 
     } else if (this.informationSource.informationSourceType == InformationSourceType.ACTIVE_LEARNING) {
-      var regMatch: any = this.getPythonClassRegExMatch(codeToSave);
+      var regMatch: any = getPythonClassRegExMatch(codeToSave);
       if (!regMatch) return codeToSave;
 
       return codeToSave.replace(regMatch[0], this.getClassLine());
@@ -597,25 +603,7 @@ export class WeakSourceDetailsComponent
     return 'class ' + className;
   }
 
-  getPythonFunctionName(codeToCheck: string): string {
-    var regMatch: any = this.getPythonFunctionRegExMatch(codeToCheck);
-    if (!regMatch) return '@@unknown@@';
-    return regMatch[2];
-  }
 
-  getPythonFunctionRegExMatch(codeToCheck: string): any {
-    return /(def)\s(\w+)\([a-zA-Z0-9_:\[\]=, ]*\)/.exec(codeToCheck);
-  }
-
-  getPythonClassName(codeToCheck: string): string {
-    var regMatch: any = this.getPythonClassRegExMatch(codeToCheck);
-    if (!regMatch) return '@@unknown@@';
-    return regMatch[1];
-  }
-
-  getPythonClassRegExMatch(codeToCheck: string): any {
-    return /class ([\w]+)\([^)]+\):/.exec(codeToCheck);
-  }
 
   getInformationSourceTypeString(type: InformationSourceType) {
     return informationSourceTypeToString(type, false, true);

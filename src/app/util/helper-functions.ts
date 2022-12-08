@@ -99,7 +99,7 @@ export type enumToArrayOptions = {
 
 export function enumToArray(e: Object, options: enumToArrayOptions = null): any[] {
     const arr = Object.values(e);
-    if (!options) return sortByEnumPos(e, arr.map(x => ({ name: x, value: x })));
+    if (!options) return sortByEnumPos(e, arr);
     let func;
     if (options.caseType == caseType.LOWER) func = (x) => x.toLowerCase();
     else if (options.caseType == caseType.UPPER) func = (x) => x.toUpperCase();
@@ -189,4 +189,26 @@ export function tryParseJSON(str: string): any {
     } catch (e) {
         return null;
     }
+}
+
+
+export function getPythonFunctionName(codeToCheck: string): string {
+    var regMatch: any = getPythonFunctionRegExMatch(codeToCheck);
+    if (!regMatch) return '@@unknown@@';
+    return regMatch[2];
+}
+
+export function getPythonFunctionRegExMatch(codeToCheck: string): any {
+    return /(def)\s(\w+)\([a-zA-Z0-9_:\[\]=, ]*\)/.exec(codeToCheck);
+}
+
+
+export function getPythonClassName(codeToCheck: string): string {
+    var regMatch: any = getPythonClassRegExMatch(codeToCheck);
+    if (!regMatch) return '@@unknown@@';
+    return regMatch[1];
+}
+
+export function getPythonClassRegExMatch(codeToCheck: string): any {
+    return /class ([\w]+)\([^)]+\):/.exec(codeToCheck);
 }

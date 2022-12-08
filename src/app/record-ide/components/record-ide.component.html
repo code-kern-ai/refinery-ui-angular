@@ -132,10 +132,9 @@
                         Clear
                     </div>
                 </button>
-                <a href="https://github.com/code-kern-ai/template-functions" target="_blank"
-                    class="hover:bg-gray-50 bg-white text-gray-700 font-semibold text-xs mr-2 px-4 py-2 rounded-md border border-gray-300">
-                    See function templates
-                </a>
+                <kern-bricks-integrator class="mr-2" (preparedCode)="codeFormCtrl.setValue($event);runRecordIde(false)"
+                    forIde="X">
+                </kern-bricks-integrator>
                 <a href="https://github.com/code-kern-ai/refinery-record-ide-env/blob/dev/requirements.txt"
                     target="_blank"
                     class="hover:bg-gray-50 bg-white text-gray-700 font-semibold text-xs mr-2 px-4 py-2 rounded-md border border-gray-300">
