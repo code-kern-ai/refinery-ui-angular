@@ -1,5 +1,5 @@
-<div class="h-full w-full flex-1 flex flex-col" style="max-height: calc(100vh - 180px); overflow-y: scroll;">
-    <div class="overflow-y-scroll h-full flex flex-col p-2">
+<div class="h-full w-full flex-1 flex flex-col" style="max-height: calc(100vh - 180px); overflow-y: auto;">
+    <div class="h-full flex flex-col p-2">
         <div *ngFor="let notificationTypeList of notifications">
 
             <div *ngIf="notificationTypeList.array[0].level === 'WARNING'"
