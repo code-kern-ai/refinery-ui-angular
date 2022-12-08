@@ -1,4 +1,3 @@
-import { NotificationCenterComponent } from './notification-center/components/notification-center.component';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { ProjectOverviewComponent } from './project-overview/components/project-overview/project-overview.component';
@@ -31,7 +30,6 @@ const routes: Routes = [
   },
   { path: 'projects', component: ProjectsComponent, data: { name: 'ProjectsComponent' } },
   { path: 'users', component: UsersComponent, data: { name: 'UsersComponent' } },
-  { path: 'notification-center', component: NotificationCenterComponent, data: { name: 'NotificationCenterComponent' } },
   { path: 'projects/new', component: ProjectNewComponent, data: { name: 'ProjectNewComponent' } },
   { path: 'config', component: ConfigComponent, data: { name: 'ConfigComponent' } },
   { path: 'model-download', component: ModelDownloadComponent, data: { name: 'ModelDownloadComponent' } },

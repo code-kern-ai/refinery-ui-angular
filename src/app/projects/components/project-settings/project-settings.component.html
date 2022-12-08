@@ -132,7 +132,7 @@
                             fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                         </svg>
-                        Add new attibute
+                        Add new attribute
                     </label>
                 </div>
 
@@ -760,7 +760,7 @@
 </ng-template>
 
 <kern-modal [isOpen]="settingModals.attribute.open" closeButton="X" [acceptButton]="{
-    buttonCaption: 'Add attibute',
+    buttonCaption: 'Add attribute',
     disabled:settingModals.attribute.name == '' || settingModals.attribute.type == '' || settingModals.attribute.duplicateNameExists,
     emitObject:this,emitFunction:createUserAttribute
 }" [modalBoxStyle]="{'overflow-x':'visible'}" (optionClicked)="settingModals.attribute.open = false">

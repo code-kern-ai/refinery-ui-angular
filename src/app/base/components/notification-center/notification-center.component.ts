@@ -2,32 +2,38 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NotificationApolloService } from 'src/app/base/services/notification/notification-apollo.service';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { Router } from '@angular/router';
-import { interval, Subscription } from 'rxjs';
-import { dateAsUTCDate, getUserAvatarUri } from '../../util/helper-functions';
+import { interval, Subscription, timer } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { NotificationService } from 'src/app/base/services/notification.service';
 import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
 import { AuthApiService } from 'src/app/base/services/auth-api.service';
 import { UserManager } from 'src/app/util/user-manager';
+import { dateAsUTCDate, getUserAvatarUri } from 'src/app/util/helper-functions';
 
+
+type NotificationListWrapper = {
+  highlightMe: boolean;
+  array: any[];
+};
 @Component({
   selector: 'kern-notification-center',
   templateUrl: './notification-center.component.html',
   styleUrls: ['./notification-center.component.scss']
 })
-
-
 export class NotificationCenterComponent implements OnInit, OnDestroy {
 
   subscriptions$: Subscription[] = [];
   projectNames = {};
-  notifications = []; // can be used to display the stacked notifications with same type in future
+  notifications: NotificationListWrapper[] = []; // can be used to display the stacked notifications with same type in future
   expandedNotifications = new Set();
   loggedInUser: any;
   notificationsQuery$: any;
   organizationName: string;
   organizationInactive: boolean;
   avatarUri: string;
+  setOutline: boolean = false;
+  clickedNotificationId: string = null;
+  static componentSingleton: NotificationCenterComponent = null;
 
   constructor(
     private auth: AuthApiService,
@@ -42,10 +48,12 @@ export class NotificationCenterComponent implements OnInit, OnDestroy {
       subscription.unsubscribe();
     });
     NotificationService.unsubscribeFromNotification(this);
+    NotificationCenterComponent.componentSingleton = null;
   }
 
   ngOnInit(): void {
     UserManager.checkUserAndRedirect(this);
+    NotificationCenterComponent.componentSingleton = this;
     this.organizationService
       .getUserOrganization()
       .pipe(first()).subscribe((org) => {
@@ -68,7 +76,7 @@ export class NotificationCenterComponent implements OnInit, OnDestroy {
     ));
     this.subscriptions$.push(interval(30000).subscribe(val => {
       this.notifications.forEach(notificationTypeList => {
-        notificationTypeList.forEach(notification => {
+        notificationTypeList.array.forEach(notification => {
           notification.timePassed = this.timeDiffCalc(dateAsUTCDate(notification.createdAtDate));
         });
       })
@@ -80,6 +88,7 @@ export class NotificationCenterComponent implements OnInit, OnDestroy {
   }
 
   buildNotificationsArray(notifications) {
+    const array = [];
     this.notifications = []
     notifications.forEach(notification => {
 
@@ -91,12 +100,18 @@ export class NotificationCenterComponent implements OnInit, OnDestroy {
       if (Object.keys(this.projectNames).length != 0) notification.projectName = this.projectNames[notification.projectId];
       this.applyPageChanges(notification)
       if (!(this.notifications.length)) {
-        this.notifications.push([notification]);
-      } else if (this.notifications[this.notifications.length - 1][0].type === notification.type && this.notifications[this.notifications.length - 1][0].projectId === notification.projectId) {
-        this.notifications[this.notifications.length - 1].push(notification);
+        this.notifications.push({
+          highlightMe: false,
+          array: [notification]
+        });
+      } else if (this.notifications[this.notifications.length - 1].array[0].type === notification.type && this.notifications[this.notifications.length - 1].array[0].projectId === notification.projectId) {
+        this.notifications[this.notifications.length - 1].array.push(notification);
       }
       else {
-        this.notifications.push([notification]);
+        this.notifications.push({
+          highlightMe: false,
+          array: [notification]
+        });
       }
     });
     return this.notifications
@@ -115,9 +130,9 @@ export class NotificationCenterComponent implements OnInit, OnDestroy {
   updateNotificationProjectNames() {
     if (Object.keys(this.projectNames).length == 0) return;
     this.notifications.forEach(notification_bucket => {
-      if (this.projectNames[notification_bucket[0].projectId]) {
-        notification_bucket[0].projectName = this.projectNames[notification_bucket[0].projectId];
-      } else notification_bucket[0].projectName = "<project deleted>";
+      if (this.projectNames[notification_bucket.array[0].projectId]) {
+        notification_bucket.array[0].projectName = this.projectNames[notification_bucket.array[0].projectId];
+      } else notification_bucket.array[0].projectName = "<project deleted>";
     });
   }
 
@@ -174,5 +189,24 @@ export class NotificationCenterComponent implements OnInit, OnDestroy {
       //once not only the user filter is active this condition can be changed
       if (msgParts[2] == this.loggedInUser?.id) this.notificationsQuery$.refetch();
     }
+  }
+
+  private checkHighlighting(notificationId: string) {
+    this.clickedNotificationId = notificationId;
+    this.notifications.forEach(notificationTypeList => {
+      notificationTypeList.highlightMe = notificationId ? notificationTypeList.array.some(notification => notification.id == this.clickedNotificationId) : false;
+    })
+  }
+
+  static outlineSelectedNotification(notificationId: string) {
+    if (!NotificationCenterComponent.componentSingleton) {
+      console.log("componentSingleton is not initialized yet");
+      return;
+    }
+    NotificationCenterComponent.componentSingleton.checkHighlighting(notificationId);
+    timer(5000).subscribe(() => {
+      if (!NotificationCenterComponent.componentSingleton) return;
+      NotificationCenterComponent.componentSingleton.checkHighlighting(null);
+    })
   }
 }

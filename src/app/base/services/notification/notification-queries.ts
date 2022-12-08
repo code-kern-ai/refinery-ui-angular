@@ -4,8 +4,9 @@ export const queries = {
   NOTIFICATIONS_BY_USER: gql`
   query {
     notificationsByUserId {
-    message,
+    message
     level
+    id
   }
 }
 `,

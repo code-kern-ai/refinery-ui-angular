@@ -82,7 +82,6 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
   get labelingTasksArray() {
     return this.labelingTasksSchema.get('labelingTasks') as FormArray;
   }
-  @ViewChild('modalInput', { read: ElementRef }) myModalnewRecordTask: ElementRef;
   downloadedModelsList$: any;
   downloadedModelsQuery$: any;
   downloadedModels: any[];
@@ -153,8 +152,9 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     const openModal = JSON.parse(localStorage.getItem("openModal"));
     if (openModal) {
       const subscription = interval(250).subscribe(() => {
-        if (this.myModalnewRecordTask) {
-          this.myModalnewRecordTask.nativeElement.checked = true;
+        if (this.settingModals.labelingTask.create) {
+          this.settingModals.labelingTask.create.open = true;
+          this.focusModalInputBox('labelingTaskName');
           localStorage.removeItem("openModal");
           subscription.unsubscribe();
         }
@@ -856,7 +856,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
   }
 
   getMoveRight(tblName: string): boolean {
-    //at some point a better grouping would be usefull 
+    //at some point a better grouping would be useful
     switch (tblName) {
       case "embedding tensors":
       case "information sources payloads":

@@ -4,6 +4,7 @@ import { Project } from 'aws-sdk/clients/codebuild';
 import { Subscription, timer } from 'rxjs';
 import { AuthApiService } from '../../services/auth-api.service';
 import { ConfigManager } from '../../services/config-service';
+import { createDefaultHeaderModals, HeaderModals } from './header-helper';
 
 @Component({
   selector: 'kern-header',
@@ -23,10 +24,15 @@ export class HeaderComponent implements OnInit {
   subscriptions$: Subscription[] = [];
   isDemo: boolean;
 
+  headerModals: HeaderModals = createDefaultHeaderModals();
+
   constructor(private router: Router, private auth: AuthApiService,) { }
 
   ngOnInit(): void {
     this.setShowConfig();
+    document.getElementById('notifications').addEventListener('click', () => {
+      this.headerModals.notifications.open = true;
+    });
   }
   setShowConfig() {
     if (!ConfigManager.isInit()) {
