@@ -349,7 +349,7 @@
 <kern-modal [isOpen]="projectsModals.uploadProject.open" closeButton="X" [modalBoxStyle]="{'width':'35rem'}"
     [acceptButton]="{
     closeAfterClick:false,
-    disabled:projectsModals.uploadProject.doingSomething,
+    disabled:projectsModals.uploadProject.doingSomething || !file,
     buttonCaption:'Upload'
 }" (optionClicked)="$event == 'CLOSE'?projectsModals.uploadProject.open = false:importExistingProject();">
     <h1 class="flex flex-grow justify-center text-lg text-gray-900 font-bold">Upload Project Data
