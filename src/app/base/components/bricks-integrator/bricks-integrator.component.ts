@@ -90,7 +90,7 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
 
   private buildSearchUrl(): string {
     let url = BricksIntegratorComponent.httpBaseLinkFilter;
-    let filter = "";
+    let filter = "?pagination[pageSize]=99999";
     if (this.moduleTypeFilter) filter += (filter == "" ? '?' : '&') + "filters[moduleType][$eq]=" + this.moduleTypeFilter;
     if (this.executionTypeFilter) filter += (filter == "" ? '?' : '&') + "filters[executionType][$eq]=" + this.executionTypeFilter;
     return url + filter;
