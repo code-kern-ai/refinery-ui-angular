@@ -210,10 +210,13 @@
                     (mouseleave)="setCurrentEmbeddingHandle(null)">
 
                     <label class="cursor-pointer label"
-                        [ngClass]="[checkIfModelIsDownloaded(modelHandle.configString) ? 'text-green-700' : '', k == downloadedModelsModals.addNewModel.indexSeparator ? 'line-separator' : '']"
+                        [ngClass]="[checkIfModelIsDownloaded(modelHandle.configString) ? 'text-green-700' : '']"
                         (click)="selectEmbeddingHandle(modelHandle,inputEmbeddingHandle)">
                         {{modelHandle.configString}}
                     </label>
+
+                    <hr class="my-1" *ngIf=" k == downloadedModelsModals.addNewModel.indexSeparator"
+                        (mouseenter)="setCurrentEmbeddingHandle(null)">
                 </li>
             </ul>
         </div>
