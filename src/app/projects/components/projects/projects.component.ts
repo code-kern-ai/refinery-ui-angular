@@ -313,11 +313,11 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     }
   }
 
-  getFirstName(userName) {
+  setFirstName(userName) {
     this.user$ = userName;
   }
 
-  getFile(file: File) {
+  setFile(file: File) {
     this.file = file;
   }
 

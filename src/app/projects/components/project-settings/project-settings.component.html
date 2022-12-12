@@ -105,7 +105,7 @@
                                     <td class="text-center px-3 py-2 text-sm text-gray-500">
                                         <button type="button"
                                             [routerLink]="['../attributes/' + attributeContainer.get('id').value]"
-                                            *ngIf="attributeContainer.get('userCreated').value"
+                                            *ngIf="attributeContainer.get('userCreated').value; else notChangeable"
                                             class="text-green-800 text-sm font-medium">
                                             <span class="leading-5">Details</span>
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block"
@@ -114,6 +114,9 @@
                                                     d="M13 7l5 5m0 0l-5 5m5-5H6" />
                                             </svg>
                                         </button>
+                                        <ng-template #notChangeable>
+                                            <label class="text-gray-500 italic">Not changeable</label>
+                                        </ng-template>
                                     </td>
                                 </tr>
                             </tbody>
@@ -967,7 +970,8 @@
                         (keydown.enter)="selectFirstUnhiddenEmbeddingHandle(inputEmbeddingHandle)"
                         (input)="checkEmbeddingHandles($event.target)">
                 </div>
-                <ul tabindex="0" class="p-2 w-full menu dropdown-content bg-base-100 shadow max-h-80 overflow-y-auto">
+                <ul tabindex="0"
+                    class="p-2 w-full menu dropdown-content bg-base-100 shadow height-dropdown overflow-y-auto">
                     <li #me *ngFor="let embeddingHandle of suggestions; let k = index"
                         [ngClass]="embeddingHandle.hidden || embeddingHandle.forceHidden?'hidden':null"
                         (mouseenter)="setCurrentEmbeddingHandle(embeddingHandle,hoverBox,me)"

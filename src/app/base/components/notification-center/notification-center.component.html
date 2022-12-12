@@ -89,7 +89,7 @@
     <div class="ml-3 w-full">
         <div class="flex">
             <h3 class="{{'text-sm font-medium text-' + textColor +'-800'}}"><a class="underline"
-                    href="{{ notificationTypeList[0].docs }}" target="_blank"
+                    href="{{ notificationTypeList[0].docs }}" target="_blank" (click)="linkClicked.emit(false)"
                     rel="noopener noreferrer">{{notificationTypeList[0].title}}</a>
                 ({{notificationTypeList[0].date}} <button *ngIf="notificationTypeList[0].projectId"
                     (click)="navigateToProjectPage(notificationTypeList[0])" class="underline">

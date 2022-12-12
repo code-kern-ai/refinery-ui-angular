@@ -342,7 +342,7 @@ export class ProjectOverviewComponent implements OnInit, OnDestroy {
       dataSliceId
     ).pipe(first()).subscribe((labelDist) => {
       this.labelDistribution = this.matchAndMergeLabelDistributionData(labelDist);
-      this.graphsHaveValues = labelDist.length > 0;
+      this.graphsHaveValues = labelDist?.length > 0;
     });
   }
 
@@ -360,6 +360,7 @@ export class ProjectOverviewComponent implements OnInit, OnDestroy {
 
   private matchAndMergeLabelDistributionData(data) {
     let returnData = [];
+    if (!data) return returnData;
     data.forEach(e => {
       let found = returnData.find(x => x.labelId == e.id);
       if (!found) {
@@ -393,7 +394,7 @@ export class ProjectOverviewComponent implements OnInit, OnDestroy {
       labelingTaskId,
       dataSlice
     ).pipe(first()).subscribe((values) => {
-      this.confusionMatrix = values.map(e => {
+      this.confusionMatrix = values?.map(e => {
         return {
           counts: e.count_absolute,
           labelIdManual: e.label_name_manual == '@@OUTSIDE@@' ? 'Outside' : e.label_name_manual,
