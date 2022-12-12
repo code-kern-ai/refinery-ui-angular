@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Output, EventEmitter } from '@angular/core';
 import { NotificationApolloService } from 'src/app/base/services/notification/notification-apollo.service';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { Router } from '@angular/router';
@@ -34,6 +34,7 @@ export class NotificationCenterComponent implements OnInit, OnDestroy {
   setOutline: boolean = false;
   clickedNotificationId: string = null;
   static componentSingleton: NotificationCenterComponent = null;
+  @Output() linkClicked = new EventEmitter<boolean>();
 
   constructor(
     private auth: AuthApiService,
@@ -144,6 +145,7 @@ export class NotificationCenterComponent implements OnInit, OnDestroy {
 
   navigateToProjectPage(notification): void {
     this.router.navigate(['projects', notification.projectId, notification.page]);
+    this.linkClicked.emit(false);
   }
 
   switchExpandedState(notification) {

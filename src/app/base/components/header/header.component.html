@@ -160,6 +160,6 @@
         (optionClicked)="headerModals.notifications.open = false">
 
         <h1 class="text-lg text-gray-900 mb-2 font-bold text-center">Notification center</h1>
-        <kern-notification-center></kern-notification-center>
+        <kern-notification-center (linkClicked)="headerModals.notifications.open = $event"></kern-notification-center>
     </kern-modal>
 </ng-template>
