@@ -115,72 +115,83 @@
                             </div>
                         </ng-container>
                     </div>
-                    <div class="flex flex-row flex-nowrap items-center">
+                    <div class="flex items-center justify-center"
+                        *ngIf="informationSource.informationSourceType == 'LABELING_FUNCTION'">
+                        <div class="flex flex-row flex-nowrap items-center ml-auto">
+                            <kern-bricks-integrator (preparedCode)="codeFormCtrl.setValue($event);isInitialLf=false"
+                                [moduleTypeFilter]="labelingTasks.get(labelingTaskControl.value).taskType == 'MULTICLASS_CLASSIFICATION' ?'classifier':'extractor'"
+                                [executionTypeFilter]="informationSource.informationSourceType == 'LABELING_FUNCTION'? 'pythonFunction':'activeLearner'"
+                                [labelingTaskId]="labelingTaskControl.value">
+                            </kern-bricks-integrator>
+                        </div>
+                        <div class="tooltip tooltip-left" data-tip="Go to GitHub repository">
+
+                            <a href="https://github.com/code-kern-ai/template-functions" target="_blank"
+                                class="ml-2 bg-white text-gray-700 text-xs font-semibold  px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none">
+                                See function templates
+                            </a>
+                        </div>
+                        <div data-tip="See available libraries for this labeling function" class="tooltip tooltip-left">
+
+                            <a href="https://github.com/code-kern-ai/refinery-lf-exec-env/blob/dev/requirements.txt"
+                                target="_blank"
+                                class="ml-2 bg-white text-gray-700 text-xs font-semibold  px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none">
+                                See installed libraries
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-row items-center mb-3"
+                    *ngIf="informationSource.informationSourceType == 'ACTIVE_LEARNING'">
+                    <div class="flex items-center">
+                        <ng-container *ngIf="embeddings; else embeddingNotFinished">
+                            <ng-template [ngIf]="embeddingsFiltered?.length" [ngIfElse]="noMatchingEmbeddings">
+                                <div class="text-sm leading-5 font-medium text-gray-700 inline-block mr-2">Embeddings
+                                </div>
+                                <ng-container *ngFor="let embedding of embeddingsFiltered;">
+                                    <ng-container [ngSwitch]="embedding.state">
+                                        <div *ngSwitchCase="'FINISHED'" data-tip="Click to copy" class="tooltip"
+                                            (click)="copyToClipboard(embedding.name)">
+                                            <span
+                                                class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800 cursor-pointer"
+                                                [ngClass]="embeddingsFiltered.length > 0 ? 'mr-4' : ''">
+                                                {{embedding.name}}
+                                            </span>
+                                        </div>
+                                        <div *ngSwitchCase="'FAILED'" data-tip="Click to copy - embedding failed"
+                                            class="tooltip" (click)="copyToClipboard(embedding.name)">
+                                            <span
+                                                class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800 cursor-pointer"
+                                                [ngClass]="embeddingsFiltered.length > 0 ? 'mr-4' : ''">
+                                                {{embedding.name}}
+                                            </span>
+                                        </div>
+                                        <div *ngSwitchDefault data-tip="Click to copy - embedding not finished yet"
+                                            class="tooltip" (click)="copyToClipboard(embedding.name)">
+                                            <span
+                                                class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800 cursor-pointer"
+                                                [ngClass]="embeddingsFiltered.length > 0 ? 'mr-4' : ''">
+                                                {{embedding.name}}
+                                            </span>
+                                        </div>
+                                    </ng-container>
+                                </ng-container>
+                            </ng-template>
+                            <ng-template #noMatchingEmbeddings>
+                                <div class="text-sm font-normal text-gray-500">No matching embeddings found</div>
+                            </ng-template>
+                        </ng-container>
+                        <ng-template #noEmbeddings>
+                            <div class="text-sm font-normal text-gray-500">No embeddings for project</div>
+                        </ng-template>
+                    </div>
+                    <div class="flex flex-row flex-nowrap items-center ml-auto">
                         <kern-bricks-integrator (preparedCode)="codeFormCtrl.setValue($event);isInitialLf=false"
                             [moduleTypeFilter]="labelingTasks.get(labelingTaskControl.value).taskType == 'MULTICLASS_CLASSIFICATION' ?'classifier':'extractor'"
                             [executionTypeFilter]="informationSource.informationSourceType == 'LABELING_FUNCTION'? 'pythonFunction':'activeLearner'"
                             [labelingTaskId]="labelingTaskControl.value">
                         </kern-bricks-integrator>
-                        <div class="flex items-center justify-center"
-                            *ngIf="informationSource.informationSourceType == 'LABELING_FUNCTION'">
-                            <div class="tooltip tooltip-left" data-tip="Go to GitHub repository">
-
-                                <a href="https://github.com/code-kern-ai/template-functions" target="_blank"
-                                    class="ml-2 bg-white text-gray-700 text-xs font-semibold  px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none">
-                                    See function templates
-                                </a>
-                            </div>
-                            <div data-tip="See available libraries for this labeling function"
-                                class="tooltip tooltip-left">
-
-                                <a href="https://github.com/code-kern-ai/refinery-lf-exec-env/blob/dev/requirements.txt"
-                                    target="_blank"
-                                    class="ml-2 bg-white text-gray-700 text-xs font-semibold  px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none">
-                                    See installed libraries
-                                </a>
-                            </div>
-                        </div>
-                        <div class="flex items-center justify-center"
-                            *ngIf="informationSource.informationSourceType == 'ACTIVE_LEARNING'">
-                            <ng-container *ngIf="embeddings; else embeddingNotFinished">
-                                <ng-template [ngIf]="embeddingsFiltered?.length" [ngIfElse]="noMatchingEmbeddings">
-                                    <ng-container *ngFor="let embedding of embeddingsFiltered;">
-                                        <ng-container [ngSwitch]="embedding.state">
-                                            <div *ngSwitchCase="'FINISHED'" data-tip="Click to copy" class="tooltip"
-                                                (click)="copyToClipboard(embedding.name)">
-                                                <span
-                                                    class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800 cursor-pointer"
-                                                    [ngClass]="embeddingsFiltered.length > 0 ? 'mr-4' : ''">
-                                                    {{embedding.name}}
-                                                </span>
-                                            </div>
-                                            <div *ngSwitchCase="'FAILED'" data-tip="Click to copy - embedding failed"
-                                                class="tooltip" (click)="copyToClipboard(embedding.name)">
-                                                <span
-                                                    class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800 cursor-pointer"
-                                                    [ngClass]="embeddingsFiltered.length > 0 ? 'mr-4' : ''">
-                                                    {{embedding.name}}
-                                                </span>
-                                            </div>
-                                            <div *ngSwitchDefault data-tip="Click to copy - embedding not finished yet"
-                                                class="tooltip" (click)="copyToClipboard(embedding.name)">
-                                                <span
-                                                    class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800 cursor-pointer"
-                                                    [ngClass]="embeddingsFiltered.length > 0 ? 'mr-4' : ''">
-                                                    {{embedding.name}}
-                                                </span>
-                                            </div>
-                                        </ng-container>
-                                    </ng-container>
-                                </ng-template>
-                                <ng-template #noMatchingEmbeddings>
-                                    <div class="text-sm font-normal text-gray-500">No matching embeddings found</div>
-                                </ng-template>
-                            </ng-container>
-                            <ng-template #noEmbeddings>
-                                <div class="text-sm font-normal text-gray-500">No embeddings for project</div>
-                            </ng-template>
-                        </div>
                     </div>
                 </div>
             </div>
