@@ -148,7 +148,7 @@ export class ModelDownloadComponentComponent implements OnInit {
     this.downloadedModelsModals.deleteModel.currentModelHandle = modelHandle;
     if (modelHandle) {
       const dataBoundingBox: DOMRect = listElement.getBoundingClientRect();
-      hoverBox.style.top = (dataBoundingBox.top) + "px"
+      hoverBox.style.top = (dataBoundingBox.top - 60) + "px"
       hoverBox.style.left = (dataBoundingBox.left + dataBoundingBox.width) + "px"
     }
   }
