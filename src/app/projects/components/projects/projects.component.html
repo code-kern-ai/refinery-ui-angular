@@ -1,5 +1,5 @@
 <div class="h-screen bg-gray-100 flex overflow-hidden">
-    <kern-sidebar-pm (firstName)="getFirstName($event)">
+    <kern-sidebar-pm (firstName)="setFirstName($event)">
     </kern-sidebar-pm>
     <!-- Content area -->
     <div class="h-full w-full flex-1 flex flex-col overflow-hidden">
@@ -359,7 +359,7 @@
     </div>
     <div>
         <kern-upload *ngIf="projectsModals.uploadProject.open" [projectId]="null" [init]="true"
-            (fileAttached)="getFile($event)">
+            (fileAttached)="setFile($event)">
         </kern-upload>
     </div>
 </kern-modal>
