@@ -36,3 +36,7 @@
 .rotate_transform_270 svg {
   transform: rotate(270deg);
 }
+
+.height-dropdown {
+  max-height: calc(100vh - 500px);
+}

@@ -684,7 +684,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     this.settingModals.embedding.create.currentEmbeddingHandle = embeddingHandle;
     if (embeddingHandle) {
       const dataBoundingBox: DOMRect = listElement.getBoundingClientRect();
-      hoverBox.style.top = (dataBoundingBox.top) + "px"
+      hoverBox.style.top = (dataBoundingBox.top - 60) + "px"
       hoverBox.style.left = (dataBoundingBox.left + dataBoundingBox.width) + "px"
     }
   }
