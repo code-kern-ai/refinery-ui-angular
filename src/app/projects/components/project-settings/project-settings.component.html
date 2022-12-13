@@ -1,4 +1,6 @@
 <div *ngIf="project$ | async as project" class="p-4 bg-gray-100 h-full overflow-y-auto flex-1 flex flex-col">
+    <kern-data-schema></kern-data-schema>
+
     <div class="text-lg leading-6 text-gray-900 font-medium inline-block">
         Data schema
     </div>
@@ -503,80 +505,9 @@
                 Add labeling task
             </label>
         </div>
-
-        <div class="mt-8">
-            <div class="text-gray-900 text-lg leading-6 font-medium">
-                Project metadata
-            </div>
-            <div class="text-sm leading-5 font-normal mt-2 text-gray-500 inline-block">Change your project
-                name
-                or
-                description here.</div>
-            <div>
-                <form action="#" class="relative">
-                    <div
-                        class="bg-white border border-gray-300 rounded-lg shadow-sm overflow-hidden flex flex-col divide-y divide-gray-200">
-                        <input #newProjectName [placeholder]="project.name"
-                            (keydown.enter)="updateProjectNameAndDescription(project.id,newProjectName.value,newProjectDescription.value);newProjectDescription.value = '';newProjectName.value=''"
-                            (input)="checkProjectUpdateDisabled($event.target.value,newProjectDescription.value)"
-                            class="appearance-none rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none"
-                            type="text">
-                        <textarea #newProjectDescription rows="2" [placeholder]="project.description" class="
-                            form-control block w-full px-3 py-1.5 text-sm text-gray-700
-                            bg-white bg-clip-padding focus:outline-none m-0"
-                            (input)="checkProjectUpdateDisabled(newProjectName.value,$event.target.value)"
-                            (keydown.enter)="updateProjectNameAndDescription(project.id,newProjectName.value,newProjectDescription.value);newProjectDescription.value = '';newProjectName.value=''"></textarea>
-                        <div
-                            class="border-t bg-gray-50 border-gray-200 px-2 py-2 flex justify-between items-center space-x-3 sm:px-3">
-                            <div class="flex-shrink-0">
-                                <button type="submit" data-tip="Stores the changes"
-                                    (click)="updateProjectNameAndDescription(project.id,newProjectName.value,newProjectDescription.value);newProjectDescription.value = '';newProjectName.value=''"
-                                    class="tooltip tooltip-right inline-flex items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">Update</button>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-
-        <div class="mt-8 mb-8">
-            <div class="text-gray-900 text-lg leading-6 font-medium">Danger zone</div>
-            <div class="text-sm leading-5 font-normal mt-2 text-gray-500 inline-block">This action can not
-                be
-                reversed.
-                Are you sure you want to delete this project?</div>
-            <div class="form-control">
-                <div class="flex space-x-2 items-center">
-                    <input name="projectName" id="projectName" [formControl]="projectName" type="text"
-                        placeholder="Please enter the project name to enable deletion"
-                        class="w-full input input-sm border border-red-400 input-bordered focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                        (keydown.enter)="(projectName.value == project.name)? deleteProject(project.id):null">
-                    <div class="tooltip tooltip-left" data-tip="This can't be reverted!">
-                        <button (click)="deleteProject(project.id)" [disabled]="!(projectName.value === project.name)"
-                            [ngClass]="!(projectName.value === project.name) ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
-                            class="inline-flex text-xs items-center bg-red-100 border border-red-400 text-red-700 font-semibold px-4 py-2 rounded-md cursor-pointer ml-6 hover:bg-red-200 focus:outline-none cursor-pointer">
-                            <svg xmlns="http://www.w3.org/2000/svg"
-                                class="mr-2 inline-block icon icon-tabler icon-tabler-wrecking-ball" width="16"
-                                height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                                stroke-linecap="round" stroke-linejoin="round">
-                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                <circle cx="19" cy="13" r="2"></circle>
-                                <circle cx="4" cy="17" r="2"></circle>
-                                <circle cx="13" cy="17" r="2"></circle>
-                                <line x1="13" y1="19" x2="4" y2="19"></line>
-                                <line x1="4" y1="15" x2="13" y2="15"></line>
-                                <path d="M8 12v-5h2a3 3 0 0 1 3 3v5"></path>
-                                <path d="M5 15v-2a1 1 0 0 1 1 -1h7"></path>
-                                <path d="M19 11v-7l-6 7"></path>
-                            </svg>
-                            Delete</button>
-                    </div>
-                </div>
-            </div>
-
-        </div>
     </div>
+
+    <kern-project-metadata [project]="project"></kern-project-metadata>
 </div>
 
 <ng-template [ngIf]="lh">

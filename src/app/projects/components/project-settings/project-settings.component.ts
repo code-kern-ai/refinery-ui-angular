@@ -48,7 +48,6 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
   //better request available from backend?
   embeddingHandlesMap: Map<string, any> = new Map<string, any>();
   labelingTasksDropdownArray = [];
-  projectName = new FormControl('');
   projectNameUpdate: string = '';
   project$: any;
   projectQuery$: any;
@@ -60,7 +59,6 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
   embeddingQuery$: any;
   forceEmbeddingRefresh: boolean = true;
   requestTimeOut: boolean = false;
-  projectUpdateDisabled: boolean = true;
   isTaskNameUnique: boolean = true;
   tokenizationProgress: Number;
   downloadMessage: DownloadState = DownloadState.NONE;
@@ -490,13 +488,13 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     this.lh.addLabel(this.project.id, this.settingModals.label.create.taskId, this.settingModals.label.create.labelName);
   }
 
-  deleteProject(projectId: string) {
-    this.projectApolloService
-      .deleteProjectById(projectId)
-      .pipe(first()).subscribe();
+  // deleteProject(projectId: string) {
+  //   this.projectApolloService
+  //     .deleteProjectById(projectId)
+  //     .pipe(first()).subscribe();
 
-    this.router.navigate(['projects']);
-  }
+  //   this.router.navigate(['projects']);
+  // }
 
 
   ngOnDestroy(): void {
@@ -504,17 +502,6 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     const projectId = this.project?.id ? this.project.id : this.activatedRoute.parent.snapshot.paramMap.get('projectId');
     NotificationService.unsubscribeFromNotification(this, projectId);
     CommentDataManager.unregisterAllCommentRequests(this);
-  }
-
-  updateProjectNameAndDescription(projectId: string, newName: string, newDescription: string) {
-    if (newName == '' && newDescription == '') return;
-    if (newName == '') {
-      newName = this.project.name;
-    }
-    if (newDescription == '') {
-      newDescription = this.project.description;
-    }
-    this.projectApolloService.updateProjectNameAndDescription(projectId, newName.trim(), newDescription.trim()).pipe(first()).subscribe();
   }
 
   labelingTasksDropdownValues() {
@@ -687,10 +674,6 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
       hoverBox.style.top = (dataBoundingBox.top - 60) + "px"
       hoverBox.style.left = (dataBoundingBox.left + dataBoundingBox.width) + "px"
     }
-  }
-
-  checkProjectUpdateDisabled(name: string, description: string) {
-    this.projectUpdateDisabled = (name == "" && description == "");
   }
 
   handleWebsocketNotification(msgParts) {
