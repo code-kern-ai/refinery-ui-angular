@@ -1,0 +1,74 @@
+<ng-template [ngIf]="fullyInitialized">
+    <ng-template [ngIf]="dataToDisplay.length > 0" [ngIfElse]="nothingToShow">
+        <div class="flex flex-col p-4">
+            <div class="overflow-x-auto">
+                <div class="inline-block min-w-full align-middle">
+                    <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+                        <table class="min-w-full border divide-y divide-gray-300">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col"
+                                        class="py-2 pl-4 pr-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500 sm:pl-6">
+                                        Type</th>
+                                    <th scope="col"
+                                        class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wide text-gray-500">
+                                        Task</th>
+                                    <th scope="col"
+                                        class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wide text-gray-500">
+                                        Created by</th>
+                                    <th scope="col"
+                                        class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wide text-gray-500">
+                                        Label</th>
+                                    <th scope="col">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                            stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                                        </svg>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200 bg-white">
+                                <tr *ngFor="let ovItem of dataToDisplay; let i = index"
+                                    [ngClass]="i%2 ==0 ? 'bg-white':'bg-gray-50'">
+                                    <td class="whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-500 sm:pl-6"
+                                        hover-group-class="bg-green-200" hover-group="{{ovItem.hoverGroups.type}}">
+                                        {{ovItem.sourceType}}</td>
+                                    <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500"
+                                        hover-group-class="bg-green-200" hover-group="{{ovItem.hoverGroups.task}}">
+                                        {{ovItem.taskName}}</td>
+                                    <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500"
+                                        hover-group-class="bg-green-200" hover-group="{{ovItem.hoverGroups.createdBy}}">
+                                        {{ovItem.createdBy}}
+                                    </td>
+                                    <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500"
+                                        hover-group-class="bg-green-200" hover-group="{{ovItem.hoverGroups.label}}">
+
+                                        <span
+                                            class="inline-flex items-center px-2.5 py-0.5 rounded-md text-sm font-medium border border-0 cursor-default"
+                                            [ngClass]="[ovItem.label.backgroundColor,ovItem.label.textColor,ovItem.label.borderColor]">{{ovItem.label.name}}
+                                        </span>
+                                        <span class="ml-2" *ngIf="ovItem.label.value">{{ovItem.label.value}}</span>
+                                    </td>
+                                    <td hover-group-class="bg-green-200" hover-group="{{ovItem.hoverGroups.rlaId}}">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                            stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                                        </svg>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template #nothingToShow>
+        <ng-template [ngIf]="!heuristicInfo.show && heuristicInfo.has">
+            <p class="text-gray-500 p-5">Heuristics display is currently disabled</p>
+        </ng-template>
+    </ng-template>
+</ng-template>

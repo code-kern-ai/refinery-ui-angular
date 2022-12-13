@@ -9,6 +9,7 @@ import { DataBrowserComponent } from './data/components/data-browser/data-browse
 import { WeakSourceDetailsComponent } from './weak-supervision/components/weak-source-details/weak-source-details.component';
 import { ZeroShotDetailsComponent } from './zero-shot-details/component/zero-shot-details.component';
 import { LabelingComponent } from './labeling/components/labeling.component';
+import { LabelingSuiteComponent } from './labeling-suite/main-component/labeling-suite.component';
 import { KnowledgeBasesComponent } from './knowledge-bases/components/knowledge-bases.component';
 import { KnowledgeBaseDetailsComponent } from './knowledge-bases/knowledge-base-details/knowledge-base-details/knowledge-base-details.component';
 import { ProjectNewComponent } from './projects/components/project-new/project-new.component';
@@ -57,8 +58,9 @@ const routes: Routes = [
       { path: 'data', component: DataBrowserComponent, data: { name: 'DataBrowserComponent' } },
       { path: 'settings', component: ProjectSettingsComponent, data: { name: 'ProjectSettingsComponent' } },
       { path: 'admin', component: ProjectAdminComponent, data: { name: 'ProjectAdminComponent' } },
-      { path: 'labeling', component: LabelingComponent, data: { name: 'LabelingComponent' } },
-      { path: 'labeling/:id', component: LabelingComponent, data: { name: 'LabelingComponent' } },
+      { path: 'labeling', component: LabelingSuiteComponent, data: { name: 'LabelingSuiteComponent' } },
+      { path: 'labeling-old', component: LabelingComponent, data: { name: 'LabelingComponent' } },
+      { path: 'labeling-old/:id', component: LabelingComponent, data: { name: 'LabelingComponent' } },
       { path: 'record-ide/:id', component: RecordIDEComponent, data: { name: 'RecordIDEComponent' } },
       { path: 'lookup-lists', component: KnowledgeBasesComponent, data: { name: 'KnowledgeBasesComponent' } },
       {

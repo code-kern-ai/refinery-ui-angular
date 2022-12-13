@@ -431,7 +431,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
     localStorage.setItem('huddleData', JSON.stringify(this.huddleData));
 
     //ensure address matches request
-    this.router.navigate(["../" + projectId + "/labeling/" + this.huddleData.linkData.id],
+    this.router.navigate(["../" + projectId + "/labeling-old/" + this.huddleData.linkData.id],
       { relativeTo: this.activatedRoute.parent, queryParams: { pos: jumpPos, type: this.huddleData.linkData.linkType } });
 
     this.resetDataToInitialTask();
@@ -1548,6 +1548,7 @@ export class LabelingComponent implements OnInit, OnDestroy {
     }
     //TODO allow custom sort (e.g. by creation time)
     this.overviewDisplay.sort((a, b) => this.calcSortOverview(a, b));
+    console.log(this.overviewDisplay);
   }
 
   private calcSortOverview(a, b): number {

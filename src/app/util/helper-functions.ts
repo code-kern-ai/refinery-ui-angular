@@ -142,13 +142,14 @@ export function capitalizeFirst(str: string) {
 }
 
 
-export function findProjectIdFromRoute(route: ActivatedRoute) {
+export function findProjectIdFromRoute(route: ActivatedRoute): string {
     while (route.parent) {
         route = route.parent;
         if (route.snapshot.params.projectId) {
             return route.snapshot.params.projectId;
         }
     }
+    return null;
 }
 
 export function copyToClipboard(textToCopy: string) {
@@ -211,4 +212,8 @@ export function getPythonClassName(codeToCheck: string): string {
 
 export function getPythonClassRegExMatch(codeToCheck: string): any {
     return /class ([\w]+)\([^)]+\):/.exec(codeToCheck);
+}
+
+export function jsonCopy(src) {
+    return JSON.parse(JSON.stringify(src));
 }

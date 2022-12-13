@@ -1,0 +1,8 @@
+.wait,
+.wait * {
+  cursor: wait;
+}
+
+.tooltip::before {
+  z-index: 50;
+}
