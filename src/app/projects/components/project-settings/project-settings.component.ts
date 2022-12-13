@@ -488,14 +488,6 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     this.lh.addLabel(this.project.id, this.settingModals.label.create.taskId, this.settingModals.label.create.labelName);
   }
 
-  // deleteProject(projectId: string) {
-  //   this.projectApolloService
-  //     .deleteProjectById(projectId)
-  //     .pipe(first()).subscribe();
-
-  //   this.router.navigate(['projects']);
-  // }
-
 
   ngOnDestroy(): void {
     this.subscriptions$.forEach((subscription) => subscription.unsubscribe());
