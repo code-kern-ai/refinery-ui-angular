@@ -2,12 +2,13 @@ import { timer } from "rxjs";
 import { first } from "rxjs/operators";
 import { LabelSource } from "src/app/base/enum/graphql-enums";
 import { ProjectApolloService } from "src/app/base/services/project/project-apollo.service";
+import { LabelingTasksComponent } from "../components/labeling-tasks/labeling-tasks.component";
 import { ProjectSettingsComponent } from "../project-settings.component";
 
 
 
 export class LabelHelper {
-    private settings: ProjectSettingsComponent;
+    private labelingTasks: LabelingTasksComponent;
     private projectApolloService: ProjectApolloService;
     private static ALLOWED_KEYS = "abcdefghijklmnopqrstuvwxyzöäüß<>|,.;:-_#'\"~+*?\\{}[]()=/&%$§!@^°€";
 
@@ -34,8 +35,8 @@ export class LabelHelper {
     // public renameCheckResults: any;
     public renameLabelData: RenameLabelData;
 
-    constructor(settings: ProjectSettingsComponent, projectApolloService: ProjectApolloService) {
-        this.settings = settings;
+    constructor(labelingTasks: LabelingTasksComponent, projectApolloService: ProjectApolloService) {
+        this.labelingTasks = labelingTasks;
         this.projectApolloService = projectApolloService;
         this.colorOptions.forEach(color => this.labelColorOptions.push(this.getColorStruct(color)));
     }
@@ -54,7 +55,7 @@ export class LabelHelper {
         taskId: string,
         labelInput: HTMLInputElement
     ): void {
-        if (this.settings.requestTimeOut) return;
+        if (this.labelingTasks.requestTimeOut) return;
         if (!labelInput.value) return;
         if (!this.isLabelNameUnique(taskId, labelInput.value)) return;
         let labelColor = "yellow"
@@ -75,8 +76,8 @@ export class LabelHelper {
 
         labelInput.value = '';
         labelInput.focus();
-        this.settings.requestTimeOut = true;
-        timer(100).subscribe(() => this.settings.requestTimeOut = false);
+        this.labelingTasks.requestTimeOut = true;
+        timer(100).subscribe(() => this.labelingTasks.requestTimeOut = false);
     }
 
     public checkRenameLabel() {
@@ -84,7 +85,7 @@ export class LabelHelper {
         this.renameLabelData.checkResults = null;
 
         this.projectApolloService
-            .checkRenameLabel(this.settings.project.id, this.currentLabel.label.id, this.renameLabelData.newLabelName.trim()).pipe(first())
+            .checkRenameLabel(this.labelingTasks.project.id, this.currentLabel.label.id, this.renameLabelData.newLabelName.trim()).pipe(first())
             .subscribe((r) => {
                 r.warnings.forEach(e => {
                     e.open = false;
@@ -97,14 +98,14 @@ export class LabelHelper {
 
     public updateLabelName() {
         this.projectApolloService
-            .updateLabelName(this.settings.project.id, this.currentLabel.label.id, this.renameLabelData.newLabelName.trim()).pipe(first())
+            .updateLabelName(this.labelingTasks.project.id, this.currentLabel.label.id, this.renameLabelData.newLabelName.trim()).pipe(first())
             .subscribe((x) => this.currentLabel.label.name = this.renameLabelData.newLabelName.trim());
     }
 
     public handleLabelRenameWarning(warning: any) {
         if (warning == null) return;
         this.projectApolloService
-            .handleLabelRenameWarning(this.settings.project.id, JSON.stringify(warning)).pipe(first())
+            .handleLabelRenameWarning(this.labelingTasks.project.id, JSON.stringify(warning)).pipe(first())
             .subscribe((x) => this.checkRenameLabel());
     }
 
@@ -200,7 +201,7 @@ export class LabelHelper {
         this.currentLabel.label.hotkey = this.labelHotkeyError ? "" : key;
         if (!this.labelHotkeyError) {
             this.projectApolloService
-                .updateLabelHotkey(this.settings.project.id, this.currentLabel.label.id, key).pipe(first())
+                .updateLabelHotkey(this.labelingTasks.project.id, this.currentLabel.label.id, key).pipe(first())
                 .subscribe();
         }
 

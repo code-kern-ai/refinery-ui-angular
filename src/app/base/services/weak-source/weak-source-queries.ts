@@ -103,20 +103,6 @@ export const queries = {
     }
   }
   `,
-
-  GET_MODEL_PROVIDER_INFO: gql`
-  query{
-    modelProviderInfo {
-      name
-      revision
-      link
-      date
-      size
-      status
-      zeroShotPipeline
-    }
-  }
-  `,
   GET_LABELING_FUNCTION_ON_10_RECORDS: gql`
   query ($projectId: ID!, $informationSourceId: ID!) {
     getLabelingFunctionOn10Records(projectId: $projectId, informationSourceId: $informationSourceId) {

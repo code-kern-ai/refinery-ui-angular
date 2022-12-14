@@ -18,6 +18,8 @@ import { copyToClipboard, toPythonFunctionName } from 'src/app/util/helper-funct
 import { LabelHelper } from './helper/label-helper';
 import { createDefaultSettingModals, SettingModals } from './helper/modal-helper';
 import { attributeVisibilityStates, getTooltipVisibilityState } from '../create-new-attribute/attributes-visibility-helper';
+import { DataHandlerHelper } from './helper/data-handler-helper';
+import { LabelingTasksComponent } from './components/labeling-tasks/labeling-tasks.component';
 
 @Component({
   selector: 'kern-project-settings',
@@ -31,35 +33,33 @@ import { attributeVisibilityStates, getTooltipVisibilityState } from '../create-
     `,
   ],
 })
-export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewInit {
-  @ViewChildren('inputTaskName') inputTaskName: QueryList<ElementRef>;
-  get LabelingTaskType(): typeof LabelingTask {
-    return LabelingTask;
-  }
+export class ProjectSettingsComponent implements OnInit, OnDestroy {
+  // @ViewChildren('inputTaskName') inputTaskName: QueryList<ElementRef>;
+  // get LabelingTaskType(): typeof LabelingTask {
+  //   return LabelingTask;
+  // }
 
   dataTypesArray = dataTypes;
 
-  granularityTypesArray = [
-    { name: 'Attribute', value: 'ON_ATTRIBUTE' },
-    { name: 'Token', value: 'ON_TOKEN' }
-  ];
+  // granularityTypesArray = [
+  //   { name: 'Attribute', value: 'ON_ATTRIBUTE' },
+  //   { name: 'Token', value: 'ON_TOKEN' }
+  // ];
 
-
-  //better request available from backend?
-  embeddingHandlesMap: Map<string, any> = new Map<string, any>();
-  labelingTasksDropdownArray = [];
-  projectNameUpdate: string = '';
+  // embeddingHandlesMap: Map<string, any> = new Map<string, any>();
+  // labelingTasksDropdownArray = [];
+  // projectNameUpdate: string = '';
   project$: any;
   projectQuery$: any;
   project: any;
-  labelingTasksQuery$: any;
+  // labelingTasksQuery$: any;
   attributesQuery$: any;
   subscriptions$: Subscription[] = [];
   embeddings: any;
   embeddingQuery$: any;
-  forceEmbeddingRefresh: boolean = true;
-  requestTimeOut: boolean = false;
-  isTaskNameUnique: boolean = true;
+  // forceEmbeddingRefresh: boolean = true;
+  // requestTimeOut: boolean = false;
+  // isTaskNameUnique: boolean = true;
   tokenizationProgress: Number;
   downloadMessage: DownloadState = DownloadState.NONE;
 
@@ -67,36 +67,37 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     return DownloadState;
   }
 
-  attributesArrayTextUsableUploaded: { id: string, name: string }[] = [];
-  attributesArrayUsableUploaded: { id: string, name: string }[] = [];
-  attributes;
-  pKeyCheckTimer;
-  pKeyValid: boolean = null;
-  attributesSchema: FormGroup;
+  // attributesArrayTextUsableUploaded: { id: string, name: string }[] = [];
+  // attributesArrayUsableUploaded: { id: string, name: string }[] = [];
+  // attributes;
+  // pKeyCheckTimer;
+  // pKeyValid: boolean = null;
+  // attributesSchema: FormGroup;
 
-  labelingTasksSchema = this.formBuilder.group({
-    labelingTasks: this.formBuilder.array([]),
-  });
-  get labelingTasksArray() {
-    return this.labelingTasksSchema.get('labelingTasks') as FormArray;
-  }
-  downloadedModelsList$: any;
-  downloadedModelsQuery$: any;
-  downloadedModels: any[];
+  // labelingTasksSchema = this.formBuilder.group({
+  //   labelingTasks: this.formBuilder.array([]),
+  // });
+  // get labelingTasksArray() {
+  //   return this.labelingTasksSchema.get('labelingTasks') as FormArray;
+  // }
+  // downloadedModelsList$: any;
+  // downloadedModelsQuery$: any;
+  // downloadedModels: any[];
   isManaged: boolean = true;
-  attributeVisibilityStates = attributeVisibilityStates;
-  tooltipsArray: string[] = [];
+  // attributeVisibilityStates = attributeVisibilityStates;
+  // tooltipsArray: string[] = [];
 
-  lh: LabelHelper;
+  // lh: LabelHelper;
   settingModals: SettingModals = createDefaultSettingModals();
+  dataHandlerHelper: DataHandlerHelper;
 
   get projectExportArray() {
     return this.settingModals.projectExport.projectExportSchema.get('attributes') as FormArray;
   }
 
-  get attributesArray() {
-    return this.attributesSchema.get('attributes') as FormArray;
-  }
+  // get attributesArray() {
+  //   return this.attributesSchema.get('attributes') as FormArray;
+  // }
 
   constructor(
     private routeService: RouteService,
@@ -106,18 +107,20 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     private formBuilder: FormBuilder,
     private s3Service: S3Service,
     private informationSourceApolloService: WeakSourceApolloService
-  ) { }
+  ) {
+    this.dataHandlerHelper = new DataHandlerHelper(this.formBuilder);
+  }
 
-  ngAfterViewInit() {
-    this.inputTaskName.changes.subscribe(() => {
-      this.setFocus(this.inputTaskName);
-    });
-  }
-  setFocus(focusArea) {
-    if (focusArea.length > 0) {
-      focusArea.first.nativeElement.focus();
-    }
-  }
+  // ngAfterViewInit() {
+  //   this.inputTaskName.changes.subscribe(() => {
+  //     this.setFocus(this.inputTaskName);
+  //   });
+  // }
+  // setFocus(focusArea) {
+  //   if (focusArea.length > 0) {
+  //     focusArea.first.nativeElement.focus();
+  //   }
+  // }
   ngOnInit(): void {
     UserManager.checkUserAndRedirect(this);
     this.routeService.updateActivatedRoute(this.activatedRoute);
@@ -133,17 +136,19 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     });
     this.setUpCommentRequests(projectId);
 
-    this.requestPKeyCheck(projectId);
+    // this.requestPKeyCheck(projectId);
     this.checkProjectTokenization(projectId);
 
-    [this.downloadedModelsQuery$, this.downloadedModelsList$] = this.informationSourceApolloService.getModelProviderInfo();
-    this.subscriptions$.push(
-      this.downloadedModelsList$.subscribe((downloadedModels) => this.downloadedModels = downloadedModels));
 
-    let preparationTasks$ = [];
-    preparationTasks$.push(this.prepareAttributesRequest(projectId));
-    preparationTasks$.push(this.prepareLabelingTasksRequest(projectId));
-    preparationTasks$.push(this.prepareEmbeddingsRequest(projectId));
+
+    // [this.downloadedModelsQuery$, this.downloadedModelsList$] = this.informationSourceApolloService.getModelProviderInfo();
+    // this.subscriptions$.push(
+    //   this.downloadedModelsList$.subscribe((downloadedModels) => this.downloadedModels = downloadedModels));
+
+    // let preparationTasks$ = [];
+    // preparationTasks$.push(this.prepareAttributesRequest(projectId));
+    // preparationTasks$.push(this.prepareLabelingTasksRequest(projectId));
+    // preparationTasks$.push(this.prepareEmbeddingsRequest(projectId));
 
 
 
@@ -159,7 +164,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
       })
     }
     this.checkIfManagedVersion();
-    this.lh = new LabelHelper(this, this.projectApolloService);
+    // this.lh = new LabelHelper(this, this.projectApolloService);
     this.initForms();
   }
   private setUpCommentRequests(projectId: string) {
@@ -175,9 +180,6 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     this.settingModals.projectExport.projectExportSchema = this.formBuilder.group({
       attributes: this.formBuilder.array([]),
     });
-    this.attributesSchema = this.formBuilder.group({
-      attributes: this.formBuilder.array([]),
-    });
   }
 
   checkIfManagedVersion() {
@@ -188,18 +190,22 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     this.isManaged = ConfigManager.getIsManaged();
   }
 
-  prepareEmbeddingFormGroup(attributes) {
-    if (attributes.length > 0) {
-      this.settingModals.embedding.create.embeddingCreationFormGroup = this.formBuilder.group({
-        targetAttribute: attributes[0].id,
-        embeddingHandle: "",
-        granularity: this.granularityTypesArray[0].value
-      });
-      this.settingModals.embedding.create.embeddingCreationFormGroup.valueChanges.pipe(debounceTime(200)).subscribe(() =>
-        this.settingModals.embedding.create.blocked = !this.canCreateEmbedding()
-      )
-    }
+  getAttributes() {
+    return this.dataHandlerHelper.attributesArray.controls.values();
   }
+
+  // prepareEmbeddingFormGroup(attributes) {
+  //   if (attributes.length > 0) {
+  //     this.settingModals.embedding.create.embeddingCreationFormGroup = this.formBuilder.group({
+  //       targetAttribute: attributes[0].id,
+  //       embeddingHandle: "",
+  //       granularity: this.granularityTypesArray[0].value
+  //     });
+  //     this.settingModals.embedding.create.embeddingCreationFormGroup.valueChanges.pipe(debounceTime(200)).subscribe(() =>
+  //       this.settingModals.embedding.create.blocked = !this.canCreateEmbedding()
+  //     )
+  //   }
+  // }
 
   checkProjectTokenization(projectId: string) {
     this.projectApolloService.getProjectTokenization(projectId).pipe(first()).subscribe((v) => {
@@ -207,286 +213,286 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     })
   }
 
-  buildExpectedEmbeddingName(): string {
-    const values = this.settingModals.embedding.create.embeddingCreationFormGroup.getRawValue();
-    let toReturn = this.getAttributeArrayAttribute(values.targetAttribute, 'name');
-    toReturn += "-" + (values.granularity == 'ON_ATTRIBUTE' ? 'classification' : 'extraction');
-    toReturn += "-" + values.embeddingHandle;
+  // buildExpectedEmbeddingName(): string {
+  //   const values = this.settingModals.embedding.create.embeddingCreationFormGroup.getRawValue();
+  //   let toReturn = this.getAttributeArrayAttribute(values.targetAttribute, 'name');
+  //   toReturn += "-" + (values.granularity == 'ON_ATTRIBUTE' ? 'classification' : 'extraction');
+  //   toReturn += "-" + values.embeddingHandle;
 
-    return toReturn;
-  }
+  //   return toReturn;
+  // }
 
-  canCreateEmbedding(): boolean {
-    const currentName = this.buildExpectedEmbeddingName();
-    if (currentName.slice(-1) == "-") return false;
-    else {
-      this.settingModals.embedding.create.blocked = true;
-      for (const embedding of this.embeddings) {
-        if (embedding.name == currentName) return false;
-      }
-    }
-    return true;
-  }
+  // canCreateEmbedding(): boolean {
+  //   const currentName = this.buildExpectedEmbeddingName();
+  //   if (currentName.slice(-1) == "-") return false;
+  //   else {
+  //     this.settingModals.embedding.create.blocked = true;
+  //     for (const embedding of this.embeddings) {
+  //       if (embedding.name == currentName) return false;
+  //     }
+  //   }
+  //   return true;
+  // }
 
-  prepareEmbeddingHandles(projectId: string, attributes) {
-    this.projectApolloService.getRecommendedEncodersForEmbeddings(projectId).pipe(first()).subscribe((encoderSuggestions) => {
-      if (!this.project) {
-        let timer = interval(250).subscribe(() => {
-          if (this.project) {
-            this.parseEncoderToSuggestions(encoderSuggestions, attributes);
-            timer.unsubscribe();
-          }
-        });
-      } else {
-        this.parseEncoderToSuggestions(encoderSuggestions, attributes);
-      }
-    })
-  }
+  // prepareEmbeddingHandles(projectId: string, attributes) {
+  //   this.projectApolloService.getRecommendedEncodersForEmbeddings(projectId).pipe(first()).subscribe((encoderSuggestions) => {
+  //     if (!this.project) {
+  //       let timer = interval(250).subscribe(() => {
+  //         if (this.project) {
+  //           this.parseEncoderToSuggestions(encoderSuggestions, attributes);
+  //           timer.unsubscribe();
+  //         }
+  //       });
+  //     } else {
+  //       this.parseEncoderToSuggestions(encoderSuggestions, attributes);
+  //     }
+  //   })
+  // }
 
-  private parseEncoderToSuggestions(encoderSuggestions, attributes) {
-    encoderSuggestions = encoderSuggestions.filter(e => e.tokenizers.includes("all") || e.tokenizers.includes(this.project.tokenizer))
-    if (!encoderSuggestions.length) return;
-    if (encoderSuggestions) encoderSuggestions.forEach(element => {
-      element = { ...element };
-      element.hidden = false;
-      element.forceHidden = false;
-      if (typeof element.applicability === 'string' || element.applicability instanceof String) {
-        element.applicability = JSON.parse(element.applicability);
-      }
-    });
-    attributes.forEach(att => {
-      this.embeddingHandlesMap.set(att.id, encoderSuggestions);
-    })
-  }
+  // private parseEncoderToSuggestions(encoderSuggestions, attributes) {
+  //   encoderSuggestions = encoderSuggestions.filter(e => e.tokenizers.includes("all") || e.tokenizers.includes(this.project.tokenizer))
+  //   if (!encoderSuggestions.length) return;
+  //   if (encoderSuggestions) encoderSuggestions.forEach(element => {
+  //     element = { ...element };
+  //     element.hidden = false;
+  //     element.forceHidden = false;
+  //     if (typeof element.applicability === 'string' || element.applicability instanceof String) {
+  //       element.applicability = JSON.parse(element.applicability);
+  //     }
+  //   });
+  //   attributes.forEach(att => {
+  //     this.embeddingHandlesMap.set(att.id, encoderSuggestions);
+  //   })
+  // }
 
-  checkForceHiddenHandles() {
-    const granularity = this.settingModals.embedding.create.embeddingCreationFormGroup.get('granularity').value;
-    const attId = this.settingModals.embedding.create.embeddingCreationFormGroup.get('targetAttribute').value;
+  // checkForceHiddenHandles() {
+  //   const granularity = this.settingModals.embedding.create.embeddingCreationFormGroup.get('granularity').value;
+  //   const attId = this.settingModals.embedding.create.embeddingCreationFormGroup.get('targetAttribute').value;
 
-    const suggestionList = this.embeddingHandlesMap.get(attId)
-    for (let element of suggestionList) {
-      element = { ...element };
-      element.forceHidden = true;
-      if ((granularity == 'ON_ATTRIBUTE' && element.applicability?.attribute)
-        || (granularity == 'ON_TOKEN' && element.applicability?.token)) {
-        element.forceHidden = false;
-      }
-    }
+  //   const suggestionList = this.embeddingHandlesMap.get(attId)
+  //   for (let element of suggestionList) {
+  //     element = { ...element };
+  //     element.forceHidden = true;
+  //     if ((granularity == 'ON_ATTRIBUTE' && element.applicability?.attribute)
+  //       || (granularity == 'ON_TOKEN' && element.applicability?.token)) {
+  //       element.forceHidden = false;
+  //     }
+  //   }
 
-  }
-
-
-  prepareEmbeddingsRequest(projectId: string) {
-    let embeddings$;
-    [this.embeddingQuery$, embeddings$] = this.projectApolloService.getEmbeddingSchema(projectId);
-
-    this.subscriptions$.push(embeddings$.subscribe((embeddings) => this.embeddings = embeddings));
-    return embeddings$;
-  }
-
-  prepareAttributesRequest(projectId: string): Observable<any> {
-    let attributes$;
-    [this.attributesQuery$, attributes$] = this.projectApolloService.getAttributesByProjectId(projectId, ['ALL']);
-    this.subscriptions$.push(attributes$.subscribe((attributes) => {
-      this.attributes = attributes;
-      this.attributesArrayTextUsableUploaded = [];
-      this.attributesArrayUsableUploaded = [];
-      this.attributesArray.clear();
-      attributes.forEach((att) => {
-        let group = this.formBuilder.group({
-          id: att.id,
-          name: att.name,
-          dataType: att.dataType,
-          isPrimaryKey: att.isPrimaryKey,
-          userCreated: att.userCreated,
-          sourceCode: att.sourceCode,
-          state: att.state,
-          dataTypeName: this.dataTypesArray.find((type) => type.value === att?.dataType).name,
-          visibilityIndex: this.attributeVisibilityStates.findIndex((type) => type.value === att?.visibility),
-        });
-
-        if (att.state == 'INITIAL' || att.state == 'FAILED') {
-          group.get('isPrimaryKey').disable();
-        }
-
-        group.valueChanges.pipe(distinctUntilChanged()).subscribe(() => {
-          let values = group.getRawValue(); //to ensure disabled will be returned as well      
-          if (this.pKeyChanged()) this.requestPKeyCheck(this.project.id);
-          if (this.attributeChangedToText()) this.createAttributeTokenStatistics(this.project.id, values.id);
-          const visibility = this.attributeVisibilityStates[values.visibilityIndex].value;
-          this.projectApolloService.
-            updateAttribute(this.project.id, values.id, values.dataType, values.isPrimaryKey, values.name, values.sourceCode, visibility).pipe(first()).subscribe();
-        });
-        this.attributesArray.push(group);
-        if (att.state == 'UPLOADED' || att.state == 'USABLE' || att.state == 'AUTOMATICALLY_CREATED') {
-          if (att.dataType == 'TEXT') {
-            this.attributesArrayTextUsableUploaded.push({ id: att.id, name: att.name });
-            this.attributesArrayUsableUploaded.push({ id: att.id, name: att.name });
-          } else {
-            this.attributesArrayUsableUploaded.push({ id: att.id, name: att.name });
-          }
-        }
-      });
-      const onlyTextAttributes = attributes.filter(a => a.dataType == 'TEXT');
-      this.prepareEmbeddingFormGroup(onlyTextAttributes);
-      this.prepareEmbeddingHandles(projectId, onlyTextAttributes);
-
-      this.tooltipsArray = [];
-      this.attributeVisibilityStates.forEach((state) => {
-        this.tooltipsArray.push(getTooltipVisibilityState(state.value));
-      });
-    }));
-    return attributes$;
-  }
-
-  attributeChangedToText(): boolean {
-    for (let i = 0; i < this.attributes.length; i++) {
-      const att = this.attributes[i]
-      const wantedDataType = this.getAttributeArrayAttribute(att.id, 'dataType');
-      if (att.dataType != wantedDataType && wantedDataType == "TEXT") return true;
-    }
-    return false;
-  }
-
-  createAttributeTokenStatistics(projectId: string, attributeId: string) {
-    this.projectApolloService.createAttributeTokenStatistics(projectId, attributeId).pipe(first()).subscribe();
-  }
-
-  requestPKeyCheck(projectId: string) {
-    this.pKeyValid = null;
-    if (this.pKeyCheckTimer) this.pKeyCheckTimer.unsubscribe();
-    this.pKeyCheckTimer = timer(500).subscribe(() => {
-      this.projectApolloService.getCompositeKeyIsValid(projectId).pipe(first()).subscribe((r) => {
-        this.pKeyCheckTimer = null;
-        if (this.anyPKey()) this.pKeyValid = r;
-        else this.pKeyValid = null;
-      })
-    });
-  }
-
-  anyPKey(): boolean {
-    if (!this.attributes) return false;
-    for (let i = 0; i < this.attributes.length; i++) {
-      const att = this.attributes[i]
-      if (att.isPrimaryKey) return true;
-    }
-    return false;
-  }
-
-  pKeyChanged(): boolean {
-    for (let i = 0; i < this.attributes.length; i++) {
-      const att = this.attributes[i]
-      if (att.isPrimaryKey != this.getAttributeArrayAttribute(att.id, 'isPrimaryKey')) return true;
-    }
-    return false;
-  }
-
-  prepareLabelingTasksRequest(projectId: string) {
-    let labelingTasks$;
-    [this.labelingTasksQuery$, labelingTasks$] = this.projectApolloService.getLabelingTasksByProjectId(projectId);
-    this.subscriptions$.push(labelingTasks$.subscribe((tasks) => {
-
-      tasks.sort((a, b) => a.relativePosition - b.relativePosition || a.name.localeCompare(b.name))
-
-      if (this.onlyLabelsChanged(tasks)) {
-        this.lh.setLabelMap(tasks);
-      } else {
-        this.labelingTasksArray.clear();
-        tasks.forEach((task) => {
-          task.labels.sort((a, b) => a.name.localeCompare(b.name));
-          this.lh.labelingTaskColors.set(task.id, task.labels.map((label) => label.color));
-          task.labels = task.labels.map((label) => this.lh.extendLabelForColor({ ...label }));
-          let group = this.formBuilder.group({
-            id: task.id,
-            name: task.name,
-            nameOpen: false,
-            targetId: task.taskTarget == LabelingTaskTarget.ON_ATTRIBUTE ? task.attribute.id : "",
-            targetName: task.taskTarget == LabelingTaskTarget.ON_ATTRIBUTE ? task.attribute.name : "Full Record",
-            taskType: task.taskType,
-          })
-          this.lh.labelMap.set(task.id, task.labels);
-          group.valueChanges.pipe(distinctUntilChanged()).subscribe(() => {
-            let values = group.getRawValue(); //to ensure disabled will be returned as well
-            if (values.nameOpen || !this.isTaskNameUniqueCheck(values.name, group) || values.name.trim() == "") return;
-            this.projectApolloService.
-              updateLabelingTask(this.project.id, values.id, values.name, values.taskType, values.targetId == "" ? null : values.targetId).pipe(first()).subscribe();
-          });
-          this.labelingTasksArray.push(group);
-        });
-      }
-
-    }));
-    return labelingTasks$;
-  }
-
-  onlyLabelsChanged(tasks): boolean {
-    if (this.labelingTasksArray.controls.length == 0) return false;
-    if (this.labelingTasksArray.controls.length != tasks.length) return false;
-    for (const task of tasks) {
-      if (this.getTaskArrayAttribute(task.id, 'id') == 'UNKNOWN') return false;
-      if (this.getTaskArrayAttribute(task.id, 'taskType') != task.taskType)
-        return false;
-      if (this.getTaskArrayAttribute(task.id, 'name') != task.name)
-        return false;
-    }
-
-    return true;
-  }
-
-  getTaskO(name: string): boolean {
-    if (name == '') return true;
-    for (let task of this.labelingTasksArray.controls) {
-      if (name == task.get('name').value) return false;
-    }
-    return true;
-  }
+  // }
 
 
-  addLabelingTask() {
-    const labelingTask = this.settingModals.labelingTask.create;
-    if (this.requestTimeOut) return;
-    if (labelingTask.name.trim().length == 0) return;
-    if (!this.isTaskNameUniqueCheck(labelingTask.name)) return;
-    if (labelingTask.taskId == "@@NO_ATTRIBUTE@@") labelingTask.taskId = null;
-    let labelingTaskType = LabelingTask.MULTICLASS_CLASSIFICATION;
-    if (
-      labelingTask.taskId &&
-      this.getAttributeArrayAttribute(labelingTask.taskId, 'dataType') == 'TEXT'
-    )
-      labelingTaskType = LabelingTask.NOT_SET;
+  // prepareEmbeddingsRequest(projectId: string) {
+  //   let embeddings$;
+  //   [this.embeddingQuery$, embeddings$] = this.projectApolloService.getEmbeddingSchema(projectId);
 
-    this.projectApolloService.addLabelingTask(this.project.id, labelingTask.name.trim(), labelingTaskType, labelingTask.taskId)
-      .pipe(first()).subscribe(() => {
-        this.settingModals.labelingTask.create.name = '';
-      });
+  //   this.subscriptions$.push(embeddings$.subscribe((embeddings) => this.embeddings = embeddings));
+  //   return embeddings$;
+  // }
 
-    this.requestTimeOut = true;
-    timer(100).subscribe(() => this.requestTimeOut = false);
-    this.settingModals.labelingTask.create.open = false;
-  }
+  // prepareAttributesRequest(projectId: string): Observable<any> {
+  //   let attributes$;
+  //   [this.attributesQuery$, attributes$] = this.projectApolloService.getAttributesByProjectId(projectId, ['ALL']);
+  //   this.subscriptions$.push(attributes$.subscribe((attributes) => {
+  //     this.attributes = attributes;
+  //     this.attributesArrayTextUsableUploaded = [];
+  //     this.dataHandlerHelper.attributesArrayUsableUploaded = [];
+  //     this.attributesArray.clear();
+  //     attributes.forEach((att) => {
+  //       let group = this.formBuilder.group({
+  //         id: att.id,
+  //         name: att.name,
+  //         dataType: att.dataType,
+  //         isPrimaryKey: att.isPrimaryKey,
+  //         userCreated: att.userCreated,
+  //         sourceCode: att.sourceCode,
+  //         state: att.state,
+  //         dataTypeName: this.dataTypesArray.find((type) => type.value === att?.dataType).name,
+  //         visibilityIndex: this.attributeVisibilityStates.findIndex((type) => type.value === att?.visibility),
+  //       });
 
-  getAttributeArrayAttribute(attributeId: string, valueID: string) {
-    for (let att of this.attributesArray.controls) {
-      if (attributeId == att.get('id').value) return att.get(valueID).value;
-    }
-    return 'UNKNOWN';
-  }
+  //       if (att.state == 'INITIAL' || att.state == 'FAILED') {
+  //         group.get('isPrimaryKey').disable();
+  //       }
 
-  getTaskArrayAttribute(taskId: string, valueID: string) {
-    for (let task of this.labelingTasksArray.controls) {
-      if (taskId == task.get('id').value) return task.get(valueID).value;
-    }
-    return 'UNKNOWN';
-  }
+  //       group.valueChanges.pipe(distinctUntilChanged()).subscribe(() => {
+  //         let values = group.getRawValue(); //to ensure disabled will be returned as well      
+  //         if (this.pKeyChanged()) this.requestPKeyCheck(this.project.id);
+  //         if (this.attributeChangedToText()) this.createAttributeTokenStatistics(this.project.id, values.id);
+  //         const visibility = this.attributeVisibilityStates[values.visibilityIndex].value;
+  //         this.projectApolloService.
+  //           updateAttribute(this.project.id, values.id, values.dataType, values.isPrimaryKey, values.name, values.sourceCode, visibility).pipe(first()).subscribe();
+  //       });
+  //       this.attributesArray.push(group);
+  //       if (att.state == 'UPLOADED' || att.state == 'USABLE' || att.state == 'AUTOMATICALLY_CREATED') {
+  //         if (att.dataType == 'TEXT') {
+  //           this.attributesArrayTextUsableUploaded.push({ id: att.id, name: att.name });
+  //           this.dataHandlerHelper.attributesArrayUsableUploaded.push({ id: att.id, name: att.name });
+  //         } else {
+  //           this.dataHandlerHelper.attributesArrayUsableUploaded.push({ id: att.id, name: att.name });
+  //         }
+  //       }
+  //     });
+  //     const onlyTextAttributes = attributes.filter(a => a.dataType == 'TEXT');
+  //     this.prepareEmbeddingFormGroup(onlyTextAttributes);
+  //     this.prepareEmbeddingHandles(projectId, onlyTextAttributes);
 
-  removeLabel() {
-    const labelDeleteData = this.settingModals.label.delete;
-    this.lh.removeLabel(this.project.id, labelDeleteData.taskId, labelDeleteData.label.id, labelDeleteData.label.color);
-  }
+  //     this.tooltipsArray = [];
+  //     this.attributeVisibilityStates.forEach((state) => {
+  //       this.tooltipsArray.push(getTooltipVisibilityState(state.value));
+  //     });
+  //   }));
+  //   return attributes$;
+  // }
 
-  addLabel(): void {
-    this.lh.addLabel(this.project.id, this.settingModals.label.create.taskId, this.settingModals.label.create.labelName);
-  }
+  // attributeChangedToText(): boolean {
+  //   for (let i = 0; i < this.attributes.length; i++) {
+  //     const att = this.attributes[i]
+  //     const wantedDataType = this.getAttributeArrayAttribute(att.id, 'dataType');
+  //     if (att.dataType != wantedDataType && wantedDataType == "TEXT") return true;
+  //   }
+  //   return false;
+  // }
+
+  // createAttributeTokenStatistics(projectId: string, attributeId: string) {
+  //   this.projectApolloService.createAttributeTokenStatistics(projectId, attributeId).pipe(first()).subscribe();
+  // }
+
+  // requestPKeyCheck(projectId: string) {
+  //   this.pKeyValid = null;
+  //   if (this.pKeyCheckTimer) this.pKeyCheckTimer.unsubscribe();
+  //   this.pKeyCheckTimer = timer(500).subscribe(() => {
+  //     this.projectApolloService.getCompositeKeyIsValid(projectId).pipe(first()).subscribe((r) => {
+  //       this.pKeyCheckTimer = null;
+  //       if (this.anyPKey()) this.pKeyValid = r;
+  //       else this.pKeyValid = null;
+  //     })
+  //   });
+  // }
+
+  // anyPKey(): boolean {
+  //   if (!this.attributes) return false;
+  //   for (let i = 0; i < this.attributes.length; i++) {
+  //     const att = this.attributes[i]
+  //     if (att.isPrimaryKey) return true;
+  //   }
+  //   return false;
+  // }
+
+  // pKeyChanged(): boolean {
+  //   for (let i = 0; i < this.attributes.length; i++) {
+  //     const att = this.attributes[i]
+  //     if (att.isPrimaryKey != this.getAttributeArrayAttribute(att.id, 'isPrimaryKey')) return true;
+  //   }
+  //   return false;
+  // }
+
+  // prepareLabelingTasksRequest(projectId: string) {
+  //   let labelingTasks$;
+  //   [this.labelingTasksQuery$, labelingTasks$] = this.projectApolloService.getLabelingTasksByProjectId(projectId);
+  //   this.subscriptions$.push(labelingTasks$.subscribe((tasks) => {
+
+  //     tasks.sort((a, b) => a.relativePosition - b.relativePosition || a.name.localeCompare(b.name))
+
+  //     if (this.onlyLabelsChanged(tasks)) {
+  //       this.lh.setLabelMap(tasks);
+  //     } else {
+  //       this.labelingTasksArray.clear();
+  //       tasks.forEach((task) => {
+  //         task.labels.sort((a, b) => a.name.localeCompare(b.name));
+  //         this.lh.labelingTaskColors.set(task.id, task.labels.map((label) => label.color));
+  //         task.labels = task.labels.map((label) => this.lh.extendLabelForColor({ ...label }));
+  //         let group = this.formBuilder.group({
+  //           id: task.id,
+  //           name: task.name,
+  //           nameOpen: false,
+  //           targetId: task.taskTarget == LabelingTaskTarget.ON_ATTRIBUTE ? task.attribute.id : "",
+  //           targetName: task.taskTarget == LabelingTaskTarget.ON_ATTRIBUTE ? task.attribute.name : "Full Record",
+  //           taskType: task.taskType,
+  //         })
+  //         this.lh.labelMap.set(task.id, task.labels);
+  //         group.valueChanges.pipe(distinctUntilChanged()).subscribe(() => {
+  //           let values = group.getRawValue(); //to ensure disabled will be returned as well
+  //           if (values.nameOpen || !this.isTaskNameUniqueCheck(values.name, group) || values.name.trim() == "") return;
+  //           this.projectApolloService.
+  //             updateLabelingTask(this.project.id, values.id, values.name, values.taskType, values.targetId == "" ? null : values.targetId).pipe(first()).subscribe();
+  //         });
+  //         this.labelingTasksArray.push(group);
+  //       });
+  //     }
+
+  //   }));
+  //   return labelingTasks$;
+  // }
+
+  // onlyLabelsChanged(tasks): boolean {
+  //   if (this.labelingTasksArray.controls.length == 0) return false;
+  //   if (this.labelingTasksArray.controls.length != tasks.length) return false;
+  //   for (const task of tasks) {
+  //     if (this.getTaskArrayAttribute(task.id, 'id') == 'UNKNOWN') return false;
+  //     if (this.getTaskArrayAttribute(task.id, 'taskType') != task.taskType)
+  //       return false;
+  //     if (this.getTaskArrayAttribute(task.id, 'name') != task.name)
+  //       return false;
+  //   }
+
+  //   return true;
+  // }
+
+  // getTaskO(name: string): boolean {
+  //   if (name == '') return true;
+  //   for (let task of this.labelingTasksArray.controls) {
+  //     if (name == task.get('name').value) return false;
+  //   }
+  //   return true;
+  // }
+
+
+  // addLabelingTask() {
+  //   const labelingTask = this.settingModals.labelingTask.create;
+  //   if (this.requestTimeOut) return;
+  //   if (labelingTask.name.trim().length == 0) return;
+  //   if (!this.isTaskNameUniqueCheck(labelingTask.name)) return;
+  //   if (labelingTask.taskId == "@@NO_ATTRIBUTE@@") labelingTask.taskId = null;
+  //   let labelingTaskType = LabelingTask.MULTICLASS_CLASSIFICATION;
+  //   if (
+  //     labelingTask.taskId &&
+  //     this.getAttributeArrayAttribute(labelingTask.taskId, 'dataType') == 'TEXT'
+  //   )
+  //     labelingTaskType = LabelingTask.NOT_SET;
+
+  //   this.projectApolloService.addLabelingTask(this.project.id, labelingTask.name.trim(), labelingTaskType, labelingTask.taskId)
+  //     .pipe(first()).subscribe(() => {
+  //       this.settingModals.labelingTask.create.name = '';
+  //     });
+
+  //   this.requestTimeOut = true;
+  //   timer(100).subscribe(() => this.requestTimeOut = false);
+  //   this.settingModals.labelingTask.create.open = false;
+  // }
+
+  // getAttributeArrayAttribute(attributeId: string, valueID: string) {
+  //   for (let att of this.attributesArray.controls) {
+  //     if (attributeId == att.get('id').value) return att.get(valueID).value;
+  //   }
+  //   return 'UNKNOWN';
+  // }
+
+  // getTaskArrayAttribute(taskId: string, valueID: string) {
+  //   for (let task of this.labelingTasksArray.controls) {
+  //     if (taskId == task.get('id').value) return task.get(valueID).value;
+  //   }
+  //   return 'UNKNOWN';
+  // }
+
+  // removeLabel() {
+  //   const labelDeleteData = this.settingModals.label.delete;
+  //   this.lh.removeLabel(this.project.id, labelDeleteData.taskId, labelDeleteData.label.id, labelDeleteData.label.color);
+  // }
+
+  // addLabel(): void {
+  //   this.lh.addLabel(this.project.id, this.settingModals.label.create.taskId, this.settingModals.label.create.labelName);
+  // }
 
 
   ngOnDestroy(): void {
@@ -496,177 +502,177 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     CommentDataManager.unregisterAllCommentRequests(this);
   }
 
-  labelingTasksDropdownValues() {
-    if (this.labelingTasksDropdownArray.length == 0) {
-      for (let t of Object.values(LabelingTask)) {
-        if (t == LabelingTask.NOT_USEABLE) continue;
-        this.labelingTasksDropdownArray.push({
-          name: labelingTaskToString(t),
-          value: t,
-        });
-      }
-    }
-    return this.labelingTasksDropdownArray;
-  }
+  // labelingTasksDropdownValues() {
+  //   if (this.labelingTasksDropdownArray.length == 0) {
+  //     for (let t of Object.values(LabelingTask)) {
+  //       if (t == LabelingTask.NOT_USEABLE) continue;
+  //       this.labelingTasksDropdownArray.push({
+  //         name: labelingTaskToString(t),
+  //         value: t,
+  //       });
+  //     }
+  //   }
+  //   return this.labelingTasksDropdownArray;
+  // }
 
-  deleteLabelingTask() {
-    this.projectApolloService
-      .deleteLabelingTask(this.project.id, this.settingModals.labelingTask.delete.taskId).pipe(first())
-      .subscribe((x) => this.removeOverviewLocalStorageValues());
-  }
+  // deleteLabelingTask() {
+  //   this.projectApolloService
+  //     .deleteLabelingTask(this.project.id, this.settingModals.labelingTask.delete.taskId).pipe(first())
+  //     .subscribe((x) => this.removeOverviewLocalStorageValues());
+  // }
 
-  openTaskName(task: FormGroup) {
-    task.get("nameOpen").setValue(true);
-  }
-  checkTaskNameColor(target: HTMLInputElement) {
-    if (this.isTaskNameUniqueCheck(target.value)) {
-      target.style.color = null;
-      target.style.fontWeight = null;
-    } else {
-      target.style.color = 'red';
-      target.style.fontWeight = 'bold';
-    }
+  // openTaskName(task: FormGroup) {
+  //   task.get("nameOpen").setValue(true);
+  // }
+  // checkTaskNameColor(target: HTMLInputElement) {
+  //   if (this.isTaskNameUniqueCheck(target.value)) {
+  //     target.style.color = null;
+  //     target.style.fontWeight = null;
+  //   } else {
+  //     target.style.color = 'red';
+  //     target.style.fontWeight = 'bold';
+  //   }
 
-  }
+  // }
 
-  changeTaskName(task: FormGroup, value: string) {
-    task.get("nameOpen").setValue(false);
-    if (value.trim() == "") return;
-    if (!this.isTaskNameUniqueCheck(value)) return;
-    const taskTarget = task.get("targetId").value == "" ? null : task.get("targetId").value;
-    this.projectApolloService.updateLabelingTask(this.project.id, task.get("id").value, value, task.get("taskType").value, taskTarget)
-      .pipe(first()).subscribe((r: any) => {
-        if (r.data?.updateLabelingTask?.ok) {
-          task.get("name").setValue(value);
-        }
-      });
-  }
+  // changeTaskName(task: FormGroup, value: string) {
+  //   task.get("nameOpen").setValue(false);
+  //   if (value.trim() == "") return;
+  //   if (!this.isTaskNameUniqueCheck(value)) return;
+  //   const taskTarget = task.get("targetId").value == "" ? null : task.get("targetId").value;
+  //   this.projectApolloService.updateLabelingTask(this.project.id, task.get("id").value, value, task.get("taskType").value, taskTarget)
+  //     .pipe(first()).subscribe((r: any) => {
+  //       if (r.data?.updateLabelingTask?.ok) {
+  //         task.get("name").setValue(value);
+  //       }
+  //     });
+  // }
 
   focusModalInputBox(inputBoxName: string) {
-    const input = document.getElementById(inputBoxName) as HTMLInputElement;
-    if (input && input instanceof HTMLElement) {
-      setTimeout(() => {
-        input.focus();
-      }, 0);
-      return;
-    }
+    // const input = document.getElementById(inputBoxName) as HTMLInputElement;
+    // if (input && input instanceof HTMLElement) {
+    //   setTimeout(() => {
+    //     input.focus();
+    //   }, 0);
+    //   return;
+    // }
   }
 
-  isTaskNameUniqueCheck(name: string, ownGroup: FormGroup = null): boolean {
-    if (name == '') return true;
-    const nameToExclude = ownGroup ? ownGroup.get("name").value : "";
-    let taskName;
-    for (let task of this.labelingTasksArray.controls) {
-      taskName = task.get('name').value;
-      if (name == taskName && taskName != nameToExclude) return false;
-    }
-    return true;
-  }
+  // isTaskNameUniqueCheck(name: string, ownGroup: FormGroup = null): boolean {
+  //   if (name == '') return true;
+  //   const nameToExclude = ownGroup ? ownGroup.get("name").value : "";
+  //   let taskName;
+  //   for (let task of this.labelingTasksArray.controls) {
+  //     taskName = task.get('name').value;
+  //     if (name == taskName && taskName != nameToExclude) return false;
+  //   }
+  //   return true;
+  // }
 
-  isLabelNameUnique(taskId: string, name: string): boolean {
-    return this.lh.isLabelNameUnique(taskId, name);
-  }
+  // isLabelNameUnique(taskId: string, name: string): boolean {
+  //   return this.lh.isLabelNameUnique(taskId, name);
+  // }
 
-  attributeAlreadyHasInformationExtraction(attributeId: string): boolean {
-    for (let task of this.labelingTasksArray.controls) {
-      if (attributeId == task.get('targetId').value) {
-        if (task.get('taskType').value == LabelingTask.INFORMATION_EXTRACTION)
-          return true;
-      }
-    }
-    return false;
-  }
+  // attributeAlreadyHasInformationExtraction(attributeId: string): boolean {
+  //   for (let task of this.labelingTasksArray.controls) {
+  //     if (attributeId == task.get('targetId').value) {
+  //       if (task.get('taskType').value == LabelingTask.INFORMATION_EXTRACTION)
+  //         return true;
+  //     }
+  //   }
+  //   return false;
+  // }
 
-  isLabelingTaskOptionDisabled(task: AbstractControl, dropdownValue: string) {
-    const targetID = task.get('targetId').value;
-    if (
-      targetID != '' &&
-      dropdownValue == LabelingTask.INFORMATION_EXTRACTION
-    ) {
-      if (this.attributeAlreadyHasInformationExtraction(targetID)) return true;
-      else if (this.getAttributeArrayAttribute(targetID, 'dataType') != 'TEXT')
-        return true;
-    } else if (
-      targetID == '' &&
-      dropdownValue == LabelingTask.INFORMATION_EXTRACTION
-    )
-      return true;
-    return false;
-  }
+  // isLabelingTaskOptionDisabled(task: AbstractControl, dropdownValue: string) {
+  //   const targetID = task.get('targetId').value;
+  //   if (
+  //     targetID != '' &&
+  //     dropdownValue == LabelingTask.INFORMATION_EXTRACTION
+  //   ) {
+  //     if (this.attributeAlreadyHasInformationExtraction(targetID)) return true;
+  //     else if (this.getAttributeArrayAttribute(targetID, 'dataType') != 'TEXT')
+  //       return true;
+  //   } else if (
+  //     targetID == '' &&
+  //     dropdownValue == LabelingTask.INFORMATION_EXTRACTION
+  //   )
+  //     return true;
+  //   return false;
+  // }
 
-  deleteEmbedding() {
-    const embeddingId = this.settingModals.embedding.delete.id;
-    if (!embeddingId) return;
-    this.projectApolloService
-      .deleteEmbedding(this.project.id, embeddingId).pipe(first())
-      .subscribe(() => {
-        this.embeddings = this.embeddings.filter(e => e.id != embeddingId);
-        this.settingModals.embedding.create.blocked = !this.canCreateEmbedding();
-      });
-  }
+  // deleteEmbedding() {
+  //   const embeddingId = this.settingModals.embedding.delete.id;
+  //   if (!embeddingId) return;
+  //   this.projectApolloService
+  //     .deleteEmbedding(this.project.id, embeddingId).pipe(first())
+  //     .subscribe(() => {
+  //       this.embeddings = this.embeddings.filter(e => e.id != embeddingId);
+  //       this.settingModals.embedding.create.blocked = !this.canCreateEmbedding();
+  //     });
+  // }
 
-  addEmbedding() {
-    if (!this.canCreateEmbedding()) return;
-    const embeddingForm = this.settingModals.embedding.create.embeddingCreationFormGroup;
-    const embeddingHandle = embeddingForm.get("embeddingHandle").value;
-    const attributeId = embeddingForm.get("targetAttribute").value;
-    const granularity = embeddingForm.get("granularity").value;
+  // addEmbedding() {
+  //   if (!this.canCreateEmbedding()) return;
+  //   const embeddingForm = this.settingModals.embedding.create.embeddingCreationFormGroup;
+  //   const embeddingHandle = embeddingForm.get("embeddingHandle").value;
+  //   const attributeId = embeddingForm.get("targetAttribute").value;
+  //   const granularity = embeddingForm.get("granularity").value;
 
-    this.projectApolloService.createEmbedding(this.project.id, attributeId, embeddingHandle, granularity.substring(3)).pipe(first()).subscribe();
-  }
+  //   this.projectApolloService.createEmbedding(this.project.id, attributeId, embeddingHandle, granularity.substring(3)).pipe(first()).subscribe();
+  // }
 
-  selectFirstUnhiddenEmbeddingHandle(inputElement: HTMLInputElement) {
-    const suggestionList = this.embeddingHandlesMap.get(this.settingModals.embedding.create.embeddingCreationFormGroup.get("targetAttribute").value)
-    for (let embeddingHandle of suggestionList) {
-      if (!embeddingHandle.hidden && !embeddingHandle.forceHidden) {
-        this.selectEmbeddingHandle(embeddingHandle, inputElement);
-        return;
-      }
-    }
+  // selectFirstUnhiddenEmbeddingHandle(inputElement: HTMLInputElement) {
+  //   const suggestionList = this.embeddingHandlesMap.get(this.settingModals.embedding.create.embeddingCreationFormGroup.get("targetAttribute").value)
+  //   for (let embeddingHandle of suggestionList) {
+  //     if (!embeddingHandle.hidden && !embeddingHandle.forceHidden) {
+  //       this.selectEmbeddingHandle(embeddingHandle, inputElement);
+  //       return;
+  //     }
+  //   }
 
-  }
+  // }
 
-  selectEmbeddingHandle(embeddingHandle, inputElement: HTMLInputElement, hoverBox?: any) {
-    inputElement.value = embeddingHandle.configString;
-    hoverBox.style.display = 'none';
-    if (document.activeElement instanceof HTMLElement) {
-      document.activeElement.blur();
-    }
-    this.checkEmbeddingHandles(inputElement);
-  }
+  // selectEmbeddingHandle(embeddingHandle, inputElement: HTMLInputElement, hoverBox?: any) {
+  //   inputElement.value = embeddingHandle.configString;
+  //   hoverBox.style.display = 'none';
+  //   if (document.activeElement instanceof HTMLElement) {
+  //     document.activeElement.blur();
+  //   }
+  //   this.checkEmbeddingHandles(inputElement);
+  // }
 
-  checkEmbeddingHandles(eventTarget: HTMLInputElement,) {
-    const embeddingForm = this.settingModals.embedding.create.embeddingCreationFormGroup;
-    embeddingForm.get('embeddingHandle').setValue(eventTarget.value);
-    const suggestionList = this.embeddingHandlesMap.get(embeddingForm.get("targetAttribute").value);
-    if (!suggestionList || suggestionList.length == 0) return;
-    const lowerEventValue = eventTarget.value.toLowerCase();
-    let suggestionsSave = [];
-    for (let embeddingHandle of suggestionList) {
-      embeddingHandle = { ...embeddingHandle, hidden: !embeddingHandle.configString.toLowerCase().includes(lowerEventValue) };
-      suggestionsSave.push(embeddingHandle)
-    }
-    this.embeddingHandlesMap.set(embeddingForm.get("targetAttribute").value, suggestionsSave);
-  }
+  // checkEmbeddingHandles(eventTarget: HTMLInputElement,) {
+  //   const embeddingForm = this.settingModals.embedding.create.embeddingCreationFormGroup;
+  //   embeddingForm.get('embeddingHandle').setValue(eventTarget.value);
+  //   const suggestionList = this.embeddingHandlesMap.get(embeddingForm.get("targetAttribute").value);
+  //   if (!suggestionList || suggestionList.length == 0) return;
+  //   const lowerEventValue = eventTarget.value.toLowerCase();
+  //   let suggestionsSave = [];
+  //   for (let embeddingHandle of suggestionList) {
+  //     embeddingHandle = { ...embeddingHandle, hidden: !embeddingHandle.configString.toLowerCase().includes(lowerEventValue) };
+  //     suggestionsSave.push(embeddingHandle)
+  //   }
+  //   this.embeddingHandlesMap.set(embeddingForm.get("targetAttribute").value, suggestionsSave);
+  // }
 
-  checkLabelingTaskName(eventTarget: HTMLInputElement) {
-    this.isTaskNameUnique = this.isTaskNameUniqueCheck(eventTarget.value);
-    this.settingModals.labelingTask.create.name = eventTarget.value;
-  }
+  // checkLabelingTaskName(eventTarget: HTMLInputElement) {
+  //   this.isTaskNameUnique = this.isTaskNameUniqueCheck(eventTarget.value);
+  //   this.settingModals.labelingTask.create.name = eventTarget.value;
+  // }
 
-  checkAndModifyLabelName(eventTarget: HTMLInputElement) {
-    eventTarget.value = eventTarget.value.replace("-", " ");
-    this.settingModals.label.create.labelName = eventTarget;
-  }
+  // checkAndModifyLabelName(eventTarget: HTMLInputElement) {
+  //   eventTarget.value = eventTarget.value.replace("-", " ");
+  //   this.settingModals.label.create.labelName = eventTarget;
+  // }
 
-  setCurrentEmbeddingHandle(embeddingHandle, hoverBox: HTMLElement, listElement: HTMLElement) {
-    this.settingModals.embedding.create.currentEmbeddingHandle = embeddingHandle;
-    if (embeddingHandle) {
-      const dataBoundingBox: DOMRect = listElement.getBoundingClientRect();
-      hoverBox.style.top = (dataBoundingBox.top - 60) + "px"
-      hoverBox.style.left = (dataBoundingBox.left + dataBoundingBox.width) + "px"
-    }
-  }
+  // setCurrentEmbeddingHandle(embeddingHandle, hoverBox: HTMLElement, listElement: HTMLElement) {
+  //   this.settingModals.embedding.create.currentEmbeddingHandle = embeddingHandle;
+  //   if (embeddingHandle) {
+  //     const dataBoundingBox: DOMRect = listElement.getBoundingClientRect();
+  //     hoverBox.style.top = (dataBoundingBox.top - 60) + "px"
+  //     hoverBox.style.left = (dataBoundingBox.left + dataBoundingBox.width) + "px"
+  //   }
+  // }
 
   handleWebsocketNotification(msgParts) {
     if (msgParts[1] == 'embedding') {
@@ -703,9 +709,11 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
       return;
     } else if (msgParts[1] == 'attributes_updated') {
       this.attributesQuery$.refetch();
-    } else if (['label_created', 'label_deleted', 'labeling_task_deleted', 'labeling_task_updated', 'labeling_task_created'].includes(msgParts[1])) {
-      this.labelingTasksQuery$.refetch();
-    } else if ('project_update' == msgParts[1]) {
+    }
+    // else if (['label_created', 'label_deleted', 'labeling_task_deleted', 'labeling_task_updated', 'labeling_task_created'].includes(msgParts[1])) {
+    //   this.labelingTasksQuery$.refetch();
+    // } 
+    else if ('project_update' == msgParts[1]) {
       this.projectQuery$.refetch();
     } else if (msgParts[1] == 'project_export') {
       this.settingModals.projectExport.downloadPrepareMessage = DownloadState.NONE;
@@ -864,32 +872,32 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     });
   }
 
-  updateLabelColor(projectId: string, labelingTaskId: string, labelId: string, oldLabelColor: string, newLabelColor: any) {
-    this.lh.updateLabelColor(projectId, labelingTaskId, labelId, oldLabelColor, newLabelColor);
-  }
+  // updateLabelColor(projectId: string, labelingTaskId: string, labelId: string, oldLabelColor: string, newLabelColor: any) {
+  //   this.lh.updateLabelColor(projectId, labelingTaskId, labelId, oldLabelColor, newLabelColor);
+  // }
 
-  checkAndSetLabelHotkey(event: KeyboardEvent) {
-    this.lh.checkAndSetLabelHotkey(event);
-  }
+  // checkAndSetLabelHotkey(event: KeyboardEvent) {
+  //   this.lh.checkAndSetLabelHotkey(event);
+  // }
 
-  @HostListener('document:keydown', ['$event'])
-  handleKeyboardEvent(event: KeyboardEvent) {
-    if (!this.lh.modalOpen.changeColor) return;
-    this.checkAndSetLabelHotkey(event);
-  }
+  // @HostListener('document:keydown', ['$event'])
+  // handleKeyboardEvent(event: KeyboardEvent) {
+  //   if (!this.lh.modalOpen.changeColor) return;
+  //   this.checkAndSetLabelHotkey(event);
+  // }
 
 
-  removeOverviewLocalStorageValues() {
-    let currentData = JSON.parse(localStorage.getItem("projectOverviewData"));
-    if (!currentData || !currentData[this.project.id]) return;
-    delete currentData[this.project.id];
-    localStorage.setItem('projectOverviewData', JSON.stringify(currentData));
-  }
+  // removeOverviewLocalStorageValues() {
+  //   let currentData = JSON.parse(localStorage.getItem("projectOverviewData"));
+  //   if (!currentData || !currentData[this.project.id]) return;
+  //   delete currentData[this.project.id];
+  //   localStorage.setItem('projectOverviewData', JSON.stringify(currentData));
+  // }
 
-  checkIfModelIsDownloaded(modelName: string) {
-    const findModel = this.downloadedModels && this.downloadedModels.find(el => el.name === modelName);
-    return findModel !== undefined ? true : false;
-  }
+  // checkIfModelIsDownloaded(modelName: string) {
+  //   const findModel = this.downloadedModels && this.downloadedModels.find(el => el.name === modelName);
+  //   return findModel !== undefined ? true : false;
+  // }
 
   createUserAttribute() {
     const attributeType = this.dataTypesArray.find((type) => type.name === this.settingModals.attribute.type).value;
@@ -915,26 +923,28 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
   }
   changeAttributeName(event: any) {
     this.settingModals.attribute.name = toPythonFunctionName(event.target.value);
-    const findDuplicate = this.attributes.find(att => att.name == event.target.value);
+    const findDuplicate = this.dataHandlerHelper.attributesArray.getRawValue().find(att => att.name == event.target.value);
     this.settingModals.attribute.duplicateNameExists = findDuplicate != undefined ? true : false;
   }
 
   openModalAttribute() {
     this.settingModals.attribute.open = true;
     this.settingModals.attribute.name = this.findFreeAttributeName();
+    this.dataHandlerHelper.focusModalInputBox('attributeName');
   }
 
   findFreeAttributeName(): string {
+    const attributes = this.dataHandlerHelper.attributesArray.getRawValue();
     const regEx = "^attribute_([0-9]+)$"
     let counterList = [];
-    for (const item of this.attributes) {
+    for (const item of attributes) {
       const match = item.name.match(regEx);
       if (match) counterList.push(parseInt(match[1]));
     }
-    return "attribute_" + (counterList.length > 0 ? (Math.max(...counterList) + 1) : (this.attributes.length + 1));
+    return "attribute_" + (counterList.length > 0 ? (Math.max(...counterList) + 1) : (attributes.length + 1));
   }
 
-  setLabelingTaskTarget(id: string) {
-    this.settingModals.labelingTask.create.taskId = id;
-  }
+  // setLabelingTaskTarget(id: string) {
+  //   this.settingModals.labelingTask.create.taskId = id;
+  // }
 }

@@ -115,7 +115,7 @@ export class ZeroShotDetailsComponent
     this.subscriptions$.push(project$.subscribe((project) => this.project = project));
     forkJoin(tasks$).subscribe(() => this.prepareInformationSource(projectId));
 
-    [this.downloadedModelsQuery$, this.downloadedModelsList$] = this.informationSourceApolloService.getModelProviderInfo();
+    [this.downloadedModelsQuery$, this.downloadedModelsList$] = this.projectApolloService.getModelProviderInfo();
     this.subscriptions$.push(
       this.downloadedModelsList$.subscribe((downloadedModels) => {
         this.downloadedModels = downloadedModels;

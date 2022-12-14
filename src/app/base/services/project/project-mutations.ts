@@ -270,6 +270,21 @@ mutation ($projectId: ID!, $name: String!, $expiresAt: String!, $scope: String!)
   }
 }
 
-`
+`,
+  MODEL_PROVIDER_DELETE_MODEL: gql`
+mutation($modelName: String!) {
+  modelProviderDeleteModel(modelName: $modelName) {
+    ok
+  }
+}
+`,
+
+  MODEL_PROVIDER_DOWNLOAD_MODEL: gql`
+mutation($modelName: String!) {
+modelProviderDownloadModel(modelName: $modelName) {
+  ok
+}
+}
+`,
 
 };

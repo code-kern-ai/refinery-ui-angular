@@ -1,1 +1,126 @@
-<p>data-schema works!</p>
+<div class="text-lg leading-6 text-gray-900 font-medium inline-block">
+    Data schema
+</div>
+<div class="mt-1">
+    <div class="text-sm leading-5 font-medium text-gray-700 inline-block">
+        This schema holds the data structure of your project.
+        It contains the attributes uploaded on project creation and the added calculated attributes.
+    </div>
+    <div class="">
+        <div class="">
+            <div class="inline-block min-w-full align-middle">
+                <form [formGroup]="attributesSchema" class="shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+                    <table formArrayName="attributes" class="min-w-full divide-y divide-gray-300">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col"
+                                    class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                    Name</th>
+                                <th scope="col"
+                                    class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                    Data Type</th>
+                                <th scope="col"
+                                    class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                    <div class="flex flex-row flex-nowrap items-center justify-center leading-3">
+                                        <span>Primary Key</span>
+                                        <div class="inline-block w-4 h-3.5">
+                                            <ng-template [ngIf]="pKeyValid!=null">
+                                                <div *ngIf="pKeyValid" data-tip="Key combination is unique"
+                                                    class="tooltip tooltip-bottom normal-case relative"
+                                                    style="top:-2px">
+                                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                                        class="inline-block w-4 h-4 stroke-current" fill="none"
+                                                        viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2" d="M5 13l4 4L19 7" />
+                                                    </svg>
+                                                </div>
+
+                                                <div *ngIf="pKeyValid == false" data-tip="Key combination isn't unique!"
+                                                    class="tooltip tooltip-bottom normal-case">
+                                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                                        class="inline-block w-4 h-4 stroke-current" fill="none"
+                                                        viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                                    </svg>
+                                                </div>
+                                            </ng-template>
+                                        </div>
+                                    </div>
+                                </th>
+                                <th scope="col"
+                                    class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                    State
+                                </th>
+                                <th scope="col"
+                                    class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                    Visibility
+                                </th>
+                                <th scope="col"
+                                    class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                    Modify
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            <tr *ngFor="let attributeContainer of attributesArray.controls; let j = index"
+                                [ngClass]="j%2!=0 ? 'bg-gray-50':'bg-white'" [formGroupName]="j">
+                                <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                    {{attributeContainer.get("name").value}}
+                                </td>
+                                <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                    {{attributeContainer.get('dataTypeName').value}}
+                                </td>
+                                <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                    <label class="cursor-pointer">
+                                        <input formControlName="isPrimaryKey" type="checkbox">
+                                    </label>
+                                </td>
+                                <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                    <kern-heuristic-statuses [status]="attributeContainer.get('state').value"
+                                        page="attributes" initialCaption="Registered">
+                                    </kern-heuristic-statuses>
+                                </td>
+                                <td class="text-center px-3 py-2 text-sm text-gray-500">
+                                    <div class="inline-block">
+                                        <kern-dropdown [dropdownOptions]="{
+                                            optionArray: attributeVisibilityStates,
+                                            buttonCaption: attributeVisibilityStates[attributeContainer.get('visibilityIndex').value].name,
+                                            valuePropertyPath: 'value',
+                                            hasFullWidth: true,
+                                            width: '170px',
+                                            optionTooltips: tooltipsArray,
+                                            tooltipMaxWidthClass: 'tooltip_max_width_200',
+                                            emitIndex:true
+                                        }"
+                                            (optionClicked)="attributeContainer.get('visibilityIndex').setValue($event);">
+                                        </kern-dropdown>
+                                    </div>
+
+                                </td>
+                                <td class="text-center px-3 py-2 text-sm text-gray-500">
+                                    <button type="button"
+                                        [routerLink]="['../attributes/' + attributeContainer.get('id').value]"
+                                        *ngIf="attributeContainer.get('userCreated').value; else notChangeable"
+                                        class="text-green-800 text-sm font-medium">
+                                        <span class="leading-5">Details</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                                        </svg>
+                                    </button>
+                                    <ng-template #notChangeable>
+                                        <label class="text-gray-500 italic">Not changeable</label>
+                                    </ng-template>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

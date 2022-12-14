@@ -533,6 +533,20 @@ query ($projectId: ID!, $exportOptions: JSONString) {
   query ($projectId: ID!, $recordIds: [ID]!) {
     recordComments(projectId: $projectId, recordIds: $recordIds)
   }
-  `
+  `,
+
+  GET_MODEL_PROVIDER_INFO: gql`
+  query{
+    modelProviderInfo {
+      name
+      revision
+      link
+      date
+      size
+      status
+      zeroShotPipeline
+    }
+  }
+  `,
 
 };

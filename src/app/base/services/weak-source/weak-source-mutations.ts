@@ -115,20 +115,4 @@ export const mutations = {
   }
   
   `,
-
-  MODEL_PROVIDER_DELETE_MODEL: gql`
-    mutation($modelName: String!) {
-      modelProviderDeleteModel(modelName: $modelName) {
-        ok
-      }
-    }
-`,
-
-  MODEL_PROVIDER_DOWNLOAD_MODEL: gql`
-  mutation($modelName: String!) {
-    modelProviderDownloadModel(modelName: $modelName) {
-      ok
-    }
-}
-`,
 };
