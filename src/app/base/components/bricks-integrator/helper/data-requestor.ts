@@ -1,21 +1,28 @@
+import { timer } from "rxjs";
 import { first } from "rxjs/operators";
 import { LabelingTask, LabelingTaskTarget } from "src/app/base/enum/graphql-enums";
 import { KnowledgeBasesApolloService } from "src/app/base/services/knowledge-bases/knowledge-bases-apollo.service";
 import { NotificationService } from "src/app/base/services/notification.service";
 import { ProjectApolloService } from "src/app/base/services/project/project-apollo.service";
+import { BricksIntegratorComponent } from "../bricks-integrator.component";
 import { isoCodes, mostRelevant } from "./language-iso";
 
 
 export class BricksDataRequestor {
     private projectApolloService: ProjectApolloService;
     private knowledgeBaseApollo: KnowledgeBasesApolloService;
+    private base: BricksIntegratorComponent
     private projectId: string;
     private attributes: any[];
     private labelingTasks: any[];
     private embeddings: any[];
     private lookupLists: any[];
 
-    constructor(projectApolloService: ProjectApolloService, knowledgeBaseApollo: KnowledgeBasesApolloService, projectId: string) {
+
+    private pauseTaskFetch: boolean = false;
+
+    constructor(projectApolloService: ProjectApolloService, knowledgeBaseApollo: KnowledgeBasesApolloService, projectId: string, base: BricksIntegratorComponent) {
+        this.base = base;
         this.projectApolloService = projectApolloService;
         this.knowledgeBaseApollo = knowledgeBaseApollo;
         this.projectId = projectId;
@@ -50,10 +57,13 @@ export class BricksDataRequestor {
         vc.pipe(first()).subscribe(att => this.attributes = att);
     }
 
-    private fetchLabelingTasks() {
+    private fetchLabelingTasks(doAfter?: () => void) {
         let q, vc;
         [q, vc] = this.projectApolloService.getLabelingTasksByProjectId(this.projectId);
-        vc.pipe(first()).subscribe(lt => this.labelingTasks = lt);
+        vc.pipe(first()).subscribe(lt => {
+            this.labelingTasks = lt;
+            if (doAfter) doAfter();
+        });
     }
 
     private fetchEmbeddings() {
@@ -95,15 +105,16 @@ export class BricksDataRequestor {
         return filtered;
     }
 
-    public getLabelingTaskName(labelingTaskId: string) {
+    public getLabelingTaskAttribute(labelingTaskId: string, attribute: string) {
         if (!this.labelingTasks) {
             console.log("labeling Tasks not yet loaded");
             return null;
         }
         let filtered = this.labelingTasks.find(lt => lt.id == labelingTaskId);
-        if (filtered) return filtered.name;
+        if (filtered) return filtered[attribute];
         else return null;
     }
+
     public getLabels(labelingTaskId: string): any[] {
         if (!this.labelingTasks) {
             console.log("labeling Tasks not yet loaded");
@@ -145,7 +156,7 @@ export class BricksDataRequestor {
         if (msgParts[1] == 'attributes_updated' || (msgParts[1] == 'calculate_attribute' && msgParts[2] == 'created')) {
             this.fetchAttributes();
         } else if (['label_created', 'label_deleted', 'labeling_task_deleted', 'labeling_task_updated', 'labeling_task_created'].includes(msgParts[1])) {
-            this.fetchLabelingTasks();
+            if (!this.pauseTaskFetch) this.fetchLabelingTasks();
         } else if (msgParts[1] == 'embedding_deleted') {
             this.fetchEmbeddings();
         } else if (msgParts[1] == 'embedding' && msgParts[3] == "state" && msgParts[4] == "FINISHED") {
@@ -155,4 +166,33 @@ export class BricksDataRequestor {
         }
 
     }
+
+    public createNewLabelingTask(taskName: string, includedLabels: string[]) {
+        if (!includedLabels.length) return;
+        this.pauseTaskFetch = true;
+        const taskType = 'MULTICLASS_CLASSIFICATION';// currently only option since extraction would require a new attribute as well!!
+        let nameExists, finalTaskName = taskName;
+
+        let c = 0;
+        while ((nameExists = !!this.labelingTasks.find(lt => lt.name == finalTaskName))) {
+            finalTaskName = taskName + " " + ++c;
+        }
+        this.projectApolloService.addLabelingTaskAndLabels(this.projectId, finalTaskName, taskType, null, includedLabels).pipe(first()).subscribe((r: any) => {
+            const taskId = r.data?.createTaskAndLabels?.taskId;
+            if (taskId) {
+                this.fetchLabelingTasks(() => {
+                    this.base.selectDifferentTask(taskId);
+                    this.pauseTaskFetch = false;
+                })
+            }
+        });
+    }
+    public createMissingLabels(taskId: string, missingLabels: string[]) {
+        if (!missingLabels.length) return;
+        this.projectApolloService.createLabels(this.projectId, taskId, missingLabels).pipe(first()).subscribe((r: any) => this.fetchLabelingTasks(() => {
+            this.base.selectDifferentTask(taskId);
+            this.pauseTaskFetch = false;
+        }));
+    }
+
 }

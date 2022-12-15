@@ -1,7 +1,7 @@
 import { capitalizeFirst, enumToArray, getPythonFunctionName, isStringTrue } from "src/app/util/helper-functions"
 import { BricksIntegratorComponent } from "../bricks-integrator.component"
 import { BricksVariableComment, isCommentTrue } from "./comment-lookup";
-import { BricksVariable, bricksVariableNeedsTaskId, BricksVariableType, getEmptyBricksVariable } from "./type-helper";
+import { BricksExpectedLabels, BricksVariable, bricksVariableNeedsTaskId, BricksVariableType, ExpectedLabel, getEmptyBricksExpectedLabels, getEmptyBricksVariable } from "./type-helper";
 //currently included python types are: int, float, str, bool, list
 
 export class BricksCodeParser {
@@ -13,11 +13,16 @@ export class BricksCodeParser {
     filterTypes: string[];
     labelingTaskName: string;
 
+    labelingTasks: any[];
+    expected: BricksExpectedLabels = getEmptyBricksExpectedLabels();
+
     constructor(private base: BricksIntegratorComponent) {
         this.filterTypes = enumToArray(BricksVariableType).filter(x => x != BricksVariableType.UNKNOWN && !x.startsWith("GENERIC"));
     }
     public prepareCode() {
         this.errors = [];
+        this.expected = getEmptyBricksExpectedLabels();
+
         this.baseCode = this.base.config.api.data.data.attributes.sourceCode;
         this.globalComments = this.collectGlobalComment();
         this.functionName = getPythonFunctionName(this.baseCode);
@@ -33,9 +38,8 @@ export class BricksCodeParser {
             this.errors.push(error);
             console.log("couldn't parse code", error);
         }
-
-        if (this.base.labelingTaskId) this.labelingTaskName = this.base.dataRequestor.getLabelingTaskName(this.base.labelingTaskId);
-
+        if (this.base.labelingTaskId) this.labelingTaskName = this.base.dataRequestor.getLabelingTaskAttribute(this.base.labelingTaskId, 'name');
+        this.labelingTasks = this.base.dataRequestor.getLabelingTasks();
     }
 
     public replaceVariables() {
@@ -47,10 +51,97 @@ export class BricksCodeParser {
         }
         this.base.config.preparedCode = replacedCode;
         this.extendCodeForRecordIde();
+        this.extendCodeForLabelMapping();
         this.base.config.codeFullyPrepared = this.variables.every(v => v.optional || (v.values.length > 0 && v.values.every(va => va != null)));
         this.base.config.canAccept = this.base.config.codeFullyPrepared;
 
     }
+
+    private parseExpectedLabelsComment(comment: string): string {
+        if (!comment) return "";
+        const labelStringMatch = comment.match(/\[(.*?)\]/);
+        if (this.base.labelingTaskId) {
+            if (labelStringMatch && labelStringMatch.length > 1) {
+                const labels = labelStringMatch[1].split(",").map(x => x.replace(/\"/g, "").trim());
+                if (labels && labels.length > 0) {
+
+                    this.expected.expectedTaskLabels = [];
+                    const existingLabels = this.base.dataRequestor.getLabels(this.base.labelingTaskId);
+                    for (const label of labels) {
+                        const existingLabel = existingLabels.find(x => x.name == label);
+                        this.expected.expectedTaskLabels.push({
+                            label: label,
+                            exists: !!existingLabel,
+                            backgroundColor: 'bg-' + (existingLabel ? existingLabel.color : 'gray') + '-100',
+                            textColor: 'text-' + (existingLabel ? existingLabel.color : 'gray') + '-700',
+                            borderColor: 'border-' + (existingLabel ? existingLabel.color : 'gray') + '-400'
+                        });
+                    }
+                    this.expected.expectedTaskLabels.sort((a, b) => (-a.exists) - (-b.exists) || a.label.localeCompare(b.label));
+                    this.expected.labelsToBeCreated = this.expected.expectedTaskLabels.filter(x => !x.exists).length;
+                    this.expected.labelWarning = !this.expected.expectedTaskLabels[this.expected.expectedTaskLabels.length - 1].exists;
+                    this.expected.canCreateTask = this.base.dataRequestor.getLabelingTaskAttribute(this.base.labelingTaskId, 'taskType') == 'MULTICLASS_CLASSIFICATION';
+                }
+                return ""; //task creation logic handled differently
+            }
+        } else {
+            if (labelStringMatch && labelStringMatch.length > 0) {
+                return "Will return " + labelStringMatch[0];
+            }
+        }
+        return comment;
+    }
+
+    public activeLabelMapping() {
+        this.expected.availableLabels = this.base.dataRequestor.getLabels(this.base.labelingTaskId);
+        this.expected.labelMappingActive = true;
+        for (const label of this.expected.expectedTaskLabels) {
+            label.mappedLabel = label.exists ? label.label : null;
+        }
+        this.replaceVariables();
+    }
+
+    private extendCodeForLabelMapping() {
+        if (!this.expected.labelMappingActive) return;
+        if (this.functionName == null || this.functionName == "@@unknown@@") return;
+        const isExtractor = this.base.config.api.data.data.attributes.moduleType == "extractor";
+
+        const currentFunctionLine = 'def ' + this.functionName + '(record):';
+
+        let functionWrapper = currentFunctionLine + "\n";
+        functionWrapper += "    #this is a wrapper to map the labels according to your specifications\n";
+        if (isExtractor) {
+            functionWrapper += "    for (result, start, end) in bricks_base_function(record):\n";
+        } else {
+            functionWrapper += "    result = bricks_base_function(record)\n";
+        }
+        functionWrapper += (isExtractor ? "    " : "") + "    if result in my_custom_mapping:\n";
+        functionWrapper += (isExtractor ? "    " : "") + "        result = my_custom_mapping[result]\n";
+        let mappingDict = "\n#generated by the bricks integrator\n";
+        mappingDict += "my_custom_mapping = {\n";
+        for (const label of this.expected.expectedTaskLabels) {
+            if (label.mappedLabel != label.label) {
+                if (label.mappedLabel == null) {
+                    mappingDict += '    "' + label.label + '":None';
+                } else {
+                    mappingDict += '    "' + label.label + '":"' + label.mappedLabel + '"';
+                }
+                mappingDict += ",\n";
+            }
+
+        }
+        mappingDict += "}";
+        functionWrapper += (isExtractor ? "    " : "") + "    if result:\n";
+        if (isExtractor) {
+            functionWrapper += "            yield (result, start, end)\n";
+        }
+        else {
+            functionWrapper += "        return result\n";
+        }
+        functionWrapper += "\ndef bricks_base_function(record):";
+        this.base.config.preparedCode = this.base.config.preparedCode.replace(currentFunctionLine, functionWrapper) + mappingDict;
+    }
+
 
     private extendCodeForRecordIde() {
         if (!this.base.forIde) return;
@@ -72,7 +163,10 @@ export class BricksCodeParser {
             const line = lines[i].trim();
             if (line.startsWith("def ")) break;
             if (line.startsWith("#")) {
-                const tmpLine = line.replace("#", "").trim();
+                let tmpLine = line.replace("#", "").trim();
+                if (isCommentTrue(tmpLine, BricksVariableComment.TASK_REQUIRED_LABELS)) {
+                    tmpLine = this.parseExpectedLabelsComment(tmpLine);
+                }
                 const idx = tmpLine.indexOf("[");
                 if (idx > 0) {
                     const parts = tmpLine.split("[").map((x, i) => (i == 0 ? x : "[" + x).trim());

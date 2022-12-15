@@ -35,6 +35,7 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
   //for values
   @Input() labelingTaskId: string;
   @Output() preparedCode = new EventEmitter<string | any>();
+  @Output() newTaskId = new EventEmitter<string>();
 
   @ViewChild("searchInput") searchInput: ElementRef;
 
@@ -52,7 +53,7 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
     this.initConfig();
     this.codeParser = new BricksCodeParser(this);
     const projectId = findProjectIdFromRoute(this.activatedRoute)
-    this.dataRequestor = new BricksDataRequestor(this.projectApolloService, this.knowledgeBaseApollo, projectId);
+    this.dataRequestor = new BricksDataRequestor(this.projectApolloService, this.knowledgeBaseApollo, projectId, this);
   }
   ngOnDestroy(): void {
     this.dataRequestor.unsubscribeFromWebsocket();
@@ -276,5 +277,39 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
     }
     this.codeParser.replaceVariables();
   }
+
+  createNewLabelingTask() {
+    this.dataRequestor.createNewLabelingTask(this.config.api.data.data.attributes.name, this.codeParser.expected.expectedTaskLabels.map(x => x.label));
+  }
+  addMissingLabelsToTask() {
+    if (!this.labelingTaskId) return;
+    const missing = this.codeParser.expected.expectedTaskLabels.filter(x => !x.exists).map(x => x.label);
+    this.dataRequestor.createMissingLabels(this.labelingTaskId, missing);
+  }
+
+  selectDifferentTask(taskId: string) {
+    if (this.labelingTaskId == taskId) {
+      this.codeParser.prepareCode();
+      return;
+    }
+
+    const currentTaskType = this.dataRequestor.getLabelingTaskAttribute(this.labelingTaskId, "taskType");
+    const newTaskType = this.dataRequestor.getLabelingTaskAttribute(taskId, "taskType");
+    this.labelingTaskId = taskId;
+    if (currentTaskType != newTaskType) {
+      this.moduleTypeFilter = newTaskType == 'MULTICLASS_CLASSIFICATION' ? 'classifier' : 'extractor'
+      this.config.api.data = null;
+      this.config.page = IntegratorPage.SEARCH;
+      this.requestSearch();
+      this.searchInput.nativeElement.value = "";
+      this.searchInput.nativeElement.focus();
+    } else {
+      this.codeParser.prepareCode();
+    }
+
+
+    if (this.newTaskId.observers.length > 0) this.newTaskId.emit(taskId);
+  }
+
 
 }

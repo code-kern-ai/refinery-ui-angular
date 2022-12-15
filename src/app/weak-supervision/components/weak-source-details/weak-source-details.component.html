@@ -119,6 +119,7 @@
                         *ngIf="informationSource.informationSourceType == 'LABELING_FUNCTION'">
                         <div class="flex flex-row flex-nowrap items-center ml-auto">
                             <kern-bricks-integrator (preparedCode)="codeFormCtrl.setValue($event);isInitialLf=false"
+                                (newTaskId)="setValueToLabelingTask($event)"
                                 [moduleTypeFilter]="labelingTasks.get(labelingTaskControl.value).taskType == 'MULTICLASS_CLASSIFICATION' ?'classifier':'extractor'"
                                 [executionTypeFilter]="informationSource.informationSourceType == 'LABELING_FUNCTION'? 'pythonFunction':'activeLearner'"
                                 [labelingTaskId]="labelingTaskControl.value">
