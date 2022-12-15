@@ -5,15 +5,13 @@ import {
   Input,
   OnDestroy,
   OnInit,
-  OnChanges,
-  SimpleChanges,
 } from '@angular/core';
 
 @Directive({
   selector: '[hover-group], [hover-group-class]',
 })
-export class HoverGroupDirective implements OnDestroy, OnInit, OnChanges {
-  constructor(public elementRef: ElementRef) {}
+export class HoverGroupDirective implements OnDestroy, OnInit {
+  constructor(public elementRef: ElementRef) { }
   //caution! the first group is the main group and used to highlight corresponding elements
   //the other provided groups are only meant as additional highlight conditions
   @Input('hover-group') hoverGroup: any;
@@ -54,10 +52,6 @@ export class HoverGroupDirective implements OnDestroy, OnInit, OnChanges {
     for (const g of this.finalGroups) HoverGroupElementRefs.push(g, this);
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    // throw new Error('Method not implemented.');
-    // changes.
-  }
 }
 
 class HoverGroupElementRefs {

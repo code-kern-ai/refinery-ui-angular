@@ -84,3 +84,10 @@ export enum LabelingTaskTarget {
     ON_ATTRIBUTE = "ON_ATTRIBUTE",
     ON_WHOLE_RECORD = "ON_WHOLE_RECORD"
 }
+
+
+export enum UserRole {
+    EXPERT = "EXPERT",
+    ANNOTATOR = "ANNOTATOR",
+    ENGINEER = "ENGINEER"
+}

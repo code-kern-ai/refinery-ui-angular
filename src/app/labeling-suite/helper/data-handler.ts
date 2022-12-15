@@ -1,7 +1,7 @@
 import { combineLatest, Observable, Subscription } from "rxjs";
 import { first, map } from "rxjs/operators";
 import { CommentDataManager, CommentType } from "src/app/base/components/comment/comment-helper";
-import { InformationSourceReturnType } from "src/app/base/enum/graphql-enums";
+import { InformationSourceReturnType, UserRole } from "src/app/base/enum/graphql-enums";
 import { NotificationService } from "src/app/base/services/notification.service";
 import { ProjectApolloService } from "src/app/base/services/project/project-apollo.service";
 import { RecordApolloService } from "src/app/base/services/record/record-apollo.service";
@@ -29,6 +29,7 @@ export class LabelingDataHandler {
 
     //public accessible data
     public mainUser: UserData;
+    public currentRole: UserRole;
     public allUsers: UserData[];
 
     //private data for config
@@ -47,6 +48,7 @@ export class LabelingDataHandler {
         this.baseComponent = baseComponent;
 
         UserManager.registerAfterInitActionOrRun(this, this.prepareUserData, true);
+
         NotificationService.subscribeToNotification(this, {
             projectId: projectId,
             whitelist: this.getWebsocketWhitelist(),
@@ -61,14 +63,16 @@ export class LabelingDataHandler {
         this.mainUser = {
             data: user,
             avatarUri: getUserAvatarUri(user),
-            isLoggedInUser: true,
+            isLoggedInUser: true
         }
         this.allUsers = UserManager.getAllUsers().map(u => ({
             data: u,
             avatarUri: getUserAvatarUri(u),
             isLoggedInUser: u.id == this.mainUser.data.id
         }));
+        UserManager.registerRoleChangeListenerAndRun(this, () => this.currentRole = UserManager.currentRole);
     }
+
 
     // private getWebsocketWhitelist(): string[] {
     //     const toReturn = ['attributes_updated', 'calculate_attribute'];
@@ -90,8 +94,9 @@ export class LabelingDataHandler {
         toReturn.push(...['access_link_changed', 'access_link_removed']);
         return toReturn;
     }
-    public unsubscribeFromWebsocket() {
+    public destroyToDos() {
         NotificationService.unsubscribeFromNotification(this);
+        UserManager.unregisterRoleChangeListener(this);
     }
 
     private fetchAttributes() {

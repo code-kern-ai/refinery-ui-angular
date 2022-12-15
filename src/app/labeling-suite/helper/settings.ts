@@ -7,3 +7,6 @@ export function getDefaultLabelingSuiteSettings(): LabelingSuiteSettings {
         showHeuristic: false
     }
 }
+
+
+//maybe a full blown class?

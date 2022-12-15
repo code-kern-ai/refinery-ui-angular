@@ -4,9 +4,11 @@ import {
   CommentDataManager,
   CommentType,
 } from 'src/app/base/components/comment/comment-helper';
+import { UserRole } from 'src/app/base/enum/graphql-enums';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { RecordApolloService } from 'src/app/base/services/record/record-apollo.service';
 import { findProjectIdFromRoute } from 'src/app/util/helper-functions';
+import { UserManager } from 'src/app/util/user-manager';
 import { LabelingDataHandler } from '../helper/data-handler';
 import { getDefaultLabelingSuiteSettings, LabelingSuiteSettings } from '../helper/settings';
 import { LabelingSuiteOverviewTableComponent } from '../sub-components/overview-table/overview-table.component';
@@ -18,10 +20,18 @@ import { LabelingSuiteOverviewTableComponent } from '../sub-components/overview-
 })
 export class LabelingSuiteComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  dataHandler: LabelingDataHandler;
+
+  //HTML enums
+  userRoleEnum: typeof UserRole = UserRole;
+
+
+  //class/variables
+  dm: LabelingDataHandler;
   projectId: string;
-  @ViewChild(LabelingSuiteOverviewTableComponent) overviewTable: LabelingSuiteOverviewTableComponent;
   settings: LabelingSuiteSettings;
+
+  //children
+  @ViewChild(LabelingSuiteOverviewTableComponent) overviewTable: LabelingSuiteOverviewTableComponent;
 
   constructor(
     private router: Router,
@@ -31,7 +41,7 @@ export class LabelingSuiteComponent implements OnInit, AfterViewInit, OnDestroy 
 
 
   ngOnDestroy() {
-    this.dataHandler.unsubscribeFromWebsocket();
+    this.dm.destroyToDos();
     localStorage.setItem("labelingSuiteSettings", JSON.stringify(this.prepareDataForSave()));
   }
 
@@ -43,11 +53,16 @@ export class LabelingSuiteComponent implements OnInit, AfterViewInit, OnDestroy 
       return;
     }
 
-    this.dataHandler = new LabelingDataHandler(this.projectId, this.projectApolloService, this.recordApolloService, this);
-    const recordId = '10596828-ca39-47d8-b55a-cbafe3fb6e45';//'c1211488-6718-4d08-be76-58019ba909a1';
-    this.dataHandler.collectRecordData(recordId);
+    this.dm = new LabelingDataHandler(this.projectId, this.projectApolloService, this.recordApolloService, this);
+    const recordId = 'c58430f5-c9fe-4e3d-9324-cae2d61b7cbc';
+    this.dm.collectRecordData(recordId);
+
+    // console.log("add very first time info (+arcade link?)")
   }
+
   ngAfterViewInit(): void {
+    //too early to load since subcomponents are not initialized/ existing yet
+    //maybe loading should only load instance in this component and then run remaining on init event?
     this.loadSettings();
   }
 
@@ -80,6 +95,26 @@ export class LabelingSuiteComponent implements OnInit, AfterViewInit, OnDestroy 
 
   public setOverviewTableData(data: any[]) {
     this.overviewTable.prepareDataToDisplay(data);
+  }
+
+
+
+  public goToRecordIde() {
+    throw new Error("Method not implemented.");
+    // const sessionId = this.labelingLinkData.id;
+    // const pos = this.labelingLinkData.requestedPos;
+
+    // this.router.navigate(["projects", this.project.id, "record-ide", sessionId], { queryParams: { pos: pos } });
+  }
+
+  public nextRecord() {
+    throw new Error("Method not implemented.");
+
+  }
+
+  public previousRecord() {
+    throw new Error("Method not implemented.");
+
   }
 
 }
