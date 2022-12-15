@@ -38,8 +38,10 @@ export class BricksCodeParser {
             this.errors.push(error);
             console.log("couldn't parse code", error);
         }
-        if (this.base.labelingTaskId) this.labelingTaskName = this.base.dataRequestor.getLabelingTaskAttribute(this.base.labelingTaskId, 'name');
-        this.labelingTasks = this.base.dataRequestor.getLabelingTasks();
+        if (this.base.labelingTaskId) {
+            this.labelingTaskName = this.base.dataRequestor.getLabelingTaskAttribute(this.base.labelingTaskId, 'name');
+            this.labelingTasks = this.base.dataRequestor.getLabelingTasks();
+        }
     }
 
     public replaceVariables() {

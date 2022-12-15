@@ -256,9 +256,9 @@
                                 clip-rule="evenodd" />
                         </svg>
                     </div>
-                    <label class="text-sm cursor-pointer -mt-1">Your selected task doesn't have all necessary
+                    <label class="text-sm -mt-1">Your selected task doesn't have all necessary
                         labels:</label>
-                    <div class="flex flex-row gap-x-2" style="max-width:30rem">
+                    <div class="flex flex-row gap-x-2 flex-wrap gap-2" style="max-width:30rem">
                         <span class="text-sm inline-flex items-center"
                             *ngFor="let label of codeParser.expected.expectedTaskLabels">
                             <label [ngClass]="[label.backgroundColor, label.textColor, label.borderColor]"
@@ -309,9 +309,9 @@
                                 clip-rule="evenodd" />
                         </svg>
                     </div>
-                    <label class="text-sm cursor-pointer -mt-1">All necessary labels found in
+                    <label class="text-sm -mt-1">All necessary labels found in
                         task:</label>
-                    <div class="flex flex-row gap-x-2" style="max-width:30rem">
+                    <div class="flex flex-row flex-wrap gap-2" style="max-width:30rem">
                         <span class="text-sm inline-flex items-center"
                             *ngFor="let label of codeParser.expected.expectedTaskLabels">
                             <label [ngClass]="[label.backgroundColor, label.textColor, label.borderColor]"
@@ -360,20 +360,23 @@
         <ng-template #displaySelectionHelper>
 
             <div class="grid grid-cols-3-max gap-x-2 gap-y-2 items-center pb-4 px-4">
-                <label class="font-bold col-start-1">Labeling Task</label>
-                <kern-dropdown [dropdownOptions]="{
+                <ng-template [ngIf]="codeParser.labelingTaskName">
+
+                    <label class="font-bold col-start-1">Labeling Task</label>
+                    <kern-dropdown [dropdownOptions]="{
                     optionArray:codeParser.labelingTasks,
                     buttonCaption:codeParser.labelingTaskName,
                     emitIndex:true
                 }" (optionClicked)="selectDifferentTask(codeParser.labelingTasks[$event].id)">
-                </kern-dropdown>
-                <div class="tooltip" data-tip="Switching a task will reset the integrator progress!">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                        stroke="currentColor" class="w-6 h-6">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-                    </svg>
-                </div>
+                    </kern-dropdown>
+                    <div class="tooltip" data-tip="Switching a task will reset the integrator progress!">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                        </svg>
+                    </div>
+                </ng-template>
                 <label class="font-bold">Variable</label>
                 <label class="font-bold">Value</label>
                 <div class="contents" *ngFor="let v of codeParser.variables;let i = index">
