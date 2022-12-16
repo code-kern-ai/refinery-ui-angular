@@ -18,10 +18,19 @@ export enum BricksVariableComment {
     /** @member {string} */
     /** no need to fill this variable to be considered finished. */
     GLOBAL_OPTIONAL = "optional",
+    /** @member {string} */
+    /** does this brick need some labels */
+    TASK_REQUIRED_LABELS = "expect, task, label",
 }
 
 export function isCommentTrue(comment: string, commentLookup: BricksVariableComment): boolean {
     if (!comment) return false;
-    return comment.includes(commentLookup);
+    if (commentLookup.includes(",")) {
+        const commentLookupArray = commentLookup.split(",");
+        for (let i = 0; i < commentLookupArray.length; i++) {
+            if (!comment.includes(commentLookupArray[i].trim())) return false;
+        }
+        return true;
+    } else return comment.includes(commentLookup);
 }
 
