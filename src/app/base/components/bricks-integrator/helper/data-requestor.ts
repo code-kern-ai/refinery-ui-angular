@@ -171,10 +171,10 @@ export class BricksDataRequestor {
         if (!includedLabels.length) return;
         this.pauseTaskFetch = true;
         const taskType = 'MULTICLASS_CLASSIFICATION';// currently only option since extraction would require a new attribute as well!!
-        let nameExists, finalTaskName = taskName;
+        let finalTaskName = taskName;
 
         let c = 0;
-        while ((nameExists = !!this.labelingTasks.find(lt => lt.name == finalTaskName))) {
+        while (!!this.labelingTasks.find(lt => lt.name == finalTaskName)) {
             finalTaskName = taskName + " " + ++c;
         }
         this.projectApolloService.addLabelingTaskAndLabels(this.projectId, finalTaskName, taskType, null, includedLabels).pipe(first()).subscribe((r: any) => {

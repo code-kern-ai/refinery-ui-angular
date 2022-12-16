@@ -22,6 +22,7 @@ export class BricksCodeParser {
     public prepareCode() {
         this.errors = [];
         this.expected = getEmptyBricksExpectedLabels();
+        if (!this.base.config.api.data) return;
 
         this.baseCode = this.base.config.api.data.data.attributes.sourceCode;
         this.globalComments = this.collectGlobalComment();
@@ -40,7 +41,8 @@ export class BricksCodeParser {
         }
         if (this.base.labelingTaskId) {
             this.labelingTaskName = this.base.dataRequestor.getLabelingTaskAttribute(this.base.labelingTaskId, 'name');
-            this.labelingTasks = this.base.dataRequestor.getLabelingTasks();
+            const taskType = this.base.dataRequestor.getLabelingTaskAttribute(this.base.labelingTaskId, 'taskType');
+            this.labelingTasks = this.base.dataRequestor.getLabelingTasks(taskType);
         }
     }
 

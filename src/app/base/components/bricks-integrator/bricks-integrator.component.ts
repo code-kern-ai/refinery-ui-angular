@@ -1,6 +1,6 @@
 
 import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { timer } from 'rxjs';
 import { first } from 'rxjs/operators';
@@ -48,6 +48,7 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
   constructor(private http: HttpClient, private projectApolloService: ProjectApolloService, private knowledgeBaseApollo: KnowledgeBasesApolloService,
     private activatedRoute: ActivatedRoute,) {
   }
+
   ngOnInit(): void {
     if (typeof this.forIde == 'string') this.forIde = isStringTrue(this.forIde);
     this.initConfig();
@@ -289,7 +290,7 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
 
   selectDifferentTask(taskId: string) {
     if (this.labelingTaskId == taskId) {
-      this.codeParser.prepareCode();
+      if (this.codeParser) this.codeParser.prepareCode();
       return;
     }
 
@@ -304,7 +305,7 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
       this.searchInput.nativeElement.value = "";
       this.searchInput.nativeElement.focus();
     } else {
-      this.codeParser.prepareCode();
+      if (this.codeParser) this.codeParser.prepareCode();
     }
 
 

@@ -6,6 +6,7 @@ import {
   ElementRef,
   AfterViewInit,
   QueryList,
+  ViewChild,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl } from '@angular/forms';
@@ -32,6 +33,7 @@ import { dataTypes } from 'src/app/util/data-types';
 import { KnowledgeBasesApolloService } from 'src/app/base/services/knowledge-bases/knowledge-bases-apollo.service';
 import { createDefaultHeuristicsDetailsModals, HeuristicsDetailsModals } from './weak-source-details-helper';
 import { AttributeVisibility } from 'src/app/projects/components/create-new-attribute/attributes-visibility-helper';
+import { BricksIntegratorComponent } from 'src/app/base/components/bricks-integrator/bricks-integrator.component';
 
 @Component({
   selector: 'kern-weak-source-details',
@@ -42,6 +44,7 @@ export class WeakSourceDetailsComponent
   implements OnInit, OnDestroy, AfterViewInit {
   @ViewChildren('descriptionArea') descriptionArea: QueryList<ElementRef>;
   @ViewChildren('nameArea') nameArea: QueryList<ElementRef>;
+  @ViewChild(BricksIntegratorComponent) bricksIntegrator: BricksIntegratorComponent;
 
   @ViewChildren('stickyHeader', { read: ElementRef }) stickyHeader: QueryList<ElementRef>;
   get LabelSourceType(): typeof LabelSource {
@@ -611,6 +614,7 @@ export class WeakSourceDetailsComponent
 
   setValueToLabelingTask(value) {
     this.labelingTaskControl.setValue(value);
+    if (this.bricksIntegrator) this.bricksIntegrator.selectDifferentTask(value);
   }
 
   getBackground(color) {
