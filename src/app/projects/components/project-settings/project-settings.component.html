@@ -1,5 +1,6 @@
-<div *ngIf="project$ | async as project" class="p-4 bg-gray-100 h-full overflow-y-auto flex-1 flex flex-col">
-    <kern-data-schema [project]="project" [dataTypesArray]="dataTypesArray" [settingModals]="settingModals">
+<div *ngIf="project" class="p-4 bg-gray-100 h-full overflow-y-auto flex-1 flex flex-col">
+    <kern-data-schema [project]="project" [attributeVisibilityStates]="attributeVisibilityStates"
+        [settingModals]="settingModals" [attributes]="attributes" [pKeyValid]="pKeyValid">
     </kern-data-schema>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-2 mt-1 align-top">
@@ -15,7 +16,7 @@
                 </label>
             </div>
 
-            <div class="tooltip tooltip-bottom" data-tip="Upload more records to the project">
+            <div #uploadButton class="tooltip tooltip-bottom" data-tip="Upload more records to the project">
                 <button [routerLink]="['../add']"
                     class="mr-1 inline-flex items-center px-2.5 py-2 border border-gray-300 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none cursor-pointer">
                     <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 h-4 w-4" fill="none" viewBox="0 0 24 24"
@@ -80,7 +81,9 @@
         </div>
     </div>
 
-    <kern-embeddings [settingModals]="settingModals" [project]="project" [isManaged]="isManaged"></kern-embeddings>
+    <kern-embeddings [embeddingHandlesMap]="embeddingHandlesMap"
+        [attributesArrayTextUsableUploaded]="attributesArrayTextUsableUploaded" [embeddings]="embeddings"
+        [settingModals]="settingModals" [project]="project" [isManaged]="isManaged"></kern-embeddings>
 
     <kern-labeling-tasks [settingModals]="settingModals" [project]="project"></kern-labeling-tasks>
 

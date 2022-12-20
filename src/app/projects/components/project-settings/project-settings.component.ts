@@ -1,8 +1,8 @@
 import { AfterViewInit, Component, ElementRef, HostListener, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { interval, Observable, Subscription, timer } from 'rxjs';
-import { debounceTime, distinctUntilChanged, first } from 'rxjs/operators';
+import { combineLatest, interval, Observable, Subscription, timer } from 'rxjs';
+import { debounceTime, distinctUntilChanged, first, flatMap, mergeMap } from 'rxjs/operators';
 import { LabelingTask, LabelingTaskTarget, labelingTaskToString } from 'src/app/base/enum/graphql-enums';
 import { NotificationService } from 'src/app/base/services/notification.service';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
@@ -20,6 +20,7 @@ import { createDefaultSettingModals, SettingModals } from './helper/modal-helper
 import { attributeVisibilityStates, getTooltipVisibilityState } from '../create-new-attribute/attributes-visibility-helper';
 import { DataHandlerHelper } from './helper/data-handler-helper';
 import { LabelingTasksComponent } from './components/labeling-tasks/labeling-tasks.component';
+import { DataSchemaComponent } from './components/data-schema/data-schema.component';
 
 @Component({
   selector: 'kern-project-settings',
@@ -54,6 +55,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
   project: any;
   // labelingTasksQuery$: any;
   attributesQuery$: any;
+  attributes$: any;
   subscriptions$: Subscription[] = [];
   embeddings: any;
   embeddingQuery$: any;
@@ -62,16 +64,18 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
   // isTaskNameUnique: boolean = true;
   tokenizationProgress: Number;
   downloadMessage: DownloadState = DownloadState.NONE;
+  embeddingHandlesMap: Map<string, any> = new Map<string, any>();
 
   get DownloadStateType(): typeof DownloadState {
     return DownloadState;
   }
 
+  // @ViewChild('dataSchema') dataSchema: DataSchemaComponent;
   // attributesArrayTextUsableUploaded: { id: string, name: string }[] = [];
   // attributesArrayUsableUploaded: { id: string, name: string }[] = [];
   // attributes;
   // pKeyCheckTimer;
-  // pKeyValid: boolean = null;
+  pKeyValid: boolean = null;
   // attributesSchema: FormGroup;
 
   // labelingTasksSchema = this.formBuilder.group({
@@ -84,12 +88,17 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
   // downloadedModelsQuery$: any;
   // downloadedModels: any[];
   isManaged: boolean = true;
-  // attributeVisibilityStates = attributeVisibilityStates;
+  attributeVisibilityStates = attributeVisibilityStates;
   // tooltipsArray: string[] = [];
 
   // lh: LabelHelper;
   settingModals: SettingModals = createDefaultSettingModals();
   dataHandlerHelper: DataHandlerHelper;
+  projectId: string;
+  attributes: any = [];
+  attributesArrayTextUsableUploaded: any[];
+  embeddings$: any;
+  suggestions$: any;
 
   get projectExportArray() {
     return this.settingModals.projectExport.projectExportSchema.get('attributes') as FormArray;
@@ -108,7 +117,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
     private s3Service: S3Service,
     private informationSourceApolloService: WeakSourceApolloService
   ) {
-    this.dataHandlerHelper = new DataHandlerHelper(this.formBuilder);
+    this.dataHandlerHelper = new DataHandlerHelper(this.formBuilder, this.projectApolloService);
   }
 
   // ngAfterViewInit() {
@@ -127,7 +136,35 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
 
     const projectId = this.activatedRoute.parent.snapshot.paramMap.get('projectId');
     [this.projectQuery$, this.project$] = this.projectApolloService.getProjectByIdQuery(projectId);
-    this.project$.subscribe((project) => this.project = project);
+    this.subscriptions$.push(this.project$.subscribe((project) => {
+      this.project = project;
+      [this.attributesQuery$, this.attributes$] = this.dataHandlerHelper.prepareAttributesRequest(projectId);
+      [this.embeddingQuery$, this.embeddings$] = this.dataHandlerHelper.prepareEmbeddingsRequest(projectId);
+      this.suggestions$ = this.projectApolloService.getRecommendedEncodersForEmbeddings(projectId);
+      let tasks$ = [];
+      tasks$.push(this.attributes$);
+      tasks$.push(this.embeddings$);
+      tasks$.push(this.suggestions$);
+
+      combineLatest(tasks$).subscribe((res: any[]) => {
+        // prepare attributes
+        this.attributes = res[0];
+        this.attributesArrayTextUsableUploaded = res[0];
+        this.attributes.forEach((attribute) => {
+          attribute.dataTypeName = this.dataTypesArray.find((type) => type.value === attribute?.dataType).name;
+          attribute.visibilityIndex = this.attributeVisibilityStates.findIndex((type) => type.value === attribute?.visibility);
+        });
+
+        // prepare embeddings
+        this.embeddings = res[1];
+        this.attributesArrayTextUsableUploaded = this.attributesArrayTextUsableUploaded.filter((attribute: any) => (attribute.state == 'UPLOADED' || attribute.state == 'AUTOMATICALLY_CREATED' || attribute.state == 'USABLE') && attribute.dataType == 'TEXT');
+
+        // prepare embedding suggestions
+        const onlyTextAttributes = this.attributes.filter(a => a.dataType == 'TEXT');
+        this.dataHandlerHelper.prepareEmbeddingFormGroup(onlyTextAttributes, this.settingModals, this.embeddings);
+        this.embeddingHandlesMap = this.dataHandlerHelper.prepareEmbeddingHandles(projectId, onlyTextAttributes, project.tokenizer, res[2]);
+      })
+    }));
 
     NotificationService.subscribeToNotification(this, {
       projectId: projectId,
@@ -135,11 +172,10 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
       func: this.handleWebsocketNotification
     });
     this.setUpCommentRequests(projectId);
-
-    // this.requestPKeyCheck(projectId);
     this.checkProjectTokenization(projectId);
 
 
+    this.pKeyValid = this.dataHandlerHelper.requestPKeyCheck(projectId);
 
     // [this.downloadedModelsQuery$, this.downloadedModelsList$] = this.informationSourceApolloService.getModelProviderInfo();
     // this.subscriptions$.push(
@@ -948,3 +984,5 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
   //   this.settingModals.labelingTask.create.taskId = id;
   // }
 }
+
+

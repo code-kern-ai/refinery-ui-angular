@@ -5,106 +5,101 @@
             <div class="text-sm leading-5 font-medium text-gray-700 inline-block">You can enrich your records
                 with
                 embeddings, e.g. to use them for vector search or active transfer learning.</div>
-            <div class="">
-                <div class="inline-block min-w-full align-middle">
-                    <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-                        <table class="min-w-full divide-y divide-gray-300">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th scope="col"
-                                        class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                        Name</th>
-                                    <th scope="col"
-                                        class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                        Type</th>
-                                    <th scope="col"
-                                        class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                        Status</th>
-                                    <th scope="col"
-                                        class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                        Dimensionality</th>
-                                    <th scope="col"
-                                        class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                        Count</th>
-                                    <th scope="col"
-                                        class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-200">
-                                <tr *ngFor="let embeddingContainer of embeddings; let j = index"
-                                    [ngClass]="j%2!=0 ? 'bg-gray-50':'bg-white'">
-                                    <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                        {{embeddingContainer.name}}
-                                    </td>
-                                    <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                        <div
-                                            class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
-                                            {{embeddingContainer.type == 'ON_ATTRIBUTE'?
-                                            'Attribute Specific' : 'Token Specific'}}
+            <div class="inline-block min-w-full align-middle">
+                <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+                    <table class="min-w-full divide-y divide-gray-300">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col"
+                                    class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                    Name</th>
+                                <th scope="col"
+                                    class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                    Type</th>
+                                <th scope="col"
+                                    class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                    Status</th>
+                                <th scope="col"
+                                    class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                    Dimensionality</th>
+                                <th scope="col"
+                                    class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                    Count</th>
+                                <th scope="col"
+                                    class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            <tr *ngFor="let embeddingContainer of embeddings; let j = index"
+                                [ngClass]="j%2!=0 ? 'bg-gray-50':'bg-white'">
+                                <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                    {{embeddingContainer.name}}
+                                </td>
+                                <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                    <div
+                                        class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
+                                        {{embeddingContainer.type == 'ON_ATTRIBUTE'?
+                                        'Attribute Specific' : 'Token Specific'}}
+                                    </div>
+                                </td>
+                                <td class="text-center px-3 text-sm text-gray-500"
+                                    [ngClass]="embeddingContainer.state != 'FINISHED' && embeddingContainer.state != 'FAILED' ? 'py-0' : 'whitespace-nowrap py-2'">
+                                    <ng-template
+                                        [ngIf]="embeddingContainer.state != 'FINISHED' && embeddingContainer.state != 'FAILED'">
+                                        <div class="items-center">
+                                            <progress class="progress progress-primary"
+                                                [value]="embeddingContainer.progress" max="1"></progress>
                                         </div>
-                                    </td>
-                                    <td class="text-center px-3 text-sm text-gray-500"
-                                        [ngClass]="embeddingContainer.state != 'FINISHED' && embeddingContainer.state != 'FAILED' ? 'py-0' : 'whitespace-nowrap py-2'">
-                                        <ng-template
-                                            [ngIf]="embeddingContainer.state != 'FINISHED' && embeddingContainer.state != 'FAILED'">
-                                            <div class="items-center">
-                                                <progress class="progress progress-primary"
-                                                    [value]="embeddingContainer.progress" max="1"></progress>
-                                            </div>
-                                            <p class="text-xs italic">{{embeddingContainer.state}}</p>
-                                        </ng-template>
+                                        <p class="text-xs italic">{{embeddingContainer.state}}</p>
+                                    </ng-template>
 
-                                        <div *ngIf="embeddingContainer.state === 'FINISHED'"
-                                            data-tip="Successfully created." class="tooltip">
-                                            <div
-                                                class="btn cursor-default btn-circle btn-xs no-animation btn-primary mx-2">
-                                                <svg xmlns="http://www.w3.org/2000/svg"
-                                                    class="inline-block w-4 h-4 stroke-current" fill="none"
-                                                    viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        stroke-width="2" d="M5 13l4 4L19 7" />
-                                                </svg>
-                                            </div>
-                                        </div>
-
-                                        <div *ngIf="embeddingContainer.state === 'FAILED'"
-                                            data-tip="Embedding creation ran into errors." class="tooltip">
-                                            <div
-                                                class="btn cursor-default btn-circle btn-xs no-animation btn-error mx-2">
-                                                <svg xmlns="http://www.w3.org/2000/svg"
-                                                    class="inline-block w-4 h-4 stroke-current" fill="none"
-                                                    viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        stroke-width="2"
-                                                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                                </svg>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                        {{embeddingContainer.dimension}}
-                                    </td>
-                                    <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                        {{embeddingContainer.count}}
-                                    </td>
-                                    <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                        <label
-                                            (click)="settingModals.embedding.delete = {open: true, id: embeddingContainer.id};"
-                                            class="modal-button btn btn-sm btn-ghost px-0">
-
+                                    <div *ngIf="embeddingContainer.state === 'FINISHED'"
+                                        data-tip="Successfully created." class="tooltip">
+                                        <div class="btn cursor-default btn-circle btn-xs no-animation btn-primary mx-2">
                                             <svg xmlns="http://www.w3.org/2000/svg"
-                                                class="inline-block w-6 h-6 stroke-current text-red-700" fill="none"
+                                                class="inline-block w-4 h-4 stroke-current" fill="none"
                                                 viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                    d="M5 13l4 4L19 7" />
                                             </svg>
-                                        </label>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                                        </div>
+                                    </div>
+
+                                    <div *ngIf="embeddingContainer.state === 'FAILED'"
+                                        data-tip="Embedding creation ran into errors." class="tooltip">
+                                        <div class="btn cursor-default btn-circle btn-xs no-animation btn-error mx-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="inline-block w-4 h-4 stroke-current" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                    {{embeddingContainer.dimension}}
+                                </td>
+                                <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                    {{embeddingContainer.count}}
+                                </td>
+                                <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                    <label
+                                        (click)="settingModals.embedding.delete = {open: true, id: embeddingContainer.id};"
+                                        class="modal-button btn btn-sm btn-ghost px-0">
+
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                            class="inline-block w-6 h-6 stroke-current text-red-700" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                    </label>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -171,7 +166,7 @@
         Add an embedding </div>
     <div class="mb-2 flex flex-grow justify-center text-sm text-gray-500">
         Pick from the below solutions to build a vector representation</div>
-    <div *ngIf="attributesArray && settingModals.embedding.create.embeddingCreationFormGroup">
+    <div *ngIf="attributesArrayTextUsableUploaded && settingModals.embedding.create.embeddingCreationFormGroup">
         <form [formGroup]="settingModals.embedding.create.embeddingCreationFormGroup"
             class="grid grid-cols-2  gap-2 items-center" style="grid-template-columns: max-content auto;">
             <div class="tooltip tooltip-right" data-tip="Choose attribute that will be encoded">
@@ -191,7 +186,7 @@
             </div><select formControlName="granularity" class="select select-bordered select-sm max-w-xs"
                 data-intercom-target="Settings Page Embedding Mask Granularity Selector"
                 (change)="checkForceHiddenHandles()">
-                <option *ngFor="let granularity of granularityTypesArray" [value]="granularity.value">
+                <option *ngFor="let granularity of dataHandlerHelper.granularityTypesArray" [value]="granularity.value">
                     {{granularity.name}}
                 </option>
             </select>
@@ -200,7 +195,7 @@
                         style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Configuration</span></span>
             </div>
             <div class="dropdown" data-intercom-target="Settings Page Embedding Mask Handle Selector With Suggestions"
-                *ngIf="embeddingHandlesMap.get(settingModals.embedding.create.embeddingCreationFormGroup.get('targetAttribute').value) as suggestions;else noSuggestions">
+                *ngIf="embeddingHandlesMap && embeddingHandlesMap.get(settingModals.embedding.create.embeddingCreationFormGroup.get('targetAttribute').value) as suggestions;else noSuggestions">
                 <div tabindex="0" class="flex flex-row select select-bordered select-sm pl-0 pr-8">
                     <input #inputEmbeddingHandle type="text" placeholder="Type to search..."
                         class="w-full font-bold input input-sm" style="outline:none; box-shadow:none;height:1.9rem;"

@@ -96,7 +96,6 @@ export class DropdownComponent implements OnChanges {
     if (this.dropdownOptions.isOptionDisabled && this.dropdownOptions.isOptionDisabled.length != this.dropdownOptions.optionArray.length) this.hasInputErrors = "array options != isOptionDisabled length\n";
     if (this.dropdownOptions.optionDescriptions && this.dropdownOptions.optionArray.length != this.dropdownOptions.optionDescriptions.length) this.hasInputErrors = "array options != optionDescriptions length\n";
     if (this.dropdownOptions.optionIcons && this.dropdownOptions.optionIcons.length != this.dropdownOptions.optionIcons.length) this.hasInputErrors = "array options != optionIcons length\n";
-    if (this.dropdownOptions.optionTooltips && this.dropdownOptions.optionTooltips.length != this.dropdownOptions.optionArray.length) this.hasInputErrors = "array options != optionTooltip length\n";
     if (this.dropdownOptions.backgroundColors && this.dropdownOptions.backgroundColors.length != this.dropdownOptions.optionArray.length) this.hasInputErrors = "array options != backgroundColors length\n";
 
     if (!this.dropdownOptions.buttonVersion) this.dropdownOptions.buttonVersion = "default";

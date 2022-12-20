@@ -9,7 +9,6 @@ import { ProjectApolloService } from 'src/app/base/services/project/project-apol
 import { DataHandlerHelper } from '../../helper/data-handler-helper';
 import { LabelHelper } from '../../helper/label-helper';
 import { SettingModals } from '../../helper/modal-helper';
-import { ProjectSettingsComponent } from '../../project-settings.component';
 
 @Component({
   selector: 'kern-labeling-tasks',
@@ -22,7 +21,7 @@ export class LabelingTasksComponent implements OnInit {
   @Input() settingModals: SettingModals;
   @ViewChildren('inputTaskName') inputTaskName: QueryList<ElementRef>;
 
-  private dataHandlerHelper;
+  dataHandlerHelper: DataHandlerHelper;
   labelingTasksQuery$: any;
   isTaskNameUnique: boolean = true;
   lh: LabelHelper;
@@ -42,7 +41,7 @@ export class LabelingTasksComponent implements OnInit {
   }
 
   constructor(private formBuilder: FormBuilder, private projectApolloService: ProjectApolloService) {
-    this.dataHandlerHelper = new DataHandlerHelper(this.formBuilder);
+    this.dataHandlerHelper = new DataHandlerHelper(this.formBuilder, this.projectApolloService);
     this.lh = new LabelHelper(this, this.projectApolloService);
     this.attributesArrayUsableUploaded = this.dataHandlerHelper.attributesArrayUsableUploaded;
   }
