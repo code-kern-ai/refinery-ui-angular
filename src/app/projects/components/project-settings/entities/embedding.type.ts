@@ -6,4 +6,6 @@ export type Embedding = {
     tokenizers: string[];
     hidden?: boolean;
     forceHidden?: boolean;
+    state?: string;
+    progress?: number;
 };

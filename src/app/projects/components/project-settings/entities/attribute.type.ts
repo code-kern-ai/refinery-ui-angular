@@ -11,6 +11,8 @@ export type Attribute = {
     state: string;
     logs: any[];
     relativePosition: number;
+    dataTypeName?: string;
+    visibilityIndex?: number;
 }
 
 export type AttributeVisibilityStates = {

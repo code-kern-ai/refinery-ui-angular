@@ -28,14 +28,16 @@ export class LabelingTasksComponent implements OnInit {
   requestTimeOut: boolean = false;
   attributesArrayUsableUploaded: { id: string, name: string }[] = [];
   subscriptions$: Subscription[] = [];
-  labelingTasksDropdownArray = [];
+  labelingTasksDropdownArray: { name: string, value: string }[] = [];
 
   labelingTasksSchema = this.formBuilder.group({
     labelingTasks: this.formBuilder.array([]),
   });
+
   get labelingTasksArray() {
     return this.labelingTasksSchema.get('labelingTasks') as FormArray;
   }
+
   get LabelingTaskType(): typeof LabelingTask {
     return LabelingTask;
   }
@@ -136,6 +138,7 @@ export class LabelingTasksComponent implements OnInit {
   openTaskName(task: FormGroup) {
     task.get("nameOpen").setValue(true);
   }
+
   checkTaskNameColor(target: HTMLInputElement) {
     if (this.isTaskNameUniqueCheck(target.value)) {
       target.style.color = null;
@@ -216,7 +219,7 @@ export class LabelingTasksComponent implements OnInit {
     this.settingModals.label.create.labelName = eventTarget;
   }
 
-  onlyLabelsChanged(tasks): boolean {
+  onlyLabelsChanged(tasks: any): boolean {
     if (this.labelingTasksArray.controls.length == 0) return false;
     if (this.labelingTasksArray.controls.length != tasks.length) return false;
     for (const task of tasks) {
@@ -276,7 +279,7 @@ export class LabelingTasksComponent implements OnInit {
     localStorage.setItem('projectOverviewData', JSON.stringify(currentData));
   }
 
-  updateLabelColor(projectId: string, labelingTaskId: string, labelId: string, oldLabelColor: string, newLabelColor: any) {
+  updateLabelColor(projectId: string, labelingTaskId: string, labelId: string, oldLabelColor: string, newLabelColor: string) {
     this.lh.updateLabelColor(projectId, labelingTaskId, labelId, oldLabelColor, newLabelColor);
   }
 
