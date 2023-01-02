@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { first } from 'rxjs/operators';
 import { Project } from 'src/app/base/entities/project';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
@@ -23,7 +23,7 @@ export class DataSchemaComponent implements OnChanges {
   constructor(private projectApolloService: ProjectApolloService) {
   }
 
-  ngOnChanges(changes) {
+  ngOnChanges(changes: SimpleChanges) {
     this.attributes = changes.attributes?.currentValue;
     this.pKeyValid = changes.pKeyValid?.currentValue;
     this.attributes.forEach((attribute) => {

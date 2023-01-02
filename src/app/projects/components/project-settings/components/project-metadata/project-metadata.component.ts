@@ -10,16 +10,12 @@ import { ProjectApolloService } from 'src/app/base/services/project/project-apol
   templateUrl: './project-metadata.component.html',
   styleUrls: ['./project-metadata.component.scss']
 })
-export class ProjectMetadataComponent implements OnInit {
+export class ProjectMetadataComponent {
 
   @Input() project: Project;
   projectName = new FormControl('');
 
-
   constructor(private projectApolloService: ProjectApolloService, private router: Router) { }
-
-  ngOnInit(): void {
-  }
 
   updateProjectNameAndDescription(newName: string, newDescription: string) {
     if (newName == '' && newDescription == '') return;

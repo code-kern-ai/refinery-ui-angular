@@ -193,7 +193,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
       const subscription = interval(250).subscribe(() => {
         if (this.settingModals.labelingTask.create) {
           this.settingModals.labelingTask.create.open = true;
-          this.focusModalInputBox('labelingTaskName');
+          this.dataHandlerHelper.focusModalInputBox('labelingTaskName');
           localStorage.removeItem("openModal");
           subscription.unsubscribe();
         }
@@ -584,15 +584,15 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
   //     });
   // }
 
-  focusModalInputBox(inputBoxName: string) {
-    // const input = document.getElementById(inputBoxName) as HTMLInputElement;
-    // if (input && input instanceof HTMLElement) {
-    //   setTimeout(() => {
-    //     input.focus();
-    //   }, 0);
-    //   return;
-    // }
-  }
+  // focusModalInputBox(inputBoxName: string) {
+  // const input = document.getElementById(inputBoxName) as HTMLInputElement;
+  // if (input && input instanceof HTMLElement) {
+  //   setTimeout(() => {
+  //     input.focus();
+  //   }, 0);
+  //   return;
+  // }
+  // }
 
   // isTaskNameUniqueCheck(name: string, ownGroup: FormGroup = null): boolean {
   //   if (name == '') return true;

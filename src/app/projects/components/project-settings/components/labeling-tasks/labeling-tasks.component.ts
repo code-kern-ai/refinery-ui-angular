@@ -19,8 +19,8 @@ export class LabelingTasksComponent implements OnInit {
 
   @Input() project: Project;
   @Input() settingModals: SettingModals;
-  @ViewChildren('inputTaskName') inputTaskName: QueryList<ElementRef>;
 
+  @ViewChildren('inputTaskName') inputTaskName: QueryList<ElementRef>;
   dataHandlerHelper: DataHandlerHelper;
   labelingTasksQuery$: any;
   isTaskNameUnique: boolean = true;
