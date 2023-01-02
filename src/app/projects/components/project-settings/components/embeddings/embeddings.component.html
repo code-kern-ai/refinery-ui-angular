@@ -212,7 +212,7 @@
                         (mouseleave)="setCurrentEmbeddingHandle(null)">
 
                         <label class="cursor-pointer label"
-                            [ngClass]="checkIfModelIsDownloaded(embeddingHandle.configString) ? 'text-green-700' : ''"
+                            [ngClass]="embeddingHandle.isModelDownloaded ? 'text-green-700' : ''"
                             (click)="selectEmbeddingHandle(embeddingHandle,inputEmbeddingHandle,hoverBox)">
                             {{embeddingHandle.configString}}
                         </label>

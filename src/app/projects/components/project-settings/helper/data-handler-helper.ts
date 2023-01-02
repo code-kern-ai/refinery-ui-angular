@@ -3,6 +3,8 @@ import { interval, Subscription, timer } from "rxjs";
 import { debounceTime, first } from "rxjs/operators";
 import { ProjectApolloService } from "src/app/base/services/project/project-apollo.service";
 import { attributeVisibilityStates } from "../../create-new-attribute/attributes-visibility-helper";
+import { Attribute } from "../entities/attribute.type";
+import { Embedding } from "../entities/embedding.type";
 import { SettingModals } from "./modal-helper";
 
 export class DataHandlerHelper {
@@ -92,7 +94,7 @@ export class DataHandlerHelper {
         return false;
     }
 
-    prepareEmbeddingFormGroup(attributes, settingModals: SettingModals, embeddings: any) {
+    prepareEmbeddingFormGroup(attributes: Attribute[], settingModals: SettingModals, embeddings: Embedding[]) {
         if (attributes.length > 0) {
             settingModals.embedding.create.embeddingCreationFormGroup = this.formBuilder.group({
                 targetAttribute: attributes[0].id,

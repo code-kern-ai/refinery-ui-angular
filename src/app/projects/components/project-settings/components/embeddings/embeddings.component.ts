@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { first } from 'rxjs/operators';
@@ -38,10 +38,15 @@ export class EmbeddingsComponent implements OnInit {
     this.prepareDownloadedModels();
   }
 
-  ngOnChanges(changes) {
+  ngOnChanges(changes: SimpleChanges) {
     this.attributesArrayTextUsableUploaded = changes.attributesArrayTextUsableUploaded?.currentValue;
     this.embeddings = changes.embeddings?.currentValue;
     this.embeddingHandlesMap = changes.embeddingHandlesMap?.currentValue;
+    this.embeddingHandlesMap.forEach((value: any) => {
+      value.forEach((element: any) => {
+        element.isModelDownloaded = this.checkIfModelIsDownloaded(element.configString);
+      });
+    });
   }
 
   prepareDownloadedModels() {
@@ -95,7 +100,7 @@ export class EmbeddingsComponent implements OnInit {
     }
   }
 
-  selectEmbeddingHandle(embeddingHandle, inputElement: HTMLInputElement, hoverBox?: any) {
+  selectEmbeddingHandle(embeddingHandle: Embedding, inputElement: HTMLInputElement, hoverBox?: any) {
     inputElement.value = embeddingHandle.configString;
     hoverBox.style.display = 'none';
     if (document.activeElement instanceof HTMLElement) {
@@ -104,7 +109,7 @@ export class EmbeddingsComponent implements OnInit {
     this.checkEmbeddingHandles(inputElement);
   }
 
-  checkEmbeddingHandles(eventTarget: HTMLInputElement,) {
+  checkEmbeddingHandles(eventTarget: HTMLInputElement) {
     const embeddingForm = this.settingModals.embedding.create.embeddingCreationFormGroup;
     embeddingForm.get('embeddingHandle').setValue(eventTarget.value);
     const suggestionList = this.embeddingHandlesMap.get(embeddingForm.get("targetAttribute").value);
