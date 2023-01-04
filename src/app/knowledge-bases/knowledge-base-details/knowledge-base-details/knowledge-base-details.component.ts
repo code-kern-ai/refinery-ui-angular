@@ -20,6 +20,7 @@ import { UploadComponent } from 'src/app/import/components/upload/upload.compone
 import { UserManager } from 'src/app/util/user-manager';
 import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
 import { createDefaultLookupListDetailsModals, LookupListsDetailsModals } from './knowledge-bases-details-helper';
+import { UploadFileType } from 'src/app/import/components/upload/upload-helper';
 
 
 @Component({
@@ -314,12 +315,16 @@ export class KnowledgeBaseDetailsComponent implements OnInit, AfterViewInit, OnD
 
   uploadToMinio() {
     if (this.file) {
-      this.uploadComponent.projectId = this.projectId;
-      this.uploadComponent.reloadOnFinish = true;
-      this.uploadComponent.uploadStarted = true;
-      const finalFileName = this.uploadComponent.getLookupListName(this.file?.name, this.knowledgeBaseId);
-      this.uploadComponent.reSubscribeToNotifications();
-      this.uploadComponent.uploadFileType.setValue("knowledge_base");
+      // this.uploadComponent.projectId = this.projectId;
+      // this.uploadComponent.reloadOnFinish = true;
+      // this.uploadComponent.uploadStarted = true;
+      // const finalFileName = this.uploadComponent.getLookupListName(this.file?.name, this.knowledgeBaseId);
+      // this.uploadComponent.reSubscribeToNotifications();
+      // this.uploadComponent.uploadFileType.setValue("knowledge_base");
+      // this.uploadComponent.finishUpUpload(finalFileName, '');
+
+
+      const finalFileName = this.uploadComponent.uploadFileToMinio(this.projectId, UploadFileType.KNOWLEDGE_BASE, this.knowledgeBaseId);
       this.uploadComponent.finishUpUpload(finalFileName, '');
     }
   }

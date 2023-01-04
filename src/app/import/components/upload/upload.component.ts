@@ -1,151 +1,128 @@
-import { HttpClient } from '@angular/common/http';
-import { S3Service } from './../../services/s3.service';
-import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { forkJoin, interval, Observable, Subscription, timer } from 'rxjs';
-import { UploadState } from 'src/app/base/entities/upload-state';
-import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
-import { first, tap } from 'rxjs/operators';
-import { RecordCategory } from 'src/app/base/enum/graphql-enums';
-import { UploadStates } from '../../services/s3.enums';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { ProjectStatus } from 'src/app/projects/enums/project-status.enum';
+import { combineLatest, forkJoin, Observable, timer } from 'rxjs';
+import { first, tap } from 'rxjs/operators';
+import { UploadState } from 'src/app/base/entities/upload-state';
 import { NotificationService } from 'src/app/base/services/notification.service';
-import { UploadType } from './upload-helper';
-
+import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
+import { ProjectStatus } from 'src/app/projects/enums/project-status.enum';
+import { UploadStates } from '../../services/s3.enums';
+import { S3Service } from '../../services/s3.service';
+import { UploadFileType, UploadType } from './upload-helper';
 
 @Component({
   selector: 'kern-upload',
   templateUrl: './upload.component.html',
-  styleUrls: ['./upload.component.scss'],
+  styleUrls: ['./upload.component.scss']
 })
-export class UploadComponent implements OnDestroy, OnInit, AfterViewInit {
-  @Input() projectId: string;
-  @Input() reloadOnFinish: boolean = true;
-  @Input() unique;
-  @Input() init = false;
-  @Input() deleteProjectOnFail = false;
-  file: File | null = null;
-  @Output() fileAttached = new EventEmitter<File>();
+export class UploadComponent implements OnInit {
 
+  @Input() file: File | null = null;
+  @Input() projectId: string;
+  @Input() deleteProjectOnFail: boolean;
+  @Input() init: boolean = false;
+  uploadStarted: boolean = false;
+  uploadTask: any;
+  uploadTaskQuery$: any;
+  reloadOnFinish: boolean = false;
+  uploadFileType: any;
+  @Output() fileAttached = new EventEmitter<File>();
   get UploadStatesType(): typeof UploadStates {
     return UploadStates;
   }
-  upload$: Observable<UploadState>;
-  uploadTask$;
-  uploadTaskQuery$;
-  uploadTask;
-  uploadStarted: boolean = false;
-  uploadFileType = new FormControl('records');
-  uploadRecordType = new FormControl(RecordCategory.SCALE);
-  uploadType: UploadType = UploadType.DEFAULT;
 
-  uploadFileTypes = ['records', 'embeddings', 'labels'];
-  uploadRecordsTypes = [RecordCategory.SCALE, RecordCategory.TEST];
+  @ViewChild('fileUpload') fileUpload: ElementRef;
+  selectedTokenizer: string = "en_core_web_sm";
   executeOnFinish: () => void;
-  @ViewChild('fileInput') fileInput;
-  showFileBox: boolean = true;
-  @ViewChild('noFileUploaded', { read: ElementRef }) noFileUploaded: ElementRef;
-  @ViewChild('fileUploaded', { read: ElementRef }) fileUploaded: ElementRef;
+  uploadType: UploadType = UploadType.DEFAULT;
+  uploadTask$;
+  upload$: Observable<UploadState>;
 
-  constructor(
-    private projectApolloService: ProjectApolloService,
-    private s3Service: S3Service,
-  ) { }
+  constructor(private projectApolloService: ProjectApolloService, private router: Router, private s3Service: S3Service) { }
+
   ngOnInit(): void {
     NotificationService.subscribeToNotification(this, {
       projectId: this.projectId,
       whitelist: ['file_upload'],
       func: this.handleWebsocketNotification
     });
-    if (this.init) this.uploadFileType.setValue("project");
-    else {
-      this.projectApolloService.getUploadTasksByProjectId(this.projectId)
-        .pipe(first()).subscribe((uploadTasks) => {
-          for (const t of uploadTasks) {
-            if (t.state == UploadStates.IN_PROGRESS || t.state == UploadStates.WAITING || t.state == UploadStates.PENDING) {
-              this.uploadStarted = true;
-              this.startProgressCall(t.id);
-              return;
-            }
-          }
-        });
-    }
+    // if (this.init) this.uploadFileType("project");
+    // else {
+    //   this.projectApolloService.getUploadTasksByProjectId(this.projectId)
+    //     .pipe(first()).subscribe((uploadTasks) => {
+    //       for (const t of uploadTasks) {
+    //         if (t.state == UploadStates.IN_PROGRESS || t.state == UploadStates.WAITING || t.state == UploadStates.PENDING) {
+    //           this.uploadStarted = true;
+    //           this.startProgressCall(t.id);
+    //           return;
+    //         }
+    //       }
+    //     });
+    // }
   }
 
-  ngAfterViewInit(): void {
-    this.noFileUploaded.nativeElement.classList.add('block');
+  onFileDropped(files: File[]) {
+    this.file = files.length > 0 ? files[0] : null;
+    this.fileAttached.emit(this.file);
   }
 
-  reSubscribeToNotifications() {
-
-    NotificationService.unsubscribeFromNotification(this, null);
-    NotificationService.subscribeToNotification(this, {
-      projectId: this.projectId,
-      whitelist: ['file_upload'],
-      func: this.handleWebsocketNotification
-    });
-
+  onFileInput(event: any) {
+    event.stopPropagation();
+    this.onFileDropped(event.target.files);
+    this.fileUpload.nativeElement.value = '';
   }
 
-  onFileInput(files: FileList | null): void {
-    if (files) {
-      this.file = files.item(0);
-      this.fileAttached.emit(this.file);
-      this.fileInput.nativeElement.value = '';
-    }
+  onFileRemove(event: Event) {
+    event.stopPropagation();
+    this.onFileDropped([]);
+    this.fileUpload.nativeElement.value = '';
   }
 
-  onSubmit(importOptions: string) {
-    if (this.file) {
-      let filename = this.file.name
-      if (this.uploadFileType.value == 'records') {
-        filename = this.getFinalFileName(filename);
+  createProject() {
+    return this.projectApolloService
+      .createProject("Imported Project", "Created during file upload " + this.file.name).pipe(first());
+  }
+
+  updateTokenizerAndProjectStatus(projectId: string) {
+    let tasks$ = [];
+    tasks$.push(this.projectApolloService.changeProjectTokenizer(projectId, this.selectedTokenizer));
+    tasks$.push(this.projectApolloService.updateProjectStatus(projectId, ProjectStatus.INIT_COMPLETE));
+    forkJoin(tasks$).pipe(first()).subscribe();
+  }
+
+  uploadFileToMinio(projectId: string, uploadFileType: string, knowledgeBaseId?: string): string {
+    this.projectId = projectId;
+    this.reloadOnFinish = false;
+    this.uploadStarted = true;
+    this.reSubscribeToNotifications();
+    this.uploadFileType = uploadFileType;
+    if (uploadFileType == UploadFileType.RECORDS || uploadFileType == UploadFileType.KNOWLEDGE_BASE) {
+      this.executeOnFinish = () => {
+        timer(200).subscribe(() => {
+          this.router.navigate(['projects', this.projectId, 'settings'])
+        })
       }
-      let tasks$ = [];
-      if (this.init && this.projectId == null) tasks$.push(this.createEmptyProject());
+    }
+    return this.getFinalFileName(this.file?.name, knowledgeBaseId);
+  }
 
-      if (tasks$.length != 0) {
-        //wait project creation
-        forkJoin([...tasks$])
-          .pipe(first())
-          .subscribe((results: any) => {
-            this.projectId = results[0].id;
-            this.prepareEmptyProject();
-            this.finishUpUpload(filename, importOptions);
-          });
-      } else {
-        this.finishUpUpload(filename, importOptions);
-      }
+  getFinalFileName(fileName: string, knowledgeBaseId?: string): string {
+    switch (this.uploadFileType) {
+      case UploadFileType.RECORDS:
+        return fileName + "_SCALE";
+      case UploadFileType.KNOWLEDGE_BASE:
+        return fileName + "_" + knowledgeBaseId;
+      default:
+        return fileName;
     }
   }
 
   finishUpUpload(filename, importOptions) {
-    let tasks$ = [];
-    tasks$.push(this.getUploadCredentialsAndId(filename, importOptions));
-
-    forkJoin([...tasks$])
-      .pipe(first())
-      .subscribe((results) => {
-        this.uploadFile(results[0], filename)
+    this.projectApolloService
+      .getUploadCredentialsAndId(this.projectId, filename, this.uploadFileType, importOptions, this.uploadType)
+      .pipe(first()).subscribe((results) => {
+        this.uploadFile(results, filename)
       });
-  }
-
-  prepareEmptyProject() {
-    this.projectApolloService
-      .changeProjectTokenizer(this.projectId, 'en_core_web_sm')
-      .pipe(first()).subscribe();
-    this.projectApolloService
-      .updateProjectStatus(
-        this.projectId,
-        ProjectStatus.INIT_COMPLETE
-      ).pipe(first()).subscribe();
-  }
-
-  createEmptyProject() {
-
-    return this.projectApolloService
-      .createProject("Imported Project", "Created during file upload " + this.file.name).pipe(first());
   }
 
   uploadFile(uploadInformation, filename: string) {
@@ -157,7 +134,6 @@ export class UploadComponent implements OnDestroy, OnInit, AfterViewInit {
           if (progress.state === UploadStates.DONE || progress.state === UploadStates.ERROR) {
             timer(500).subscribe(() => this.file = null);
             if (this.init && progress.state === UploadStates.ERROR && this.deleteProjectOnFail) {
-              //create created project if not successful -- only s3 upload errors not general import errors
               this.deleteExistingProject();
             }
           }
@@ -166,16 +142,11 @@ export class UploadComponent implements OnDestroy, OnInit, AfterViewInit {
     })
   }
 
-  deleteExistingProject() {
-    this.projectApolloService.deleteProjectById(this.projectId).pipe(first()).subscribe();
-  }
-
   startProgressCall(uploadTaskId: string) {
     [this.uploadTaskQuery$, this.uploadTask$] = this.projectApolloService.getUploadTaskByTaskId(this.projectId, uploadTaskId);
     const firstReturn = this.uploadTask$.pipe(first());
     this.uploadTask$ = this.uploadTask$.subscribe((task) => {
       this.uploadTask = task;
-      this.fileUploaded.nativeElement.classList.add('hidden');
       if (task.state == UploadStates.DONE || task.progress == 100) {
         this.clearUploadTask();
         if (this.reloadOnFinish) location.reload();
@@ -195,25 +166,25 @@ export class UploadComponent implements OnDestroy, OnInit, AfterViewInit {
     this.uploadTaskQuery$ = null;
   }
 
-  identifiableRecords(uploadFileType) {
-    return uploadFileType == "records" || this.unique || uploadFileType == "project";
+  deleteExistingProject() {
+    this.projectApolloService.deleteProjectById(this.projectId).pipe(first()).subscribe();
   }
 
-  ngOnDestroy() {
-    if (this.uploadTask$) this.uploadTask$.unsubscribe();
-    NotificationService.unsubscribeFromNotification(this, this.projectId)
+  resetUpload() {
+    this.file = null;
+    this.clearUploadTask();
+    this.upload$ = null;
+    this.uploadStarted = false;
+    this.fileAttached.emit(null);
   }
 
-
-  getUploadCredentialsAndId(filename: string, fileImportOptions: string) {
-    return this.projectApolloService
-      .getUploadCredentialsAndId(
-        this.projectId,
-        filename,
-        this.uploadFileType.value,
-        fileImportOptions,
-        this.uploadType
-      ).pipe(first());
+  reSubscribeToNotifications() {
+    NotificationService.unsubscribeFromNotification(this, null);
+    NotificationService.subscribeToNotification(this, {
+      projectId: this.projectId,
+      whitelist: ['file_upload'],
+      func: this.handleWebsocketNotification
+    });
   }
 
   handleWebsocketNotification(msgParts) {
@@ -239,30 +210,4 @@ export class UploadComponent implements OnDestroy, OnInit, AfterViewInit {
     }
   }
 
-  getFinalFileName(fileName: string): string {
-    return fileName + "_" + this.uploadRecordType.value;
-  }
-
-  getLookupListName(fileName: string, listId: string): string {
-    return fileName + "_" + listId;
-  }
-
-  removeFile(event) {
-    event.stopPropagation();
-    this.file = null;
-    this.fileAttached.emit(null);
-  }
-
-  onFileDropped(files) {
-    this.file = files[0];
-    this.fileAttached.emit(this.file);
-  }
-
-  resetUpload() {
-    this.file = null;
-    this.clearUploadTask();
-    this.upload$ = null;
-    this.uploadStarted = false;
-    this.fileAttached.emit(null);
-  }
 }

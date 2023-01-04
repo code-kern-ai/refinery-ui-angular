@@ -3,8 +3,9 @@ import { Router } from '@angular/router';
 import { timer } from 'rxjs';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { ProjectStatus } from 'src/app/projects/enums/project-status.enum';
-import { UploadComponent } from '../upload/upload.component';
+import { UploadComponent } from 'src/app/import/components/upload/upload.component';
 import { first } from 'rxjs/operators';
+import { UploadFileType } from '../upload/upload-helper';
 
 @Component({
   selector: 'kern-upload-records',
@@ -46,28 +47,30 @@ export class UploadRecordsComponent implements OnInit {
   }
 
   submitUploadRecords() {
-    this.projectApolloService
-      .changeProjectTokenizer(this.projectId, this.selectedTokenizer)
-      .pipe(first())
-      .subscribe();
-    this.projectApolloService
-      .updateProjectStatus(
-        this.projectId,
-        ProjectStatus.INIT_COMPLETE
-      ).pipe(first()).subscribe()
+    // this.projectApolloService
+    //   .changeProjectTokenizer(this.projectId, this.selectedTokenizer)
+    //   .pipe(first())
+    //   .subscribe();
+    // this.projectApolloService
+    //   .updateProjectStatus(
+    //     this.projectId,
+    //     ProjectStatus.INIT_COMPLETE
+    //   ).pipe(first()).subscribe()
 
     // Attach a file to the project
-    this.uploadComponent.projectId = this.projectId;
-    this.uploadComponent.reloadOnFinish = false;
-    this.uploadComponent.uploadStarted = true;
-    const finalFileName = this.uploadComponent.getFinalFileName(this.file?.name);
-    this.uploadComponent.reSubscribeToNotifications();
-    this.uploadComponent.uploadFileType.setValue("records");
-    this.uploadComponent.executeOnFinish = () => {
-      timer(200).subscribe(() => {
-        this.router.navigate(['projects', this.projectId, 'settings'])
-      })
-    }
+    // this.uploadComponent.projectId = this.projectId;
+    // this.uploadComponent.reloadOnFinish = false;
+    // this.uploadComponent.uploadStarted = true;
+    // const finalFileName = this.uploadComponent.getFinalFileName(this.file?.name);
+    // this.uploadComponent.reSubscribeToNotifications();
+    // this.uploadComponent.uploadFileType.setValue("records");
+    // this.uploadComponent.executeOnFinish = () => {
+    //   timer(200).subscribe(() => {
+    //     this.router.navigate(['projects', this.projectId, 'settings'])
+    //   })
+    // }
+    this.uploadComponent.updateTokenizerAndProjectStatus(this.projectId);
+    const finalFileName = this.uploadComponent.uploadFileToMinio(this.projectId, UploadFileType.RECORDS);
     this.uploadComponent.finishUpUpload(finalFileName, this.importOptionsHTML.nativeElement.value);
   }
 }

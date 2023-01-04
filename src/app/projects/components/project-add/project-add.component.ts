@@ -9,7 +9,6 @@ import { ProjectStatus } from '../../enums/project-status.enum';
 import { Project } from 'src/app/base/entities/project';
 import { RouteService } from 'src/app/base/services/route.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { UploadComponent } from 'src/app/import/components/upload/upload.component';
 import { Subscription, timer } from 'rxjs';
 import { UploadRecordsComponent } from 'src/app/import/components/upload-records/upload-records.component';
 import { UploadType } from 'src/app/import/components/upload/upload-helper';
