@@ -20,11 +20,10 @@ export class UploadComponent implements OnInit {
   @Input() file: File | null = null;
   @Input() projectId: string;
   @Input() deleteProjectOnFail: boolean;
-  @Input() init: boolean = false;
   uploadStarted: boolean = false;
   uploadTask: any;
   uploadTaskQuery$: any;
-  reloadOnFinish: boolean = false;
+  reloadOnFinish: boolean = true;
   uploadFileType: any;
   @Output() fileAttached = new EventEmitter<File>();
   get UploadStatesType(): typeof UploadStates {
@@ -46,19 +45,6 @@ export class UploadComponent implements OnInit {
       whitelist: ['file_upload'],
       func: this.handleWebsocketNotification
     });
-    // if (this.init) this.uploadFileType("project");
-    // else {
-    //   this.projectApolloService.getUploadTasksByProjectId(this.projectId)
-    //     .pipe(first()).subscribe((uploadTasks) => {
-    //       for (const t of uploadTasks) {
-    //         if (t.state == UploadStates.IN_PROGRESS || t.state == UploadStates.WAITING || t.state == UploadStates.PENDING) {
-    //           this.uploadStarted = true;
-    //           this.startProgressCall(t.id);
-    //           return;
-    //         }
-    //       }
-    //     });
-    // }
   }
 
   onFileDropped(files: File[]) {
@@ -92,16 +78,14 @@ export class UploadComponent implements OnInit {
 
   uploadFileToMinio(projectId: string, uploadFileType: string, knowledgeBaseId?: string): string {
     this.projectId = projectId;
-    this.reloadOnFinish = false;
+    this.reloadOnFinish = UploadFileType.RECORDS || uploadFileType == UploadFileType.KNOWLEDGE_BASE ? false : true;
     this.uploadStarted = true;
     this.reSubscribeToNotifications();
     this.uploadFileType = uploadFileType;
-    if (uploadFileType == UploadFileType.RECORDS || uploadFileType == UploadFileType.KNOWLEDGE_BASE) {
-      this.executeOnFinish = () => {
-        timer(200).subscribe(() => {
-          this.router.navigate(['projects', this.projectId, 'settings'])
-        })
-      }
+    this.executeOnFinish = () => {
+      timer(200).subscribe(() => {
+        this.router.navigate(['projects', this.projectId, 'settings'])
+      });
     }
     return this.getFinalFileName(this.file?.name, knowledgeBaseId);
   }
@@ -133,7 +117,7 @@ export class UploadComponent implements OnInit {
         tap((progress) => {
           if (progress.state === UploadStates.DONE || progress.state === UploadStates.ERROR) {
             timer(500).subscribe(() => this.file = null);
-            if (this.init && progress.state === UploadStates.ERROR && this.deleteProjectOnFail) {
+            if (progress.state === UploadStates.ERROR && this.deleteProjectOnFail) {
               this.deleteExistingProject();
             }
           }

@@ -22,6 +22,7 @@ import { ProjectStatus } from 'src/app/projects/enums/project-status.enum';
 import { dateAsUTCDate, getUserAvatarUri, isStringTrue } from 'src/app/util/helper-functions';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { createDefaultProjectsModals, ProjectsModals } from './projects-helper';
+import { UploadFileType } from 'src/app/import/components/upload/upload-helper';
 
 @Component({
   selector: 'kern-projects',
@@ -323,27 +324,10 @@ export class ProjectsComponent implements OnInit, OnDestroy {
 
   importExistingProject() {
     this.projectsModals.uploadProject.doingSomething = true;
-    this.uploadComponent.createEmptyProject().subscribe((project: Project) => {
-      this.projectApolloService
-        .changeProjectTokenizer(project.id, this.selectedTokenizer)
-        .pipe(first())
-        .subscribe();
-      this.projectApolloService
-        .updateProjectStatus(
-          project.id,
-          ProjectStatus.INIT_COMPLETE
-        ).pipe(first()).subscribe()
-
-      // Attach a file to the project
-      this.uploadComponent.projectId = null;
-      this.uploadComponent.reSubscribeToNotifications();
-      this.uploadComponent.projectId = project.id;
-      this.uploadComponent.uploadStarted = true;
-      this.uploadComponent.finishUpUpload(this.file?.name, '');
-      this.uploadComponent.executeOnFinish = () => {
-        this.projectsModals.uploadProject.open = false;
-        this.projectsModals.uploadProject.doingSomething = false;
-      }
+    this.uploadComponent.createProject().subscribe((project: Project) => {
+      this.uploadComponent.updateTokenizerAndProjectStatus(project.id);
+      const finalFileName = this.uploadComponent.uploadFileToMinio(project.id, UploadFileType.PROJECT);
+      this.uploadComponent.finishUpUpload(finalFileName, '');
     });
   }
 
