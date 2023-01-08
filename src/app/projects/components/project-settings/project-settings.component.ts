@@ -401,14 +401,13 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
   }
 
   findFreeAttributeName(): string {
-    const attributes = this.dataHandlerHelper.attributesArray.getRawValue();
     const regEx = "^attribute_([0-9]+)$"
     let counterList = [];
-    for (const item of attributes) {
+    for (const item of this.attributes) {
       const match = item.name.match(regEx);
       if (match) counterList.push(parseInt(match[1]));
     }
-    return "attribute_" + (counterList.length > 0 ? (Math.max(...counterList) + 1) : (attributes.length + 1));
+    return "attribute_" + (counterList.length > 0 ? (Math.max(...counterList) + 1) : (this.attributes.length + 1));
   }
 }
 
