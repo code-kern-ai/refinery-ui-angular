@@ -52,6 +52,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
   attributesArrayTextUsableUploaded: Attribute[];
   embeddings$: any;
   suggestions$: any;
+  primaryKey$: any;
 
   get projectExportArray() {
     return this.settingModals.projectExport.projectExportSchema.get('attributes') as FormArray;
@@ -79,10 +80,12 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
       [this.attributesQuery$, this.attributes$] = this.dataHandlerHelper.prepareAttributesRequest(projectId);
       [this.embeddingQuery$, this.embeddings$] = this.dataHandlerHelper.prepareEmbeddingsRequest(projectId);
       this.suggestions$ = this.projectApolloService.getRecommendedEncodersForEmbeddings(projectId);
+      this.primaryKey$ = this.projectApolloService.getCompositeKeyIsValid(projectId);
       let tasks$ = [];
       tasks$.push(this.attributes$);
       tasks$.push(this.embeddings$);
       tasks$.push(this.suggestions$);
+      tasks$.push(this.primaryKey$);
 
       combineLatest(tasks$).subscribe((res: any[]) => {
         // prepare attributes
@@ -92,6 +95,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
           attribute.dataTypeName = this.dataTypesArray.find((type) => type.value === attribute?.dataType).name;
           attribute.visibilityIndex = this.attributeVisibilityStates.findIndex((type) => type.value === attribute?.visibility);
         });
+        this.pKeyValid = this.dataHandlerHelper.requestPKeyCheck(this.attributes, res[3]);
 
         // prepare embeddings
         this.embeddings = res[1];
@@ -111,9 +115,6 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
     });
     this.setUpCommentRequests(projectId);
     this.checkProjectTokenization(projectId);
-
-
-    this.pKeyValid = this.dataHandlerHelper.requestPKeyCheck(projectId);
 
     const openModal = JSON.parse(localStorage.getItem("openModal"));
     if (openModal) {

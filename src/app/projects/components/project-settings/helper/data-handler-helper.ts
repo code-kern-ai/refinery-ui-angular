@@ -51,14 +51,6 @@ export class DataHandlerHelper {
         return this.projectApolloService.getAttributesByProjectId(projectId, ['ALL']);
     }
 
-    pKeyChanged(): boolean {
-        for (let i = 0; i < this.attributes.length; i++) {
-            const att = this.attributes[i]
-            if (att.isPrimaryKey != this.getAttributeArrayAttribute(att.id, 'isPrimaryKey')) return true;
-        }
-        return false;
-    }
-
     attributeChangedToText(): boolean {
         for (let i = 0; i < this.attributes.length; i++) {
             const att = this.attributes[i]
@@ -68,15 +60,16 @@ export class DataHandlerHelper {
         return false;
     }
 
-    requestPKeyCheck(projectId: string): any {
-        let pKeyValid = null;
+    requestPKeyCheck(attributes: Attribute[], primaryKey: boolean): any {
+        let pKeyValid: boolean = primaryKey;
         if (this.pKeyCheckTimer) this.pKeyCheckTimer.unsubscribe();
         this.pKeyCheckTimer = timer(500).subscribe(() => {
-            this.projectApolloService.getCompositeKeyIsValid(projectId).pipe(first()).subscribe((r) => {
-                this.pKeyCheckTimer = null;
-                if (this.anyPKey()) pKeyValid = r;
-                else pKeyValid = null;
-            })
+            this.pKeyCheckTimer = null;
+            if (this.anyPKey(attributes)) {
+                pKeyValid = primaryKey;
+            }
+            else pKeyValid = null;
+            return pKeyValid;
         });
         return pKeyValid;
     }
@@ -85,10 +78,10 @@ export class DataHandlerHelper {
         this.projectApolloService.createAttributeTokenStatistics(projectId, attributeId).pipe(first()).subscribe();
     }
 
-    anyPKey(): boolean {
-        if (!this.attributes) return false;
-        for (let i = 0; i < this.attributes.length; i++) {
-            const att = this.attributes[i]
+    anyPKey(attributes: Attribute[]): boolean {
+        if (!attributes) return false;
+        for (let i = 0; i < attributes.length; i++) {
+            const att = attributes[i];
             if (att.isPrimaryKey) return true;
         }
         return false;
