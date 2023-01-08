@@ -1,6 +1,6 @@
 import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { combineLatest, forkJoin, Observable, timer } from 'rxjs';
+import { forkJoin, Observable, timer } from 'rxjs';
 import { first, tap } from 'rxjs/operators';
 import { UploadState } from 'src/app/base/entities/upload-state';
 import { NotificationService } from 'src/app/base/services/notification.service';
@@ -21,10 +21,10 @@ export class UploadComponent implements OnInit {
   @Input() projectId: string;
   @Input() deleteProjectOnFail: boolean;
   uploadStarted: boolean = false;
-  uploadTask: any;
+  uploadTask: UploadTask;
   uploadTaskQuery$: any;
   reloadOnFinish: boolean = true;
-  uploadFileType: any;
+  uploadFileType: UploadFileType;
   @Output() fileAttached = new EventEmitter<File>();
   get UploadStatesType(): typeof UploadStates {
     return UploadStates;
@@ -45,6 +45,11 @@ export class UploadComponent implements OnInit {
       whitelist: ['file_upload'],
       func: this.handleWebsocketNotification
     });
+  }
+
+  ngOnDestroy() {
+    if (this.uploadTask$) this.uploadTask$.unsubscribe();
+    NotificationService.unsubscribeFromNotification(this, this.projectId)
   }
 
   onFileDropped(files: File[]) {
@@ -76,7 +81,7 @@ export class UploadComponent implements OnInit {
     forkJoin(tasks$).pipe(first()).subscribe();
   }
 
-  uploadFileToMinio(projectId: string, uploadFileType: string, knowledgeBaseId?: string): string {
+  uploadFileToMinio(projectId: string, uploadFileType: UploadFileType, knowledgeBaseId?: string): string {
     this.projectId = projectId;
     this.reloadOnFinish = UploadFileType.RECORDS || uploadFileType == UploadFileType.KNOWLEDGE_BASE ? false : true;
     this.uploadStarted = true;
@@ -101,7 +106,7 @@ export class UploadComponent implements OnInit {
     }
   }
 
-  finishUpUpload(filename, importOptions) {
+  finishUpUpload(filename: string, importOptions: string) {
     this.projectApolloService
       .getUploadCredentialsAndId(this.projectId, filename, this.uploadFileType, importOptions, this.uploadType)
       .pipe(first()).subscribe((results) => {
@@ -109,10 +114,10 @@ export class UploadComponent implements OnInit {
       });
   }
 
-  uploadFile(uploadInformation, filename: string) {
+  uploadFile(uploadInformation: any, filename: string) {
     this.uploadStarted = true;
     const credentialsAndUploadId = JSON.parse(JSON.parse(uploadInformation))
-    forkJoin(this.startProgressCall(credentialsAndUploadId.uploadTaskId)).subscribe(() => {
+    this.startProgressCall(credentialsAndUploadId.uploadTaskId).subscribe(() => {
       this.upload$ = this.s3Service.uploadFile(credentialsAndUploadId, this.file, filename).pipe(
         tap((progress) => {
           if (progress.state === UploadStates.DONE || progress.state === UploadStates.ERROR) {
@@ -171,7 +176,7 @@ export class UploadComponent implements OnInit {
     });
   }
 
-  handleWebsocketNotification(msgParts) {
+  handleWebsocketNotification(msgParts: string[]) {
     if (!this.uploadTask || !this.uploadTaskQuery$) return;
     if (msgParts[2] != this.uploadTask.id) return;
     if (msgParts[3] == 'state') {
@@ -195,3 +200,11 @@ export class UploadComponent implements OnInit {
   }
 
 }
+
+export type UploadTask = {
+  fileAdditionalInfo: string;
+  id: string;
+  progress: number;
+  state: string;
+  userId: string;
+};
