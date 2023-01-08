@@ -85,7 +85,7 @@
                                     <td class="whitespace-nowrap text-center">
                                         <span
                                             class="inline-flex items-center px-2.5 py-0.5 rounded-md text-sm font-medium border border-0"
-                                            [ngClass]="[getBackground(aggregation.value.color), getText(aggregation.value.color), getBorder(aggregation.value.color)]">{{aggregation.value.label}}
+                                            [ngClass]="['bg-'+aggregation.value.color+'-100', 'text-'+aggregation.value.color+'-700', 'border-'+aggregation.value.color+'-400']">{{aggregation.value.label}}
                                         </span>
 
                                     </td>
