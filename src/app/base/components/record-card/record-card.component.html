@@ -165,4 +165,37 @@
         </label>
     </div>
 
+    <ng-template [ngIf]="similarSearchHelper.embeddings?.length>1">
+        <kern-modal [isOpen]="dataBrowserModals.similaritySearch.open" closeButton="X" [acceptButton]="{
+            buttonCaption: 'Search',
+            emitObject: this, emitFunction:requestSimilarSearch
+        }" (optionClicked)="dataBrowserModals.similaritySearch.open = false">
+            <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium"
+                *ngIf="similarSearchHelper.embeddings?.length>1">
+                Select embedding for similarity search </div>
+            <div *ngIf="activeSearchParams.length > 0 || similarSearchHelper.recordsInDisplay">
+                <div class="text-red-500 mb-2 flex flex-grow justify-center text-sm">
+                    Warning: your current filter selection will be removed!</div>
+            </div>
+            <select #embeddingSelectSS class="select select-bordered select-sm w-full mt-4"
+                (change)="setEmbeddingIdSS(embeddingSelectSS.selectedIndex)">
+                <option *ngFor="let embedding of similarSearchHelper.embeddings" [value]="embedding.id">
+                    {{embedding.name }}
+                </option>
+            </select>
+        </kern-modal>
+    </ng-template>
 </div>
+
+<kern-modal [isOpen]="dataBrowserModals.recordComments.open" closeButton="X"
+    [modalBoxStyle]="{'min-width':'25rem', 'max-width':'40rem'}"
+    (optionClicked)="dataBrowserModals.recordComments.open = false">
+    <h1 class="text-lg text-gray-900 mb-2 text-center">Record comments</h1>
+
+    <div *ngFor="let cObj of dataBrowserModals.recordComments.commentsData; let i = index" class="break-words">
+        <div class="flex flex-grow justify-between gap-8">
+            <p style="min-width: 100px;" class="font-bold">Comment {{i+1}}</p>
+            <p class="text-gray-500">{{cObj.comment}}</p>
+        </div>
+    </div>
+</kern-modal>

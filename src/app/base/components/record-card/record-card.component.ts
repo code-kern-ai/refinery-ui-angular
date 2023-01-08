@@ -15,6 +15,7 @@ export class RecordCardComponent implements OnInit {
   @Input() recordComments: any;
   @Input() attributes: any;
   @Input() dataBrowserModals: any;
+  @Input() activeSearchParams: any;
 
   @Output() preliminaryRecordIds = new EventEmitter<number>();
 
@@ -41,5 +42,14 @@ export class RecordCardComponent implements OnInit {
 
   getHover(color) {
     return `hover:bg-${color}-200`
+  }
+
+  requestSimilarSearch() {
+    const saveSimilaritySearch = this.dataBrowserModals.similaritySearch;
+    this.similarSearchHelper.requestSimilarSearch(saveSimilaritySearch.embeddingId, saveSimilaritySearch.recordId);
+  }
+
+  setEmbeddingIdSS(selectedValue: string) {
+    this.dataBrowserModals.similaritySearch.embeddingId = this.similarSearchHelper.embeddings[selectedValue].id;
   }
 }
