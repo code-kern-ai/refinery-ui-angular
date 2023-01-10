@@ -15,7 +15,13 @@ export class RecordCardComponent {
   @Input() attributes: Attribute;
   @Input() recordCardOptions: RecordCardOptions;
 
+  tableData: any[] = [];
+
   constructor() {
+  }
+
+  ngOnInit(): void {
+    this.tableData = this.prepareRecordTableData();
   }
 
   storePreliminaryRecordIds(index: number) {
@@ -43,5 +49,35 @@ export class RecordCardComponent {
 
   setEmbeddingIdSimilaritySearch(selectedIndex: string) {
     this.recordCardOptions.dataBrowserModals.similaritySearch.embeddingId = this.recordCardOptions.similarSearchHelper.embeddings[selectedIndex].id;
+  }
+
+  prepareRecordTableData() {
+    const tableData = [];
+    tableData.push({
+      field: 'type',
+      displayName: 'Type',
+      order: 1
+    });
+    tableData.push({
+      field: 'task',
+      displayName: 'Task',
+      order: 2
+    });
+    tableData.push({
+      field: 'label',
+      displayName: 'Label',
+      order: 3,
+    });
+    tableData.push({
+      field: 'amount',
+      displayName: 'Amount',
+      order: 4
+    });
+    tableData.push({
+      field: 'confidenceAvg',
+      displayName: 'Avg.confidence',
+      order: 5
+    });
+    return tableData;
   }
 }

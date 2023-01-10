@@ -24,53 +24,7 @@
             <div *ngIf="recordCardOptions.dataBrowserModals.configuration.weakSupervisionRelated && record.wsHint"
                 class="text-gray-800 text-sm">
                 {{record.wsHint}}</div>
-            <div class="overflow-x-auto">
-                <div class="inline-block min-w-full align-middle">
-                    <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-                        <table class="min-w-full border divide-y divide-gray-300">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th scope="col"
-                                        class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                        Type</th>
-                                    <th scope="col"
-                                        class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                        Task</th>
-                                    <th scope="col"
-                                        class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                        Label</th>
-                                    <th scope="col"
-                                        class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                        Amount</th>
-                                    <th scope="col"
-                                        class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
-                                        Avg. Confidence</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-200 bg-white">
-                                <tr *ngFor="let aggregation of record.rla_aggregation | keyvalue; let i = index"
-                                    [ngClass]="(i%2!=0 ? 'bg-gray-50':'bg-white') + (!recordCardOptions.dataBrowserModals.configuration.weakSupervisionRelated || (recordCardOptions.dataBrowserModals.configuration.weakSupervisionRelated && aggregation.value.isWSRelated)?'':' hidden')">
-                                    <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                        {{aggregation.value.type}}</td>
-                                    <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                        {{aggregation.value.task}}</td>
-                                    <td class="whitespace-nowrap text-center">
-                                        <span
-                                            class="inline-flex items-center px-2.5 py-0.5 rounded-md text-sm font-medium border border-0"
-                                            [ngClass]="['bg-'+aggregation.value.color+'-100', 'text-'+aggregation.value.color+'-700', 'border-'+aggregation.value.color+'-400']">{{aggregation.value.label}}
-                                        </span>
-
-                                    </td>
-                                    <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                        {{aggregation.value.amount}}</td>
-                                    <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                                        {{aggregation.value.confidenceAvg}}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+            <kern-record-table [tableData]="tableData" [allData]="record.rla_aggregation"></kern-record-table>
         </div>
     </ng-template>
     <div class="mt-3">
