@@ -57,29 +57,37 @@
                 Attribute name exists
             </div>
 
-            <div class="w-full mt-8">
-                <div class="flex flex-row items-center my-2">
-                    <div class="text-sm leading-5 font-medium text-gray-700 inline-block mr-2">Visibility of attributes
-                    </div>
-                    <div class="inline-block">
-                        <kern-dropdown [dropdownOptions]="{
+            <div class="w-full mt-8 grid grid-cols-2 grid-cols-2-max items-center gap-2">
+                <div class="text-sm leading-5 font-medium text-gray-700 inline-block">Visibility
+                </div>
+                <div class="inline-block">
+                    <kern-dropdown [dropdownOptions]="{
                             optionArray: attributeVisibilityStates,
                             buttonCaption: attributeVisibilityVal,
                             valuePropertyPath: 'value',
                             optionTooltips: tooltipsArray
                         }" (optionClicked)="updateVisibilityAttributes($event)">
-                        </kern-dropdown>
-                    </div>
+                    </kern-dropdown>
                 </div>
-
+                <div class="text-sm leading-5 font-medium text-gray-700 inline-block">Data type</div>
+                <div class="tooltip tooltip-right"
+                    [attr.data-tip]="currentAttribute.state == 'USABLE' || currentAttribute.state == 'RUNNING' ? 'Cannot edit data type' : 'Edit your data type'">
+                    <kern-dropdown [dropdownOptions]="{
+                                optionArray: dataTypesArray,
+                                buttonCaption: attributeDataType,
+                                valuePropertyPath: 'value',
+                                isDisabled: currentAttribute.state == 'USABLE' || currentAttribute.state == 'RUNNING'
+                            }" (optionClicked)="updateDataType($event)">
+                    </kern-dropdown>
+                </div>
+                <div class="text-sm leading-5 font-medium text-gray-700 inline-block">Attributes</div>
                 <div class="flex flex-row items-center">
-                    <div class="text-sm leading-5 font-medium text-gray-700 inline-block mr-2">Attributes</div>
                     <ng-template [ngIf]="attributesUsableUploaded.length > 0" [ngIfElse]="noAttributes">
                         <span *ngFor="let attribute of attributesUsableUploaded"
                             (click)="copyToClipboard(attribute.name)"
                             [attr.data-tip]="attribute.dataTypeName + ' - Click to copy' " class="tooltip">
                             <div [ngClass]="'bg-'+attribute.color+'-100 text-'+attribute.color+'-700 border border-'+attribute.color+'-400 hover:bg-'+attribute.color+'-200'"
-                                class="cursor-pointer border items-center px-2 py-0.5 rounded text-xs font-medium text-center m-2">
+                                class="cursor-pointer border items-center px-2 py-0.5 rounded text-xs font-medium text-center mr-2">
                                 {{attribute.name}}
                             </div>
                         </span>
@@ -88,35 +96,18 @@
                         <div class="text-sm font-normal text-gray-500">No usable attributes.</div>
                     </ng-template>
                 </div>
-                <div class="flex flex-row items-center" *ngIf="knowledgeBases">
-                    <div class="text-sm leading-5 font-medium text-gray-700 inline-block mr-2">
-                        {{knowledgeBases.length == 0?'No lookup lists in project':'Lookup lists'}}</div>
+                <div class="text-sm leading-5 font-medium text-gray-700 inline-block">
+                    {{knowledgeBases.length == 0?'No lookup lists in project':'Lookup lists'}}</div>
+                <div class="flex flex-row items-center">
                     <span *ngFor="let base of knowledgeBases" (click)="copyImportToClipboard(base.pythonVariable)"
                         data-tip="Click to copy import statement" class="tooltip">
                         <div
-                            class="cursor-pointer border items-center px-2 py-0.5 rounded text-xs font-medium text-center m-2">
+                            class="cursor-pointer border items-center px-2 py-0.5 rounded text-xs font-medium text-center mr-2">
                             {{base.pythonVariable}} - {{base.termCount}}
                         </div>
                     </span>
-
                 </div>
             </div>
-
-
-            <div class="flex flex-row items-center mt-2">
-                <div class="text-sm leading-5 font-medium text-gray-700 inline-block mr-2">Data types</div>
-                <div class="tooltip tooltip-right"
-                    [attr.data-tip]="currentAttribute.state == 'USABLE' || currentAttribute.state == 'RUNNING' ? 'Cannot edit data type' : 'Edit your data type'">
-                    <kern-dropdown [dropdownOptions]="{
-                            optionArray: dataTypesArray,
-                            buttonCaption: attributeDataType,
-                            valuePropertyPath: 'value',
-                            isDisabled: currentAttribute.state == 'USABLE' || currentAttribute.state == 'RUNNING'
-                        }" (optionClicked)="updateDataType($event)">
-                    </kern-dropdown>
-                </div>
-            </div>
-
 
             <div class="flex flex-row items-center justify-between my-3">
                 <div class="text-sm leading-5 font-medium text-gray-700 inline-block mr-2">Editor</div>

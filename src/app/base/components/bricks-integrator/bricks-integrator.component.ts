@@ -1,6 +1,6 @@
 
 import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { timer } from 'rxjs';
 import { first } from 'rxjs/operators';
@@ -35,6 +35,7 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
   //for values
   @Input() labelingTaskId: string;
   @Output() preparedCode = new EventEmitter<string | any>();
+  @Output() newTaskId = new EventEmitter<string>();
 
   @ViewChild("searchInput") searchInput: ElementRef;
 
@@ -47,12 +48,13 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
   constructor(private http: HttpClient, private projectApolloService: ProjectApolloService, private knowledgeBaseApollo: KnowledgeBasesApolloService,
     private activatedRoute: ActivatedRoute,) {
   }
+
   ngOnInit(): void {
     if (typeof this.forIde == 'string') this.forIde = isStringTrue(this.forIde);
     this.initConfig();
     this.codeParser = new BricksCodeParser(this);
     const projectId = findProjectIdFromRoute(this.activatedRoute)
-    this.dataRequestor = new BricksDataRequestor(this.projectApolloService, this.knowledgeBaseApollo, projectId);
+    this.dataRequestor = new BricksDataRequestor(this.projectApolloService, this.knowledgeBaseApollo, projectId, this);
   }
   ngOnDestroy(): void {
     this.dataRequestor.unsubscribeFromWebsocket();
@@ -276,5 +278,39 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
     }
     this.codeParser.replaceVariables();
   }
+
+  createNewLabelingTask() {
+    this.dataRequestor.createNewLabelingTask(this.config.api.data.data.attributes.name, this.codeParser.expected.expectedTaskLabels.map(x => x.label));
+  }
+  addMissingLabelsToTask() {
+    if (!this.labelingTaskId) return;
+    const missing = this.codeParser.expected.expectedTaskLabels.filter(x => !x.exists).map(x => x.label);
+    this.dataRequestor.createMissingLabels(this.labelingTaskId, missing);
+  }
+
+  selectDifferentTask(taskId: string) {
+    if (this.labelingTaskId == taskId) {
+      if (this.codeParser) this.codeParser.prepareCode();
+      return;
+    }
+
+    const currentTaskType = this.dataRequestor.getLabelingTaskAttribute(this.labelingTaskId, "taskType");
+    const newTaskType = this.dataRequestor.getLabelingTaskAttribute(taskId, "taskType");
+    this.labelingTaskId = taskId;
+    if (currentTaskType != newTaskType) {
+      this.moduleTypeFilter = newTaskType == 'MULTICLASS_CLASSIFICATION' ? 'classifier' : 'extractor'
+      this.config.api.data = null;
+      this.config.page = IntegratorPage.SEARCH;
+      this.requestSearch();
+      this.searchInput.nativeElement.value = "";
+      this.searchInput.nativeElement.focus();
+    } else {
+      if (this.codeParser) this.codeParser.prepareCode();
+    }
+
+
+    if (this.newTaskId.observers.length > 0) this.newTaskId.emit(taskId);
+  }
+
 
 }
