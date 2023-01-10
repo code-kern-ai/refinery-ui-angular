@@ -18,11 +18,14 @@ export type AttributeSort = {
     type: string;
 };
 
-export type ExtendedRecord = {
-    fullCount: number;
-    queryLimit: number;
-    queryOffset: number;
-    recordList: DataBrowserRecord[];
-    sessionId: string;
-    sql: string;
+export type ActiveSearchParams = {
+    id: number;
+    searchText: string;
+    searchTextReplaced: string;
+    splittedText: string[];
+    values: any;
 };
+
+export type Attribute = {
+    [k: string]: any;
+}

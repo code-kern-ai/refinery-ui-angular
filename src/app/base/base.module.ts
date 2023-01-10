@@ -27,6 +27,8 @@ import { LogsComponent } from './components/logs/logs.component';
 import { DefaultOrderKeyvaluePipe } from './pipes/default-order-key-value.pipe';
 import { NotificationCenterComponent } from './components/notification-center/notification-center.component';
 import { RecordCardComponent } from './components/record-card/record-card.component';
+import { RecordDisplayComponent } from './components/record-card/components/record-display/record-display.component';
+import { RecordTableComponent } from './components/record-card/components/record-table/record-table.component';
 
 @NgModule({
   declarations: [
@@ -49,7 +51,9 @@ import { RecordCardComponent } from './components/record-card/record-card.compon
     LogsComponent,
     DefaultOrderKeyvaluePipe,
     NotificationCenterComponent,
-    RecordCardComponent
+    RecordCardComponent,
+    RecordDisplayComponent,
+    RecordTableComponent
   ],
   imports: [CommonModule, AppRoutingModule],
   exports: [

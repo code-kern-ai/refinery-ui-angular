@@ -840,10 +840,18 @@
                 <div *ngIf="extendedRecords.fullCount == 0">Your search criteria didn't match any record.</div>
                 <div *ngFor="let record of extendedRecords.recordList;let i = index"
                     class="bg-white overflow-hidden shadow rounded-lg border mb-4 pb-4 relative">
-                    <kern-record-card [attributesSortOrder]="attributesSortOrder" [record]="record" [index]="i"
-                        [attributes]="attributes" [extendedRecords]="extendedRecords"
-                        [similarSearchHelper]="similarSearchHelper" [recordComments]="recordComments"
-                        [dataBrowserModals]="dataBrowserModals" [activeSearchParams]="activeSearchParams">
+                    <kern-record-card [record]="record" [attributes]="attributes" [recordCardOptions]="{
+                        attributesSortOrder: attributesSortOrder,
+                        dataBrowserModals: dataBrowserModals,
+                        indexExtendedRecord: i,
+                        recordList: extendedRecords.recordList,
+                        sessionId: extendedRecords.sessionId,
+                        recordComments: recordComments,
+                        activeSearchParams:activeSearchParams,
+                        similarSearchHelper:similarSearchHelper,
+                        textHighlightArrayKern:textHighlightArrayKern,
+                        isTextHighlightNeeded: isTextHighlightNeeded
+                    }">
                     </kern-record-card>
                 </div>
             </div>

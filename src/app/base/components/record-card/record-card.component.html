@@ -1,7 +1,7 @@
 <div class="px-4 py-5 sm:p-6">
-    <div *ngIf="recordComments[record.id]" class="tooltip tooltip-left cursor-pointer absolute top-6 right-5"
-        data-tip="Record comments"
-        (click)="dataBrowserModals.recordComments.open = true; dataBrowserModals.recordComments.commentsData = recordComments[record.id]">
+    <div *ngIf="recordCardOptions.recordComments[record.id]"
+        class="tooltip tooltip-left cursor-pointer absolute top-6 right-5" data-tip="Record comments"
+        (click)="recordCardOptions.dataBrowserModals.recordComments.open = true; recordCardOptions.dataBrowserModals.recordComments.commentsData = recordCardOptions.recordComments[record.id]">
         <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-notes" width="24" height="24"
             viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
             stroke-linejoin="round">
@@ -12,44 +12,16 @@
             <line x1="9" y1="15" x2="13" y2="15"></line>
         </svg>
     </div>
-    <div *ngFor="let attribute of attributesSortOrder; let k = index">
-        <div class="font-semibold text-sm text-gray-800">
-            <div class="flex flex-row items-center">
-                <span class="font-dmMono"> {{attributes.get(attribute.key)?.name}}</span>
-            </div>
-        </div>
-        <div *ngIf="attributes.get(attribute.key)" class="text-gray-800 text-sm mb-4 overflow-anywhere flex">
-            <ng-template [ngIf]=" dataBrowserModals.configuration.highlightText && isTextHighlightNeeded &&
-                isTextHighlightNeeded.get(attribute.key) &&
-                record.data[attributes.get(attribute.key).name]" [ngIfElse]="noHighlight">
-                <kern-highlight [text]="record.data[attributes.get(attribute.key).name].toString()"
-                    [searchForExtended]="textHighlightArrayKern[attribute.key]"></kern-highlight>
-            </ng-template>
-            <ng-template #noHighlight>
-                <span
-                    *ngIf="record.data[attributes.get(attribute.key).name] != null && record.data[attributes.get(attribute.key).name] !== ''; else notPresent">
-                    {{record.data[attributes.get(attribute.key).name]}}
-                </span>
-                <ng-template #notPresent>
-                    <svg xmlns="http://www.w3.org/2000/svg"
-                        class="icon icon-tabler icon-tabler-alert-circle text-yellow-700 inline-block" width="20"
-                        height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                        <circle cx="12" cy="12" r="9"></circle>
-                        <line x1="12" y1="8" x2="12" y2="12"></line>
-                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                    </svg>
-                    <span class="text-gray-500 text-sm font-normal italic">Not present in the
-                        record</span>
-                </ng-template>
-            </ng-template>
-        </div>
-    </div>
-    <!--rla aggregation-->
+    <kern-record-display [record]="record" [attributes]="attributes" [recordCardOptions]="{
+        attributesSortOrder: recordCardOptions.attributesSortOrder,
+        dataBrowserModals: recordCardOptions.dataBrowserModals,
+        textHighlightArrayKern: recordCardOptions.textHighlightArrayKern,
+        isTextHighlightNeeded: recordCardOptions.isTextHighlightNeeded
+    }"></kern-record-display>
+
     <ng-template [ngIf]="record.rla_aggregation">
         <div class="mt-2 flex flex-col">
-            <div *ngIf="dataBrowserModals.configuration.weakSupervisionRelated && record.wsHint"
+            <div *ngIf="recordCardOptions.dataBrowserModals.configuration.weakSupervisionRelated && record.wsHint"
                 class="text-gray-800 text-sm">
                 {{record.wsHint}}</div>
             <div class="overflow-x-auto">
@@ -77,7 +49,7 @@
                             </thead>
                             <tbody class="divide-y divide-gray-200 bg-white">
                                 <tr *ngFor="let aggregation of record.rla_aggregation | keyvalue; let i = index"
-                                    [ngClass]="(i%2!=0 ? 'bg-gray-50':'bg-white') + (!dataBrowserModals.configuration.weakSupervisionRelated || (dataBrowserModals.configuration.weakSupervisionRelated && aggregation.value.isWSRelated)?'':' hidden')">
+                                    [ngClass]="(i%2!=0 ? 'bg-gray-50':'bg-white') + (!recordCardOptions.dataBrowserModals.configuration.weakSupervisionRelated || (recordCardOptions.dataBrowserModals.configuration.weakSupervisionRelated && aggregation.value.isWSRelated)?'':' hidden')">
                                     <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
                                         {{aggregation.value.type}}</td>
                                     <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
@@ -103,7 +75,7 @@
     </ng-template>
     <div class="mt-3">
         <div class="float-left">
-            <ng-template [ngIf]="similarSearchHelper.embeddings?.length==0">
+            <ng-template [ngIf]="recordCardOptions.similarSearchHelper.embeddings?.length==0">
                 <div data-tip="Add an embedding in the project settings" class="tooltip tooltip-right relative z-50">
                     <label class="text-gray-700 text-sm font-medium">
                         <span class="cursor-help leading-5 underline"
@@ -112,8 +84,9 @@
                     </label>
                 </div>
             </ng-template>
-            <ng-template [ngIf]="similarSearchHelper.embeddings?.length==1">
-                <label (click)="dataBrowserModals.similaritySearch.recordId = record.id; requestSimilarSearch()"
+            <ng-template [ngIf]="recordCardOptions.similarSearchHelper.embeddings?.length==1">
+                <label
+                    (click)="recordCardOptions.dataBrowserModals.similaritySearch.recordId = record.id; requestSimilarSearch()"
                     class="text-green-700 hover:text-green-500 text-sm font-medium cursor-pointer">
                     <span class="leading-5">Find similar
                         records
@@ -130,9 +103,9 @@
                     </span>
                 </label>
             </ng-template>
-            <ng-template [ngIf]="similarSearchHelper.embeddings?.length > 1">
+            <ng-template [ngIf]="recordCardOptions.similarSearchHelper.embeddings?.length > 1">
                 <label
-                    (click)="dataBrowserModals.similaritySearch.open = true; similarSearchHelper.rememberedRecordId = record.id; dataBrowserModals.similaritySearch.recordId = record.id"
+                    (click)="recordCardOptions.dataBrowserModals.similaritySearch.open = true; recordCardOptions.similarSearchHelper.rememberedRecordId = record.id; recordCardOptions.dataBrowserModals.similaritySearch.recordId = record.id"
                     class="text-green-700 hover:text-green-500 text-sm font-medium cursor-pointer">
                     <span class="leading-5">Find similar
                         records
@@ -154,8 +127,9 @@
 
     <div class="float-right">
         <label class="text-green-700 hover:text-green-500 text-sm font-medium cursor-pointer"
-            (click)="storePreliminaryRecordIds(index+1)" [routerLink]="['../labeling/' + extendedRecords.sessionId]"
-            [queryParams]="{pos: index+1,type:'SESSION'}">
+            (click)="storePreliminaryRecordIds(recordCardOptions.indexExtendedRecord+1)"
+            [routerLink]="['../labeling/' + recordCardOptions.sessionId]"
+            [queryParams]="{pos: recordCardOptions.indexExtendedRecord+1,type:'SESSION'}">
             <span class="leading-5">Continue with this record
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor" stroke-width="2">
@@ -165,21 +139,23 @@
         </label>
     </div>
 
-    <ng-template [ngIf]="similarSearchHelper.embeddings?.length>1">
-        <kern-modal [isOpen]="dataBrowserModals.similaritySearch.open" closeButton="X" [acceptButton]="{
+    <ng-template [ngIf]="recordCardOptions.similarSearchHelper.embeddings?.length>1">
+        <kern-modal [isOpen]="recordCardOptions.dataBrowserModals.similaritySearch.open" closeButton="X" [acceptButton]="{
             buttonCaption: 'Search',
             emitObject: this, emitFunction:requestSimilarSearch
-        }" (optionClicked)="dataBrowserModals.similaritySearch.open = false">
+        }" (optionClicked)="recordCardOptions.dataBrowserModals.similaritySearch.open = false">
             <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium"
-                *ngIf="similarSearchHelper.embeddings?.length>1">
+                *ngIf="recordCardOptions.similarSearchHelper.embeddings?.length>1">
                 Select embedding for similarity search </div>
-            <div *ngIf="activeSearchParams.length > 0 || similarSearchHelper.recordsInDisplay">
+            <div
+                *ngIf="recordCardOptions.activeSearchParams.length > 0 || recordCardOptions.similarSearchHelper.recordsInDisplay">
                 <div class="text-red-500 mb-2 flex flex-grow justify-center text-sm">
                     Warning: your current filter selection will be removed!</div>
             </div>
             <select #embeddingSelectSS class="select select-bordered select-sm w-full mt-4"
                 (change)="setEmbeddingIdSimilaritySearch(embeddingSelectSS.selectedIndex)">
-                <option *ngFor="let embedding of similarSearchHelper.embeddings" [value]="embedding.id">
+                <option *ngFor="let embedding of recordCardOptions.similarSearchHelper.embeddings"
+                    [value]="embedding.id">
                     {{embedding.name }}
                 </option>
             </select>
@@ -187,12 +163,13 @@
     </ng-template>
 </div>
 
-<kern-modal [isOpen]="dataBrowserModals.recordComments.open" closeButton="X"
+<kern-modal [isOpen]="recordCardOptions.dataBrowserModals.recordComments.open" closeButton="X"
     [modalBoxStyle]="{'min-width':'25rem', 'max-width':'40rem'}"
-    (optionClicked)="dataBrowserModals.recordComments.open = false">
+    (optionClicked)="recordCardOptions.dataBrowserModals.recordComments.open = false">
     <h1 class="text-lg text-gray-900 mb-2 text-center">Record comments</h1>
 
-    <div *ngFor="let cObj of dataBrowserModals.recordComments.commentsData; let i = index" class="break-words">
+    <div *ngFor="let cObj of recordCardOptions.dataBrowserModals.recordComments.commentsData; let i = index"
+        class="break-words">
         <div class="flex flex-grow justify-between gap-8">
             <p style="min-width: 100px;" class="font-bold">Comment {{i+1}}</p>
             <p class="text-gray-500">{{cObj.comment}}</p>

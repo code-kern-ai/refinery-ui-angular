@@ -61,6 +61,7 @@ import { createDefaultDataBrowserModals, DataBrowserModals } from './helper-clas
 import { CommentsFilter } from './helper-classes/comments-filter';
 import { AttributeVisibility } from 'src/app/projects/components/create-new-attribute/attributes-visibility-helper';
 import { HighlightSearch } from 'src/app/base/components/highlight/helper';
+import { Attribute } from 'src/app/base/components/record-card/record-card.types';
 
 
 type DataSlice = {
@@ -118,7 +119,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   project$: any;
   projectId: string;
   attributesQuery$: any;
-  attributes: Map<string, any> = new Map<string, any>();
+  attributes: Attribute;
   attributesSortOrder = [];
 
   labelingTaskWait: { isWaiting: boolean } = { isWaiting: false };
@@ -170,7 +171,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   subscriptions$: Subscription[] = [];
 
   lastSearchParams;
-  isTextHighlightNeeded: Map<string, boolean> = new Map<string, boolean>();
+  isTextHighlightNeeded: { [key: string]: boolean } = {};
   textHighlightArray: Map<string, string[]> = new Map<string, string[]>();
   textHighlightArrayKern: { [key: string]: HighlightSearch[] } = {};
 
@@ -307,7 +308,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     this.subscriptions$.push(vc$.subscribe((attributes) => {
       attributes = attributes.filter((a) => a.visibility == AttributeVisibility.DO_NOT_HIDE);
       attributes.sort((a, b) => a.relativePosition - b.relativePosition);
-      this.attributes.clear();
+      this.attributes = Object.fromEntries(attributes.map((attribute) => [attribute.id, attribute]));
       this.attributesSortOrder = [];
 
       this.attributesSortOrder.push({
@@ -319,7 +320,6 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       this.colorsAttributes.push('gray');
 
       attributes.forEach((att) => {
-        this.attributes.set(att.id, att);
         this.attributesSortOrder.push({
           name: att.name,
           key: att.id,
@@ -623,7 +623,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   _orderByFormArray(): FormArray {
     let array = this.formBuilder.array([]);
     for (let i = 1; i < this.attributesSortOrder.length; i++) {
-      array.push(this.getOrderByGroup(this.attributes.get(this.attributesSortOrder[i].key).name, true, -1)) //1, //-1 desc, 1 asc     
+      array.push(this.getOrderByGroup(this.attributes[this.attributesSortOrder[i].key].name, true, -1)) //1, //-1 desc, 1 asc     
     }
     array.push(this.getOrderByGroup(StaticOrderByKeys.WEAK_SUPERVISION_CONFIDENCE, false, -1));
     array.push(this.getOrderByGroup(StaticOrderByKeys.MODEL_CALLBACK_CONFIDENCE, false, -1));
@@ -1093,24 +1093,6 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     }
   }
 
-  // storePreliminaryRecordIds(pos: number) {
-  //   const huddleData = {
-  //     recordIds: this.extendedRecords.recordList.map((record) => record.id),
-  //     partial: true,
-  //     linkData: {
-  //       projectId: this.projectId,
-  //       id: this.extendedRecords.sessionId,
-  //       requestedPos: pos,
-  //       linkType: labelingLinkType.SESSION
-  //     },
-  //     allowedTask: null,
-  //     canEdit: true,
-  //     checkedAt: { db: null, local: new Date() }
-
-  //   }
-  //   localStorage.setItem('huddleData', JSON.stringify(huddleData));
-  // }
-
   setExtendedData(queryResults, extend: boolean) {
     if (!extend) {
       this.extendedRecords = {};
@@ -1274,18 +1256,18 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     for (let searchElement of this.activeSearchParams) {
       if (searchElement.values.group == SearchGroup.ATTRIBUTES) {
         if (searchElement.values.name == 'Any Attribute') {
-          this.isTextHighlightNeeded.set(attributeKey, true);
+          this.isTextHighlightNeeded[attributeKey] = true;
           return;
         }
         if (
-          searchElement.values.name == this.attributes.get(attributeKey).name
+          searchElement.values.name == this.attributes[attributeKey].name
         ) {
-          this.isTextHighlightNeeded.set(attributeKey, true);
+          this.isTextHighlightNeeded[attributeKey] = true;
           return;
         }
       }
     }
-    this.isTextHighlightNeeded.set(attributeKey, false);
+    this.isTextHighlightNeeded[attributeKey] = false;
   }
 
   refreshHighlightArray(attributeKey) {
@@ -1295,7 +1277,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       if (searchElement.values.group == SearchGroup.ATTRIBUTES) {
         if (
           searchElement.values.name == 'Any Attribute' ||
-          searchElement.values.name == this.attributes.get(attributeKey).name
+          searchElement.values.name == this.attributes[attributeKey].name
         ) {
           if (typeof searchElement.values.searchValue != 'string') {
             searchElement.values.searchValue = searchElement.values.searchValue.toString();

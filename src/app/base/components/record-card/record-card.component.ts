@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
-import { DataBrowserModals, RecordCommentsModal } from 'src/app/data/components/data-browser/helper-classes/modals-helper';
 import { labelingLinkType } from 'src/app/labeling/components/helper/labeling-helper';
-import { AttributeSort, DataBrowserRecord, ExtendedRecord } from './record-card.types';
+import { RecordCardOptions } from './record-card-helper';
+import { Attribute, DataBrowserRecord } from './record-card.types';
 
 
 @Component({
@@ -12,27 +12,19 @@ import { AttributeSort, DataBrowserRecord, ExtendedRecord } from './record-card.
 export class RecordCardComponent {
 
   @Input() record: DataBrowserRecord;
-  @Input() attributesSortOrder: AttributeSort;
-  @Input() index: number;
-  @Input() extendedRecords: ExtendedRecord;
-  @Input() similarSearchHelper: any;
-  @Input() recordComments: RecordCommentsModal;
-  @Input() attributes: Map<string, any>;
-  @Input() dataBrowserModals: DataBrowserModals;
-  @Input() activeSearchParams: any;
+  @Input() attributes: Attribute;
+  @Input() recordCardOptions: RecordCardOptions;
 
-  constructor() { }
-  ngOnInit() {
-    console.log(this.record)
+  constructor() {
   }
 
   storePreliminaryRecordIds(index: number) {
     const huddleData = {
-      recordIds: this.extendedRecords.recordList.map((record) => record.id),
+      recordIds: this.recordCardOptions.recordList.map((record) => record.id),
       partial: true,
       linkData: {
         projectId: this.record.project_id,
-        id: this.extendedRecords.sessionId,
+        id: this.recordCardOptions.sessionId,
         requestedPos: index,
         linkType: labelingLinkType.SESSION
       },
@@ -45,11 +37,11 @@ export class RecordCardComponent {
   }
 
   requestSimilarSearch() {
-    const saveSimilaritySearch = this.dataBrowserModals.similaritySearch;
-    this.similarSearchHelper.requestSimilarSearch(saveSimilaritySearch.embeddingId, saveSimilaritySearch.recordId);
+    const saveSimilaritySearch = this.recordCardOptions.dataBrowserModals.similaritySearch;
+    this.recordCardOptions.similarSearchHelper.requestSimilarSearch(saveSimilaritySearch.embeddingId, saveSimilaritySearch.recordId);
   }
 
   setEmbeddingIdSimilaritySearch(selectedIndex: string) {
-    this.dataBrowserModals.similaritySearch.embeddingId = this.similarSearchHelper.embeddings[selectedIndex].id;
+    this.recordCardOptions.dataBrowserModals.similaritySearch.embeddingId = this.recordCardOptions.similarSearchHelper.embeddings[selectedIndex].id;
   }
 }
