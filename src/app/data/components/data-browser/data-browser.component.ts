@@ -1093,23 +1093,23 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     }
   }
 
-  storePreliminaryRecordIds(pos: number) {
-    const huddleData = {
-      recordIds: this.extendedRecords.recordList.map((record) => record.id),
-      partial: true,
-      linkData: {
-        projectId: this.projectId,
-        id: this.extendedRecords.sessionId,
-        requestedPos: pos,
-        linkType: labelingLinkType.SESSION
-      },
-      allowedTask: null,
-      canEdit: true,
-      checkedAt: { db: null, local: new Date() }
+  // storePreliminaryRecordIds(pos: number) {
+  //   const huddleData = {
+  //     recordIds: this.extendedRecords.recordList.map((record) => record.id),
+  //     partial: true,
+  //     linkData: {
+  //       projectId: this.projectId,
+  //       id: this.extendedRecords.sessionId,
+  //       requestedPos: pos,
+  //       linkType: labelingLinkType.SESSION
+  //     },
+  //     allowedTask: null,
+  //     canEdit: true,
+  //     checkedAt: { db: null, local: new Date() }
 
-    }
-    localStorage.setItem('huddleData', JSON.stringify(huddleData));
-  }
+  //   }
+  //   localStorage.setItem('huddleData', JSON.stringify(huddleData));
+  // }
 
   setExtendedData(queryResults, extend: boolean) {
     if (!extend) {

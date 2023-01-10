@@ -178,7 +178,7 @@
                     Warning: your current filter selection will be removed!</div>
             </div>
             <select #embeddingSelectSS class="select select-bordered select-sm w-full mt-4"
-                (change)="setEmbeddingIdSS(embeddingSelectSS.selectedIndex)">
+                (change)="setEmbeddingIdSimilaritySearch(embeddingSelectSS.selectedIndex)">
                 <option *ngFor="let embedding of similarSearchHelper.embeddings" [value]="embedding.id">
                     {{embedding.name }}
                 </option>

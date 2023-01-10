@@ -1,5 +1,7 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { DataBrowserModals, RecordCommentsModal } from 'src/app/data/components/data-browser/helper-classes/modals-helper';
+import { labelingLinkType } from 'src/app/labeling/components/helper/labeling-helper';
+import { AttributeSort, DataBrowserRecord, ExtendedRecord } from './record-card.types';
 
 
 @Component({
@@ -7,9 +9,9 @@ import { DataBrowserModals, RecordCommentsModal } from 'src/app/data/components/
   templateUrl: './record-card.component.html',
   styleUrls: ['./record-card.component.scss']
 })
-export class RecordCardComponent implements OnInit {
+export class RecordCardComponent {
 
-  @Input() record: Record;
+  @Input() record: DataBrowserRecord;
   @Input() attributesSortOrder: AttributeSort;
   @Input() index: number;
   @Input() extendedRecords: ExtendedRecord;
@@ -19,15 +21,27 @@ export class RecordCardComponent implements OnInit {
   @Input() dataBrowserModals: DataBrowserModals;
   @Input() activeSearchParams: any;
 
-  @Output() preliminaryRecordIds = new EventEmitter<number>();
-
   constructor() { }
-
-  ngOnInit(): void {
+  ngOnInit() {
+    console.log(this.record)
   }
 
   storePreliminaryRecordIds(index: number) {
-    this.preliminaryRecordIds.emit(index);
+    const huddleData = {
+      recordIds: this.extendedRecords.recordList.map((record) => record.id),
+      partial: true,
+      linkData: {
+        projectId: this.record.project_id,
+        id: this.extendedRecords.sessionId,
+        requestedPos: index,
+        linkType: labelingLinkType.SESSION
+      },
+      allowedTask: null,
+      canEdit: true,
+      checkedAt: { db: null, local: new Date() }
+
+    }
+    localStorage.setItem('huddleData', JSON.stringify(huddleData));
   }
 
   requestSimilarSearch() {
@@ -35,36 +49,7 @@ export class RecordCardComponent implements OnInit {
     this.similarSearchHelper.requestSimilarSearch(saveSimilaritySearch.embeddingId, saveSimilaritySearch.recordId);
   }
 
-  setEmbeddingIdSS(selectedValue: string) {
-    this.dataBrowserModals.similaritySearch.embeddingId = this.similarSearchHelper.embeddings[selectedValue].id;
+  setEmbeddingIdSimilaritySearch(selectedIndex: string) {
+    this.dataBrowserModals.similaritySearch.embeddingId = this.similarSearchHelper.embeddings[selectedIndex].id;
   }
 }
-
-export type Record = {
-  category: string;
-  created_at: string;
-  data: any;
-  db_order: number;
-  id: string;
-  project_id: string;
-  record_id: string;
-  rla_aggregation: any;
-  rla_data: any;
-  wsHint: string;
-};
-
-export type AttributeSort = {
-  key: string;
-  name: string;
-  order: number;
-  type: string;
-};
-
-export type ExtendedRecord = {
-  fullCount: number;
-  queryLimit: number;
-  queryOffset: number;
-  recordList: Record[];
-  sessionId: string;
-  sql: string;
-};
