@@ -1,136 +1,86 @@
 import { combineLatest, Observable, Subscription } from "rxjs";
-import { first, map } from "rxjs/operators";
+import { first } from "rxjs/operators";
 import { CommentDataManager, CommentType } from "src/app/base/components/comment/comment-helper";
-import { InformationSourceReturnType, UserRole } from "src/app/base/enum/graphql-enums";
+import { InformationSourceReturnType } from "src/app/base/enum/graphql-enums";
 import { NotificationService } from "src/app/base/services/notification.service";
-import { ProjectApolloService } from "src/app/base/services/project/project-apollo.service";
 import { RecordApolloService } from "src/app/base/services/record/record-apollo.service";
-import { getUserAvatarUri, jsonCopy } from "src/app/util/helper-functions";
-import { UserManager } from "src/app/util/user-manager";
-import { LabelingSuiteComponent } from "../main-component/labeling-suite.component";
+import { jsonCopy } from "src/app/util/helper-functions";
+import { DoBeforeDestroy } from "src/app/util/interfaces";
+import { LabelingSuiteManager, UpdateType } from "./manager";
 
+type RecordData = {
+    deleted: boolean;
+    token: any;
+    baseRecord: any;
+    rlas: any[];
+}
 
-export class LabelingDataHandler {
-
-    //private constant references
-    private projectId: string;
-    private projectApolloService: ProjectApolloService;
+export class LabelingSuiteRecordManager implements DoBeforeDestroy {
+    private baseManager: LabelingSuiteManager;
     private recordApolloService: RecordApolloService;
-    private baseComponent: LabelingSuiteComponent;
-
-    //private data for preparation
-    private attributes: any[];
-    private labelingTasks: any[];
-    private recordData: RecordData = {
+    private projectId: string;
+    public recordData: RecordData = {
+        deleted: false,
         baseRecord: null,
         token: null,
         rlas: null,
     };
 
-    //public accessible data
-    public mainUser: UserData;
-    public currentRole: UserRole;
-    public allUsers: UserData[];
-
-    //private data for config
     private activeRecordId: string;
     private recordRequests = {
         record: null as Subscription,
         token: null as Subscription,
         rla: null as Subscription,
         rlaQuery: null as any,
-    }
+    };
 
-    constructor(projectId: string, projectApolloService: ProjectApolloService, recordApolloService: RecordApolloService, baseComponent: LabelingSuiteComponent) {
+
+    constructor(projectId: string, recordApolloService: RecordApolloService, baseManager: LabelingSuiteManager) {
         this.projectId = projectId;
-        this.projectApolloService = projectApolloService;
         this.recordApolloService = recordApolloService;
-        this.baseComponent = baseComponent;
+        this.baseManager = baseManager;
 
-        UserManager.registerAfterInitActionOrRun(this, this.prepareUserData, true);
 
         NotificationService.subscribeToNotification(this, {
-            projectId: projectId,
+            projectId: this.projectId,
             whitelist: this.getWebsocketWhitelist(),
             func: this.handleWebsocketNotification
         });
-        this.fetchAttributes();
-        this.fetchLabelingTasks();
     }
 
-    private prepareUserData() {
-        const user = UserManager.getUser();
-        this.mainUser = {
-            data: user,
-            avatarUri: getUserAvatarUri(user),
-            isLoggedInUser: true
-        }
-        this.allUsers = UserManager.getAllUsers().map(u => ({
-            data: u,
-            avatarUri: getUserAvatarUri(u),
-            isLoggedInUser: u.id == this.mainUser.data.id
-        }));
-        UserManager.registerRoleChangeListenerAndRun(this, () => this.currentRole = UserManager.currentRole);
+    doBeforeDestroy(): void {
+        NotificationService.unsubscribeFromNotification(this, this.projectId);
     }
 
-
-    // private getWebsocketWhitelist(): string[] {
-    //     const toReturn = ['attributes_updated', 'calculate_attribute'];
-    //     toReturn.push(...['label_created', 'label_deleted', 'labeling_task_deleted', 'labeling_task_updated', 'labeling_task_created']);
-
-    //     return toReturn;
-    // }
     private getWebsocketWhitelist(): string[] {
-        let toReturn = ['label_created', 'label_deleted', 'attributes_updated', 'calculate_attribute'];
-        toReturn.push(...['payload_finished', 'weak_supervision_finished']);
-        toReturn.push(
-            ...[
-                'labeling_task_deleted',
-                'labeling_task_updated',
-                'labeling_task_created',
-            ]
-        );
+        let toReturn = [];
         toReturn.push(...['record_deleted', 'rla_created', 'rla_deleted']);
-        toReturn.push(...['access_link_changed', 'access_link_removed']);
         return toReturn;
     }
-    public destroyToDos() {
-        NotificationService.unsubscribeFromNotification(this);
-        UserManager.unregisterRoleChangeListener(this);
-    }
-
-    private fetchAttributes() {
-        let q, vc;
-        [q, vc] = this.projectApolloService.getAttributesByProjectId(this.projectId);
-        vc.pipe(first()).subscribe(att => this.attributes = att);
-    }
-
-    private fetchLabelingTasks() {
-        let q, vc;
-        [q, vc] = this.projectApolloService.getLabelingTasksByProjectId(this.projectId);
-        vc.pipe(first()).subscribe(lt => this.labelingTasks = lt);
-    }
-
 
     private handleWebsocketNotification(msgParts: string[]) {
-        if (msgParts[1] == 'attributes_updated' || (msgParts[1] == 'calculate_attribute' && msgParts[2] == 'created')) {
-            this.fetchAttributes();
-        } else if (['label_created', 'label_deleted', 'labeling_task_deleted', 'labeling_task_updated', 'labeling_task_created'].includes(msgParts[1])) {
-            this.fetchLabelingTasks();
+        if (msgParts[1] == 'record_deleted') {
+            console.log("record deleted");
+            this.setDeletedState();
         }
-
         else {
-            console.log("unknown message in labeling suite data handler: " + msgParts);
+            console.log("unknown message in labeling suite record manager" + msgParts);
         }
 
     }
+
+
 
 
     public collectRecordData(recordId: string) {
-        if (recordId == null || recordId == "deleted") {
+        if (recordId == null) {
             // this.fullRecordData = { id: recordId };
             // if (this.recordLabelAssociations$) this.recordLabelAssociations$.unsubscribe();
             console.log("no record id provided (collect record data)")
+            return;
+        }
+        if (recordId == "deleted") {
+            this.recordData.deleted = true;
             return;
         }
         if (this.activeRecordId) {
@@ -155,13 +105,19 @@ export class LabelingDataHandler {
         this.recordData.token = results[0];
         this.recordData.baseRecord = results[1];
         let rlas = results[2];
-        if (this.ignoreRlas(rlas)) return;
+        if (this.ignoreRlas(rlas)) {
+            this.baseManager.runUpdateListeners(UpdateType.RECORD);
+            return;
+        }
         rlas = jsonCopy(rlas);
         this.recordData.rlas = this.finalizeRlas(rlas);
+        this.baseManager.runUpdateListeners(UpdateType.RECORD);
 
-        this.baseComponent.setOverviewTableData(this.recordData.rlas);
-
+        // this.baseComponent.setOverviewTableData(this.recordData.rlas);
     }
+
+
+
     private finalizeRlas(rlas: any[]): any[] {
         if (!rlas) return [];
         for (const e of rlas) {
@@ -210,6 +166,7 @@ export class LabelingDataHandler {
             if (!recordData) {
                 // this.huddleData.recordIds[this.huddleData.linkData.requestedPos - 1] = "deleted"
                 // this.jumpToPosition(this.project.id, this.huddleData.linkData.requestedPos);
+                this.recordData.deleted = true;
                 console.log("no record data found (collect record data)")
                 return;
             }
@@ -246,16 +203,32 @@ export class LabelingDataHandler {
         return false;
     }
 
-}
 
+    public deleteRecord() {
+        if (this.recordData.deleted) return;
+        console.log("delete record -> nonthing done though since dev")
+        return;
+        const recordId = this.recordData.baseRecord.id;
+        this.recordApolloService.deleteRecordByRecordId(this.projectId, recordId)
+            .pipe(first()).subscribe((r) => {
+                if (r['data']['deleteRecord']?.ok) {
+                    this.setDeletedState();
+                    //   this.huddleData.recordIds[this.huddleData.linkData.requestedPos - 1] = "deleted"
+                    //   let jumpPos = this.huddleData.linkData.requestedPos + 1;
+                    //   if (jumpPos >= this.huddleData.recordIds.length) jumpPos -= 2;
+                    //   this.jumpToPosition(this.project.id, jumpPos);
+                } else {
+                    console.log("Something went wrong with deletion of record:" + recordId);
+                }
+            });
+    }
 
-type UserData = {
-    data: any;
-    avatarUri: string;
-    isLoggedInUser: boolean;
-}
-type RecordData = {
-    token: any;
-    baseRecord: any;
-    rlas: any[];
+    private setDeletedState() {
+
+        this.recordData.deleted = true;
+        this.recordData.baseRecord = null;
+        this.recordData.rlas = null;
+        this.recordData.token = null;
+    }
+
 }

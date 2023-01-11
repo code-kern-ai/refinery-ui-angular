@@ -1,4 +1,7 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { LabelingSuiteManager } from '../../helper/manager/manager';
+import { LabelingSuiteSettings } from '../../helper/manager/settings';
+import { LabelingSuiteComponent } from '../../main-component/labeling-suite.component';
 
 @Component({
   selector: 'kern-labeling-suite-task-header',
@@ -6,9 +9,12 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
   styleUrls: ['./task-header.component.scss'],
 })
 export class LabelingSuiteTaskHeaderComponent implements OnInit, OnDestroy {
-  constructor() {}
+  @Input() lsm: LabelingSuiteManager;
+  @Input() mainComponent: LabelingSuiteComponent;
 
-  ngOnDestroy() {}
+  constructor() { }
 
-  ngOnInit(): void {}
+  ngOnDestroy() { }
+
+  ngOnInit(): void { }
 }

@@ -1,12 +1,18 @@
 import {
   Component,
+  Input,
+  OnChanges,
   OnDestroy,
   OnInit,
+  SimpleChanges,
 } from '@angular/core';
-import { informationSourceTypeToString, LabelSource, labelSourceToString } from 'src/app/base/enum/graphql-enums';
+import { getLabelSourceOrder, informationSourceTypeToString, LabelSource, labelSourceToString } from 'src/app/base/enum/graphql-enums';
 import { LabelHelper } from 'src/app/projects/components/project-settings/helper/label-helper';
 import { dateAsUTCDate } from 'src/app/util/helper-functions';
+import { LabelingSuiteManager, UpdateType } from '../../helper/manager/manager';
+import { ComponentType, LabelingSuiteOverviewTableSettings, LabelingSuiteSettings } from '../../helper/manager/settings';
 import { getHoverGroups } from '../../helper/util-functions';
+import { LabelingSuiteComponent } from '../../main-component/labeling-suite.component';
 import { getEmptyHeuristicInfo, HeuristicInfo, TableDisplayData } from './helper';
 
 @Component({
@@ -14,56 +20,55 @@ import { getEmptyHeuristicInfo, HeuristicInfo, TableDisplayData } from './helper
   templateUrl: './overview-table.component.html',
   styleUrls: ['./overview-table.component.scss']
 })
-export class LabelingSuiteOverviewTableComponent implements OnInit, OnDestroy {
+export class LabelingSuiteOverviewTableComponent implements OnInit, OnDestroy, OnChanges {
+
+  @Input() lsm: LabelingSuiteManager;
 
   private fullData: TableDisplayData[];
   dataToDisplay: TableDisplayData[];
-  heuristicInfo: HeuristicInfo = {
-    show: false,
-    has: false
-  };
 
-  fullyInitialized: boolean = false;
-
+  dataHasHeuristics: boolean = false;
+  get settings(): LabelingSuiteOverviewTableSettings {
+    return this.lsm.settingManager.settings.overviewTable;
+  }
 
   constructor(
   ) { }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.lsm) {
+      this.lsm.registerUpdateListenerAndDo(UpdateType.RECORD, this, () => this.prepareDataToDisplay(this.lsm.recordManager.recordData.rlas));
+      this.lsm.settingManager.registerSettingListener(ComponentType.OVERVIEW_TABLE, this, () => this.settingsChanged());
+    }
+  }
 
   ngOnDestroy() {
+    if (this.lsm) {
+      this.lsm.unregisterUpdateListener(UpdateType.RECORD, this);
+      this.lsm.settingManager.unregisterSettingListener(ComponentType.OVERVIEW_TABLE, this);
+    }
   }
 
 
   ngOnInit(): void {
   }
 
-
-  public setPageSettings(allSettings: any) {
-    if (allSettings.overviewTable) {
-      this.setHeuristicShow(allSettings.overviewTable.showHeuristics)
-    } else {
-      console.log("OverviewTable: No showHeuristics property in settings object");
-    }
-    this.checkFullyInitialized();
-  }
-  public extendSettingsForSave(allSettings: any) {
-    allSettings.overviewTable = {
-      showHeuristics: this.heuristicInfo.show
-    }
-  }
-
-  public prepareDataToDisplay(data: any[]) {
+  private prepareDataToDisplay(data: any[]) {
+    if (!data) return;
     this.buildDisplayArray(data);
-    this.setHeuristicShow(this.heuristicInfo?.show);
-    this.heuristicInfo.has = this.checkDataHasHeuristics(data);
-    this.checkFullyInitialized();
+    this.rebuildDataToDisplay();
+    this.dataHasHeuristics = this.checkDataHasHeuristics(data);
   }
 
-  public setHeuristicShow(show: boolean) {
-    this.heuristicInfo.show = !!show;
+
+  private settingsChanged() {
+    this.rebuildDataToDisplay();
+  }
+
+  private rebuildDataToDisplay() {
     if (this.fullData) {
-      this.dataToDisplay = this.heuristicInfo.show ? this.fullData : this.fullData.filter(
-        (e) => e.sourceType != LabelSource.INFORMATION_SOURCE
+      this.dataToDisplay = this.settings.showHeuristics ? this.fullData : this.fullData.filter(
+        (e) => e.sourceTypeKey != LabelSource.INFORMATION_SOURCE
       );
     }
   }
@@ -73,23 +78,23 @@ export class LabelingSuiteOverviewTableComponent implements OnInit, OnDestroy {
       this.fullData = [];
       return;
     }
-    let result = [];
-
+    let result = Array(data.length);
+    let i = 0;
     for (let e of data) {
-      const toPush: any = {
+      result[i++] = {
         hoverGroups: getHoverGroups(e),
-        orderPos: this.getOrderPos(e),
+        orderPos: getLabelSourceOrder(e.sourceType, e.informationSource?.type),
+        orderPosSec: this.getOrderPos(e),
         sourceType: this.getSourceTypeText(e),
+        sourceTypeKey: e.sourceType,
         taskName: e.labelingTaskLabel.labelingTask.name,
         createdBy: this.getCreatedByName(e),
         label: this.getLabelData(e)
       };
-      result.push(toPush);
     }
-    result.sort((a, b) => a.orderPos - b.orderPos);
+    result.sort((a, b) => a.orderPos - b.orderPos || a.orderPosSec - b.orderPosSec || a.createdBy.localeCompare(b.createdBy));
 
     this.fullData = result;
-    console.log("OverviewTable: Full data set", this.fullData);
   }
 
   private getOrderPos(e: any): number {
@@ -127,22 +132,11 @@ export class LabelingSuiteOverviewTableComponent implements OnInit, OnDestroy {
     }
   }
 
-  // private calcSortOverview(a, b): number {
-  //   let aRPos = a.labelingTaskLabel.labelingTask.attribute?.relativePosition;
-  //   let bRPos = b.labelingTaskLabel.labelingTask.attribute?.relativePosition;
-  //   if (!aRPos) aRPos = Number.MAX_VALUE;
-  //   if (!bRPos) bRPos = Number.MAX_VALUE;
-  //   return aRPos - bRPos || a.tokenStartIdx - b.tokenStartIdx;
-  // }
-
   private checkDataHasHeuristics(data: any[]): boolean {
     if (!data) return false;
     for (const el of data) {
       if (el.sourceType == LabelSource.INFORMATION_SOURCE) return true;
     }
     return false;
-  }
-  private checkFullyInitialized() {
-    this.fullyInitialized = this.heuristicInfo != null && this.dataToDisplay != null;
   }
 }

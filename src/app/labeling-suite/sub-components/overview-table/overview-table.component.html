@@ -1,4 +1,4 @@
-<ng-template [ngIf]="fullyInitialized">
+<ng-template [ngIf]="dataToDisplay != null">
     <ng-template [ngIf]="dataToDisplay.length > 0" [ngIfElse]="nothingToShow">
         <div class="flex flex-col p-4">
             <div class="overflow-x-auto">
@@ -67,7 +67,7 @@
     </ng-template>
 
     <ng-template #nothingToShow>
-        <ng-template [ngIf]="!heuristicInfo.show && heuristicInfo.has">
+        <ng-template [ngIf]="!settings.showHeuristics && dataHasHeuristics">
             <p class="text-gray-500 p-5">Heuristics display is currently disabled</p>
         </ng-template>
     </ng-template>

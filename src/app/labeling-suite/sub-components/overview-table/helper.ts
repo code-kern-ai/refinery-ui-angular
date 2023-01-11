@@ -1,5 +1,3 @@
-import { LabelColors } from "src/app/projects/components/project-settings/helper/label-helper";
-
 export type HeuristicInfo = {
     show: boolean;
     has: boolean;
@@ -21,7 +19,9 @@ export type TableDisplayData = {
         value: string,
     },
     orderPos: number,
+    orderPosSec: number,
     sourceType: string,
+    sourceTypeKey: string,
     taskName: string,
     createdBy: string,
     label: {

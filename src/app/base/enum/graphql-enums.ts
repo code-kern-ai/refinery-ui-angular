@@ -4,6 +4,25 @@ export enum LabelSource {
     INFORMATION_SOURCE = "INFORMATION_SOURCE",
     MODEL_CALLBACK = "MODEL_CALLBACK",
 }
+
+export function getLabelSourceOrder(source: LabelSource, isType?: InformationSourceType): number {
+    switch (source) {
+        case LabelSource.MANUAL: return 0;
+        case LabelSource.WEAK_SUPERVISION: return 1;
+        case LabelSource.MODEL_CALLBACK: return 2;
+        case LabelSource.INFORMATION_SOURCE:
+            switch (isType) {
+                case InformationSourceType.LABELING_FUNCTION: return 30;
+                case InformationSourceType.ACTIVE_LEARNING: return 31;
+                case InformationSourceType.PRE_COMPUTED: return 32;
+                case InformationSourceType.ZERO_SHOT: return 33;
+                case InformationSourceType.CROWD_LABELER: return 34;
+                default: return 35;
+            }
+        default: return 9999;
+    }
+}
+
 export function labelSourceToString(source: LabelSource, forDisplay: boolean = true) {
     if (forDisplay) {
         switch (source) {
