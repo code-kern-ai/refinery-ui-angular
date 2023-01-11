@@ -18,7 +18,12 @@ export class RecordDisplayComponent implements OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.record) {
       if (!this.record.hasOwnProperty('data')) {
-        this.record.data = this.record.fullRecordData;
+        if (this.record.hasOwnProperty('fullRecordData')) {
+          this.record.data = this.record.fullRecordData;
+        }
+        if (this.record.hasOwnProperty('recordData')) {
+          this.record.data = this.record.recordData;
+        }
       }
     }
     if (changes.recordCardOptions) {
@@ -30,5 +35,4 @@ export class RecordDisplayComponent implements OnChanges {
       }
     }
   }
-
 }

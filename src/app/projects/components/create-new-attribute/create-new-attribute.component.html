@@ -296,15 +296,10 @@
     <h1 class="text-lg text-gray-900 mb-2 text-center">View details</h1>
     <div *ngIf=" attributeCalculationModals.attributeDetails.recordData else requestingData"
         class="text-sm text-gray-500 my-2" class="overflow-y-auto max-height-modal scrollable-size">
-        <div *ngFor="let att of attributes">
-            <div *ngIf="att.state == 'UPLOADED' || att.state == 'AUTOMATICALLY_CREATED' || att.state =='USABLE'"
-                class="text-sm leading-5 text-left my-3">
-                <div class="text-gray-900 font-bold">{{att.name}}</div>
-                <div class="text-gray-500 font-normal">
-                    {{attributeCalculationModals.attributeDetails.recordData[att.name]}}
-                </div>
-            </div>
-        </div>
+        <kern-record-display [record]="attributeCalculationModals.attributeDetails" [attributes]="attributeDetails"
+            [recordCardOptions]="{
+            attributesSortOrder: attributes
+        }"></kern-record-display>
         <div class="text-sm leading-5 text-left text-gray-900 font-bold">
             Calculated value</div>
         <div class="text-sm leading-5 text-left text-gray-500 font-normal">
