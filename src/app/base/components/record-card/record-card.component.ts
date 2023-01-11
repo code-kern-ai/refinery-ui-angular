@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { labelingLinkType } from 'src/app/labeling/components/helper/labeling-helper';
 import { RecordCardOptions } from './record-card-helper';
-import { Attribute, DataBrowserRecord } from './record-card.types';
+import { Attributes, DataBrowserRecord } from './record-card.types';
 
 
 @Component({
@@ -12,7 +12,7 @@ import { Attribute, DataBrowserRecord } from './record-card.types';
 export class RecordCardComponent {
 
   @Input() record: DataBrowserRecord;
-  @Input() attributes: Attribute;
+  @Input() attributes: Attributes;
   @Input() recordCardOptions: RecordCardOptions;
 
   columnsData: any[] = [];

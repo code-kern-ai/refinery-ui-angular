@@ -34,7 +34,7 @@ import { KnowledgeBasesApolloService } from 'src/app/base/services/knowledge-bas
 import { createDefaultHeuristicsDetailsModals, HeuristicsDetailsModals } from './weak-source-details-helper';
 import { AttributeVisibility } from 'src/app/projects/components/create-new-attribute/attributes-visibility-helper';
 import { BricksIntegratorComponent } from 'src/app/base/components/bricks-integrator/bricks-integrator.component';
-import { Attribute } from 'src/app/base/components/record-card/record-card.types';
+import { Attributes } from 'src/app/base/components/record-card/record-card.types';
 
 @Component({
   selector: 'kern-weak-source-details',
@@ -102,7 +102,7 @@ export class WeakSourceDetailsComponent
   displayLogWarning: boolean = false;
   isInitialLf: boolean = null; //null as add state to differentiate between initial, not and unchecked
   heuristicDetailsModals: HeuristicsDetailsModals = createDefaultHeuristicsDetailsModals();
-  attributeDetails: Attribute;
+  attributeDetails: Attributes;
 
   constructor(
     private router: Router,

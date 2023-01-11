@@ -61,7 +61,7 @@ import { createDefaultDataBrowserModals, DataBrowserModals } from './helper-clas
 import { CommentsFilter } from './helper-classes/comments-filter';
 import { AttributeVisibility } from 'src/app/projects/components/create-new-attribute/attributes-visibility-helper';
 import { HighlightSearch } from 'src/app/base/components/highlight/helper';
-import { Attribute } from 'src/app/base/components/record-card/record-card.types';
+import { Attributes } from 'src/app/base/components/record-card/record-card.types';
 
 
 type DataSlice = {
@@ -119,7 +119,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   project$: any;
   projectId: string;
   attributesQuery$: any;
-  attributes: Attribute;
+  attributes: Attributes;
   attributesSortOrder = [];
 
   labelingTaskWait: { isWaiting: boolean } = { isWaiting: false };

@@ -33,6 +33,6 @@ export type ActiveSearchParams = {
     values: any;
 };
 
-export type Attribute = {
-    [k: string]: any;
+export type Attributes = {
+    [id: string]: any;
 }
