@@ -47,10 +47,6 @@ export class RecordCardComponent {
     this.recordCardOptions.similarSearchHelper.requestSimilarSearch(saveSimilaritySearch.embeddingId, saveSimilaritySearch.recordId);
   }
 
-  setEmbeddingIdSimilaritySearch(selectedIndex: string) {
-    this.recordCardOptions.dataBrowserModals.similaritySearch.embeddingId = this.recordCardOptions.similarSearchHelper.embeddings[selectedIndex].id;
-  }
-
   prepareColumnsData() {
     const columnsData = [];
     columnsData.push({

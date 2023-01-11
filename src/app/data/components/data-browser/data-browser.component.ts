@@ -2078,4 +2078,13 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   setEmbeddingId(selectedValue: string) {
     this.dataBrowserModals.findOutliers.embeddingId = this.similarSearchHelper.embeddings[selectedValue].id;
   }
+
+  setEmbeddingIdSimilaritySearch(selectedIndex: string) {
+    this.dataBrowserModals.similaritySearch.embeddingId = this.similarSearchHelper.embeddings[selectedIndex].id;
+  }
+
+  requestSimilarSearch() {
+    const saveSimilaritySearch = this.dataBrowserModals.similaritySearch;
+    this.similarSearchHelper.requestSimilarSearch(saveSimilaritySearch.embeddingId, saveSimilaritySearch.recordId);
+  }
 }
