@@ -152,6 +152,7 @@ export function getEmptyBricksVariable(): BricksVariable {
     }
 }
 
+
 export function bricksVariableNeedsTaskId(variableType: BricksVariableType): boolean {
     switch (variableType) {
         case BricksVariableType.EMBEDDING:
@@ -162,3 +163,30 @@ export function bricksVariableNeedsTaskId(variableType: BricksVariableType): boo
     }
 }
 
+export type BricksExpectedLabels = {
+    expectedTaskLabels: ExpectedLabel[];
+    labelsToBeCreated: number;
+    labelWarning: boolean;
+    canCreateTask: boolean;
+    labelMappingActive: boolean;
+    availableLabels: any[];
+}
+export function getEmptyBricksExpectedLabels(): BricksExpectedLabels {
+    return {
+        expectedTaskLabels: [],
+        labelsToBeCreated: null,
+        labelWarning: false,
+        canCreateTask: false,
+        labelMappingActive: false,
+        availableLabels: [],
+    }
+}
+
+export type ExpectedLabel = {
+    label: string,
+    exists: boolean,
+    backgroundColor: string,
+    borderColor: string,
+    textColor: string,
+    mappedLabel?: string,
+}
