@@ -84,7 +84,9 @@ import { RecordTableComponent } from './components/record-card/components/record
     LogsComponent,
     DefaultOrderKeyvaluePipe,
     NotificationCenterComponent,
-    RecordCardComponent
+    RecordCardComponent,
+    RecordDisplayComponent,
+    RecordTableComponent
   ]
 })
 export class BaseModule { }

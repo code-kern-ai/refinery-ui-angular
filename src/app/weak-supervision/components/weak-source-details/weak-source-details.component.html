@@ -464,7 +464,7 @@
     <div *ngIf="heuristicDetailsModals.attributeDetails.currentRecordIdx != -1">
         <div *ngIf="sampleRecords.records[heuristicDetailsModals.attributeDetails.currentRecordIdx] as record">
             <div class="text-sm text-gray-500 my-2" class="overflow-y-auto max-height-modal scrollable-size">
-                <kern-record-display [attributes]="attributeDetails" [recordCardOptions]="{
+                <kern-record-display [record]="record" [attributes]="attributeDetails" [recordCardOptions]="{
                     attributesSortOrder: attributesView
                 }"></kern-record-display>
                 <div class="text-sm leading-5 text-left text-gray-900 font-bold">

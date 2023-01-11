@@ -5,7 +5,7 @@ import { ActiveSearchParams, AttributeSort, DataBrowserRecord } from "./record-c
 export type RecordCardOptions = {
     /**
      * Options set for kern record card
-     * @attributesSortOrder {AttributeSort[], optional} - Array of sorted attributes to be displayed
+     * @attributesSortOrder {AttributeSort[] | any[], optional} - Array of sorted attributes to be displayed
      * @dataBrowserModals {DataBrowserModals, optional} - Data browser modals with specific fields
      * @indexExtendedRecord {number, optional} - Index of the extended record in the record list
      * @recordList {DataBrowserRecord[], optional} - Array of records to be displayed
@@ -16,7 +16,7 @@ export type RecordCardOptions = {
      * @textHighlightArrayKern {string[], optional} - Array of text to be highlighted
      * @isTextHighlightNeeded {[key: string]: boolean, optional} - Flag to check if text highlight is needed
     */
-    attributesSortOrder?: AttributeSort[];
+    attributesSortOrder?: AttributeSort[] | any[];
     dataBrowserModals?: DataBrowserModals;
     indexExtendedRecord?: number;
     recordList?: DataBrowserRecord[];

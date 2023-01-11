@@ -24,7 +24,7 @@
             <div *ngIf="recordCardOptions.dataBrowserModals.configuration.weakSupervisionRelated && record.wsHint"
                 class="text-gray-800 text-sm">
                 {{record.wsHint}}</div>
-            <kern-record-table [tableData]="tableData" [allData]="record.rla_aggregation"></kern-record-table>
+            <kern-record-table [columnsData]="columnsData" [tableData]="record.rla_aggregation"></kern-record-table>
         </div>
     </ng-template>
     <div class="mt-3">

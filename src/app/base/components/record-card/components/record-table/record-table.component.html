@@ -4,25 +4,25 @@
             <table class="min-w-full border divide-y divide-gray-300">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th *ngFor="let column of tableData" scope="col"
+                        <th *ngFor="let column of preparedColumnsData" scope="col"
                             class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
                             {{column.displayName}}
                         </th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200 bg-white">
-                    <tr *ngFor="let data of allData | keyvalue; let i = index"
+                    <tr *ngFor="let data of preparedTableData; let i = index"
                         [ngClass]="i%2!=0 ? 'bg-gray-50':'bg-white'">
-                        <td *ngFor="let column of tableData"
+                        <td *ngFor="let column of preparedColumnsData"
                             class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
                             <span *ngIf="column.field !== 'label'; else labelBadge">
-                                {{data.value[column.field]}}
+                                {{data[column.field]}}
                             </span>
                             <ng-template #labelBadge>
                                 <span
                                     class="inline-flex items-center px-2.5 py-0.5 rounded-md text-sm font-medium border border-0"
-                                    [ngClass]="[data.value.backgroundColor, data.value.textColor, data.value.borderColor]">
-                                    {{data.value[column.field]}}
+                                    [ngClass]="[data.backgroundColor, data.textColor, data.borderColor]">
+                                    {{data[column.field]}}
                                 </span>
                             </ng-template>
                         </td>

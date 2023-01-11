@@ -11,6 +11,13 @@ export type DataBrowserRecord = {
     wsHint: string;
 };
 
+export type RecordDisplay = {
+    data: {
+        [k: string]: any;
+    };
+    [k: string]: any;
+};
+
 export type AttributeSort = {
     key: string;
     name: string;
