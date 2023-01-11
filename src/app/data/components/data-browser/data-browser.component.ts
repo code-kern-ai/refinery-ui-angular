@@ -1919,6 +1919,8 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     } else if (['label_created', 'label_deleted', 'labeling_task_deleted', 'labeling_task_updated', 'labeling_task_created', 'information_source_created', 'information_source_updated', 'information_source_deleted'].includes(msgParts[1])) {
       this.refreshAndDo(this.labelingTasksQuery$, this.labelingTaskWait, () => this.websocketFilterRefresh(currentFilterData));
       this.alterUser(msgParts[1])
+    } else if (msgParts[1] == 'calculate_attribute' && msgParts[2] == 'updated') {
+      this.attributesQuery$.refetch();
     }
     this.similarSearchHelper.handleWebsocketNotification(msgParts);
   }

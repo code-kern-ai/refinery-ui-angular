@@ -1,11 +1,11 @@
 <div *ngFor="let attribute of recordCardOptions.attributesSortOrder; let k = index">
     <div class="font-semibold text-sm text-gray-800">
         <div class="flex flex-row items-center">
-            <span class="font-dmMono"> {{attributes[attribute.key]?.name}}</span>
+            <span class="font-dmMono">{{attributes[attribute.key]?.name}}</span>
         </div>
     </div>
     <div *ngIf="attributes[attribute.key]" class="text-gray-800 text-sm mb-4 overflow-anywhere flex">
-        <ng-template [ngIf]=" recordCardOptions.dataBrowserModals.configuration.highlightText && recordCardOptions.isTextHighlightNeeded &&
+        <ng-template [ngIf]="recordCardOptions.dataBrowserModals.configuration.highlightText && recordCardOptions.isTextHighlightNeeded &&
             recordCardOptions.isTextHighlightNeeded[attribute.key] &&
             record.data[attributes[attribute.key].name]" [ngIfElse]="noHighlight">
             <kern-highlight [text]="record.data[attributes[attribute.key].name].toString()"
