@@ -26,9 +26,8 @@ import { HeuristicStatusesComponent } from './components/heuristic-statuses/heur
 import { LogsComponent } from './components/logs/logs.component';
 import { DefaultOrderKeyvaluePipe } from './pipes/default-order-key-value.pipe';
 import { NotificationCenterComponent } from './components/notification-center/notification-center.component';
-import { RecordCardComponent } from './components/record-card/record-card.component';
-import { RecordDisplayComponent } from './components/record-card/components/record-display/record-display.component';
-import { RecordTableComponent } from './components/record-card/components/record-table/record-table.component';
+import { RecordDisplayComponent } from './components/record-display/record-display.component';
+import { RecordTableComponent } from './components/record-table/record-table.component';
 
 @NgModule({
   declarations: [
@@ -51,7 +50,6 @@ import { RecordTableComponent } from './components/record-card/components/record
     LogsComponent,
     DefaultOrderKeyvaluePipe,
     NotificationCenterComponent,
-    RecordCardComponent,
     RecordDisplayComponent,
     RecordTableComponent
   ],
@@ -84,7 +82,6 @@ import { RecordTableComponent } from './components/record-card/components/record
     LogsComponent,
     DefaultOrderKeyvaluePipe,
     NotificationCenterComponent,
-    RecordCardComponent,
     RecordDisplayComponent,
     RecordTableComponent
   ]

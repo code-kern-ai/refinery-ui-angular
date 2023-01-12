@@ -1,15 +1,15 @@
-<div *ngFor="let attribute of recordCardOptions.attributesSortOrder; let k = index">
+<div *ngFor="let attribute of recordDisplayOptions.attributesSortOrder; let k = index">
     <div class="font-semibold text-sm text-gray-800">
         <div class="flex flex-row items-center">
             <span class="font-dmMono">{{attributes[attribute.key]?.name}}</span>
         </div>
     </div>
     <div *ngIf="attributes[attribute.key]" class="text-gray-800 text-sm mb-4 overflow-anywhere flex">
-        <ng-template [ngIf]="recordCardOptions.dataBrowserModals && recordCardOptions.dataBrowserModals.configuration.highlightText && recordCardOptions.isTextHighlightNeeded &&
-            recordCardOptions.isTextHighlightNeeded[attribute.key] &&
+        <ng-template [ngIf]="recordDisplayOptions.dataBrowserModals && recordDisplayOptions.dataBrowserModals.configuration.highlightText && recordDisplayOptions.isTextHighlightNeeded &&
+        recordDisplayOptions.isTextHighlightNeeded[attribute.key] &&
             record.data[attributes[attribute.key].name]" [ngIfElse]="noHighlight">
             <kern-highlight [text]="record.data[attributes[attribute.key].name].toString()"
-                [searchForExtended]="recordCardOptions.textHighlightArrayKern[attribute.key]"></kern-highlight>
+                [searchForExtended]="recordDisplayOptions.textHighlightArrayKern[attribute.key]"></kern-highlight>
         </ng-template>
         <ng-template #noHighlight>
             <span

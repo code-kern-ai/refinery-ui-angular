@@ -19,7 +19,7 @@ import { getColorForDataType, isStringTrue, toPythonFunctionName } from 'src/app
 import { KnowledgeBasesApolloService } from 'src/app/base/services/knowledge-bases/knowledge-bases-apollo.service';
 import { AttributeCalculationModals, createDefaultAttributeCalculationModals } from './create-new-attribute-helper';
 import { AttributeVisibility, attributeVisibilityStates, getTooltipVisibilityState } from './attributes-visibility-helper';
-import { Attributes } from 'src/app/base/components/record-card/record-card.types';
+import { Attributes } from 'src/app/base/components/record-display/record-display.helper';
 
 @Component({
   selector: 'kern-create-new-attribute',

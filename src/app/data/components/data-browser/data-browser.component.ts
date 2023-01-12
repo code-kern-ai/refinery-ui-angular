@@ -61,7 +61,7 @@ import { createDefaultDataBrowserModals, DataBrowserModals } from './helper-clas
 import { CommentsFilter } from './helper-classes/comments-filter';
 import { AttributeVisibility } from 'src/app/projects/components/create-new-attribute/attributes-visibility-helper';
 import { HighlightSearch } from 'src/app/base/components/highlight/helper';
-import { Attributes } from 'src/app/base/components/record-card/record-card.types';
+import { Attributes } from 'src/app/base/components/record-display/record-display.helper';
 
 
 type DataSlice = {
@@ -210,7 +210,8 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     private recordApolloService: RecordApolloService,
     private organizationApolloService: OrganizationApolloService,
     public formBuilder: FormBuilder,
-    private cfRef: ChangeDetectorRef
+    private cfRef: ChangeDetectorRef,
+    private route: ActivatedRoute
   ) { }
 
   ngAfterViewChecked() {
@@ -2086,5 +2087,25 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   requestSimilarSearch() {
     const saveSimilaritySearch = this.dataBrowserModals.similaritySearch;
     this.similarSearchHelper.requestSimilarSearch(saveSimilaritySearch.embeddingId, saveSimilaritySearch.recordId);
+  }
+
+  storePreliminaryRecordIds(index: number) {
+    const huddleData = {
+      recordIds: this.extendedRecords.recordList.map((record) => record.id),
+      partial: true,
+      linkData: {
+        projectId: this.projectId,
+        id: this.extendedRecords.sessionId,
+        requestedPos: index,
+        linkType: labelingLinkType.SESSION
+      },
+      allowedTask: null,
+      canEdit: true,
+      checkedAt: { db: null, local: new Date() }
+
+    }
+    localStorage.setItem('huddleData', JSON.stringify(huddleData));
+    this.router.navigate(['../labeling/' + this.extendedRecords.sessionId],
+      { queryParams: { pos: index + 1, type: 'SESSION' }, relativeTo: this.route });
   }
 }

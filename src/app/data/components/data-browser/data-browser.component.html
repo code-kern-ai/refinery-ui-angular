@@ -838,22 +838,16 @@
 
             <div *ngIf="extendedRecords && attributes && !loading" class="mr-2">
                 <div *ngIf="extendedRecords.fullCount == 0">Your search criteria didn't match any record.</div>
-                <div *ngFor="let record of extendedRecords.recordList;let i = index"
-                    class="bg-white overflow-hidden shadow rounded-lg border mb-4 pb-4 relative">
-                    <kern-record-card [record]="record" [attributes]="attributes" [recordCardOptions]="{
-                        attributesSortOrder: attributesSortOrder,
-                        dataBrowserModals: dataBrowserModals,
-                        indexExtendedRecord: i,
-                        recordList: extendedRecords.recordList,
-                        sessionId: extendedRecords.sessionId,
-                        recordComments: recordComments,
-                        activeSearchParams:activeSearchParams,
-                        similarSearchHelper:similarSearchHelper,
-                        textHighlightArrayKern:textHighlightArrayKern,
-                        isTextHighlightNeeded: isTextHighlightNeeded
-                    }">
-                    </kern-record-card>
-                </div>
+                <kern-record-list [attributes]="attributes" [recordList]="extendedRecords.recordList"
+                    [recordListOptions]="{
+                    recordComments: recordComments,
+                    dataBrowserModals: dataBrowserModals,
+                    attributesSortOrder: attributesSortOrder,
+                    textHighlightArrayKern: textHighlightArrayKern,
+                    isTextHighlightNeeded: isTextHighlightNeeded,
+                    similarSearchHelper: similarSearchHelper
+                }" (similarSearch)="requestSimilarSearch()" (indexHuddleData)="storePreliminaryRecordIds($event)">
+                </kern-record-list>
             </div>
         </div>
     </div>

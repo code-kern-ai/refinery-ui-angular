@@ -1,6 +1,5 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { RecordCardOptions } from '../../record-card-helper';
-import { RecordDisplay } from '../../record-card.types';
+import { Attributes, RecordDisplay, RecordDisplayOptions } from './record-display.helper';
 
 @Component({
   selector: 'kern-record-display',
@@ -10,8 +9,8 @@ import { RecordDisplay } from '../../record-card.types';
 export class RecordDisplayComponent implements OnChanges {
 
   @Input() record: RecordDisplay;
-  @Input() attributes: any;
-  @Input() recordCardOptions: RecordCardOptions;
+  @Input() attributes: Attributes;
+  @Input() recordDisplayOptions: RecordDisplayOptions;
 
   constructor() { }
 
@@ -27,9 +26,9 @@ export class RecordDisplayComponent implements OnChanges {
       }
     }
     if (changes.recordCardOptions) {
-      const firstEl = this.recordCardOptions.attributesSortOrder[0];
+      const firstEl = this.recordDisplayOptions.attributesSortOrder[0];
       if (!firstEl.hasOwnProperty('key')) {
-        this.recordCardOptions.attributesSortOrder.forEach((attribute, index) => {
+        this.recordDisplayOptions.attributesSortOrder.forEach((attribute, index) => {
           attribute.key = attribute.id;
         });
       }
