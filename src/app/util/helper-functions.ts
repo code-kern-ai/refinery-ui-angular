@@ -231,19 +231,22 @@ export function loopNestedDict(dict: any, callback: (key: string, value: any) =>
 
 
 /**
- * transfer values from dictA to dictB, if the key is not present in dictB, it will be ignored.
+ * transfer values from dictA to dictB, if the key is not present in dictB, it will be ignored or created.
  * @param  {dictionary[]} dictA holds data that should be transferred.
  * @param  {dictionary[]} dictB holds data that should be overwritten if existing in dictA.
+ * @param  {boolean} ignoreNoneExistingKeys - optional - decides weather none existent keys are created or ignored.
  */
-export function transferNestedDict(dictA: any, dictB: any) {
+export function transferNestedDict(dictA: any, dictB: any, ignoreNoneExistingKeys: boolean = true) {
     if (dictA == null || dictB == null) return;
     if (typeof dictA !== 'object' || typeof dictB !== 'object') return;
 
     for (let key in dictA) {
-        if (!dictB[key]) continue;
+        if (dictB[key] == null && ignoreNoneExistingKeys) continue;
         if (typeof dictA[key] === 'object') {
-            if (typeof dictB[key] !== 'object') continue;
-            transferNestedDict(dictA[key], dictB[key]);
+            if (typeof dictB[key] !== 'object') {
+                dictB[key] = {};
+            }
+            transferNestedDict(dictA[key], dictB[key], ignoreNoneExistingKeys);
         } else {
             dictB[key] = dictA[key];
         }

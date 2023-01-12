@@ -53,15 +53,17 @@ export class LabelingSuiteRecordManager implements DoBeforeDestroy {
     }
 
     private getWebsocketWhitelist(): string[] {
-        let toReturn = [];
+        let toReturn = ['payload_finished', 'weak_supervision_finished'];
         toReturn.push(...['record_deleted', 'rla_created', 'rla_deleted']);
         return toReturn;
     }
 
     private handleWebsocketNotification(msgParts: string[]) {
         if (msgParts[1] == 'record_deleted') {
-            console.log("record deleted");
-            this.setDeletedState();
+            if (msgParts[2] == this.activeRecordId) {
+                console.log("record deleted");
+                this.setDeletedState();
+            }
         }
         else {
             console.log("unknown message in labeling suite record manager" + msgParts);

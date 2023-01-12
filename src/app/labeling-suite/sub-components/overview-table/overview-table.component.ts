@@ -8,10 +8,10 @@ import {
 } from '@angular/core';
 import { getLabelSourceOrder, informationSourceTypeToString, LabelSource, labelSourceToString } from 'src/app/base/enum/graphql-enums';
 import { LabelHelper } from 'src/app/projects/components/project-settings/helper/label-helper';
-import { dateAsUTCDate } from 'src/app/util/helper-functions';
+import { dateAsUTCDate, jsonCopy } from 'src/app/util/helper-functions';
 import { LabelingSuiteManager, UpdateType } from '../../helper/manager/manager';
 import { ComponentType, LabelingSuiteOverviewTableSettings, LabelingSuiteSettings } from '../../helper/manager/settings';
-import { getHoverGroups } from '../../helper/util-functions';
+import { getHoverGroupsOverviewTable } from '../../helper/util-functions';
 import { LabelingSuiteComponent } from '../../main-component/labeling-suite.component';
 import { getEmptyHeuristicInfo, HeuristicInfo, TableDisplayData } from './helper';
 
@@ -28,9 +28,14 @@ export class LabelingSuiteOverviewTableComponent implements OnInit, OnDestroy, O
   dataToDisplay: TableDisplayData[];
 
   dataHasHeuristics: boolean = false;
+
+
+  //shorthand not to be used in html
   get settings(): LabelingSuiteOverviewTableSettings {
     return this.lsm.settingManager.settings.overviewTable;
   }
+  //copy of settings for html so get methods doesn't need to be run on update but change management takes effect
+  htmlSettings: LabelingSuiteOverviewTableSettings;
 
   constructor(
   ) { }
@@ -56,12 +61,13 @@ export class LabelingSuiteOverviewTableComponent implements OnInit, OnDestroy, O
   private prepareDataToDisplay(data: any[]) {
     if (!data) return;
     this.buildDisplayArray(data);
-    this.rebuildDataToDisplay();
+    this.settingsChanged();
     this.dataHasHeuristics = this.checkDataHasHeuristics(data);
   }
 
 
   private settingsChanged() {
+    this.htmlSettings = jsonCopy(this.settings);
     this.rebuildDataToDisplay();
   }
 
@@ -82,7 +88,7 @@ export class LabelingSuiteOverviewTableComponent implements OnInit, OnDestroy, O
     let i = 0;
     for (let e of data) {
       result[i++] = {
-        hoverGroups: getHoverGroups(e),
+        hoverGroups: getHoverGroupsOverviewTable(e),
         orderPos: getLabelSourceOrder(e.sourceType, e.informationSource?.type),
         orderPosSec: this.getOrderPos(e),
         sourceType: this.getSourceTypeText(e),

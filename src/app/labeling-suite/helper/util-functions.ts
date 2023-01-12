@@ -1,6 +1,6 @@
 import { informationSourceTypeToString, LabelSource, labelSourceToString } from "src/app/base/enum/graphql-enums";
 
-export function getHoverGroups(data: any): any {
+export function getHoverGroupsOverviewTable(data: any): any {
     const all: any = {
         task: "TA_" + data.labelingTaskLabel.labelingTask.name, //names are unique
         type: "TY_" + (data.sourceType == LabelSource.INFORMATION_SOURCE ? informationSourceTypeToString(data.informationSource.type, false) : labelSourceToString(data.sourceType)),
@@ -17,6 +17,20 @@ export function getHoverGroups(data: any): any {
         rlaId: getHoverGroupFor(HoverGroupTarget.RLA_ID, all),
     }
 }
+
+export function getHoverGroupsTaskOverview(taskName: string, labelId?: string): any {
+    const all: any = {
+        task: "TA_" + taskName, //names are unique
+    }
+    if (labelId) {
+        all.label = "LA_" + labelId;
+        return getHoverGroupFor(HoverGroupTarget.LABEL, all);
+    }
+    return getHoverGroupFor(HoverGroupTarget.TASK, all);
+}
+
+
+
 export function getHoverGroupFor(first: HoverGroupTarget, all: any): string {
     let finalString = all[first];
     for (let key in all) {

@@ -8,6 +8,7 @@ import { LabelingSuiteComponent } from "../../main-component/labeling-suite.comp
 import { LabelingSuiteModalManager } from "./modals";
 import { LabelingSuiteRecordManager } from "./record";
 import { LabelingSuiteSettingManager } from "./settings";
+import { LabelingSuiteTaskManager } from "./task";
 import { LabelingSuiteUserManager } from "./user";
 
 
@@ -15,21 +16,24 @@ export class LabelingSuiteManager implements DoBeforeDestroy {
     //base component reference for communication
     public baseComponent: LabelingSuiteComponent;
 
-    //additional manager
+    //general manager
     public settingManager: LabelingSuiteSettingManager;
     public modalManager: LabelingSuiteModalManager;
-    public recordManager: LabelingSuiteRecordManager;
     public userManager: LabelingSuiteUserManager;
 
+    //data manager
+    public recordManager: LabelingSuiteRecordManager;
+    public taskManager: LabelingSuiteTaskManager;
+
+    public projectId: string;
+
     //private constant references
-    private projectId: string;
     private projectApolloService: ProjectApolloService;
     // private recordApolloService: RecordApolloService;
 
 
     //public accessible data
     public attributes: any[];
-    public labelingTasks: any[];
 
     //private data for config
 
@@ -42,10 +46,13 @@ export class LabelingSuiteManager implements DoBeforeDestroy {
         this.projectApolloService = projectApolloService;
         // this.recordApolloService = recordApolloService;
         this.baseComponent = baseComponent;
-        this.settingManager = new LabelingSuiteSettingManager();
+        this.settingManager = new LabelingSuiteSettingManager(projectId);
         this.modalManager = new LabelingSuiteModalManager();
-        this.recordManager = new LabelingSuiteRecordManager(projectId, recordApolloService, this);
         this.userManager = new LabelingSuiteUserManager();
+
+        this.recordManager = new LabelingSuiteRecordManager(projectId, recordApolloService, this);
+        this.taskManager = new LabelingSuiteTaskManager(projectId, projectApolloService, this);
+
 
         enumToArray(UpdateType).forEach(ct => {
             this.registeredUpdateListeners.set(ct, new Map<Object, () => void>());
@@ -58,7 +65,6 @@ export class LabelingSuiteManager implements DoBeforeDestroy {
             func: this.handleWebsocketNotification
         });
         this.fetchAttributes();
-        this.fetchLabelingTasks();
 
 
     }
@@ -69,8 +75,10 @@ export class LabelingSuiteManager implements DoBeforeDestroy {
         //destroy for other managers
         this.settingManager.doBeforeDestroy();
         // this.modalManager.doBeforeDestroy(); //atm nothing to do
-        this.recordManager.doBeforeDestroy();
         this.userManager.doBeforeDestroy();
+
+        this.taskManager.doBeforeDestroy();
+        this.recordManager.doBeforeDestroy();
     }
 
 
@@ -78,13 +86,6 @@ export class LabelingSuiteManager implements DoBeforeDestroy {
     private getWebsocketWhitelist(): string[] {
         let toReturn = ['label_created', 'label_deleted', 'attributes_updated', 'calculate_attribute'];
         toReturn.push(...['payload_finished', 'weak_supervision_finished']);
-        toReturn.push(
-            ...[
-                'labeling_task_deleted',
-                'labeling_task_updated',
-                'labeling_task_created',
-            ]
-        );
         toReturn.push(...['access_link_changed', 'access_link_removed']);
         return toReturn;
     }
@@ -94,18 +95,11 @@ export class LabelingSuiteManager implements DoBeforeDestroy {
         vc.pipe(first()).subscribe(att => this.attributes = att);
     }
 
-    private fetchLabelingTasks() {
-        let q, vc;
-        [q, vc] = this.projectApolloService.getLabelingTasksByProjectId(this.projectId);
-        vc.pipe(first()).subscribe(lt => this.labelingTasks = lt);
-    }
 
 
     private handleWebsocketNotification(msgParts: string[]) {
         if (msgParts[1] == 'attributes_updated' || (msgParts[1] == 'calculate_attribute' && msgParts[2] == 'created')) {
             this.fetchAttributes();
-        } else if (['label_created', 'label_deleted', 'labeling_task_deleted', 'labeling_task_updated', 'labeling_task_created'].includes(msgParts[1])) {
-            this.fetchLabelingTasks();
         }
 
         else {
@@ -137,5 +131,6 @@ export class LabelingSuiteManager implements DoBeforeDestroy {
 
 
 export enum UpdateType {
-    RECORD
+    RECORD,
+    LABELING_TASKS
 }

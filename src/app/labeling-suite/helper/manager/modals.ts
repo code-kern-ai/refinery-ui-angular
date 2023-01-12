@@ -1,6 +1,7 @@
 export type LabelingSuiteModals = {
     goldStar: { open: boolean };
     deleteRecord: { open: boolean };
+    taskHeaderInfo: { open: boolean };
     settings: SettingsModal;
 };
 
@@ -18,6 +19,9 @@ export class LabelingSuiteModalManager {
         return {
             goldStar: { open: false },
             deleteRecord: {
+                open: false,
+            },
+            taskHeaderInfo: {
                 open: false,
             },
             settings: {

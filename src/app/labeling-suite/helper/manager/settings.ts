@@ -1,17 +1,42 @@
-import { enumToArray, loopNestedDict, transferNestedDict } from "src/app/util/helper-functions";
+import { enumToArray, jsonCopy, transferNestedDict } from "src/app/util/helper-functions";
 import { DoBeforeDestroy } from "src/app/util/interfaces";
 
 export type LabelingSuiteSettings = {
     main: LabelingSuiteMainSettings;
     overviewTable: LabelingSuiteOverviewTableSettings;
+    task: LabelingSuiteTaskHeaderSettings;
 }
 
 export type LabelingSuiteOverviewTableSettings = {
     showHeuristics: boolean;
 }
+
 export type LabelingSuiteMainSettings = {
     autoNextRecord: boolean;
     showNLabelButton: number;
+}
+
+//labeling task
+export type LabelingSuiteTaskHeaderSettings = {
+    isCollapsed: boolean;
+    alwaysShowQuickButtons: boolean;
+    //caution technically irritating because the line below is not for projectIds but for any string key -> thats why any needs to be added to allow isCollapsed boolean
+    [projectId: string]: LabelingSuiteTaskHeaderProjectSettings | any;
+}
+
+export type LabelingSuiteTaskHeaderProjectSettings = {
+    [taskId: string]: LabelingSuiteTaskHeaderTaskSettings
+}
+
+export type LabelingSuiteTaskHeaderTaskSettings = {
+    [labelId: string]: LabelingSuiteTaskHeaderLabelSettings
+}
+
+export type LabelingSuiteTaskHeaderLabelSettings = {
+    showManual: boolean;
+    showWeakSupervision: boolean;
+    showModel: boolean;
+    showHeuristics: boolean;
 }
 
 export enum ComponentType {
@@ -22,21 +47,15 @@ export enum ComponentType {
     TASK_HEADER,
 }
 
-// function lookupComponentKey(comp: ComponentType): string {
-//     switch (comp) {
-//         case ComponentType.OVERVIEW_TABLE: return 'overviewTable';
-//         case ComponentType.MAIN: return 'main';
-//         default: return null;
-//     }
-// }
-
 export class LabelingSuiteSettingManager implements DoBeforeDestroy {
     static localStorageKey = "labelingSuiteSettings";
     public settings: LabelingSuiteSettings;
 
     private registeredSettingsListeners: Map<ComponentType, Map<Object, () => void>> = new Map<ComponentType, Map<Object, () => void>>();
+    private projectId: string;
 
-    constructor() {
+    constructor(projectId: string) {
+        this.projectId = projectId;
         enumToArray(ComponentType).forEach(ct => {
             this.registeredSettingsListeners.set(ct, new Map<Object, () => void>());
         });
@@ -54,7 +73,11 @@ export class LabelingSuiteSettingManager implements DoBeforeDestroy {
             const tmpSettings = JSON.parse(tmp);
             //to ensure new setting values exist and old ones are loaded if matching name
             transferNestedDict(tmpSettings, this.settings);
+            if (tmpSettings.task) {
+                transferNestedDict(tmpSettings.task, this.settings.task, false);
+            }
         }
+        if (!this.settings.task[this.projectId]) this.settings.task[this.projectId] = {};
         this.runSettingListeners(ComponentType.ALL);
     }
 
@@ -76,20 +99,22 @@ export class LabelingSuiteSettingManager implements DoBeforeDestroy {
             },
             overviewTable: {
                 showHeuristics: false,
+            },
+            task: {
+                isCollapsed: false,
+                alwaysShowQuickButtons: false,
             }
         }
     }
 
-
-    // public changeSetting(type: ComponentType, key: string, value: any) {
-    //     if (type == ComponentType.ALL) this.settings = value;
-    //     else {
-    //         let compKey = lookupComponentKey(type);
-    //         if (!compKey) throw Error("Component type has no settings");
-    //         this.settings[compKey][key] = value;
-    //     }
-    //     this.runSettingListeners(type);
-    // }
+    public getDefaultTaskOverviewLabelSettings(): LabelingSuiteTaskHeaderLabelSettings {
+        return {
+            showManual: true,
+            showWeakSupervision: true,
+            showModel: false,
+            showHeuristics: false,
+        }
+    }
 
     public registerSettingListener(type: ComponentType, caller: Object, func: () => void) {
         if (!this.registeredSettingsListeners.has(type)) throw Error("Component type not available");
@@ -102,9 +127,16 @@ export class LabelingSuiteSettingManager implements DoBeforeDestroy {
         }
     }
 
-    public runSettingListeners(type: ComponentType) {
-        if (!this.registeredSettingsListeners.has(type)) throw Error("Component type not available");
-        if (this.registeredSettingsListeners.get(type).size == 0) return;
-        this.registeredSettingsListeners.get(type).forEach((func, key) => func.call(key));
+    public runSettingListeners(type: ComponentType, saveSettings: boolean = true) {
+        if (type == ComponentType.ALL) {
+            enumToArray(ComponentType).forEach(ct => ct != ComponentType.ALL ? this.runSettingListeners(ct, false) : null);
+            return;
+        } else {
+            if (!this.registeredSettingsListeners.has(type)) throw Error("Component type not available");
+            if (this.registeredSettingsListeners.get(type).size == 0) return;
+            this.registeredSettingsListeners.get(type).forEach((func, key) => func.call(key));
+
+        }
+        if (saveSettings) this.saveSettings();
     }
 }

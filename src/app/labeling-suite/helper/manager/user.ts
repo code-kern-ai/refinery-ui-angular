@@ -22,7 +22,6 @@ export class LabelingSuiteUserManager implements DoBeforeDestroy {
 
     doBeforeDestroy(): void {
         UserManager.unregisterRoleChangeListener(this);
-        throw new Error("Method not implemented.");
     }
 
 
