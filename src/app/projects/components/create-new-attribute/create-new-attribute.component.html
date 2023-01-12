@@ -297,7 +297,7 @@
     <div *ngIf=" attributeCalculationModals.attributeDetails.recordData else requestingData"
         class="text-sm text-gray-500 my-2" class="overflow-y-auto max-height-modal scrollable-size">
         <kern-record-display [record]="attributeCalculationModals.attributeDetails" [attributes]="attributeDetails"
-            [recordCardOptions]="{
+            [recordDisplayOptions]="{
             attributesSortOrder: attributes
         }"></kern-record-display>
         <div class="text-sm leading-5 text-left text-gray-900 font-bold">

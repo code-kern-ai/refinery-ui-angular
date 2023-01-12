@@ -20,16 +20,22 @@ export class RecordDisplayComponent implements OnChanges {
         if (this.record.hasOwnProperty('fullRecordData')) {
           this.record.data = this.record.fullRecordData;
         }
-        if (this.record.hasOwnProperty('recordData')) {
+        else if (this.record.hasOwnProperty('recordData')) {
           this.record.data = this.record.recordData;
+        } else {
+          throw new Error("Cant find record data in record object");
         }
       }
     }
-    if (changes.recordCardOptions) {
+    if (changes.recordDisplayOptions) {
       const firstEl = this.recordDisplayOptions.attributesSortOrder[0];
       if (!firstEl.hasOwnProperty('key')) {
         this.recordDisplayOptions.attributesSortOrder.forEach((attribute, index) => {
-          attribute.key = attribute.id;
+          if (attribute.id !== null) {
+            attribute.key = attribute.id;
+          } else {
+            throw new Error("Cant find attribute id in attribute object");
+          }
         });
       }
     }
