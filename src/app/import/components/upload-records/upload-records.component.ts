@@ -5,7 +5,7 @@ import { ProjectApolloService } from 'src/app/base/services/project/project-apol
 import { ProjectStatus } from 'src/app/projects/enums/project-status.enum';
 import { UploadComponent } from 'src/app/import/components/upload/upload.component';
 import { first } from 'rxjs/operators';
-import { UploadFileType } from '../upload/upload-helper';
+import { UploadFileType } from '../upload/upload-types';
 
 @Component({
   selector: 'kern-upload-records',
@@ -70,7 +70,7 @@ export class UploadRecordsComponent implements OnInit {
     //   })
     // }
     this.uploadComponent.updateTokenizerAndProjectStatus(this.projectId);
-    const finalFileName = this.uploadComponent.uploadFileToMinio(this.projectId, UploadFileType.RECORDS);
+    const finalFileName = this.uploadComponent.uploadFileToMinio(this.projectId, UploadFileType.RECORDS_NEW);
     this.uploadComponent.finishUpUpload(finalFileName, this.importOptionsHTML.nativeElement.value);
   }
 }

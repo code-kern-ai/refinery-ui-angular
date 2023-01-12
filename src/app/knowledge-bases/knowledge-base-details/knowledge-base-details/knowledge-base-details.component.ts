@@ -20,7 +20,7 @@ import { UploadComponent } from 'src/app/import/components/upload/upload.compone
 import { UserManager } from 'src/app/util/user-manager';
 import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
 import { createDefaultLookupListDetailsModals, LookupListsDetailsModals } from './knowledge-bases-details-helper';
-import { UploadFileType } from 'src/app/import/components/upload/upload-helper';
+import { UploadFileType } from 'src/app/import/components/upload/upload-types';
 
 
 @Component({

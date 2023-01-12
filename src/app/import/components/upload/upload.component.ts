@@ -8,7 +8,7 @@ import { ProjectApolloService } from 'src/app/base/services/project/project-apol
 import { ProjectStatus } from 'src/app/projects/enums/project-status.enum';
 import { UploadStates } from '../../services/s3.enums';
 import { S3Service } from '../../services/s3.service';
-import { UploadFileType, UploadType } from './upload-helper';
+import { UploadFileType, UploadOptions, UploadType } from './upload-types';
 
 @Component({
   selector: 'kern-upload',
@@ -17,14 +17,19 @@ import { UploadFileType, UploadType } from './upload-helper';
 })
 export class UploadComponent implements OnInit {
 
+
+  @Input() uploadFileType: UploadFileType;
   @Input() file: File | null = null;
-  @Input() projectId: string;
-  @Input() deleteProjectOnFail: boolean;
+  @Input() projectId?: string;
+  @Input() uploadOptions: UploadOptions;
+
+
+  // @Input() deleteProjectOnFail: boolean;
   uploadStarted: boolean = false;
   uploadTask: UploadTask;
   uploadTaskQuery$: any;
-  reloadOnFinish: boolean = true;
-  uploadFileType: UploadFileType;
+  // reloadOnFinish: boolean = true;
+  // uploadFileType: UploadFileType;
   @Output() fileAttached = new EventEmitter<File>();
   get UploadStatesType(): typeof UploadStates {
     return UploadStates;
@@ -83,7 +88,7 @@ export class UploadComponent implements OnInit {
 
   uploadFileToMinio(projectId: string, uploadFileType: UploadFileType, knowledgeBaseId?: string): string {
     this.projectId = projectId;
-    this.reloadOnFinish = UploadFileType.RECORDS || uploadFileType == UploadFileType.KNOWLEDGE_BASE ? false : true;
+    this.uploadOptions.reloadOnFinish = UploadFileType.RECORDS_ADD || uploadFileType == UploadFileType.KNOWLEDGE_BASE ? false : true;
     this.uploadStarted = true;
     this.reSubscribeToNotifications();
     this.uploadFileType = uploadFileType;
@@ -97,7 +102,7 @@ export class UploadComponent implements OnInit {
 
   getFinalFileName(fileName: string, knowledgeBaseId?: string): string {
     switch (this.uploadFileType) {
-      case UploadFileType.RECORDS:
+      case UploadFileType.RECORDS_ADD:
         return fileName + "_SCALE";
       case UploadFileType.KNOWLEDGE_BASE:
         return fileName + "_" + knowledgeBaseId;
@@ -122,7 +127,7 @@ export class UploadComponent implements OnInit {
         tap((progress) => {
           if (progress.state === UploadStates.DONE || progress.state === UploadStates.ERROR) {
             timer(500).subscribe(() => this.file = null);
-            if (progress.state === UploadStates.ERROR && this.deleteProjectOnFail) {
+            if (progress.state === UploadStates.ERROR && this.uploadOptions.deleteProjectOnFail) {
               this.deleteExistingProject();
             }
           }
@@ -138,7 +143,7 @@ export class UploadComponent implements OnInit {
       this.uploadTask = task;
       if (task.state == UploadStates.DONE || task.progress == 100) {
         this.clearUploadTask();
-        if (this.reloadOnFinish) location.reload();
+        if (this.uploadOptions.reloadOnFinish) location.reload();
         else this.uploadStarted = false;
         if (this.executeOnFinish) {
           this.executeOnFinish.call(this);
@@ -183,7 +188,7 @@ export class UploadComponent implements OnInit {
       if (msgParts[4] == UploadStates.DONE) this.uploadTaskQuery$.refetch();
       else if (msgParts[4] == UploadStates.ERROR) {
         this.resetUpload();
-        if (this.deleteProjectOnFail) this.deleteExistingProject();
+        if (this.uploadOptions.deleteProjectOnFail) this.deleteExistingProject();
       }
       else {
         this.uploadTask = { ...this.uploadTask };

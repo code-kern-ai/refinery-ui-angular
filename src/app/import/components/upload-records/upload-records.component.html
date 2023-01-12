@@ -55,7 +55,9 @@
         </label>
     </div>
 </div>
-<kern-upload [projectId]="null" (fileAttached)="getFile($event)" [deleteProjectOnFail]="deleteProjectOnFail">
+<kern-upload [projectId]="null" (fileAttached)="getFile($event)" [uploadOptions]="{
+    deleteProjectOnFail: deleteProjectOnFail
+}">
 </kern-upload>
 <ng-template [ngIf]="openTab === 2">
     <div class="form-control mt-6">

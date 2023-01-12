@@ -22,7 +22,7 @@ import { ProjectStatus } from 'src/app/projects/enums/project-status.enum';
 import { dateAsUTCDate, getUserAvatarUri, isStringTrue } from 'src/app/util/helper-functions';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { createDefaultProjectsModals, ProjectsModals } from './projects-helper';
-import { UploadFileType } from 'src/app/import/components/upload/upload-helper';
+import { UploadFileType } from 'src/app/import/components/upload/upload-types';
 
 @Component({
   selector: 'kern-projects',
