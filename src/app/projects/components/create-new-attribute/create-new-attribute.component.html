@@ -294,10 +294,10 @@
 <kern-modal [isOpen]="attributeCalculationModals.attributeDetails.open" [modalBoxStyle]="{'min-width':'30rem'}"
     closeButton="X" (optionClicked)="attributeCalculationModals.attributeDetails.open = false">
     <h1 class="text-lg text-gray-900 mb-2 text-center">View details</h1>
-    <div *ngIf=" attributeCalculationModals.attributeDetails.recordData else requestingData"
+    <div *ngIf="attributeCalculationModals.attributeDetails.recordData else requestingData"
         class="text-sm text-gray-500 my-2" class="overflow-y-auto max-height-modal scrollable-size">
-        <kern-record-display [record]="attributeCalculationModals.attributeDetails" [attributes]="attributeDetails"
-            [recordDisplayOptions]="{
+        <kern-record-display [record]="attributeCalculationModals.attributeDetails.recordData"
+            [attributes]="attributeDetails" [recordDisplayOptions]="{
             attributesSortOrder: attributes
         }"></kern-record-display>
         <div class="text-sm leading-5 text-left text-gray-900 font-bold">

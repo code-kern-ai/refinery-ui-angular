@@ -425,7 +425,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
       .getRecordByRecordId(this.project.id, recordId)
       .pipe(first())
       .subscribe((record) => {
-        this.attributeCalculationModals.attributeDetails.recordData = record.data;
+        this.attributeCalculationModals.attributeDetails.recordData = record;
       });
   }
 
