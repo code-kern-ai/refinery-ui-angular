@@ -1,0 +1,99 @@
+<div *ngFor="let record of recordList;let i = index"
+    class="bg-white overflow-hidden shadow rounded-lg border mb-4 pb-4 relative">
+    <div class="px-4 py-5 sm:p-6">
+        <div *ngIf="recordListOptions.recordComments[record.id]"
+            class="tooltip tooltip-left cursor-pointer absolute top-6 right-5" data-tip="Record comments"
+            (click)="recordListOptions.dataBrowserModals.recordComments.open = true; recordListOptions.dataBrowserModals.recordComments.commentsData = recordListOptions.recordComments[record.id]">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-notes" width="24" height="24"
+                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                <rect x="5" y="3" width="14" height="18" rx="2"></rect>
+                <line x1="9" y1="7" x2="15" y2="7"></line>
+                <line x1="9" y1="11" x2="15" y2="11"></line>
+                <line x1="9" y1="15" x2="13" y2="15"></line>
+            </svg>
+        </div>
+        <kern-record-display [record]="record" [attributes]="attributes" [recordDisplayOptions]="{
+            attributesSortOrder: recordListOptions.attributesSortOrder,
+            dataBrowserModals: recordListOptions.dataBrowserModals,
+            textHighlightArrayKern: recordListOptions.textHighlightArrayKern,
+            isTextHighlightNeeded: recordListOptions.isTextHighlightNeeded
+        }"></kern-record-display>
+
+        <ng-template [ngIf]="record.rla_aggregation">
+            <div class="mt-2 flex flex-col">
+                <div *ngIf="recordListOptions.dataBrowserModals.configuration.weakSupervisionRelated && record.wsHint"
+                    class="text-gray-800 text-sm">
+                    {{record.wsHint}}</div>
+                <kern-record-table [columnsData]="columnsData" [tableData]="record.rla_aggregation"></kern-record-table>
+            </div>
+        </ng-template>
+        <div class="mt-3">
+            <div class="float-left">
+                <ng-template [ngIf]="recordListOptions.similarSearchHelper.embeddings?.length==0">
+                    <div data-tip="Add an embedding in the project settings"
+                        class="tooltip tooltip-right relative z-50">
+                        <label class="text-gray-700 text-sm font-medium">
+                            <span class="cursor-help leading-5 underline"
+                                style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">No
+                                embedding, can't find similar records</span>
+                        </label>
+                    </div>
+                </ng-template>
+                <ng-template [ngIf]="recordListOptions.similarSearchHelper.embeddings?.length==1">
+                    <label
+                        (click)="recordListOptions.dataBrowserModals.similaritySearch.recordId = record.id; requestSimilarSearch()"
+                        class="text-green-700 hover:text-green-500 text-sm font-medium cursor-pointer">
+                        <span class="leading-5">Find similar
+                            records
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                class="icon icon-tabler icon-tabler-angle inline-block" width="24" height="24"
+                                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <path d="M21 19h-18l9 -15"></path>
+                                <path d="M20.615 15.171h.015"></path>
+                                <path d="M19.515 11.771h.015"></path>
+                                <path d="M17.715 8.671h.015"></path>
+                                <path d="M15.415 5.971h.015"></path>
+                            </svg>
+                        </span>
+                    </label>
+                </ng-template>
+                <ng-template [ngIf]="recordListOptions.similarSearchHelper.embeddings?.length > 1">
+                    <label
+                        (click)="recordListOptions.dataBrowserModals.similaritySearch.open = true; recordListOptions.similarSearchHelper.rememberedRecordId = record.id; recordListOptions.dataBrowserModals.similaritySearch.recordId = record.id"
+                        class="text-green-700 hover:text-green-500 text-sm font-medium cursor-pointer">
+                        <span class="leading-5">Find similar
+                            records
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                class="icon icon-tabler icon-tabler-angle inline-block" width="24" height="24"
+                                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <path d="M21 19h-18l9 -15"></path>
+                                <path d="M20.615 15.171h.015"></path>
+                                <path d="M19.515 11.771h.015"></path>
+                                <path d="M17.715 8.671h.015"></path>
+                                <path d="M15.415 5.971h.015"></path>
+                            </svg>
+                        </span>
+                    </label>
+                </ng-template>
+            </div>
+        </div>
+
+        <div class="float-right">
+            <label class="text-green-700 hover:text-green-500 text-sm font-medium cursor-pointer"
+                (click)="storePreliminaryRecordIds(i)">
+                <span class="leading-5">Continue with this record
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                </span>
+            </label>
+        </div>
+    </div>
+</div>

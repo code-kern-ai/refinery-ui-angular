@@ -51,7 +51,7 @@ export class CommentsFilter {
             updateDummy: true
         });
 
-        this.dataBrowser.groupValueChangesSubscribtion$.push(group.valueChanges
+        this.dataBrowser.groupValueChangesSubscription$.push(group.valueChanges
             .pipe(pairwise(), distinctUntilChanged(), startWith(''))
             .subscribe(([prev, next]: [any, any]) => this.searchGroupItemChanged(group, prev, next)));
 

@@ -61,6 +61,7 @@ import { createDefaultDataBrowserModals, DataBrowserModals } from './helper-clas
 import { CommentsFilter } from './helper-classes/comments-filter';
 import { AttributeVisibility } from 'src/app/projects/components/create-new-attribute/attributes-visibility-helper';
 import { HighlightSearch } from 'src/app/base/components/highlight/helper';
+import { Attributes } from 'src/app/base/components/record-display/record-display.helper';
 
 
 type DataSlice = {
@@ -118,7 +119,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   project$: any;
   projectId: string;
   attributesQuery$: any;
-  attributes: Map<string, any> = new Map<string, any>();
+  attributes: Attributes;
   attributesSortOrder = [];
 
   labelingTaskWait: { isWaiting: boolean } = { isWaiting: false };
@@ -131,13 +132,13 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   loading = true;
   isSearchMenuOpen: boolean = true;
   isSearchMenuVisible: boolean = true;
-  timerSubscribtion;
+  timerSubscription;
 
   allOrderByGroups: Map<string, FormGroup> = new Map<string, FormGroup>();
   searchGroups: Map<string, SearchGroupElement>;
   searchGroupOrder: { order: number; key: string }[] = [];
 
-  groupValueChangesSubscribtion$ = [];
+  groupValueChangesSubscription$ = [];
 
   colors = schemeCategory24;
   searchOperatorDropdownArray = [];
@@ -170,7 +171,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   subscriptions$: Subscription[] = [];
 
   lastSearchParams;
-  isTextHighlightNeeded: Map<string, boolean> = new Map<string, boolean>();
+  isTextHighlightNeeded: { [key: string]: boolean } = {};
   textHighlightArray: Map<string, string[]> = new Map<string, string[]>();
   textHighlightArrayKern: { [key: string]: HighlightSearch[] } = {};
 
@@ -190,7 +191,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
 
   alertLastVisible: number;
   tooltipsArray: string[] = [];
-  saveDropdonwAttribute: string = "";
+  saveDropdownAttribute: string = "";
   colorsAttributes: string[] = [];
   updateSearchParameters: UpdateSearchParameters;
   dataBrowserModals: DataBrowserModals = createDefaultDataBrowserModals();
@@ -209,7 +210,8 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     private recordApolloService: RecordApolloService,
     private organizationApolloService: OrganizationApolloService,
     public formBuilder: FormBuilder,
-    private cfRef: ChangeDetectorRef
+    private cfRef: ChangeDetectorRef,
+    private route: ActivatedRoute
   ) { }
 
   ngAfterViewChecked() {
@@ -307,7 +309,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     this.subscriptions$.push(vc$.subscribe((attributes) => {
       attributes = attributes.filter((a) => a.visibility == AttributeVisibility.DO_NOT_HIDE);
       attributes.sort((a, b) => a.relativePosition - b.relativePosition);
-      this.attributes.clear();
+      this.attributes = Object.fromEntries(attributes.map((attribute) => [attribute.id, attribute]));
       this.attributesSortOrder = [];
 
       this.attributesSortOrder.push({
@@ -319,7 +321,6 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       this.colorsAttributes.push('gray');
 
       attributes.forEach((att) => {
-        this.attributes.set(att.id, att);
         this.attributesSortOrder.push({
           name: att.name,
           key: att.id,
@@ -373,7 +374,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     this.searchGroups.get(lastGroup.get('groupKey').value).inOpenTransition =
       true;
 
-    this.saveDropdonwAttribute = "";
+    this.saveDropdownAttribute = "";
     this.getOperatorDropdownValues();
 
     return group;
@@ -510,11 +511,11 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       updateDummy: true
     });
 
-    this.groupValueChangesSubscribtion$.push(group.valueChanges
+    this.groupValueChangesSubscription$.push(group.valueChanges
       .pipe(distinctUntilChanged(), startWith(''))
       .subscribe((values) => this._sortOrderSearchGroupItemChanged(group, values)));
 
-    // to ensure pairwise works as exprected
+    // to ensure pairwise works as expected
     group.get("updateDummy").setValue(false);
     return group;
   }
@@ -623,7 +624,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   _orderByFormArray(): FormArray {
     let array = this.formBuilder.array([]);
     for (let i = 1; i < this.attributesSortOrder.length; i++) {
-      array.push(this.getOrderByGroup(this.attributes.get(this.attributesSortOrder[i].key).name, true, -1)) //1, //-1 desc, 1 asc     
+      array.push(this.getOrderByGroup(this.attributes[this.attributesSortOrder[i].key].name, true, -1)) //1, //-1 desc, 1 asc     
     }
     array.push(this.getOrderByGroup(StaticOrderByKeys.WEAK_SUPERVISION_CONFIDENCE, false, -1));
     array.push(this.getOrderByGroup(StaticOrderByKeys.MODEL_CALLBACK_CONFIDENCE, false, -1));
@@ -683,7 +684,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       lower: 0,
       upper: 100
     });
-    this.groupValueChangesSubscribtion$.push(group.valueChanges
+    this.groupValueChangesSubscription$.push(group.valueChanges
       .pipe(pairwise(), distinctUntilChanged())
       .subscribe(([prev, next]: [any, any]) => {
         if (!(prev.active && !next.active)) {
@@ -710,7 +711,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
           displayName: this.getOrderByDisplayName(orderByKey),
           isAttribute: isAttribute,
         });
-        this.groupValueChangesSubscribtion$.push(group.valueChanges.subscribe(() => {
+        this.groupValueChangesSubscription$.push(group.valueChanges.subscribe(() => {
           const values = group.getRawValue();
           if (values.active && !values.seedString) {
             this.generateRandomSeed(group, false);
@@ -780,7 +781,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     });
     if (task.labels.length == 0) group.disable();
     else {
-      this.groupValueChangesSubscribtion$.push(group.valueChanges
+      this.groupValueChangesSubscription$.push(group.valueChanges
         .pipe(pairwise(), distinctUntilChanged(), startWith(''))
         .subscribe(([prev, next]: [any, any]) =>
           this._labelingTaskGroupItemChanged(group, prev, next)
@@ -955,7 +956,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       caseSensitive: false
     });
 
-    this.groupValueChangesSubscribtion$.push(group.valueChanges
+    this.groupValueChangesSubscription$.push(group.valueChanges
       .pipe(pairwise(), distinctUntilChanged(), startWith(''))
       .subscribe(([prev, next]: [any, any]) => this._attributeSearchGroupItemChanged(group, prev, next)));
 
@@ -1011,11 +1012,6 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     const drillDown = this.fullSearch.get("DRILL_DOWN").get("DRILL_DOWN").value;
     if (this.requestedDrillDown != drillDown) return true;
     return false;
-  }
-
-  requestSimilarSearch() {
-    const saveSimilaritySeach = this.dataBrowserModals.similaritySearch;
-    this.similarSearchHelper.requestSimilarSearch(saveSimilaritySeach.embeddingId, saveSimilaritySeach.recordId);
   }
 
   requestOutlierSlice() {
@@ -1096,24 +1092,6 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       this.refreshTextHighlightNeeded(this.attributesSortOrder[i].key);
       this.refreshHighlightArray(this.attributesSortOrder[i].key);
     }
-  }
-
-  storePreliminaryRecordIds(pos: number) {
-    const huddleData = {
-      recordIds: this.extendedRecords.recordList.map((record) => record.id),
-      partial: true,
-      linkData: {
-        projectId: this.projectId,
-        id: this.extendedRecords.sessionId,
-        requestedPos: pos,
-        linkType: labelingLinkType.SESSION
-      },
-      allowedTask: null,
-      canEdit: true,
-      checkedAt: { db: null, local: new Date() }
-
-    }
-    localStorage.setItem('huddleData', JSON.stringify(huddleData));
   }
 
   setExtendedData(queryResults, extend: boolean) {
@@ -1226,13 +1204,13 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     if (this.isSearchMenuOpen) {
       target.classList.add('rotate_transform');
       timer(1).subscribe(() => (this.isSearchMenuVisible = true)); //ensure smooth slide open
-      if (this.timerSubscribtion) {
-        this.timerSubscribtion.unsubscribe();
-        this.timerSubscribtion = null;
+      if (this.timerSubscription) {
+        this.timerSubscription.unsubscribe();
+        this.timerSubscription = null;
       }
     } else {
       target.classList.remove('rotate_transform');
-      this.timerSubscribtion = timer(500).subscribe(
+      this.timerSubscription = timer(500).subscribe(
         () => (this.isSearchMenuVisible = false)
       );
     }
@@ -1254,7 +1232,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   getOperatorDropdownValues(i?: number, value?: any) {
     if (this.searchOperatorDropdownArray.length == 0) {
       const formControlsIdx = this.getSearchFormArray(SearchGroup.ATTRIBUTES).controls[i];
-      const attributeType = getAttributeType(this.attributesSortOrder, this.saveDropdonwAttribute);
+      const attributeType = getAttributeType(this.attributesSortOrder, this.saveDropdownAttribute);
       if (attributeType !== 'BOOLEAN') {
         for (let t of Object.values(SearchOperator)) {
           this.searchOperatorDropdownArray.push({
@@ -1279,18 +1257,18 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     for (let searchElement of this.activeSearchParams) {
       if (searchElement.values.group == SearchGroup.ATTRIBUTES) {
         if (searchElement.values.name == 'Any Attribute') {
-          this.isTextHighlightNeeded.set(attributeKey, true);
+          this.isTextHighlightNeeded[attributeKey] = true;
           return;
         }
         if (
-          searchElement.values.name == this.attributes.get(attributeKey).name
+          searchElement.values.name == this.attributes[attributeKey].name
         ) {
-          this.isTextHighlightNeeded.set(attributeKey, true);
+          this.isTextHighlightNeeded[attributeKey] = true;
           return;
         }
       }
     }
-    this.isTextHighlightNeeded.set(attributeKey, false);
+    this.isTextHighlightNeeded[attributeKey] = false;
   }
 
   refreshHighlightArray(attributeKey) {
@@ -1300,7 +1278,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       if (searchElement.values.group == SearchGroup.ATTRIBUTES) {
         if (
           searchElement.values.name == 'Any Attribute' ||
-          searchElement.values.name == this.attributes.get(attributeKey).name
+          searchElement.values.name == this.attributes[attributeKey].name
         ) {
           if (typeof searchElement.values.searchValue != 'string') {
             searchElement.values.searchValue = searchElement.values.searchValue.toString();
@@ -1942,6 +1920,8 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     } else if (['label_created', 'label_deleted', 'labeling_task_deleted', 'labeling_task_updated', 'labeling_task_created', 'information_source_created', 'information_source_updated', 'information_source_deleted'].includes(msgParts[1])) {
       this.refreshAndDo(this.labelingTasksQuery$, this.labelingTaskWait, () => this.websocketFilterRefresh(currentFilterData));
       this.alterUser(msgParts[1])
+    } else if (msgParts[1] == 'calculate_attribute' && msgParts[2] == 'updated') {
+      this.attributesQuery$.refetch();
     }
     this.similarSearchHelper.handleWebsocketNotification(msgParts);
   }
@@ -1954,8 +1934,8 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
 
   websocketFilterRefresh(currentFilterData: string) {
     this.clearFilters();
-    this.groupValueChangesSubscribtion$.forEach(x => x.unsubscribe());
-    this.groupValueChangesSubscribtion$ = [];
+    this.groupValueChangesSubscription$.forEach(x => x.unsubscribe());
+    this.groupValueChangesSubscription$ = [];
     this.prepareSearchGroups();
     this.activateFilter(currentFilterData);
     if (!this.activeSlice) this.displayOutdatedWarning = false;
@@ -2054,7 +2034,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     formControlsIdx.get(field).setValue(value);
     if (field == 'name') {
       const attributeType = getAttributeType(this.attributesSortOrder, value);
-      this.saveDropdonwAttribute = value;
+      this.saveDropdownAttribute = value;
       if (attributeType == "BOOLEAN" && formControlsIdx.get("searchValue").value != "") {
         formControlsIdx.get("searchValue").setValue("");
         formControlsIdx.get("searchValueBetween").setValue("");
@@ -2100,7 +2080,32 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     this.dataBrowserModals.findOutliers.embeddingId = this.similarSearchHelper.embeddings[selectedValue].id;
   }
 
-  setEmbeddingIdSS(selectedValue: string) {
-    this.dataBrowserModals.similaritySearch.embeddingId = this.similarSearchHelper.embeddings[selectedValue].id;
+  setEmbeddingIdSimilaritySearch(selectedIndex: string) {
+    this.dataBrowserModals.similaritySearch.embeddingId = this.similarSearchHelper.embeddings[selectedIndex].id;
+  }
+
+  requestSimilarSearch() {
+    const saveSimilaritySearch = this.dataBrowserModals.similaritySearch;
+    this.similarSearchHelper.requestSimilarSearch(saveSimilaritySearch.embeddingId, saveSimilaritySearch.recordId);
+  }
+
+  storePreliminaryRecordIds(index: number) {
+    const huddleData = {
+      recordIds: this.extendedRecords.recordList.map((record) => record.id),
+      partial: true,
+      linkData: {
+        projectId: this.projectId,
+        id: this.extendedRecords.sessionId,
+        requestedPos: index,
+        linkType: labelingLinkType.SESSION
+      },
+      allowedTask: null,
+      canEdit: true,
+      checkedAt: { db: null, local: new Date() }
+
+    }
+    localStorage.setItem('huddleData', JSON.stringify(huddleData));
+    this.router.navigate(['../labeling/' + this.extendedRecords.sessionId],
+      { queryParams: { pos: index + 1, type: 'SESSION' }, relativeTo: this.route });
   }
 }

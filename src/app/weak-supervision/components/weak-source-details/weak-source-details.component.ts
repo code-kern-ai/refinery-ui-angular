@@ -6,7 +6,7 @@ import {
   ElementRef,
   AfterViewInit,
   QueryList,
-  ViewChild,
+  ViewChild
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl } from '@angular/forms';
@@ -34,6 +34,7 @@ import { KnowledgeBasesApolloService } from 'src/app/base/services/knowledge-bas
 import { createDefaultHeuristicsDetailsModals, HeuristicsDetailsModals } from './weak-source-details-helper';
 import { AttributeVisibility } from 'src/app/projects/components/create-new-attribute/attributes-visibility-helper';
 import { BricksIntegratorComponent } from 'src/app/base/components/bricks-integrator/bricks-integrator.component';
+import { Attributes } from 'src/app/base/components/record-display/record-display.helper';
 
 @Component({
   selector: 'kern-weak-source-details',
@@ -101,6 +102,7 @@ export class WeakSourceDetailsComponent
   displayLogWarning: boolean = false;
   isInitialLf: boolean = null; //null as add state to differentiate between initial, not and unchecked
   heuristicDetailsModals: HeuristicsDetailsModals = createDefaultHeuristicsDetailsModals();
+  attributeDetails: Attributes;
 
   constructor(
     private router: Router,
@@ -644,6 +646,7 @@ export class WeakSourceDetailsComponent
         attribute.color = getColorForDataType(attribute.dataType);
         attribute.dataTypeName = this.dataTypesArray.find((type) => type.value === attribute.dataType).name;
       });
+      this.attributeDetails = Object.fromEntries(this.attributesView.map((attribute) => [attribute.id, attribute]));
     }));
     return attributes$.pipe(first());
   }
