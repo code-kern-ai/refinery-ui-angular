@@ -846,7 +846,8 @@
                     textHighlightArrayKern: textHighlightArrayKern,
                     isTextHighlightNeeded: isTextHighlightNeeded,
                     similarSearchHelper: similarSearchHelper
-                }" (similarSearch)="requestSimilarSearch()" (indexHuddleData)="storePreliminaryRecordIds($event)">
+                }" (similaritySearchRequested)="requestSimilarSearch()"
+                    (recordClicked)="storePreliminaryRecordIds($event)">
                 </kern-record-list>
             </div>
         </div>

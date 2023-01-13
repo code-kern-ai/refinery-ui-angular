@@ -27,3 +27,11 @@ export type ColumnData = {
     displayName: string;
     order: number;
 };
+
+export const DATA_BROWSER_TABLE_COLUMN_HEADERS: ColumnData[] = [
+    { field: 'type', displayName: 'Type', order: 1 },
+    { field: 'task', displayName: 'Task', order: 2 },
+    { field: 'label', displayName: 'Label', order: 3 },
+    { field: 'amount', displayName: 'Amount', order: 4 },
+    { field: 'confidenceAvg', displayName: 'Avg.confidence', order: 5 }
+]
