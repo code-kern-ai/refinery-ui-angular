@@ -20,5 +20,12 @@ export type UploadOptions = {
     deleteProjectOnFail?: boolean;
     reloadOnFinish?: boolean;
     tokenizerValues?: string[];
+};
 
+export type UploadTask = {
+    fileAdditionalInfo: string;
+    id: string;
+    progress: number;
+    state: string;
+    userId: string;
 };

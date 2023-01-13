@@ -5,8 +5,9 @@
 
             <div class="flex flex-row">
                 <input name="projectTitle" [value]="recordNewUploadHelper.projectTitle" type="submit"
-                    (keydown.enter)="initProjectEvent($event)" type="text" placeholder="Enter some title here ..."
-                    required autocomplete="off" class="input input-sm input-bordered w-full placeholder-italic">
+                    (change)="changeProjectTitle($event)" (keydown.enter)="initProjectEvent($event)" type="text"
+                    placeholder="Enter some title here ..." required autocomplete="off"
+                    class="input input-sm input-bordered w-full placeholder-italic">
             </div>
         </div>
 
@@ -20,7 +21,7 @@
 
         <div class="form-control mt-6">
             <label class="text-gray-500 text-sm font-normal">Project description <em>- optional</em></label>
-            <textarea [value]="recordNewUploadHelper.description"
+            <textarea [value]="recordNewUploadHelper.description" (change)="changeProjectDescription($event)"
                 class="textarea-bordered placeholder-italic input input-sm" style="height: 2.2rem;"
                 placeholder="Enter some description here ..."></textarea>
         </div>
@@ -32,15 +33,17 @@
                         class="underline cursor-pointer">documentation</span></a> for further
                 details.
             </label>
-            <select [value]="recordNewUploadHelper.selectedTokenizer"
+            <select [(ngModel)]="recordNewUploadHelper.selectedTokenizer"
                 class="select select-sm select-bordered w-full input input-sm"
                 data-intercom-target="Spacy Tokenizer Selection">
-                <option *ngFor="let token of tokenizerValues" [disabled]="token.disabled" [value]="token.configString">
+                <option *ngFor="let token of uploadOptions.tokenizerValues" [disabled]="token.disabled"
+                    [value]="token.configString">
                     {{token.name}} <span *ngIf="token.configString">({{token.configString}})</span>
                 </option>
             </select>
         </div>
         <ng-container *ngTemplateOutlet="upload"></ng-container>
+        <ng-container *ngTemplateOutlet="importOptionsTextarea"></ng-container>
 
         <ng-container *ngTemplateOutlet="submitUpload"></ng-container>
     </section>
@@ -108,7 +111,7 @@
 
 <ng-template #submitUpload>
     <div class="mt-4 flex flex-row gap-x-3">
-        <button (click)="initializeProject()" type="button"
+        <button (click)="submitUploadFile()" type="button"
             class="bg-blue-700 text-white text-xs font-semibold px-4 py-2 rounded-md hover:bg-blue-800 focus:outline-none"
             type="submit">
             Proceed
@@ -122,5 +125,24 @@
             class="bg-red-100 border border-red-400 text-red-700 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer hover:bg-red-200 focus:outline-none">
             Cancel project creation
         </button>
+    </div>
+</ng-template>
+
+<ng-template #importOptionsTextarea>
+    <div class="form-group">
+        <label class="text-gray-500 text-sm font-normal">
+            You can specify import file upload options for your file. See how this is done for <a
+                href="https://pandas.pydata.org/docs/reference/api/pandas.read_json.html" target="_blank"><span
+                    class="underline cursor-pointer">JSON</span></a>, <a
+                href="https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html" target="_blank"><span
+                    class="underline cursor-pointer">CSV</span></a> and <a
+                href="https://pandas.pydata.org/docs/reference/api/pandas.read_excel.html" target="_blank"><span
+                    class="underline cursor-pointer">spreadsheets</span></a>. If you leave
+            it blank, we'll use default settings
+        </label>
+        <div>
+            <textarea #importOptions class="shadow mt-1 p-4 text-sm w-full placeholder-indigo" rows="3"
+                placeholder="E.g. for uncommon CSV&#10;sep=\t&#10;lineterminator=\r"></textarea>
+        </div>
     </div>
 </ng-template>

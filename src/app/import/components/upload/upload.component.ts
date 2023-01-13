@@ -10,7 +10,7 @@ import { UploadStates } from '../../services/s3.enums';
 import { S3Service } from '../../services/s3.service';
 import { UploadHelper } from './upload-helper';
 import { RecordAddUploadHelper, RecordNewUploadHelper } from './upload-specific';
-import { UploadFileType, UploadOptions, UploadType } from './upload-types';
+import { UploadFileType, UploadOptions, UploadTask, UploadType } from './upload-types';
 
 @Component({
   selector: 'kern-upload',
@@ -21,7 +21,6 @@ export class UploadComponent implements OnInit {
 
 
   @Input() uploadFileType: UploadFileType;
-  @Input() file: File | null = null;
   @Input() projectId?: string;
   @Input() uploadOptions: UploadOptions;
 
@@ -32,6 +31,8 @@ export class UploadComponent implements OnInit {
   uploadHelper: UploadHelper;
   recordNewUploadHelper: RecordNewUploadHelper;
   recordAddUploadHelper: RecordAddUploadHelper;
+  file: File | null = null;
+  @ViewChild('importOptions', { read: ElementRef }) importOptionsHTML: ElementRef;
 
 
   // @Input() deleteProjectOnFail: boolean;
@@ -53,14 +54,12 @@ export class UploadComponent implements OnInit {
   upload$: Observable<UploadState>;
 
   constructor(private projectApolloService: ProjectApolloService, private router: Router, private s3Service: S3Service) {
-    this.recordNewUploadHelper = new RecordNewUploadHelper();
+    this.recordNewUploadHelper = new RecordNewUploadHelper(this.projectApolloService, this.router);
     this.recordAddUploadHelper = new RecordAddUploadHelper();
-    this.uploadHelper = new UploadHelper(this, this.recordNewUploadHelper, this.recordAddUploadHelper);
+    this.uploadHelper = new UploadHelper(this.router, this, this.recordNewUploadHelper, this.recordAddUploadHelper);
   }
 
   ngOnInit(): void {
-    console.log(this.uploadFileType)
-
     NotificationService.subscribeToNotification(this, {
       projectId: this.projectId,
       whitelist: ['file_upload'],
@@ -100,31 +99,6 @@ export class UploadComponent implements OnInit {
     tasks$.push(this.projectApolloService.changeProjectTokenizer(projectId, this.selectedTokenizer));
     tasks$.push(this.projectApolloService.updateProjectStatus(projectId, ProjectStatus.INIT_COMPLETE));
     forkJoin(tasks$).pipe(first()).subscribe();
-  }
-
-  uploadFileToMinio(projectId: string, uploadFileType: UploadFileType, knowledgeBaseId?: string): string {
-    this.projectId = projectId;
-    this.uploadOptions.reloadOnFinish = UploadFileType.RECORDS_ADD || uploadFileType == UploadFileType.KNOWLEDGE_BASE ? false : true;
-    this.uploadStarted = true;
-    this.reSubscribeToNotifications();
-    this.uploadFileType = uploadFileType;
-    this.executeOnFinish = () => {
-      timer(200).subscribe(() => {
-        this.router.navigate(['projects', this.projectId, 'settings'])
-      });
-    }
-    return this.getFinalFileName(this.file?.name, knowledgeBaseId);
-  }
-
-  getFinalFileName(fileName: string, knowledgeBaseId?: string): string {
-    switch (this.uploadFileType) {
-      case UploadFileType.RECORDS_ADD:
-        return fileName + "_SCALE";
-      case UploadFileType.KNOWLEDGE_BASE:
-        return fileName + "_" + knowledgeBaseId;
-      default:
-        return fileName;
-    }
   }
 
   finishUpUpload(filename: string, importOptions: string) {
@@ -220,12 +194,16 @@ export class UploadComponent implements OnInit {
     }
   }
 
-}
+  submitUploadFile() {
+    this.uploadHelper.upload();
+  }
 
-export type UploadTask = {
-  fileAdditionalInfo: string;
-  id: string;
-  progress: number;
-  state: string;
-  userId: string;
-};
+  changeProjectTitle(event: any) {
+    this.recordNewUploadHelper.projectTitle = event.target.value;
+  }
+
+  changeProjectDescription(event: any) {
+    this.recordNewUploadHelper.description = event.target.value;
+  }
+
+}
