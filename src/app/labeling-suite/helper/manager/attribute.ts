@@ -1,14 +1,18 @@
 import { first } from "rxjs/operators";
 import { NotificationService } from "src/app/base/services/notification.service";
 import { ProjectApolloService } from "src/app/base/services/project/project-apollo.service";
+import { AttributeVisibility } from "src/app/projects/components/create-new-attribute/attributes-visibility-helper";
 import { enumToArray, transferNestedDict } from "src/app/util/helper-functions";
 import { DoBeforeDestroy } from "src/app/util/interfaces";
 import { LabelingSuiteManager, UpdateType } from "./manager";
 
 
 
-export class LabelingSuiteTaskManager implements DoBeforeDestroy {
-    public labelingTasks: any[];
+export class LabelingSuiteAttributeManager implements DoBeforeDestroy {
+
+    public attributes: any[];
+    //only for debugging purposes
+    private fullAttributes: any[];
 
     private baseManager: LabelingSuiteManager;
     private projectApolloService: ProjectApolloService;
@@ -27,7 +31,7 @@ export class LabelingSuiteTaskManager implements DoBeforeDestroy {
             whitelist: this.getWebsocketWhitelist(),
             func: this.handleWebsocketNotification
         });
-        this.fetchLabelingTasks();
+        this.fetchAttributes();
     }
 
     doBeforeDestroy(): void {
@@ -35,29 +39,30 @@ export class LabelingSuiteTaskManager implements DoBeforeDestroy {
     }
 
     private getWebsocketWhitelist(): string[] {
-        let toReturn = ['label_created', 'label_deleted'];
-        toReturn.push(...['labeling_task_deleted', 'labeling_task_updated', 'labeling_task_created',]);
+        let toReturn = ['attributes_updated', 'calculate_attribute'];
         return toReturn;
     }
 
     private handleWebsocketNotification(msgParts: string[]) {
-        if (['label_created', 'label_deleted', 'labeling_task_deleted', 'labeling_task_updated', 'labeling_task_created'].includes(msgParts[1])) {
-            this.fetchLabelingTasks();
+        if (msgParts[1] == 'attributes_updated' || (msgParts[1] == 'calculate_attribute' && msgParts[2] == 'created')) {
+            this.fetchAttributes();
         }
         else {
-            console.log("unknown message in labeling suite task manager" + msgParts);
+            console.log("unknown message in LabelingSuite Attribute Manager: " + msgParts);
         }
 
     }
 
-
-    private fetchLabelingTasks() {
+    private fetchAttributes() {
         let q, vc;
-        [q, vc] = this.projectApolloService.getLabelingTasksByProjectId(this.projectId);
-        vc.pipe(first()).subscribe(lt => {
-            this.labelingTasks = lt;
-            this.baseManager.runUpdateListeners(UpdateType.LABELING_TASKS);
+        [q, vc] = this.projectApolloService.getAttributesByProjectId(this.projectId);
+        vc.pipe(first()).subscribe(att => {
+            this.fullAttributes = att;
+            this.attributes = att.filter((a) => a.visibility == AttributeVisibility.DO_NOT_HIDE || a.visibility == AttributeVisibility.HIDE_ON_DATA_BROWSER);
+            this.attributes.sort((a, b) => a.relativePosition - b.relativePosition);
+            this.baseManager.runUpdateListeners(UpdateType.ATTRIBUTES);
         });
     }
+
 
 }

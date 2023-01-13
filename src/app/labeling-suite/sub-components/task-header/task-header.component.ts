@@ -10,7 +10,7 @@ import { LabelingSuiteTaskHeaderDisplayData, LabelingSuiteTaskHeaderLabelDisplay
 @Component({
   selector: 'kern-labeling-suite-task-header',
   templateUrl: './task-header.component.html',
-  styleUrls: ['./task-header.component.scss'],
+  styleUrls: ['./task-header.component.scss', '../../main-component/labeling-suite.component.scss'],
 })
 export class LabelingSuiteTaskHeaderComponent implements OnInit, OnChanges, OnDestroy {
   @Input() lsm: LabelingSuiteManager;

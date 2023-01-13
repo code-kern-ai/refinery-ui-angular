@@ -64,6 +64,8 @@ export class LabelingSuiteRecordManager implements DoBeforeDestroy {
                 console.log("record deleted");
                 this.setDeletedState();
             }
+        } else if (msgParts[1] == 'rla_created' || msgParts[1] == 'rla_deleted') {
+            if (this.recordRequests.rlaQuery) this.recordRequests.rlaQuery.refetch();
         }
         else {
             console.log("unknown message in labeling suite record manager" + msgParts);
@@ -114,8 +116,6 @@ export class LabelingSuiteRecordManager implements DoBeforeDestroy {
         rlas = jsonCopy(rlas);
         this.recordData.rlas = this.finalizeRlas(rlas);
         this.baseManager.runUpdateListeners(UpdateType.RECORD);
-
-        // this.baseComponent.setOverviewTableData(this.recordData.rlas);
     }
 
 
@@ -208,7 +208,7 @@ export class LabelingSuiteRecordManager implements DoBeforeDestroy {
 
     public deleteRecord() {
         if (this.recordData.deleted) return;
-        console.log("delete record -> nonthing done though since dev")
+        console.log("delete record -> nothing done though since dev")
         return;
         const recordId = this.recordData.baseRecord.id;
         this.recordApolloService.deleteRecordByRecordId(this.projectId, recordId)

@@ -1,1 +1,80 @@
-<div class="bg-white border-green-400">labeling section</div>
+<div #baseDomElement class="bg-white relative bg-white p-4">
+    <div *ngIf="lVars.loading" class="">
+        <kern-loading size="btn-lg"></kern-loading>
+    </div>
+    <div *ngIf="!lVars.loading && lsm.recordManager.recordData.deleted"
+        class="flex items-center justify-center text-red-500">
+        This Record has been deleted
+    </div>
+    <table *ngIf="!lVars.loading && !lsm.recordManager.recordData.deleted && lVars.loopAttributes"
+        class="w-full border">
+        <tbody class="divide-y divide-gray-200">
+            <tr *ngFor="let attribute of lVars.loopAttributes;let i = index"
+                [ngClass]="i%2 == 0 ? 'bg-white':'bg-gray-50'">
+                <td class="font-dmMono text-sm font-bold text-gray-500 py-2 pl-4 pr-3 sm:pl-6" style="min-width:200px">
+                    {{attribute.name}}
+                </td>
+                <!-- text & gold stars-->
+                <td class="px-3 py-2 text-sm text-gray-500 w-full">
+                    <div class="flex flex-col gap-y-2">
+                        <div *ngFor="let task of lVars.taskLookup[attribute.id].lookup;let j = index"
+                            class="flex flex-row flex-nowrap gap-x-2">
+                            <div>
+                                <!-- gold star-->
+                            </div>
+                            <div>
+                                <!-- text/labels-->
+                                <ng-template [ngIf]="task.showText">
+                                    <ng-template [ngIf]="task.task.taskType == 'INFORMATION_EXTRACTION'"
+                                        [ngIfElse]="displayText">
+                                        <!--extraction stuff-->
+                                        can't handle yet
+                                    </ng-template>
+                                    <ng-template #displayText>
+
+                                        <!-- <p class="break-words text-sm leading-5 font-normal text-gray-500"
+                                            *ngIf="lsm.recordManager.recordData.baseRecord.data[lVars.taskLookup[attribute.id].attribute.name] !== '';else notPresentInRecord">
+                                            {{lsm.recordManager.recordData.baseRecord.data[lVars.taskLookup[attribute.id].attribute.name]}}
+                                        </p> -->
+                                        {{lsm.recordManager.recordData.baseRecord.data[lVars.taskLookup[attribute.id].attribute.name]}}
+                                    </ng-template>
+                                </ng-template>
+
+
+                            </div>
+                            <!--       
+                    <div #labelDiv *ngFor="let labelId of task.labelOrder; let i = index"
+                      class="text-sm font-medium px-2 py-0.5 rounded-md border focus:outline-none cursor-pointer"
+                      hover-group-class="{{task.labels[labelId].color.hoverColor}}"
+                      hover-group="{{task.labels[labelId].hoverGroups}}"
+                      [ngClass]="[task.labels[labelId].color.backgroundColor, task.labels[labelId].color.textColor, task.labels[labelId].color.borderColor]"
+                      (click)="setLabelSettingsLabel(task.labels[labelId]);labelSettingsBoxPosition(labelDiv,baseDomElement);">
+                      <div class="truncate" style="max-width: 260px;">{{task.labels[labelId].name}}
+                        <kbd *ngIf="task.labels[labelId].hotkey"
+                          class="ml-1 uppercase inline-flex items-center border bg-white border-gray-200 rounded px-2 text-sm font-sans font-medium text-gray-400">{{task.labels[labelId].hotkey}}</kbd>
+                      </div>
+                    </div> -->
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+
+
+
+<ng-template #notPresentInRecord>
+    <svg xmlns="http://www.w3.org/2000/svg"
+        class="icon icon-tabler icon-tabler-alert-circle text-yellow-700 inline-block" width="20" height="20"
+        viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
+        stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <circle cx="12" cy="12" r="9"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+    </svg>
+    <span class="text-gray-500 text-sm font-normal italic">Not present in the
+        record</span>
+</ng-template>

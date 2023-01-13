@@ -15,8 +15,8 @@
     </ng-container>
   </div>
   <ng-template #headerDisplay>
-    <table class="min-w-full border divide-y divide-gray-300">
-      <tbody class="bg-white">
+    <table class="min-w-full border">
+      <tbody class="bg-white divide-y divide-gray-200">
         <tr *ngFor="let task of displayData;let i = index" [ngClass]="i%2 == 0 ? 'bg-white':'bg-gray-50'">
           <td class="font-bold py-2 pl-4 pr-3 text-sm text-gray-500 sm:pl-6" hover-group-class="bg-green-200"
             hover-group="{{task.hoverGroups}}">
@@ -213,7 +213,9 @@
 
 <ng-template #quickButton let-attributeName="attributeName" let-caption="caption" let-dataTipCaption="dataTipCaption">
 
-  <div class="tooltip" data-tip="Activate all corresponding labels">
+  <div class="tooltip"
+    [ngClass]="lsm.settingManager.settings.task.isCollapsed && caption == 'Manual'?'tooltip-right':null"
+    data-tip="Show labels in labeling view">
     <button (click)="setAllLabelDisplaySetting(true,null,attributeName)"
       class="inline-flex items-center bg-white text-gray-700 text-xs font-semibold py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none"
       [ngClass]="lsm.settingManager.settings.task.isCollapsed?'px-2':'px-4'">
@@ -226,7 +228,7 @@
       </svg>{{caption}}
     </button>
   </div>
-  <div class="tooltip" data-tip="Activate all corresponding labels and deactivate others">
+  <div class="tooltip" data-tip="Show labels in labeling view and deactivate others">
     <button (click)="setAllLabelDisplaySetting(true,null,attributeName,true)"
       class="inline-flex items-center bg-white text-gray-700 text-xs font-semibold py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none"
       [ngClass]="lsm.settingManager.settings.task.isCollapsed?'px-2':'px-4'">

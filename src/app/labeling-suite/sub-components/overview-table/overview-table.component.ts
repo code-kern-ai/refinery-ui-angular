@@ -18,7 +18,7 @@ import { getEmptyHeuristicInfo, HeuristicInfo, TableDisplayData } from './helper
 @Component({
   selector: 'kern-labeling-suite-overview-table',
   templateUrl: './overview-table.component.html',
-  styleUrls: ['./overview-table.component.scss']
+  styleUrls: ['./overview-table.component.scss', '../../main-component/labeling-suite.component.scss']
 })
 export class LabelingSuiteOverviewTableComponent implements OnInit, OnDestroy, OnChanges {
 
