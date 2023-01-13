@@ -11,7 +11,7 @@ import { Subscription, timer } from 'rxjs';
 import { UploadRecordsComponent } from 'src/app/import/components/upload-records/upload-records.component';
 import { ConfigManager } from 'src/app/base/services/config-service';
 import { getUserAvatarUri } from 'src/app/util/helper-functions';
-import { UploadType } from 'src/app/import/components/upload/upload-types';
+import { UploadFileType, UploadType } from 'src/app/import/components/upload/upload-types';
 import { LabelStudioAssistantComponent } from 'src/app/base/components/upload-assistant/label-studio/label-studio-assistant.component';
 import { PreparationStep } from 'src/app/base/components/upload-assistant/label-studio/label-studio-assistant-helper';
 
@@ -23,9 +23,13 @@ import { PreparationStep } from 'src/app/base/components/upload-assistant/label-
 })
 export class ProjectNewComponent implements OnInit, AfterViewChecked {
 
+  get UploadFileType(): typeof UploadFileType {
+    return UploadFileType;
+  }
+
   user$: any;
   subscriptions$: Subscription[] = [];
-  createNewProject: FormGroup;
+  // createNewProject: FormGroup;
   selectedTokenizer = 'en_core_web_sm';
   tokenizerValues = [];
   checkIfUpload: boolean;
@@ -74,11 +78,11 @@ export class ProjectNewComponent implements OnInit, AfterViewChecked {
         this.avatarUri = getUserAvatarUri(user);
       });
 
-    this.createNewProject = this.formBuilder.group({
-      projectTitle: ['', [Validators.required, Validators.pattern(/^(\s+\S+\s*)*(?!\s).*$/), this.orgExists()]],
-      description: [''],
-      tokenizerForm: [this.selectedTokenizer]
-    });
+    // this.createNewProject = this.formBuilder.group({
+    //   projectTitle: ['', [Validators.required, Validators.pattern(/^(\s+\S+\s*)*(?!\s).*$/), this.orgExists()]],
+    //   description: [''],
+    //   tokenizerForm: [this.selectedTokenizer]
+    // });
 
     [this.projectNameListQuery$, this.projectNameList$] = this.projectApolloService.getProjects();
     this.subscriptions$.push(this.projectNameList$.subscribe((projectList) => {
@@ -99,7 +103,7 @@ export class ProjectNewComponent implements OnInit, AfterViewChecked {
       });
   }
 
-  get f() { return this.createNewProject.controls; }
+  // get f() { return this.createNewProject.controls; }
 
   handleWebsocketNotification(msgParts) {
     if (!this.projectNameListQuery$) return;
@@ -121,12 +125,12 @@ export class ProjectNewComponent implements OnInit, AfterViewChecked {
     }
   }
 
-  canCreateProject(): boolean {
-    if (!this.createNewProject.get('projectTitle')?.value) return false;
-    if (this.createNewProject.get('projectTitle').value.trim() == '') return false;
-    for (const p of this.projectNameList) if (p.name == this.createNewProject.get('projectTitle').value) return false;
-    return true;
-  }
+  // canCreateProject(): boolean {
+  //   if (!this.createNewProject.get('projectTitle')?.value) return false;
+  //   if (this.createNewProject.get('projectTitle').value.trim() == '') return false;
+  //   for (const p of this.projectNameList) if (p.name == this.createNewProject.get('projectTitle').value) return false;
+  //   return true;
+  // }
   initProjectEvent(event: Event) {
     event.preventDefault();
     this.initializeProject();
@@ -135,23 +139,23 @@ export class ProjectNewComponent implements OnInit, AfterViewChecked {
     this.uploadRecordsComponent.uploadComponent.uploadType = uploadType;
     this.uploadRecordsComponent.submitted = true;
     this.submitted = true;
-    if (this.createNewProject.invalid) return false;
-    this.createNewProject.setValue({
-      projectTitle: (this.createNewProject.get('projectTitle').value).trim(),
-      description: (this.createNewProject.get('description').value).trim(),
-      tokenizerForm: this.createNewProject.get('tokenizerForm').value,
-    });
+    // if (this.createNewProject.invalid) return false;
+    // this.createNewProject.setValue({
+    //   projectTitle: (this.createNewProject.get('projectTitle').value).trim(),
+    //   description: (this.createNewProject.get('description').value).trim(),
+    //   tokenizerForm: this.createNewProject.get('tokenizerForm').value,
+    // });
 
-    if (this.submitted && this.hasFileUploaded) {
-      this.projectApolloService
-        .createProject(this.createNewProject.get('projectTitle').value.trim(), this.createNewProject.get('description').value.trim())
-        .pipe(first()).subscribe((p: Project) => {
-          this.project = p;
-          this.uploadRecordsComponent.projectId = p.id;
-          this.uploadRecordsComponent.selectedTokenizer = this.createNewProject.get('tokenizerForm').value;
-          this.uploadRecordsComponent.submitUploadRecords();
-        });
-    }
+    // if (this.submitted && this.hasFileUploaded) {
+    //   this.projectApolloService
+    //     .createProject(this.createNewProject.get('projectTitle').value.trim(), this.createNewProject.get('description').value.trim())
+    //     .pipe(first()).subscribe((p: Project) => {
+    //       this.project = p;
+    //       this.uploadRecordsComponent.projectId = p.id;
+    //       this.uploadRecordsComponent.selectedTokenizer = this.createNewProject.get('tokenizerForm').value;
+    //       this.uploadRecordsComponent.submitUploadRecords();
+    //     });
+    // }
     return true;
   }
 

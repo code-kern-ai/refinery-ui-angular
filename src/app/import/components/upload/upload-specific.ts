@@ -1,6 +1,7 @@
 export class RecordNewUploadHelper {
-    name: string;
-    description: string;
+    projectTitle: string = '';
+    description: string = '';
+    selectedTokenizer: string = 'en_core_web_sm';
 
     constructor() { }
 

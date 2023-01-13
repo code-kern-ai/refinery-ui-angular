@@ -5,7 +5,7 @@
     <div class="h-full w-full flex-1 flex flex-col overflow-auto">
         <kern-header [user]="user$ | async" [organizationName]="organizationName" [avatarUri]="avatarUri"
             page="project-new"></kern-header>
-        <section class="p-4">
+        <!-- <section class="p-4">
             <form [formGroup]="createNewProject">
                 <div class="form-control">
                     <label class="text-gray-500 text-sm font-normal">Project title</label>
@@ -69,6 +69,10 @@
                     </button>
                 </div>
             </form>
-        </section>
+        </section> -->
+        <kern-upload [uploadFileType]="UploadFileType.RECORDS_NEW" [uploadOptions]="{
+            deleteProjectOnFail: true,
+            tokenizerValues: tokenizerValues
+        }"></kern-upload>
     </div>
 </div>

@@ -8,6 +8,8 @@ import { ProjectApolloService } from 'src/app/base/services/project/project-apol
 import { ProjectStatus } from 'src/app/projects/enums/project-status.enum';
 import { UploadStates } from '../../services/s3.enums';
 import { S3Service } from '../../services/s3.service';
+import { UploadHelper } from './upload-helper';
+import { RecordAddUploadHelper, RecordNewUploadHelper } from './upload-specific';
 import { UploadFileType, UploadOptions, UploadType } from './upload-types';
 
 @Component({
@@ -22,6 +24,14 @@ export class UploadComponent implements OnInit {
   @Input() file: File | null = null;
   @Input() projectId?: string;
   @Input() uploadOptions: UploadOptions;
+
+  get UploadFileType(): typeof UploadFileType {
+    return UploadFileType;
+  }
+
+  uploadHelper: UploadHelper;
+  recordNewUploadHelper: RecordNewUploadHelper;
+  recordAddUploadHelper: RecordAddUploadHelper;
 
 
   // @Input() deleteProjectOnFail: boolean;
@@ -42,9 +52,15 @@ export class UploadComponent implements OnInit {
   uploadTask$;
   upload$: Observable<UploadState>;
 
-  constructor(private projectApolloService: ProjectApolloService, private router: Router, private s3Service: S3Service) { }
+  constructor(private projectApolloService: ProjectApolloService, private router: Router, private s3Service: S3Service) {
+    this.recordNewUploadHelper = new RecordNewUploadHelper();
+    this.recordAddUploadHelper = new RecordAddUploadHelper();
+    this.uploadHelper = new UploadHelper(this, this.recordNewUploadHelper, this.recordAddUploadHelper);
+  }
 
   ngOnInit(): void {
+    console.log(this.uploadFileType)
+
     NotificationService.subscribeToNotification(this, {
       projectId: this.projectId,
       whitelist: ['file_upload'],

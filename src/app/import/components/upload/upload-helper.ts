@@ -4,8 +4,8 @@ import { UploadComponent } from "./upload.component";
 
 export class UploadHelper {
     private baseComponent: UploadComponent;
-    private recordNewUploadHelper: RecordNewUploadHelper;
-    private recordAddUploadHelper: RecordAddUploadHelper;
+    recordNewUploadHelper: RecordNewUploadHelper;
+    recordAddUploadHelper: RecordAddUploadHelper;
 
     constructor(baseComponent: UploadComponent, recordNewUploadHelper: RecordNewUploadHelper, recordAddUploadHelper: RecordAddUploadHelper) {
         this.baseComponent = baseComponent;
