@@ -1,5 +1,6 @@
-<ng-template [ngIf]="uploadFileTypeDisplay == UploadFileTypeDisplay.RECORDS_NEW">
-    <section class="p-4">
+<section class="p-4">
+    <ng-template [ngIf]="uploadFileTypeDisplay == UploadFileTypeDisplay.RECORDS_NEW">
+
         <div class="form-control">
             <label class="text-gray-500 text-sm font-normal">Project title</label>
 
@@ -42,20 +43,23 @@
                 </option>
             </select>
         </div>
-        <ng-container *ngTemplateOutlet="upload"></ng-container>
-        <ng-container *ngTemplateOutlet="importOptionsTextarea"></ng-container>
-        <ng-container *ngTemplateOutlet="submitUpload"></ng-container>
-    </section>
-</ng-template>
+        <ng-component *ngTemplateOutlet="uploadWrapper"></ng-component>
+    </ng-template>
+    <ng-template [ngIf]="uploadFileTypeDisplay == UploadFileTypeDisplay.RECORDS_ADD">
+        <div class="text-lg leading-6 text-gray-900 font-medium inline-block">
+            Record upload
+        </div>
+        <ng-component *ngTemplateOutlet="uploadWrapper"></ng-component>
+    </ng-template>
+</section>
 
-<ng-template [ngIf]="uploadFileTypeDisplay == UploadFileTypeDisplay.RECORDS_ADD">
-    <section class="p-4">
-        <ng-container *ngTemplateOutlet="upload"></ng-container>
-        <ng-container *ngTemplateOutlet="importOptionsTextarea"></ng-container>
-        <ng-container *ngTemplateOutlet="submitUpload"></ng-container>
-    </section>
-</ng-template>
 
+<ng-template #uploadWrapper>
+    <ng-component *ngTemplateOutlet="dataSourcesUpload"></ng-component>
+    <ng-container *ngTemplateOutlet="upload"></ng-container>
+    <ng-container *ngTemplateOutlet="importOptionsTextarea"></ng-container>
+    <ng-container *ngTemplateOutlet="submitUpload"></ng-container>
+</ng-template>
 
 <ng-template #upload>
     <input type="file" class="hidden" (change)="onFileInput($event)" #fileUpload>
@@ -150,6 +154,65 @@
         <div>
             <textarea #importOptions class="shadow mt-1 p-4 text-sm w-full placeholder-indigo" rows="3"
                 placeholder="E.g. for uncommon CSV&#10;sep=\t&#10;lineterminator=\r"></textarea>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #dataSourcesUpload>
+    <div class="text-gray-500 text-sm font-normal">Choose from one of the following data
+        sources</div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        <div>
+            <label class="rounded-lg relative border p-4 flex cursor-pointer h-full focus:outline-none bg-white"
+                (click)="toggleTab(0)" [ngClass]="openTab === 0 ? 'border-black' : 'border-gray'">
+                <input type="radio" name="upload-file" [value]="0" [checked]="true"
+                    class="h-4 w-4 mt-0.5 cursor-pointer shrink-0 text-indigo-600 border-gray-300 focus:ring-indigo-500"
+                    aria-labelledby="upload-file-0-label" aria-describedby="upload-file-0-description">
+                <span class="ml-3 flex flex-col">
+                    <span id="upload-file-1-label" class="block text-sm font-medium"
+                        [ngClass]="openTab === 0 ? 'text-indigo-700' : 'text-gray-900'"> Upload file
+                    </span>
+                    <span id="upload-file-1-description" class="block text-sm font-normal"
+                        [ngClass]="openTab === 0 ? 'text-indigo-dark-2' : 'text-gray-500'"> Upload
+                        any kind of CSV, JSON or spreadsheet. </span>
+                </span>
+            </label>
+        </div>
+        <div>
+            <label class="bg-white rounded-lg relative border p-4 flex h-full focus:outline-none">
+                <div class="grid grid-cols-6 gap-4 w-full">
+                    <div class="col-span-3 lg:col-span-4 ml-3">
+                        <span id="integrate-api-0-label" class="block text-sm font-medium text-gray-900">
+                            Integrate via API </span>
+                        <span id="integrate-api-0-description" class="block text-sm font-normal text-gray-500"> Upload
+                            data
+                            via our API. </span>
+                    </div>
+                    <div class="col-span-3 lg:col-span-2 text-right items-center flex">
+                        <button
+                            class="bg-gray-100 text-gray-800 rounded-lg text-xs px-2.5 py-0.5 cursor-default border border-gray-300">Coming
+                            soon!</button>
+                    </div>
+                </div>
+            </label>
+        </div>
+        <div>
+            <label class="bg-white rounded-lg relative border p-4 flex h-full focus:outline-none">
+                <div class="grid grid-cols-6 gap-4 w-full">
+                    <div class="col-span-3 lg:col-span-4 ml-3">
+                        <span id="integrate-database-0-label" class="block text-sm font-medium text-gray-900"> Integrate
+                            database </span>
+                        <span id="integrate-database-0-description" class="block text-sm font-normal text-gray-500">
+                            Integrate data directly from a
+                            DB. </span>
+                    </div>
+                    <div class="col-span-3 lg:col-span-2 text-right items-center flex">
+                        <button
+                            class="bg-gray-100 text-gray-800 rounded-lg text-xs px-2.5 py-0.5 cursor-default border border-gray-300">Coming
+                            soon!</button>
+                    </div>
+                </div>
+            </label>
         </div>
     </div>
 </ng-template>

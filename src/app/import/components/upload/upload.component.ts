@@ -38,7 +38,7 @@ export class UploadComponent implements OnInit {
   recordAddUploadHelper: RecordAddUploadHelper;
   file: File | null = null;
   @ViewChild('importOptions', { read: ElementRef }) importOptionsHTML: ElementRef;
-
+  openTab: number = 0;
 
   // @Input() deleteProjectOnFail: boolean;
   uploadStarted: boolean = false;
@@ -209,6 +209,10 @@ export class UploadComponent implements OnInit {
 
   changeProjectDescription(event: any) {
     this.recordNewUploadHelper.description = event.target.value;
+  }
+
+  toggleTab(tabNum: number) {
+    this.openTab = tabNum;
   }
 
 }
