@@ -21,7 +21,6 @@ export class UploadHelper {
 
     upload(file?: File): void {
         if (file) this.baseComponent.file = file;
-        console.log(this.baseComponent.uploadFileType)
         switch (this.baseComponent.uploadFileType) {
             case UploadFileType.RECORDS:
                 if (this.baseComponent.uploadFileTypeDisplay == UploadFileTypeDisplay.RECORDS_NEW) {
@@ -43,7 +42,6 @@ export class UploadHelper {
 
     uploadFileToMinio(projectId: string, uploadFileType: UploadFileType, knowledgeBaseId?: string): string {
         this.baseComponent.projectId = projectId;
-        this.baseComponent.uploadStarted = true;
         this.baseComponent.reSubscribeToNotifications();
         this.baseComponent.uploadFileType = uploadFileType;
         this.baseComponent.executeOnFinish = () => {

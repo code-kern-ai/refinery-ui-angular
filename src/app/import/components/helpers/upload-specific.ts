@@ -52,7 +52,6 @@ export class ExistingProjectUploadHelper {
     }
 
     doUpload(): void {
-        console.log("doUpload")
         this.projectApolloService
             .createProject("Imported Project", "Created during file upload " + this.baseComponent.file.name)
             .pipe(first()).subscribe((p: Project) => {

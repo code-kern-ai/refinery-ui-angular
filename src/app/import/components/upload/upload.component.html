@@ -114,14 +114,16 @@
                     </ng-template>
 
                     <ng-container *ngIf="file">
-                        <div *ngIf="upload$ | async as upload" class="m-2">
+                        <div *ngIf="progressState" class="m-2">
                             <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700"
-                                *ngIf="!(upload.state === UploadStatesType.ERROR)">
-                                <div class="bg-primary h-2.5 rounded-full" [style.width]="upload.progress+'%'"></div>
+                                *ngIf="!(progressState.state === UploadStatesType.ERROR)">
+                                <div class="bg-primary h-2.5 rounded-full" [style.width]="progressState.progress+'%'">
+                                </div>
                             </div>
                             <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700"
-                                *ngIf="upload.state === UploadStatesType.ERROR">
-                                <div class="bg-red-700 h-2.5 rounded-full" [style.width]="upload.progress+'%'"></div>
+                                *ngIf="progressState.state === UploadStatesType.ERROR">
+                                <div class="bg-red-700 h-2.5 rounded-full" [style.width]="progressState.progress+'%'">
+                                </div>
                             </div>
                         </div>
                     </ng-container>

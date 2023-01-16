@@ -55,7 +55,7 @@ export class UploadComponent implements OnInit {
   uploadType: UploadType = UploadType.DEFAULT;
   uploadTask$;
   upload$: Observable<UploadState>;
-  uploadState: UploadState;
+  progressState: UploadState;
 
   constructor(private projectApolloService: ProjectApolloService, private router: Router, private s3Service: S3Service) {
     this.recordNewUploadHelper = new RecordNewUploadHelper(this.projectApolloService, this.router, this);
@@ -119,18 +119,15 @@ export class UploadComponent implements OnInit {
     this.uploadStarted = true;
     const credentialsAndUploadId = JSON.parse(JSON.parse(uploadInformation))
     this.startProgressCall(credentialsAndUploadId.uploadTaskId).subscribe(() => {
-      this.upload$ = this.s3Service.uploadFile(credentialsAndUploadId, this.file, filename).pipe(
-        tap((progress) => {
-          console.log("progress", progress)
-          if (progress.state === UploadStates.DONE || progress.state === UploadStates.ERROR) {
-            timer(500).subscribe(() => this.file = null);
-            if (progress.state === UploadStates.ERROR && this.uploadOptions.deleteProjectOnFail) {
-              this.deleteExistingProject();
-            }
+      this.s3Service.uploadFile(credentialsAndUploadId, this.file, filename).subscribe((progress) => {
+        this.progressState = progress;
+        if (this.progressState.state === UploadStates.DONE || this.progressState.state === UploadStates.ERROR) {
+          timer(500).subscribe(() => this.file = null);
+          if (this.progressState.state === UploadStates.ERROR && this.uploadOptions.deleteProjectOnFail) {
+            this.deleteExistingProject();
           }
-        })
-      )
-      this.upload$.subscribe();
+        }
+      });
     })
   }
 
@@ -138,7 +135,6 @@ export class UploadComponent implements OnInit {
     [this.uploadTaskQuery$, this.uploadTask$] = this.projectApolloService.getUploadTaskByTaskId(this.projectId, uploadTaskId);
     const firstReturn = this.uploadTask$.pipe(first());
     this.uploadTask$ = this.uploadTask$.subscribe((task) => {
-      console.log(task, this.uploadOptions)
       this.uploadTask = task;
       if (task.state == UploadStates.DONE || task.progress == 100) {
         this.clearUploadTask();
