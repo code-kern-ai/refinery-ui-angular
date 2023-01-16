@@ -22,7 +22,7 @@ export class RecordNewUploadHelper {
             .createProject(this.projectTitle.trim(), this.description.trim())
             .pipe(first()).subscribe((p: Project) => {
                 this.uploadHelper.setProjectId(p.id, this.baseComponent);
-                this.uploadHelper.executeUploadForRecords(UploadFileType.RECORDS, this.baseComponent);
+                this.uploadHelper.executeUploadFile(UploadFileType.RECORDS, this.baseComponent);
             });
 
     }
@@ -39,7 +39,7 @@ export class RecordAddUploadHelper {
 
     doUpload(): void {
         this.uploadHelper.setProjectId(this.baseComponent.projectId, this.baseComponent);
-        this.uploadHelper.executeUploadForRecords(UploadFileType.RECORDS, this.baseComponent);
+        this.uploadHelper.executeUploadFile(UploadFileType.RECORDS, this.baseComponent);
     }
 }
 
@@ -56,7 +56,7 @@ export class ExistingProjectUploadHelper {
             .createProject("Imported Project", "Created during file upload " + this.baseComponent.file.name)
             .pipe(first()).subscribe((p: Project) => {
                 this.uploadHelper.setProjectId(p.id, this.baseComponent);
-                this.uploadHelper.executeUploadForRecords(UploadFileType.PROJECT, this.baseComponent);
+                this.uploadHelper.executeUploadFile(UploadFileType.PROJECT, this.baseComponent);
             });
     }
 }
@@ -71,6 +71,6 @@ export class LookupListsUploadHelper {
 
     doUpload(): void {
         this.uploadHelper.setProjectId(this.baseComponent.projectId, this.baseComponent);
-        this.uploadHelper.executeUploadForRecords(UploadFileType.KNOWLEDGE_BASE, this.baseComponent);
+        this.uploadHelper.executeUploadFile(UploadFileType.KNOWLEDGE_BASE, this.baseComponent);
     }
 }

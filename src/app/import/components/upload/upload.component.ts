@@ -49,7 +49,6 @@ export class UploadComponent implements OnInit {
   executeOnFinish: () => void;
   uploadType: UploadType = UploadType.DEFAULT;
   uploadTask$;
-  upload$: Observable<UploadState>;
   progressState: UploadState;
 
   constructor(private projectApolloService: ProjectApolloService, private router: Router, private s3Service: S3Service) {
@@ -96,21 +95,19 @@ export class UploadComponent implements OnInit {
   }
 
   updateTokenizerAndProjectStatus(projectId: string) {
-    let tasks$ = [];
-    tasks$.push(this.projectApolloService.changeProjectTokenizer(projectId, this.selectedTokenizer));
-    tasks$.push(this.projectApolloService.updateProjectStatus(projectId, ProjectStatus.INIT_COMPLETE));
-    forkJoin(tasks$).pipe(first()).subscribe();
+    this.projectApolloService.changeProjectTokenizer(projectId, this.selectedTokenizer).pipe(first()).subscribe();
+    this.projectApolloService.updateProjectStatus(projectId, ProjectStatus.INIT_COMPLETE).pipe(first()).subscribe();
   }
 
   finishUpUpload(filename: string, importOptions: string) {
     this.projectApolloService
       .getUploadCredentialsAndId(this.projectId, filename, this.uploadFileType, importOptions, this.uploadType)
       .pipe(first()).subscribe((results) => {
-        this.uploadFile(results, filename)
+        this.uploadFileToMinIO(results, filename)
       });
   }
 
-  uploadFile(uploadInformation: any, filename: string) {
+  uploadFileToMinIO(uploadInformation: any, filename: string) {
     this.uploadStarted = true;
     const credentialsAndUploadId = JSON.parse(JSON.parse(uploadInformation))
     this.startProgressCall(credentialsAndUploadId.uploadTaskId).subscribe(() => {
@@ -157,7 +154,6 @@ export class UploadComponent implements OnInit {
   resetUpload() {
     this.file = null;
     this.clearUploadTask();
-    this.upload$ = null;
     this.uploadStarted = false;
     this.fileAttached.emit(null);
   }

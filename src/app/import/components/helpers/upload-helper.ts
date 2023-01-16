@@ -37,7 +37,7 @@ export class UploadHelper {
         }
     }
 
-    uploadFileToMinio(projectId: string, uploadFileType: UploadFileType, knowledgeBaseId?: string): string {
+    getFinalFileName(projectId: string, uploadFileType: UploadFileType, knowledgeBaseId?: string): string {
         this.baseComponent.projectId = projectId;
         this.baseComponent.reSubscribeToNotifications();
         this.baseComponent.executeOnFinish = () => {
@@ -45,10 +45,10 @@ export class UploadHelper {
                 this.router.navigate(['projects', this.baseComponent.projectId, 'settings'])
             });
         }
-        return this.getFinalFileName(uploadFileType, this.baseComponent.file?.name, knowledgeBaseId);
+        return this.getFileNameBasedOnType(uploadFileType, this.baseComponent.file?.name, knowledgeBaseId);
     }
 
-    getFinalFileName(uploadFileType: UploadFileType, fileName: string, knowledgeBaseId?: string): string {
+    getFileNameBasedOnType(uploadFileType: UploadFileType, fileName: string, knowledgeBaseId?: string): string {
         switch (uploadFileType) {
             case UploadFileType.RECORDS:
                 return fileName + "_SCALE";
@@ -64,10 +64,10 @@ export class UploadHelper {
         this.baseComponent.projectId = projectId;
     }
 
-    executeUploadForRecords(uploadFileType: UploadFileType, baseComponent: UploadComponent): void {
+    executeUploadFile(uploadFileType: UploadFileType, baseComponent: UploadComponent): void {
         this.baseComponent = baseComponent;
         this.baseComponent.updateTokenizerAndProjectStatus(this.baseComponent.projectId);
-        const finalFileName = this.uploadFileToMinio(this.baseComponent.projectId, uploadFileType, this.baseComponent.uploadOptions.knowledgeBaseId);
+        const finalFileName = this.getFinalFileName(this.baseComponent.projectId, uploadFileType, this.baseComponent.uploadOptions.knowledgeBaseId);
         const importOptions = uploadFileType == UploadFileType.RECORDS ? this.baseComponent.importOptionsHTML.nativeElement.value : '';
         this.baseComponent.finishUpUpload(finalFileName, importOptions);
     }
