@@ -1,5 +1,6 @@
 <section class="p-4">
-    <ng-template [ngIf]="uploadFileTypeDisplay == UploadFileTypeDisplay.RECORDS_NEW">
+    <ng-template
+        [ngIf]="uploadFileType == UploadFileType.RECORDS && uploadFileTypeDisplay == UploadFileTypeDisplay.RECORDS_NEW">
 
         <div class="form-control">
             <label class="text-gray-500 text-sm font-normal">Project title</label>
@@ -45,17 +46,27 @@
         </div>
         <ng-component *ngTemplateOutlet="uploadWrapper"></ng-component>
     </ng-template>
-    <ng-template [ngIf]="uploadFileTypeDisplay == UploadFileTypeDisplay.RECORDS_ADD">
+    <ng-template
+        [ngIf]="uploadFileType == UploadFileType.RECORDS && uploadFileTypeDisplay == UploadFileTypeDisplay.RECORDS_ADD">
         <div class="text-lg leading-6 text-gray-900 font-medium inline-block">
             Record upload
         </div>
-        <ng-component *ngTemplateOutlet="uploadWrapper"></ng-component>
+        <ng-container *ngTemplateOutlet="uploadWrapper"></ng-container>
     </ng-template>
+
+    <ng-template [ngIf]="uploadFileType == UploadFileType.PROJECT">
+        <ng-container *ngTemplateOutlet="upload"></ng-container>
+    </ng-template>
+
+    <ng-template [ngIf]="uploadFileType == UploadFileType.KNOWLEDGE_BASE">
+        <ng-container *ngTemplateOutlet="upload"></ng-container>
+    </ng-template>
+
 </section>
 
 
 <ng-template #uploadWrapper>
-    <ng-component *ngTemplateOutlet="dataSourcesUpload"></ng-component>
+    <ng-container *ngTemplateOutlet="dataSourcesUpload"></ng-container>
     <ng-container *ngTemplateOutlet="upload"></ng-container>
     <ng-container *ngTemplateOutlet="importOptionsTextarea"></ng-container>
     <ng-container *ngTemplateOutlet="submitUpload"></ng-container>
@@ -127,9 +138,9 @@
             type="submit">
             Proceed
         </button>
-        <kern-label-studio-assistant *ngIf="uploadRecordsComponent" [inputData]="{
-            uploadComponent: uploadRecordsComponent.uploadComponent,
-            uploadFunction: initializeProject,
+        <kern-label-studio-assistant [inputData]="{
+            uploadComponent: this,
+            uploadFunction: uploadHelper.uploadFile,
             uploadFunctionThisObject:this}" (initialUploadTriggered)="disableInput=$event">
         </kern-label-studio-assistant>
         <button [routerLink]="['/projects']" type="button"

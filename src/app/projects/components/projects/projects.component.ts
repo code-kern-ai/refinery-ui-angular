@@ -22,7 +22,7 @@ import { ProjectStatus } from 'src/app/projects/enums/project-status.enum';
 import { dateAsUTCDate, getUserAvatarUri, isStringTrue } from 'src/app/util/helper-functions';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { createDefaultProjectsModals, ProjectsModals } from './projects-helper';
-import { UploadFileType } from 'src/app/import/components/upload/upload-types';
+import { UploadFileType } from 'src/app/import/components/helpers/upload-types';
 
 @Component({
   selector: 'kern-projects',
@@ -110,6 +110,10 @@ export class ProjectsComponent implements OnInit, OnDestroy {
 
   get ProjectStatusType(): typeof ProjectStatus {
     return ProjectStatus;
+  }
+
+  get UploadFileType(): typeof UploadFileType {
+    return UploadFileType;
   }
 
   ngOnDestroy(): void {

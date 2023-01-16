@@ -8,7 +8,7 @@ import { ProjectApolloService } from '../../../services/project/project-apollo.s
 import { UserManager } from 'src/app/util/user-manager';
 import { AssistantConstants, AssistantInputData, AssistantSetupData, AssistantStep, LabelStudioTaskMapping, PreparationStep } from './label-studio-assistant-helper';
 import { ModalButtonType } from '../../modal/modal-helper';
-import { UploadType } from 'src/app/import/components/upload/upload-types';
+import { UploadType } from 'src/app/import/components/helpers/upload-types';
 
 
 

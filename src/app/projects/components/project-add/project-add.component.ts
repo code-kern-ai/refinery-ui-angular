@@ -11,7 +11,7 @@ import { RouteService } from 'src/app/base/services/route.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription, timer } from 'rxjs';
 import { UploadRecordsComponent } from 'src/app/import/components/upload-records/upload-records.component';
-import { UploadFileType, UploadFileTypeDisplay, UploadType } from 'src/app/import/components/upload/upload-types';
+import { UploadFileType, UploadFileTypeDisplay, UploadType } from 'src/app/import/components/helpers/upload-types';
 
 @Component({
   selector: 'kern-project-add',

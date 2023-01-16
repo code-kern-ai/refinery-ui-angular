@@ -11,9 +11,9 @@ import { Subscription, timer } from 'rxjs';
 import { UploadRecordsComponent } from 'src/app/import/components/upload-records/upload-records.component';
 import { ConfigManager } from 'src/app/base/services/config-service';
 import { getUserAvatarUri } from 'src/app/util/helper-functions';
-import { UploadFileType, UploadFileTypeDisplay, UploadType } from 'src/app/import/components/upload/upload-types';
 import { LabelStudioAssistantComponent } from 'src/app/base/components/upload-assistant/label-studio/label-studio-assistant.component';
 import { PreparationStep } from 'src/app/base/components/upload-assistant/label-studio/label-studio-assistant-helper';
+import { UploadFileType, UploadFileTypeDisplay, UploadType } from 'src/app/import/components/helpers/upload-types';
 
 @Component({
   selector: 'kern-project-new',

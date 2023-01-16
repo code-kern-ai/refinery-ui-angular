@@ -8,9 +8,9 @@ import { ProjectApolloService } from 'src/app/base/services/project/project-apol
 import { ProjectStatus } from 'src/app/projects/enums/project-status.enum';
 import { UploadStates } from '../../services/s3.enums';
 import { S3Service } from '../../services/s3.service';
-import { UploadHelper } from './upload-helper';
-import { RecordAddUploadHelper, RecordNewUploadHelper } from './upload-specific';
-import { UploadFileType, UploadFileTypeDisplay, UploadOptions, UploadTask, UploadType } from './upload-types';
+import { UploadHelper } from '../helpers/upload-helper';
+import { ExistingProjectUploadHelper, LookupListsUploadHelper, RecordAddUploadHelper, RecordNewUploadHelper } from '../helpers/upload-specific';
+import { UploadFileType, UploadFileTypeDisplay, UploadOptions, UploadTask, UploadType } from '../helpers/upload-types';
 
 @Component({
   selector: 'kern-upload',
@@ -19,11 +19,12 @@ import { UploadFileType, UploadFileTypeDisplay, UploadOptions, UploadTask, Uploa
 })
 export class UploadComponent implements OnInit {
 
-
   @Input() uploadFileType: UploadFileType;
   @Input() uploadFileTypeDisplay: UploadFileTypeDisplay;
   @Input() projectId?: string;
   @Input() uploadOptions: UploadOptions;
+
+  @Output() fileAttached = new EventEmitter<File>();
 
   get UploadFileType(): typeof UploadFileType {
     return UploadFileType;
@@ -33,35 +34,35 @@ export class UploadComponent implements OnInit {
     return UploadFileTypeDisplay;
   }
 
-  uploadHelper: UploadHelper;
-  recordNewUploadHelper: RecordNewUploadHelper;
-  recordAddUploadHelper: RecordAddUploadHelper;
-  file: File | null = null;
-  @ViewChild('importOptions', { read: ElementRef }) importOptionsHTML: ElementRef;
-  openTab: number = 0;
-
-  // @Input() deleteProjectOnFail: boolean;
-  uploadStarted: boolean = false;
-  uploadTask: UploadTask;
-  uploadTaskQuery$: any;
-  // reloadOnFinish: boolean = true;
-  // uploadFileType: UploadFileType;
-  @Output() fileAttached = new EventEmitter<File>();
   get UploadStatesType(): typeof UploadStates {
     return UploadStates;
   }
 
+  @ViewChild('importOptions', { read: ElementRef }) importOptionsHTML: ElementRef;
   @ViewChild('fileUpload') fileUpload: ElementRef;
+  uploadHelper: UploadHelper;
+  recordNewUploadHelper: RecordNewUploadHelper;
+  recordAddUploadHelper: RecordAddUploadHelper;
+  existingProjectUploadHelper: ExistingProjectUploadHelper;
+  lookupListsUploadHelper: LookupListsUploadHelper;
+  file: File | null = null;
+  openTab: number = 0;
+  uploadStarted: boolean = false;
+  uploadTask: UploadTask;
+  uploadTaskQuery$: any;
   selectedTokenizer: string = "en_core_web_sm";
   executeOnFinish: () => void;
   uploadType: UploadType = UploadType.DEFAULT;
   uploadTask$;
   upload$: Observable<UploadState>;
+  uploadState: UploadState;
 
   constructor(private projectApolloService: ProjectApolloService, private router: Router, private s3Service: S3Service) {
     this.recordNewUploadHelper = new RecordNewUploadHelper(this.projectApolloService, this.router, this);
     this.recordAddUploadHelper = new RecordAddUploadHelper(this.router, this);
-    this.uploadHelper = new UploadHelper(this.router, this, this.recordNewUploadHelper, this.recordAddUploadHelper);
+    this.existingProjectUploadHelper = new ExistingProjectUploadHelper(this.projectApolloService, this.router, this);
+    this.lookupListsUploadHelper = new LookupListsUploadHelper(this.router, this)
+    this.uploadHelper = new UploadHelper(this.router, this, this.recordNewUploadHelper, this.recordAddUploadHelper, this.existingProjectUploadHelper, this.lookupListsUploadHelper);
   }
 
   ngOnInit(): void {
@@ -120,6 +121,7 @@ export class UploadComponent implements OnInit {
     this.startProgressCall(credentialsAndUploadId.uploadTaskId).subscribe(() => {
       this.upload$ = this.s3Service.uploadFile(credentialsAndUploadId, this.file, filename).pipe(
         tap((progress) => {
+          console.log("progress", progress)
           if (progress.state === UploadStates.DONE || progress.state === UploadStates.ERROR) {
             timer(500).subscribe(() => this.file = null);
             if (progress.state === UploadStates.ERROR && this.uploadOptions.deleteProjectOnFail) {
@@ -128,6 +130,7 @@ export class UploadComponent implements OnInit {
           }
         })
       )
+      this.upload$.subscribe();
     })
   }
 
@@ -135,6 +138,7 @@ export class UploadComponent implements OnInit {
     [this.uploadTaskQuery$, this.uploadTask$] = this.projectApolloService.getUploadTaskByTaskId(this.projectId, uploadTaskId);
     const firstReturn = this.uploadTask$.pipe(first());
     this.uploadTask$ = this.uploadTask$.subscribe((task) => {
+      console.log(task, this.uploadOptions)
       this.uploadTask = task;
       if (task.state == UploadStates.DONE || task.progress == 100) {
         this.clearUploadTask();

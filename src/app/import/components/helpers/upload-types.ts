@@ -20,10 +20,12 @@ export type UploadOptions = {
  * @deleteProjectOnFail {boolean, optional} - If true, the project will be deleted if the upload fails
  * @reloadOnFinish {boolean, optional} - If true, the page will reload after the upload is finished
  * @tokenizerValues {string[], optional} - If set, the tokenizer dropdown will be shown and the values will be used as options
+ * @knowledgeBaseId {string, optional} - Knowledge base id used for the upload terms
  */
     deleteProjectOnFail?: boolean;
     reloadOnFinish?: boolean;
     tokenizerValues?: string[];
+    knowledgeBaseId?: string;
 };
 
 export type UploadTask = {

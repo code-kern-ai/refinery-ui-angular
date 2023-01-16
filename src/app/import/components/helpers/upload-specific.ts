@@ -2,9 +2,9 @@ import { Router } from "@angular/router";
 import { first } from "rxjs/operators";
 import { Project } from "src/app/base/entities/project";
 import { ProjectApolloService } from "src/app/base/services/project/project-apollo.service";
+import { UploadComponent } from "../upload/upload.component";
 import { UploadHelper } from "./upload-helper";
 import { UploadFileType } from "./upload-types";
-import { UploadComponent } from "./upload.component";
 
 export class RecordNewUploadHelper {
     projectTitle: string = '';
@@ -40,5 +40,38 @@ export class RecordAddUploadHelper {
     doUpload(): void {
         this.uploadHelper.setProjectId(this.baseComponent.projectId, this.baseComponent);
         this.uploadHelper.executeUploadForRecords(UploadFileType.RECORDS, this.baseComponent);
+    }
+}
+
+export class ExistingProjectUploadHelper {
+    uploadHelper: UploadHelper;
+
+    constructor(private projectApolloService: ProjectApolloService, private router: Router, private baseComponent: UploadComponent) {
+        this.uploadHelper = new UploadHelper(router);
+        this.baseComponent = baseComponent;
+    }
+
+    doUpload(): void {
+        console.log("doUpload")
+        this.projectApolloService
+            .createProject("Imported Project", "Created during file upload " + this.baseComponent.file.name)
+            .pipe(first()).subscribe((p: Project) => {
+                this.uploadHelper.setProjectId(p.id, this.baseComponent);
+                this.uploadHelper.executeUploadForRecords(UploadFileType.PROJECT, this.baseComponent);
+            });
+    }
+}
+
+export class LookupListsUploadHelper {
+    uploadHelper: UploadHelper;
+
+    constructor(private router: Router, private baseComponent: UploadComponent) {
+        this.uploadHelper = new UploadHelper(router);
+        this.baseComponent = baseComponent;
+    }
+
+    doUpload(): void {
+        this.uploadHelper.setProjectId(this.baseComponent.projectId, this.baseComponent);
+        this.uploadHelper.executeUploadForRecords(UploadFileType.KNOWLEDGE_BASE, this.baseComponent);
     }
 }

@@ -5,7 +5,7 @@ import { ProjectApolloService } from 'src/app/base/services/project/project-apol
 import { ProjectStatus } from 'src/app/projects/enums/project-status.enum';
 import { UploadComponent } from 'src/app/import/components/upload/upload.component';
 import { first } from 'rxjs/operators';
-import { UploadFileType } from '../upload/upload-types';
+import { UploadFileType } from '../helpers/upload-types';
 
 @Component({
   selector: 'kern-upload-records',

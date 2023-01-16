@@ -1,4 +1,4 @@
-import { UploadType } from "src/app/import/components/upload/upload-types";
+import { UploadType } from "aws-sdk/clients/devicefarm";
 import { UploadComponent } from "src/app/import/components/upload/upload.component";
 
 

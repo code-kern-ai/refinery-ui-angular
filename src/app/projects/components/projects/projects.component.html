@@ -305,7 +305,7 @@
             New project
         </button>
         <button class="ml-6 mt-6 mr-6 xs:mr-0">
-            <label (click)="this.projectsModals.uploadProject.open = true"
+            <label (click)="projectsModals.uploadProject.open = true"
                 class="bg-blue-700 text-white text-xs font-semibold px-4 py-2.5 rounded-md cursor-pointer hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                 Import snapshot
             </label>
@@ -346,20 +346,17 @@
 
 </ng-template>
 
-<kern-modal [isOpen]="projectsModals.uploadProject.open" closeButton="X" [modalBoxStyle]="{'width':'35rem'}"
+<!-- <kern-modal [isOpen]="projectsModals.uploadProject.open" closeButton="X" [modalBoxStyle]="{'width':'35rem'}"
     [acceptButton]="{
     closeAfterClick:false,
     disabled:projectsModals.uploadProject.doingSomething || !file,
     buttonCaption:'Upload'
 }" (optionClicked)="$event == 'CLOSE'?projectsModals.uploadProject.open = false:importExistingProject();">
-    <h1 class="flex flex-grow justify-center text-lg text-gray-900 font-bold">Upload Project Data
-    </h1>
-    <div class="text-sm text-gray-500 mb-4 text-center">
-        Upload data from an existing project
-    </div>
-    <div>
-        <kern-upload *ngIf="projectsModals.uploadProject.open" [projectId]="null" [deleteProjectOnFail]="true"
-            (fileAttached)="setFile($event)">
-        </kern-upload>
-    </div>
-</kern-modal>
+    <kern-modal-upload [uploadFileType]="UploadFileType.PROJECT"></kern-modal-upload>
+</kern-modal> -->
+
+<kern-modal-upload [uploadFileType]="UploadFileType.PROJECT" [isModalOpen]="projectsModals.uploadProject.open"
+    [uploadOptions]="{
+    reloadOnFinish: true
+}" (closeModalEvent)="projectsModals.uploadProject.open = false;">
+</kern-modal-upload>

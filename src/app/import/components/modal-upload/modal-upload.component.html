@@ -1,0 +1,36 @@
+<ng-template [ngIf]="uploadFileType == UploadFileType.PROJECT">
+    <kern-modal [isOpen]="uploadModals.uploadProject.open" closeButton="X" [modalBoxStyle]="{'width':'35rem'}"
+        [acceptButton]="{
+        buttonCaption: 'Upload',
+        closeAfterClick:false,
+        emitObject: this, emitFunction: submitUpload
+    }" (optionClicked)="closeModal()">
+        <h1 class="flex flex-grow justify-center text-lg text-gray-900 font-bold">Upload Project Data
+        </h1>
+        <div class="text-sm text-gray-500 mb-4 text-center">
+            Upload data from an existing project
+        </div>
+        <kern-upload [uploadFileType]="uploadFileType" [uploadOptions]="{
+            deleteProjectOnFail: true
+        }" (fileAttached)="setFile($event)"></kern-upload>
+    </kern-modal>
+</ng-template>
+
+<ng-template [ngIf]="uploadFileType == UploadFileType.KNOWLEDGE_BASE">
+    <kern-modal [isOpen]="uploadModals.uploadLookupLists.open" closeButton="X" [modalBoxStyle]="{'width':'35rem'}"
+        [acceptButton]="{
+        buttonCaption: 'Upload',
+        closeAfterClick:false,
+        emitObject: this, emitFunction: submitUpload
+    }" (optionClicked)="closeModal()">
+        <h1 class="flex flex-grow justify-center text-lg text-gray-900 font-bold">Upload Project Data
+        </h1>
+        <div class="text-sm text-gray-500 mb-4 text-center">
+            Upload data to your lookup list
+        </div>
+        <kern-upload [uploadFileType]="uploadFileType" [uploadOptions]="{
+            deleteProjectOnFail: false,
+            knowledgeBaseId:uploadOptions.knowledgeBaseId
+        }" (fileAttached)="setFile($event)"></kern-upload>
+    </kern-modal>
+</ng-template>

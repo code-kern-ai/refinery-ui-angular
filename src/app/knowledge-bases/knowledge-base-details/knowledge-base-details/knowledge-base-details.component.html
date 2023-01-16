@@ -284,22 +284,20 @@
     </div>
 </kern-modal>
 
-<kern-modal [isOpen]="lookupListDetailsModals.uploadLookupList.open" closeButton="X" [modalBoxStyle]="{'width':'35rem'}"
+<!-- <kern-modal [isOpen]="lookupListDetailsModals.uploadLookupList.open" closeButton="X" [modalBoxStyle]="{'width':'35rem'}"
     [acceptButton]="{
     buttonCaption: 'Upload',
     emitObject: this, emitFunction: uploadToMinio
 }" (optionClicked)="lookupListDetailsModals.uploadLookupList.open = false">
-    <h1 class="flex flex-grow justify-center text-lg text-gray-900 font-bold">Upload list data
-    </h1>
-    <div class="text-sm text-gray-500 mb-4 text-center">
-        Upload data to your lookup list
-    </div>
-    <div>
-        <kern-upload *ngIf="lookupListDetailsModals.uploadLookupList.open" [projectId]="projectId"
-            (fileAttached)="getFile($event)">
-        </kern-upload>
-    </div>
-</kern-modal>
+    <kern-modal-upload [uploadFileType]="UploadFileType.KNOWLEDGE_BASE"></kern-modal-upload>
+</kern-modal> -->
+
+<kern-modal-upload [uploadFileType]="UploadFileType.KNOWLEDGE_BASE"
+    [isModalOpen]="lookupListDetailsModals.uploadLookupList.open" [projectId]="projectId" [uploadOptions]="{
+        deleteProjectOnFail: false,
+        knowledgeBaseId: knowledgeBaseId
+    }" (closeModalEvent)="lookupListDetailsModals.uploadLookupList.open = false;">
+</kern-modal-upload>
 
 <kern-modal [isOpen]="lookupListDetailsModals.pasteLookupList.open" closeButton="X" [modalBoxStyle]="{'width':'35rem'}"
     [acceptButton]="{
