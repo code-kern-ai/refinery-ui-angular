@@ -6,10 +6,7 @@ export enum UploadType {
 export enum UploadFileType {
     RECORDS = "records",
     KNOWLEDGE_BASE = "knowledge_base",
-    PROJECT = "project"
-}
-
-export enum UploadFileTypeDisplay {
+    PROJECT = "project",
     RECORDS_NEW = "records_new",
     RECORDS_ADD = "records_add"
 }

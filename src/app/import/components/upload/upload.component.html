@@ -1,6 +1,5 @@
 <section class="p-4">
-    <ng-template
-        [ngIf]="uploadFileType == UploadFileType.RECORDS && uploadFileTypeDisplay == UploadFileTypeDisplay.RECORDS_NEW">
+    <ng-template [ngIf]="uploadFileType == UploadFileType.RECORDS_NEW">
 
         <div class="form-control">
             <label class="text-gray-500 text-sm font-normal">Project title</label>
@@ -46,8 +45,8 @@
         </div>
         <ng-component *ngTemplateOutlet="uploadWrapper"></ng-component>
     </ng-template>
-    <ng-template
-        [ngIf]="uploadFileType == UploadFileType.RECORDS && uploadFileTypeDisplay == UploadFileTypeDisplay.RECORDS_ADD">
+
+    <ng-template [ngIf]="uploadFileType == UploadFileType.RECORDS_ADD">
         <div class="text-lg leading-6 text-gray-900 font-medium inline-block">
             Record upload
         </div>

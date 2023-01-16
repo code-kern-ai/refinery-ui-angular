@@ -13,7 +13,7 @@ import { ConfigManager } from 'src/app/base/services/config-service';
 import { getUserAvatarUri } from 'src/app/util/helper-functions';
 import { LabelStudioAssistantComponent } from 'src/app/base/components/upload-assistant/label-studio/label-studio-assistant.component';
 import { PreparationStep } from 'src/app/base/components/upload-assistant/label-studio/label-studio-assistant-helper';
-import { UploadFileType, UploadFileTypeDisplay, UploadType } from 'src/app/import/components/helpers/upload-types';
+import { UploadFileType, UploadType } from 'src/app/import/components/helpers/upload-types';
 
 @Component({
   selector: 'kern-project-new',
@@ -25,10 +25,6 @@ export class ProjectNewComponent implements OnInit, AfterViewChecked {
 
   get UploadFileType(): typeof UploadFileType {
     return UploadFileType;
-  }
-
-  get UploadFileTypeDisplay(): typeof UploadFileTypeDisplay {
-    return UploadFileTypeDisplay;
   }
 
   user$: any;

@@ -10,7 +10,7 @@ import { UploadStates } from '../../services/s3.enums';
 import { S3Service } from '../../services/s3.service';
 import { UploadHelper } from '../helpers/upload-helper';
 import { ExistingProjectUploadHelper, LookupListsUploadHelper, RecordAddUploadHelper, RecordNewUploadHelper } from '../helpers/upload-specific';
-import { UploadFileType, UploadFileTypeDisplay, UploadOptions, UploadTask, UploadType } from '../helpers/upload-types';
+import { UploadFileType, UploadOptions, UploadTask, UploadType } from '../helpers/upload-types';
 
 @Component({
   selector: 'kern-upload',
@@ -20,7 +20,6 @@ import { UploadFileType, UploadFileTypeDisplay, UploadOptions, UploadTask, Uploa
 export class UploadComponent implements OnInit {
 
   @Input() uploadFileType: UploadFileType;
-  @Input() uploadFileTypeDisplay: UploadFileTypeDisplay;
   @Input() projectId?: string;
   @Input() uploadOptions: UploadOptions;
 
@@ -28,10 +27,6 @@ export class UploadComponent implements OnInit {
 
   get UploadFileType(): typeof UploadFileType {
     return UploadFileType;
-  }
-
-  get UploadFileTypeDisplay(): typeof UploadFileTypeDisplay {
-    return UploadFileTypeDisplay;
   }
 
   get UploadStatesType(): typeof UploadStates {
