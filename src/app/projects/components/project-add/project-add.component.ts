@@ -11,7 +11,7 @@ import { RouteService } from 'src/app/base/services/route.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription, timer } from 'rxjs';
 import { UploadRecordsComponent } from 'src/app/import/components/upload-records/upload-records.component';
-import { UploadType } from 'src/app/import/components/upload/upload-types';
+import { UploadFileType, UploadFileTypeDisplay, UploadType } from 'src/app/import/components/upload/upload-types';
 
 @Component({
   selector: 'kern-project-add',
@@ -19,6 +19,14 @@ import { UploadType } from 'src/app/import/components/upload/upload-types';
   styleUrls: ['./project-add.component.scss']
 })
 export class ProjectAddComponent implements OnInit, AfterViewChecked {
+
+  get UploadFileType(): typeof UploadFileType {
+    return UploadFileType;
+  }
+
+  get UploadFileTypeDisplay(): typeof UploadFileTypeDisplay {
+    return UploadFileTypeDisplay;
+  }
 
   user$: any;
   subscriptions$: Subscription[] = [];

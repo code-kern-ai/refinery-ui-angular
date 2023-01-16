@@ -70,7 +70,7 @@ export class UploadRecordsComponent implements OnInit {
     //   })
     // }
     this.uploadComponent.updateTokenizerAndProjectStatus(this.projectId);
-    const finalFileName = this.uploadComponent.uploadFileToMinio(this.projectId, UploadFileType.RECORDS_NEW);
+    const finalFileName = this.uploadComponent.uploadFileToMinio(this.projectId, UploadFileType.RECORDS);
     this.uploadComponent.finishUpUpload(finalFileName, this.importOptionsHTML.nativeElement.value);
   }
 }

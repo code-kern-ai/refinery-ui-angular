@@ -1,7 +1,7 @@
 import { Router } from "@angular/router";
 import { timer } from "rxjs";
 import { RecordAddUploadHelper, RecordNewUploadHelper } from "./upload-specific";
-import { UploadFileType } from "./upload-types";
+import { UploadFileType, UploadFileTypeDisplay } from "./upload-types";
 import { UploadComponent } from "./upload.component";
 
 export class UploadHelper {
@@ -16,11 +16,11 @@ export class UploadHelper {
     }
 
     upload(): void {
-        switch (this.baseComponent.uploadFileType) {
-            case UploadFileType.RECORDS_NEW:
+        switch (this.baseComponent.uploadFileTypeDisplay) {
+            case UploadFileTypeDisplay.RECORDS_NEW:
                 this.recordNewUploadHelper.doUpload();
                 break;
-            case UploadFileType.RECORDS_ADD:
+            case UploadFileTypeDisplay.RECORDS_ADD:
                 this.recordAddUploadHelper.doUpload();
                 break;
 
@@ -29,7 +29,7 @@ export class UploadHelper {
 
     uploadFileToMinio(projectId: string, uploadFileType: UploadFileType, knowledgeBaseId?: string): string {
         this.baseComponent.projectId = projectId;
-        this.baseComponent.uploadOptions.reloadOnFinish = UploadFileType.RECORDS_ADD || uploadFileType == UploadFileType.KNOWLEDGE_BASE ? false : true;
+        this.baseComponent.uploadOptions.reloadOnFinish = UploadFileType.RECORDS || uploadFileType == UploadFileType.KNOWLEDGE_BASE ? false : true;
         this.baseComponent.uploadStarted = true;
         this.baseComponent.reSubscribeToNotifications();
         this.baseComponent.uploadFileType = uploadFileType;
@@ -43,7 +43,7 @@ export class UploadHelper {
 
     getFinalFileName(fileName: string, knowledgeBaseId?: string): string {
         switch (this.baseComponent.uploadFileType) {
-            case UploadFileType.RECORDS_ADD:
+            case UploadFileType.RECORDS:
                 return fileName + "_SCALE";
             case UploadFileType.KNOWLEDGE_BASE:
                 return fileName + "_" + knowledgeBaseId;
@@ -52,11 +52,13 @@ export class UploadHelper {
         }
     }
 
-    setProjectId(projectId: string): void {
+    setProjectId(projectId: string, baseComponent: UploadComponent): void {
+        this.baseComponent = baseComponent;
         this.baseComponent.projectId = projectId;
     }
 
-    executeUploadForRecords(uploadFileType: UploadFileType): void {
+    executeUploadForRecords(uploadFileType: UploadFileType, baseComponent: UploadComponent): void {
+        this.baseComponent = baseComponent;
         this.baseComponent.updateTokenizerAndProjectStatus(this.baseComponent.projectId);
         const finalFileName = this.uploadFileToMinio(this.baseComponent.projectId, uploadFileType);
         this.baseComponent.finishUpUpload(finalFileName, this.baseComponent.importOptionsHTML.nativeElement.value);

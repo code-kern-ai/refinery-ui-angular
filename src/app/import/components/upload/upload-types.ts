@@ -4,10 +4,14 @@ export enum UploadType {
 }
 
 export enum UploadFileType {
-    RECORDS_NEW = "records",
-    RECORDS_ADD = "records",
+    RECORDS = "records",
     KNOWLEDGE_BASE = "knowledge_base",
     PROJECT = "project"
+}
+
+export enum UploadFileTypeDisplay {
+    RECORDS_NEW = "records_new",
+    RECORDS_ADD = "records_add"
 }
 
 export type UploadOptions = {

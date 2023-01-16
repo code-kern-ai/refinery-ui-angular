@@ -1,4 +1,4 @@
-<ng-template [ngIf]="uploadFileType == UploadFileType.RECORDS_NEW">
+<ng-template [ngIf]="uploadFileTypeDisplay == UploadFileTypeDisplay.RECORDS_NEW">
     <section class="p-4">
         <div class="form-control">
             <label class="text-gray-500 text-sm font-normal">Project title</label>
@@ -44,7 +44,14 @@
         </div>
         <ng-container *ngTemplateOutlet="upload"></ng-container>
         <ng-container *ngTemplateOutlet="importOptionsTextarea"></ng-container>
+        <ng-container *ngTemplateOutlet="submitUpload"></ng-container>
+    </section>
+</ng-template>
 
+<ng-template [ngIf]="uploadFileTypeDisplay == UploadFileTypeDisplay.RECORDS_ADD">
+    <section class="p-4">
+        <ng-container *ngTemplateOutlet="upload"></ng-container>
+        <ng-container *ngTemplateOutlet="importOptionsTextarea"></ng-container>
         <ng-container *ngTemplateOutlet="submitUpload"></ng-container>
     </section>
 </ng-template>

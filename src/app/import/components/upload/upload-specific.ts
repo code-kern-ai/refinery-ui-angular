@@ -4,6 +4,7 @@ import { Project } from "src/app/base/entities/project";
 import { ProjectApolloService } from "src/app/base/services/project/project-apollo.service";
 import { UploadHelper } from "./upload-helper";
 import { UploadFileType } from "./upload-types";
+import { UploadComponent } from "./upload.component";
 
 export class RecordNewUploadHelper {
     projectTitle: string = '';
@@ -11,26 +12,33 @@ export class RecordNewUploadHelper {
     selectedTokenizer: string = 'en_core_web_sm';
     uploadHelper: UploadHelper;
 
-    constructor(private projectApolloService: ProjectApolloService, private router: Router) {
+    constructor(private projectApolloService: ProjectApolloService, private router: Router, private baseComponent: UploadComponent) {
         this.uploadHelper = new UploadHelper(router);
+        this.baseComponent = baseComponent;
     }
 
     doUpload(): void {
         this.projectApolloService
             .createProject(this.projectTitle.trim(), this.description.trim())
             .pipe(first()).subscribe((p: Project) => {
-                this.uploadHelper.setProjectId(p.id);
-                this.uploadHelper.executeUploadForRecords(UploadFileType.RECORDS_NEW);
+                this.uploadHelper.setProjectId(p.id, this.baseComponent);
+                this.uploadHelper.executeUploadForRecords(UploadFileType.RECORDS, this.baseComponent);
             });
 
     }
 }
 
 export class RecordAddUploadHelper {
-    projectId: string;
+    uploadHelper: UploadHelper;
 
-    constructor() { }
+
+    constructor(private router: Router, private baseComponent: UploadComponent) {
+        this.uploadHelper = new UploadHelper(router);
+        this.baseComponent = baseComponent;
+    }
 
     doUpload(): void {
+        this.uploadHelper.setProjectId(this.baseComponent.projectId, this.baseComponent);
+        this.uploadHelper.executeUploadForRecords(UploadFileType.RECORDS, this.baseComponent);
     }
 }

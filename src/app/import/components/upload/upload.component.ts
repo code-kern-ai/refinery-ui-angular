@@ -10,7 +10,7 @@ import { UploadStates } from '../../services/s3.enums';
 import { S3Service } from '../../services/s3.service';
 import { UploadHelper } from './upload-helper';
 import { RecordAddUploadHelper, RecordNewUploadHelper } from './upload-specific';
-import { UploadFileType, UploadOptions, UploadTask, UploadType } from './upload-types';
+import { UploadFileType, UploadFileTypeDisplay, UploadOptions, UploadTask, UploadType } from './upload-types';
 
 @Component({
   selector: 'kern-upload',
@@ -21,11 +21,16 @@ export class UploadComponent implements OnInit {
 
 
   @Input() uploadFileType: UploadFileType;
+  @Input() uploadFileTypeDisplay: UploadFileTypeDisplay;
   @Input() projectId?: string;
   @Input() uploadOptions: UploadOptions;
 
   get UploadFileType(): typeof UploadFileType {
     return UploadFileType;
+  }
+
+  get UploadFileTypeDisplay(): typeof UploadFileTypeDisplay {
+    return UploadFileTypeDisplay;
   }
 
   uploadHelper: UploadHelper;
@@ -54,8 +59,8 @@ export class UploadComponent implements OnInit {
   upload$: Observable<UploadState>;
 
   constructor(private projectApolloService: ProjectApolloService, private router: Router, private s3Service: S3Service) {
-    this.recordNewUploadHelper = new RecordNewUploadHelper(this.projectApolloService, this.router);
-    this.recordAddUploadHelper = new RecordAddUploadHelper();
+    this.recordNewUploadHelper = new RecordNewUploadHelper(this.projectApolloService, this.router, this);
+    this.recordAddUploadHelper = new RecordAddUploadHelper(this.router, this);
     this.uploadHelper = new UploadHelper(this.router, this, this.recordNewUploadHelper, this.recordAddUploadHelper);
   }
 

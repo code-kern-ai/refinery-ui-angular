@@ -70,7 +70,8 @@
                 </div>
             </form>
         </section> -->
-        <kern-upload [uploadFileType]="UploadFileType.RECORDS_NEW" [uploadOptions]="{
+        <kern-upload [uploadFileType]="UploadFileType.RECORDS"
+            [uploadFileTypeDisplay]="UploadFileTypeDisplay.RECORDS_NEW" [uploadOptions]="{
             deleteProjectOnFail: true,
             tokenizerValues: tokenizerValues
         }"></kern-upload>
