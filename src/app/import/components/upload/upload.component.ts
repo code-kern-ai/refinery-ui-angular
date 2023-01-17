@@ -136,7 +136,6 @@ export class UploadComponent implements OnInit {
     [this.uploadTaskQuery$, this.uploadTask$] = this.projectApolloService.getUploadTaskByTaskId(this.projectId, uploadTaskId);
     const firstReturn = this.uploadTask$.pipe(first());
     this.uploadTask$ = this.uploadTask$.subscribe((task) => {
-      console.log(this.uploadStarted)
       this.uploadTask = task;
       if (task.state == UploadStates.DONE || task.progress == 100) {
         this.clearUploadTask();
@@ -200,7 +199,8 @@ export class UploadComponent implements OnInit {
     }
   }
 
-  submitUploadFile() {
+  submitUploadFile(uploadType: UploadType = UploadType.DEFAULT) {
+    this.uploadType = uploadType;
     this.submitted = true;
     if (this.file == null) return;
 

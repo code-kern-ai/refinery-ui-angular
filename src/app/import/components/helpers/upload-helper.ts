@@ -34,8 +34,6 @@ export class UploadHelper {
             case UploadFileType.KNOWLEDGE_BASE:
                 this.lookupListsUploadHelper.doUpload();
                 break;
-            default:
-                this.existingProjectUploadHelper.doUpload();
         }
     }
 
