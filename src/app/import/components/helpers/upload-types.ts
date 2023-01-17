@@ -21,12 +21,14 @@ export type UploadOptions = {
  * @tokenizerValues {string[], optional} - If set, the tokenizer dropdown will be shown and the values will be used as options
  * @knowledgeBaseId {string, optional} - Knowledge base id used for the upload terms
  * @projectNameList {Project[], optional} - List of all projects
+ * @projectName {string, optional} - Name of the project
  */
     deleteProjectOnFail?: boolean;
     reloadOnFinish?: boolean;
     tokenizerValues?: string[];
     knowledgeBaseId?: string;
-    projectNameList?: Project[]
+    projectNameList?: Project[];
+    projectName?: string;
 };
 
 export type UploadTask = {

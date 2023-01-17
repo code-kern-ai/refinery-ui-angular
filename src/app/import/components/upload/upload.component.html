@@ -137,7 +137,7 @@
         </button>
         <kern-label-studio-assistant [inputData]="{
             uploadComponent: this,
-            uploadFunction: uploadHelper.uploadFile,
+            uploadFunction: submitUploadFile,
             uploadFunctionThisObject:this}" (initialUploadTriggered)="disableInput=$event">
         </kern-label-studio-assistant>
         <button [routerLink]="['/projects']" type="button"

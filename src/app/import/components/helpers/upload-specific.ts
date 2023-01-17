@@ -30,7 +30,7 @@ export class RecordNewUploadHelper {
 
 export class RecordAddUploadHelper {
     uploadHelper: UploadHelper;
-
+    projectName: string = '';
 
     constructor(private router: Router, private baseComponent: UploadComponent) {
         this.uploadHelper = new UploadHelper(router);

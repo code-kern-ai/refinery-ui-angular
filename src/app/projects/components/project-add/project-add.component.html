@@ -28,7 +28,8 @@
             </form>
         </section> -->
         <kern-upload [uploadFileType]="UploadFileType.RECORDS_ADD" [projectId]="projectId" [uploadOptions]="{
-            deleteProjectOnFail: false
+            deleteProjectOnFail: false,
+            projectName: project?.name
         }"></kern-upload>
     </div>
 </div>

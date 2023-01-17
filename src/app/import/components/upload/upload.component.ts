@@ -62,11 +62,18 @@ export class UploadComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.recordAddUploadHelper.projectName = this.uploadOptions.projectName;
     NotificationService.subscribeToNotification(this, {
       projectId: this.projectId,
       whitelist: ['file_upload'],
       func: this.handleWebsocketNotification
     });
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.uploadOptions) {
+      this.recordAddUploadHelper.projectName = this.uploadOptions.projectName;
+    }
   }
 
   ngOnDestroy() {

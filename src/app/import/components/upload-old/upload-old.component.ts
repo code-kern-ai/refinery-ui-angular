@@ -11,7 +11,7 @@ import { UploadStates } from '../../services/s3.enums';
 import { Router } from '@angular/router';
 import { ProjectStatus } from 'src/app/projects/enums/project-status.enum';
 import { NotificationService } from 'src/app/base/services/notification.service';
-import { UploadType } from '../upload/upload-types';
+import { UploadType } from '../helpers/upload-types';
 
 
 @Component({
