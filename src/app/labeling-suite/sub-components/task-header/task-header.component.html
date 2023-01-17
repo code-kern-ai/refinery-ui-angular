@@ -22,7 +22,8 @@
             hover-group="{{task.hoverGroups}}">
             {{task.name}}
           </td>
-          <td class="px-3 py-2 text-sm text-gray-500 w-full">
+          <td class="px-3 py-2 text-sm text-gray-500 w-full" hover-group-class="bg-green-200"
+            hover-group="{{task.hoverGroups}}">
             <div class="flex flex-row flex-wrap gap-x-2">
 
               <div #labelDiv *ngFor="let labelId of task.labelOrder; let i = index"
@@ -204,6 +205,17 @@
           <line x1="6" y1="6" x2="18" y2="18"></line>
         </svg>
         Nothing
+      </button>
+      <button (click)="setAllLabelDisplaySettingDefault()"
+        class="inline-flex items-center bg-white text-gray-700 text-xs font-semibold py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none"
+        [ngClass]="lsm.settingManager.settings.task.isCollapsed?'px-2':'px-4'">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-arrow-back-up" width="24"
+          height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
+          stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M9 13l-4 -4l4 -4m-4 4h11a4 4 0 0 1 0 8h-1"></path>
+        </svg>
+        Default
       </button>
     </div>
   </div>

@@ -19,7 +19,7 @@
                                     <th scope="col"
                                         class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wide text-gray-500">
                                         Label</th>
-                                    <th scope="col">
+                                    <th scope="col" *ngIf="!lsm.settingManager.settings.main.disableHoverGroups">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                             stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                                             <path stroke-linecap="round" stroke-linejoin="round"
@@ -47,11 +47,14 @@
                                         <span
                                             class="inline-flex items-center px-2.5 py-0.5 rounded-md text-sm font-medium border border-0 cursor-default relative"
                                             [ngClass]="[ovItem.label.backgroundColor,ovItem.label.textColor,ovItem.label.borderColor]">{{ovItem.label.name}}
-                                            <div class="label-overlay-manual"></div>
+                                            <div class="label-overlay-base"
+                                                hover-group-class="{{ovItem.hoverGroups.labelClass}}"
+                                                hover-group="{{ovItem.hoverGroups.label}}"></div>
                                         </span>
                                         <span class="ml-2" *ngIf="ovItem.label.value">{{ovItem.label.value}}</span>
                                     </td>
-                                    <td hover-group-class="bg-green-200" hover-group="{{ovItem.hoverGroups.rlaId}}">
+                                    <td *ngIf="!lsm.settingManager.settings.main.disableHoverGroups"
+                                        hover-group-class="bg-green-200" hover-group="{{ovItem.hoverGroups.rlaId}}">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                             stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                                             <path stroke-linecap="round" stroke-linejoin="round"

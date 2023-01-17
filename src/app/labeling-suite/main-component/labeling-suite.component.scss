@@ -21,6 +21,40 @@ input[type="number"] {
 
 
 .label-overlay-manual {
+
+  //https://www.magicpattern.design/tools/css-backgrounds
+  // background-image: linear-gradient(0deg, transparent , #666);
+  // background-size: 10px 10px;
+  background-color: #ffffff;
+  background-image: linear-gradient(30deg, #a9a9a9 12%, transparent 12.5%, transparent 87%, #a9a9a9 87.5%, #a9a9a9), linear-gradient(150deg, #a9a9a9 12%, transparent 12.5%, transparent 87%, #a9a9a9 87.5%, #a9a9a9), linear-gradient(30deg, #a9a9a9 12%, transparent 12.5%, transparent 87%, #a9a9a9 87.5%, #a9a9a9), linear-gradient(150deg, #a9a9a9 12%, transparent 12.5%, transparent 87%, #a9a9a9 87.5%, #a9a9a9), linear-gradient(60deg, #a9a9a977 25%, transparent 25.5%, transparent 75%, #a9a9a977 75%, #a9a9a977), linear-gradient(60deg, #a9a9a977 25%, transparent 25.5%, transparent 75%, #a9a9a977 75%, #a9a9a977);
+  background-size: 14px 25px;
+  background-position: 0 0, 0 0, 7px 12px, 7px 12px, 0 0, 7px 12px;
+}
+
+.label-overlay-weak-supervision {
+  background-color: #ffffff;
+  background-image: linear-gradient(135deg, #a9a9a9 25%, transparent 25%), linear-gradient(225deg, #a9a9a9 25%, transparent 25%), linear-gradient(45deg, #a9a9a9 25%, transparent 25%), linear-gradient(315deg, #a9a9a9 25%, #ffffff 25%);
+  background-position: 10px 0, 10px 0, 0 0, 0 0;
+  background-size: 10px 10px;
+  background-repeat: repeat;
+}
+
+.label-overlay-heuristic {
+  background-color: #ffffff;
+  background-image: linear-gradient(135deg, #a9a9a9 25%, transparent 25%), linear-gradient(225deg, #a9a9a9 25%, transparent 25%), linear-gradient(45deg, #a9a9a9 25%, transparent 25%), linear-gradient(315deg, #a9a9a9 25%, #ffffff 25%);
+  background-position: 7px 0, 7px 0, 0 0, 0 0;
+  background-size: 14px 14px;
+  background-repeat: repeat;
+}
+
+.label-overlay-model {
+  background-color: #ffffff;
+  background-image: repeating-linear-gradient(45deg, #a9a9a9 25%, transparent 25%, transparent 75%, #a9a9a9 75%, #a9a9a9), repeating-linear-gradient(45deg, #a9a9a9 25%, #ffffff 25%, #ffffff 75%, #a9a9a9 75%, #a9a9a9);
+  background-position: 0 0, 10px 10px;
+  background-size: 20px 20px;
+}
+
+.label-overlay-base {
   position: absolute;
   top: 1px;
   right: 1px;
@@ -29,10 +63,10 @@ input[type="number"] {
   pointer-events: none;
   border-radius: 0.375rem;
   opacity: 0.3;
-  //https://www.magicpattern.design/tools/css-backgrounds
-  // background-image: linear-gradient(0deg, transparent , #666);
-  // background-size: 10px 10px;
-  background-image: linear-gradient(30deg, #aeaeae 12%, transparent 12.5%, transparent 87%, #aeaeae 87.5%, #aeaeae), linear-gradient(150deg, #aeaeae 12%, transparent 12.5%, transparent 87%, #aeaeae 87.5%, #aeaeae), linear-gradient(30deg, #aeaeae 12%, transparent 12.5%, transparent 87%, #aeaeae 87.5%, #aeaeae), linear-gradient(150deg, #aeaeae 12%, transparent 12.5%, transparent 87%, #aeaeae 87.5%, #aeaeae), linear-gradient(60deg, #aeaeae77 25%, transparent 25.5%, transparent 75%, #aeaeae77 75%, #aeaeae77), linear-gradient(60deg, #aeaeae77 25%, transparent 25.5%, transparent 75%, #aeaeae77 75%, #aeaeae77);
-  background-size: 22px 39px;
-  background-position: 0 0, 0 0, 11px 19px, 11px 19px, 0 0, 11px 19px;
+}
+
+
+.wait,
+.wait * {
+  cursor: wait;
 }

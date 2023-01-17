@@ -13,8 +13,24 @@ export function getHoverGroupsOverviewTable(data: any): any {
         type: getHoverGroupFor(HoverGroupTarget.TYPE, all),
         task: getHoverGroupFor(HoverGroupTarget.TASK, all),
         label: getHoverGroupFor(HoverGroupTarget.LABEL, all),
+        labelClass: getHoverClassLabel(data.sourceType),
         createdBy: getHoverGroupFor(HoverGroupTarget.CREATED_BY, all),
         rlaId: getHoverGroupFor(HoverGroupTarget.RLA_ID, all),
+    }
+}
+
+export function getHoverClassLabel(type: LabelSource): string {
+    switch (type) {
+        case LabelSource.MANUAL:
+            return "label-overlay-manual";
+        case LabelSource.INFORMATION_SOURCE:
+            return "label-overlay-heuristic";
+        case LabelSource.WEAK_SUPERVISION:
+            return "label-overlay-weak-supervision";
+        case LabelSource.MODEL_CALLBACK:
+            return "label-overlay-model";
+        default:
+            return "";
     }
 }
 

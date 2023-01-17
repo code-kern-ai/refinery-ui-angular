@@ -1,4 +1,5 @@
-<div *ngIf="lsm.userManager.mainUser" class="h-full bg-white flex flex-col">
+<div *ngIf="lsm.userManager.mainUser" class="h-full bg-white flex flex-col"
+    [ngClass]="lsm.somethingLoading?'wait':null">
 
     <ng-container [ngTemplateOutlet]="navigationBarTop"></ng-container>
     <div class="flex-grow">
@@ -226,7 +227,7 @@
                         <span class="flex-grow flex flex-col ml-3 flex-shrink-0">
                             <span class="text-sm font-medium text-gray-900">Hide
                                 heuristic
-                                labels</span>
+                                labels from overview table</span>
                             <span class="text-sm text-gray-500">Apply this if you
                                 don't
                                 want to be biased</span>
@@ -258,7 +259,8 @@
                     <ng-template [ngIf]="!lsm.recordManager.recordData.deleted">
                         <input #showNLabelsInput tabindex="0" type="number"
                             class="bg-white text-gray-700 text-xs font-semibold mr-3 px-4 py-2 rounded-md border border-gray-300 w-11 input input-sm"
-                            [value]="lsm.settingManager.settings.main.showNLabelButton" (focus)="$event.target.select()"
+                            [value]="lsm.settingManager.settings.labeling.showNLabelButton"
+                            (focus)="$event.target.select()"
                             (keydown.enter)="setShowNLabelButton(showNLabelsInput.value)"
                             (blur)="setShowNLabelButton(showNLabelsInput.value)" style="box-shadow:none;">
                         <span class="flex-grow flex flex-col flex-shrink-0">

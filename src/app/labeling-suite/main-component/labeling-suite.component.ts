@@ -78,8 +78,8 @@ export class LabelingSuiteComponent implements OnInit, OnDestroy {
     this.lsm.settingManager.runSettingListeners(ComponentType.MAIN);
   }
   public setShowNLabelButton(value: number) {
-    this.lsm.settingManager.settings.main.showNLabelButton = value;
-    this.lsm.settingManager.runSettingListeners(ComponentType.MAIN);
+    this.lsm.settingManager.settings.labeling.showNLabelButton = value;
+    this.lsm.settingManager.runSettingListeners(ComponentType.LABELING);
   }
 
 
@@ -101,6 +101,7 @@ export class LabelingSuiteComponent implements OnInit, OnDestroy {
     throw new Error("Method not implemented.");
 
   }
+
 
 
 }

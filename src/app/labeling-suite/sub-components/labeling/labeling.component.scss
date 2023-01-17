@@ -1,3 +1,13 @@
 .tooltip::before {
   z-index: 50;
+  max-width: 230px;
+}
+
+
+.full-overlay-height {
+  height: 100%;
+}
+
+.full-overlay-height>div {
+  display: block;
 }

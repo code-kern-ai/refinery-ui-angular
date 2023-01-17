@@ -42,6 +42,7 @@ module.exports = {
       "hljs-addition",
       "hljs-emphasis",
       "hljs-strong",
+      "label-overlay-*",
       // /(from|via|to|border|bg|text)-(.*)-(\d{1}0{1,2})/, // all color options
       // /(border|bg|text)-(.*)-(100|200|400|700)/, colors with specific value & type
       // /(border|bg|text)-(red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-(100|200|400|700)/,

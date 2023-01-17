@@ -515,7 +515,7 @@ export class RecordApolloService {
         map((result) => {
           const data = result['data']['tokenizeRecord'];
           if (!data) return null;
-          return this.#addDiffToLast({
+          return this.#addDiffToNext(this.#addDiffToLast({
             recordId: data.recordId,
             attributes: data.attributes.map((attribute) => {
               return {
@@ -527,7 +527,7 @@ export class RecordApolloService {
                   : attribute.tokens.map(this.#tokenMapper),
               };
             }),
-          });
+          }));
         })
       );
   }
@@ -542,6 +542,7 @@ export class RecordApolloService {
       type: token.type,
     };
   }
+  //needed for old label studio to be removed after
   #addDiffToLast(tokenObj) {
     let lastPos = 0;
     let diff = -1;
@@ -552,6 +553,17 @@ export class RecordApolloService {
           diff = t.posStart - lastPos;
           t.diffToLastPos = diff;
           lastPos = t.posEnd;
+        }
+      }
+    }
+
+    return tokenObj;
+  }
+  #addDiffToNext(tokenObj) {
+    for (let a of tokenObj.attributes) {
+      if (a.token) {
+        for (let i = 0; i < a.token.length - 1; i++) {
+          a.token[i].nextCloser = a.token[i].posEnd == a.token[i + 1].posStart;
         }
       }
     }

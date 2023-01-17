@@ -30,5 +30,6 @@ export type TableDisplayData = {
         backgroundColor: string,
         textColor: string,
         borderColor: string,
-    }
+    },
+    rla: any
 }

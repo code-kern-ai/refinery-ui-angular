@@ -1,3 +1,5 @@
+import { HoverGroupDirective } from "src/app/base/directives/hover-group.directive";
+import { LabelSource } from "src/app/base/enum/graphql-enums";
 import { enumToArray, jsonCopy, transferNestedDict } from "src/app/util/helper-functions";
 import { DoBeforeDestroy } from "src/app/util/interfaces";
 
@@ -5,15 +7,22 @@ export type LabelingSuiteSettings = {
     main: LabelingSuiteMainSettings;
     overviewTable: LabelingSuiteOverviewTableSettings;
     task: LabelingSuiteTaskHeaderSettings;
+    labeling: LabelingSuiteLabelingSettings;
 }
 
 export type LabelingSuiteOverviewTableSettings = {
     showHeuristics: boolean;
+    includeLabelDisplaySettings: boolean;
 }
 
 export type LabelingSuiteMainSettings = {
     autoNextRecord: boolean;
+    disableHoverGroups: boolean;
+}
+export type LabelingSuiteLabelingSettings = {
     showNLabelButton: number;
+    showTaskNames: boolean;
+    compactClassificationLabelDisplay: boolean;
 }
 
 //labeling task
@@ -95,14 +104,20 @@ export class LabelingSuiteSettingManager implements DoBeforeDestroy {
         return {
             main: {
                 autoNextRecord: false,
-                showNLabelButton: 5,
+                disableHoverGroups: false,
             },
             overviewTable: {
                 showHeuristics: false,
+                includeLabelDisplaySettings: true,
             },
             task: {
                 isCollapsed: false,
                 alwaysShowQuickButtons: false,
+            },
+            labeling: {
+                showNLabelButton: 5,
+                showTaskNames: true,
+                compactClassificationLabelDisplay: true,
             }
         }
     }
@@ -131,12 +146,57 @@ export class LabelingSuiteSettingManager implements DoBeforeDestroy {
         if (type == ComponentType.ALL) {
             enumToArray(ComponentType).forEach(ct => ct != ComponentType.ALL ? this.runSettingListeners(ct, false) : null);
             return;
-        } else {
-            if (!this.registeredSettingsListeners.has(type)) throw Error("Component type not available");
-            if (this.registeredSettingsListeners.get(type).size == 0) return;
-            this.registeredSettingsListeners.get(type).forEach((func, key) => func.call(key));
-
         }
+        if (type == ComponentType.MAIN) {
+            if (this.settings.main.disableHoverGroups != HoverGroupDirective.disableHover) {
+                HoverGroupDirective.disableHover = this.settings.main.disableHoverGroups;
+            }
+        }
+        if (!this.registeredSettingsListeners.has(type)) throw Error("Component type not available");
+        if (this.registeredSettingsListeners.get(type).size != 0) {
+            this.registeredSettingsListeners.get(type).forEach((func, key) => func.call(key));
+        }
+
         if (saveSettings) this.saveSettings();
+    }
+
+
+    public filterRlaDataForOverviewTable(data: any[], rlaKey?: string): any[] {
+        let filtered = data;
+        if (!this.settings.overviewTable.showHeuristics) {
+            if (rlaKey) filtered = filtered.filter(entry => entry[rlaKey].sourceType != LabelSource.INFORMATION_SOURCE);
+            else filtered = filtered.filter(rla => rla.sourceType != LabelSource.INFORMATION_SOURCE);
+        }
+        if (this.settings.overviewTable.includeLabelDisplaySettings) {
+            if (rlaKey) filtered = filtered.filter(entry => this.filterRlaLabelCondition(entry[rlaKey]));
+            else filtered = filtered.filter(rla => this.filterRlaLabelCondition(rla));
+        }
+        return filtered;
+    }
+
+    public filterRlaDataForLabeling(data: any[], rlaKey?: string): any[] {
+        let filtered = data;
+        if (rlaKey) filtered = filtered.filter(entry => this.filterRlaLabelCondition(entry[rlaKey]));
+        else filtered = filtered.filter(rla => this.filterRlaLabelCondition(rla));
+
+        return filtered;
+    }
+
+    private filterRlaLabelCondition(rla: any): boolean {
+        const taskId = rla.labelingTaskLabel.labelingTask.id;
+        const rlaSettings: LabelingSuiteTaskHeaderLabelSettings = this.settings.task[this.projectId][taskId][rla.labelingTaskLabelId];
+        switch (rla.sourceType) {
+            case LabelSource.MANUAL:
+                return rlaSettings.showManual;
+            case LabelSource.INFORMATION_SOURCE:
+                return rlaSettings.showHeuristics;
+            case LabelSource.MODEL_CALLBACK:
+                return rlaSettings.showModel;
+            case LabelSource.WEAK_SUPERVISION:
+                return rlaSettings.showWeakSupervision;
+            default:
+                console.log("unknown source type in setting rla filter", rla)
+                return false;
+        }
     }
 }

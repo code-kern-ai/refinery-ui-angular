@@ -28,6 +28,7 @@ export class LabelingSuiteManager implements DoBeforeDestroy {
     public attributeManager: LabelingSuiteAttributeManager;
 
     public projectId: string;
+    public somethingLoading: boolean = true;
 
     //private changeListener
     private registeredUpdateListeners: Map<UpdateType, Map<Object, () => void>> = new Map<UpdateType, Map<Object, () => void>>();
@@ -37,7 +38,7 @@ export class LabelingSuiteManager implements DoBeforeDestroy {
         this.baseComponent = baseComponent;
         this.settingManager = new LabelingSuiteSettingManager(projectId);
         this.modalManager = new LabelingSuiteModalManager();
-        this.userManager = new LabelingSuiteUserManager();
+        this.userManager = new LabelingSuiteUserManager(this);
 
         this.recordManager = new LabelingSuiteRecordManager(projectId, recordApolloService, this);
         this.taskManager = new LabelingSuiteTaskManager(projectId, projectApolloService, this);
@@ -112,5 +113,6 @@ export class LabelingSuiteManager implements DoBeforeDestroy {
 export enum UpdateType {
     RECORD,
     LABELING_TASKS,
-    ATTRIBUTES
+    ATTRIBUTES,
+    DISPLAY_USER
 }

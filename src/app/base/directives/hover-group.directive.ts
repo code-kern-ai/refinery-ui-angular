@@ -18,23 +18,26 @@ export class HoverGroupDirective implements OnDestroy, OnInit {
   @Input('hover-group-class') hoverClass: any;
 
   private finalGroups: string[];
+  public static disableHover = true;
 
   @HostListener('mouseenter') onMouseEnter() {
+    if (HoverGroupDirective.disableHover) return;
     if (!this.finalGroups || this.finalGroups.length == 0) return;
     const highlightGroup = this.finalGroups[0];
     for (let e of HoverGroupElementRefs.getElements(highlightGroup)) {
       for (let v of e.hoverClass.split(' ')) {
-        e.elementRef.nativeElement.classList.add(v);
+        if (v) e.elementRef.nativeElement.classList.add(v);
       }
     }
   }
 
   @HostListener('mouseleave') onMouseLeave() {
+    if (HoverGroupDirective.disableHover) return;
     if (!this.finalGroups || this.finalGroups.length == 0) return;
     const highlightGroup = this.finalGroups[0];
     for (let e of HoverGroupElementRefs.getElements(highlightGroup)) {
       for (let v of e.hoverClass.split(' ')) {
-        e.elementRef.nativeElement.classList.remove(v);
+        if (v) e.elementRef.nativeElement.classList.remove(v);
       }
     }
   }

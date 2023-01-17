@@ -7,12 +7,14 @@ import { RecordApolloService } from "src/app/base/services/record/record-apollo.
 import { jsonCopy } from "src/app/util/helper-functions";
 import { DoBeforeDestroy } from "src/app/util/interfaces";
 import { LabelingSuiteManager, UpdateType } from "./manager";
+import { LabelingSuiteRlaManager as LabelingSuiteRlaPreparator } from "./recordRla";
+import { GOLD_STAR_USER_ID } from "./user";
 
 type RecordData = {
     deleted: boolean;
     token: any;
     baseRecord: any;
-    rlas: any[];
+    // rlas: any[];
 }
 
 export class LabelingSuiteRecordManager implements DoBeforeDestroy {
@@ -23,8 +25,9 @@ export class LabelingSuiteRecordManager implements DoBeforeDestroy {
         deleted: false,
         baseRecord: null,
         token: null,
-        rlas: null,
+        // rlas: null,
     };
+    public rlaPreparator: LabelingSuiteRlaPreparator;
 
     private activeRecordId: string;
     private recordRequests = {
@@ -39,6 +42,7 @@ export class LabelingSuiteRecordManager implements DoBeforeDestroy {
         this.projectId = projectId;
         this.recordApolloService = recordApolloService;
         this.baseManager = baseManager;
+        this.rlaPreparator = new LabelingSuiteRlaPreparator();
 
 
         NotificationService.subscribeToNotification(this, {
@@ -105,45 +109,24 @@ export class LabelingSuiteRecordManager implements DoBeforeDestroy {
     }
 
     private finishUpRecordData(results: any[]) {
+        //through combine latest token data should always be present
+
         console.log("fully loaded", results);
+
         this.recordData.token = results[0];
         this.recordData.baseRecord = results[1];
         let rlas = results[2];
         if (this.ignoreRlas(rlas)) {
+            this.rlaPreparator.setRlas([], null);
             this.baseManager.runUpdateListeners(UpdateType.RECORD);
             return;
         }
-        rlas = jsonCopy(rlas);
-        this.recordData.rlas = this.finalizeRlas(rlas);
+        this.rlaPreparator.setRlas(rlas, this.recordData.token.attributes);
+        // rlas = jsonCopy(rlas);
+        // this.recordData.rlas = this.finalizeRlas(rlas,this.recordData.token.attributes);
         this.baseManager.runUpdateListeners(UpdateType.RECORD);
     }
 
-
-
-    private finalizeRlas(rlas: any[]): any[] {
-        if (!rlas) return [];
-        for (const e of rlas) {
-            if (e.returnType == InformationSourceReturnType.RETURN) continue;
-            const attributeId = e.labelingTaskLabel.labelingTask.attribute.id;
-            let att = this.getTokenizedAttribute(attributeId);
-            let t1 = this.getToken(att, e.tokenStartIdx);
-            let t2 = this.getToken(att, e.tokenEndIdx);
-            e.value = att.raw.substring(t1.posStart, t2.posEnd);
-        }
-        return rlas;
-    }
-    private getTokenizedAttribute(attributeId: string) {
-        for (let att of this.recordData.token.attributes) {
-            if (att.attributeId == attributeId) return att;
-        }
-        return null;
-    }
-    private getToken(tokenizedAttribute, idx: number) {
-        for (let token of tokenizedAttribute.token) {
-            if (token.idx == idx) return token;
-        }
-        return null;
-    }
 
     private prepareTokenizedRecord(recordId: string): Observable<any> {
         if (this.recordRequests.token) this.recordRequests.token.unsubscribe();
@@ -187,13 +170,15 @@ export class LabelingSuiteRecordManager implements DoBeforeDestroy {
         [this.recordRequests.rlaQuery, observable] = this.recordApolloService.getRecordLabelAssociations(this.projectId, recordId);
         this.recordRequests.rla = observable
             .subscribe((recordLabelAssociations) => {
+
                 if (this.ignoreRlas(recordLabelAssociations)) return;
+
                 // const rlaData = this.prepareRLADataForRole(recordLabelAssociations);
                 // this.extendRecordLabelAssociations(rlaData);
                 // this.parseRlaToGroups(rlaData)
                 // this.prepareFullRecord();
                 // this.prepareInformationExtractionDisplay();
-                // this.somethingLoading = false;
+                this.baseManager.somethingLoading = false;
 
             });
         return observable;
@@ -203,6 +188,34 @@ export class LabelingSuiteRecordManager implements DoBeforeDestroy {
         if (!rlas) return true;
         if (rlas.length > 0 && rlas[0].recordId != this.activeRecordId) return true;
         return false;
+    }
+
+    public addLabelToRecord(taskId: string, labelId: string, sourceId: string = null) {
+        //sourceId necessary for crowd labels
+        this.baseManager.somethingLoading = true;
+        const asGoldStar = this.baseManager.userManager.displayUserId == GOLD_STAR_USER_ID ? true : null;
+        this.recordApolloService
+            .addClassificationLabelsToRecord(
+                this.projectId,
+                this.activeRecordId,
+                taskId,
+                labelId,
+                asGoldStar,
+                sourceId,
+            )
+            .pipe(first())
+            .subscribe();
+    }
+
+    public deleteLabelFromRecord(rlaId: string) {
+        this.baseManager.somethingLoading = true;
+        this.recordApolloService
+            .deleteRecordLabelAssociationById(
+                this.projectId,
+                this.activeRecordId,
+                [rlaId]
+            ).pipe(first())
+            .subscribe();
     }
 
 
@@ -229,8 +242,13 @@ export class LabelingSuiteRecordManager implements DoBeforeDestroy {
 
         this.recordData.deleted = true;
         this.recordData.baseRecord = null;
-        this.recordData.rlas = null;
+        this.rlaPreparator.setRlas(null, null);
         this.recordData.token = null;
+    }
+
+    public getTokenArrayForAttribute(attributeId: string): any[] {
+        if (!this.recordData.token) return null;
+        return this.recordData.token.attributes.find((a) => a.attributeId == attributeId)?.token;
     }
 
 }

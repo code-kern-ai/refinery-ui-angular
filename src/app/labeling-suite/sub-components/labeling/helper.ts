@@ -12,6 +12,8 @@ export type LabelingVars = {
 
 type TaskLookup = {
     showText: boolean;
+    showGridLabelPart: boolean;
+    girdRowSpan?: string;
     orderKey: number;
     task: any;
     tokenData?: any;

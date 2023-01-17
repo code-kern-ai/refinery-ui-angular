@@ -128,6 +128,14 @@ export class LabelingSuiteTaskHeaderComponent implements OnInit, OnChanges, OnDe
     this.lsm.settingManager.runSettingListeners(ComponentType.TASK_HEADER);
   }
 
+  setAllLabelDisplaySettingDefault() {
+    for (let taskId in this.settings) {
+      for (let labelId in this.settings[taskId]) {
+        this.settings[taskId][labelId] = this.lsm.settingManager.getDefaultTaskOverviewLabelSettings();
+      }
+    }
+    this.lsm.settingManager.runSettingListeners(ComponentType.TASK_HEADER);
+  }
 
   private prepareDataForDisplay(data: any[]): LabelingSuiteTaskHeaderDisplayData[] {
     if (!data) return null;

@@ -6,6 +6,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
 import { DragAndDropDirective } from './directives/drag-and-drop.directive';
 import { HoverGroupDirective } from './directives/hover-group.directive';
+import { VarDirective } from './directives/ng-var.directive';
 import { NgxFilesizeModule } from 'ngx-filesize';
 import { LoadingComponent } from './components/loading/loading.component';
 import { HighlightComponent } from './components/highlight/highlight.component';
@@ -51,7 +52,8 @@ import { RecordTableComponent } from './components/record-table/record-table.com
     DefaultOrderKeyvaluePipe,
     NotificationCenterComponent,
     RecordDisplayComponent,
-    RecordTableComponent
+    RecordTableComponent,
+    VarDirective
   ],
   imports: [CommonModule, AppRoutingModule],
   exports: [
@@ -62,7 +64,7 @@ import { RecordTableComponent } from './components/record-table/record-table.com
     DragAndDropDirective,
     HoverGroupDirective,
     SidebarPmComponent,
-    FormsModule,
+    VarDirective,
     ReactiveFormsModule,
     NgxFilesizeModule,
     LoadingComponent,
