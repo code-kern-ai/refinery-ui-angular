@@ -295,6 +295,7 @@
 <kern-modal-upload [uploadFileType]="UploadFileType.KNOWLEDGE_BASE"
     [isModalOpen]="lookupListDetailsModals.uploadLookupList.open" [projectId]="projectId" [uploadOptions]="{
         deleteProjectOnFail: false,
+        reloadOnFinish: false,
         knowledgeBaseId: knowledgeBaseId
     }" (closeModalEvent)="lookupListDetailsModals.uploadLookupList.open = false;">
 </kern-modal-upload>

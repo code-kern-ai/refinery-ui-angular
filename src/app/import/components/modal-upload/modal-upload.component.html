@@ -3,13 +3,14 @@
         closeAfterClick:false,
         emitObject: this, emitFunction: submitUpload,
         disabled:uploadModals.uploadFile.doingSomething || !file
-    }" (optionClicked)="closeModal()">
+    }">
     <h1 class="flex flex-grow justify-center text-lg text-gray-900 font-bold">{{title}}</h1>
     <div class="text-sm text-gray-500 mb-4 text-center">
         {{subTitle}}
     </div>
     <kern-upload [uploadFileType]="uploadFileType" [uploadOptions]="{
-            deleteProjectOnFail: uploadFileType == UploadFileType.PROJECT ? true : false,
+            deleteProjectOnFail: uploadOptions.deleteProjectOnFail,
+            reloadOnFinish: uploadOptions.reloadOnFinish,
             knowledgeBaseId: uploadFileType == UploadFileType.KNOWLEDGE_BASE ? uploadOptions.knowledgeBaseId : null
         }" (fileAttached)="setFile($event)"></kern-upload>
 </kern-modal>

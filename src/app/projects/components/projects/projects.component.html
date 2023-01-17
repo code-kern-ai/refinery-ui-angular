@@ -357,6 +357,7 @@
 
 <kern-modal-upload [uploadFileType]="UploadFileType.PROJECT" [isModalOpen]="projectsModals.uploadProject.open"
     [uploadOptions]="{
-    reloadOnFinish: true
+    reloadOnFinish: true,
+    deleteProjectOnFail: true
 }" (closeModalEvent)="projectsModals.uploadProject.open = false;">
 </kern-modal-upload>
