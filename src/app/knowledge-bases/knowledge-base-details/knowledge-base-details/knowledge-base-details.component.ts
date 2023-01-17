@@ -379,4 +379,10 @@ export class KnowledgeBaseDetailsComponent implements OnInit, AfterViewInit, OnD
       this.lookupListDetailsModals.pasteLookupList.inputArea = value;
     }
   }
+
+  refetchLookupLists(refetch: boolean) {
+    if (!refetch) return;
+    this.knowledgeBaseQuery$.refetch();
+    this.termsQuery$.refetch();
+  }
 }

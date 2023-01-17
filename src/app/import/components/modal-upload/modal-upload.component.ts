@@ -3,10 +3,8 @@ import { createDefaultModalUploadModal, getSubtitle, getTitle, UploadModals } fr
 import { UploadFileType, UploadOptions } from '../helpers/upload-types';
 import { UploadComponent } from '../upload/upload.component';
 import { UploadHelper } from '../helpers/upload-helper';
-import { Router } from '@angular/router';
-import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
-import { S3Service } from '../../services/s3.service';
 import { UploadStates } from '../../services/s3.enums';
+import { interval } from 'rxjs';
 
 @Component({
   selector: 'kern-modal-upload',
@@ -22,6 +20,7 @@ export class ModalUploadComponent implements OnChanges {
 
   @Output() closeModalEvent = new EventEmitter();
   @Output() fileAttached = new EventEmitter<File>();
+  @Output() refetchLookupLists = new EventEmitter<boolean>();
 
   get UploadFileType(): typeof UploadFileType {
     return UploadFileType;
@@ -32,15 +31,16 @@ export class ModalUploadComponent implements OnChanges {
   }
 
   @ViewChild('fileUpload') fileUpload: ElementRef;
+  @ViewChild(UploadComponent) baseComponent: UploadComponent;
   uploadModals: UploadModals = createDefaultModalUploadModal();
   file: File | null = null;
   uploadHelper: UploadHelper;
-  baseComponent: UploadComponent;
   title: string;
   subTitle: string;
 
-  constructor(private projectApolloService: ProjectApolloService, private router: Router, private s3Service: S3Service) {
-    this.baseComponent = new UploadComponent(this.projectApolloService, this.router, this.s3Service);
+  constructor() { }
+
+  ngAfterViewInit(): void {
     this.uploadHelper = new UploadHelper(this.baseComponent, this.baseComponent.recordNewUploadHelper, this.baseComponent.recordAddUploadHelper, this.baseComponent.existingProjectUploadHelper, this.baseComponent.lookupListsUploadHelper);
   }
 
@@ -55,6 +55,9 @@ export class ModalUploadComponent implements OnChanges {
   closeModal(): void {
     this.uploadModals.uploadFile.open = false;
     this.closeModalEvent.emit();
+    if (this.uploadOptions.knowledgeBaseId) {
+      this.refetchLookupLists.emit(true);
+    }
   }
 
   submitUpload() {
@@ -71,6 +74,17 @@ export class ModalUploadComponent implements OnChanges {
 
   optionClicked(button: string) {
     if (button == 'CLOSE') this.closeModal();
+    if (button == 'ACCEPT') {
+      const x = interval(1000).subscribe(() => {
+        if (this.baseComponent.progressState?.progress === 100 && this.baseComponent.progressState?.state === UploadStates.DONE) {
+          this.uploadModals.uploadFile.doingSomething = false;
+          this.baseComponent.resetUpload();
+          this.baseComponent.reSubscribeToNotifications();
+          this.closeModal();
+          x.unsubscribe();
+        }
+      });
+    }
   }
 
 }

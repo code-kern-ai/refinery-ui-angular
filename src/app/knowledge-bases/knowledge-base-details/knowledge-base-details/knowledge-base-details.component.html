@@ -297,7 +297,8 @@
         deleteProjectOnFail: false,
         reloadOnFinish: false,
         knowledgeBaseId: knowledgeBaseId
-    }" (closeModalEvent)="lookupListDetailsModals.uploadLookupList.open = false;">
+    }" (closeModalEvent)="lookupListDetailsModals.uploadLookupList.open = false;"
+    (refetchLookupLists)="refetchLookupLists($event)">
 </kern-modal-upload>
 
 <kern-modal [isOpen]="lookupListDetailsModals.pasteLookupList.open" closeButton="X" [modalBoxStyle]="{'width':'35rem'}"

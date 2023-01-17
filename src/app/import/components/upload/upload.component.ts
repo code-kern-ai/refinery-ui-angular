@@ -154,6 +154,7 @@ export class UploadComponent implements OnInit {
     this.uploadTask$ = null;
     this.uploadTask = null;
     this.uploadTaskQuery$ = null;
+    this.progressState = null;
   }
 
   deleteExistingProject() {
