@@ -64,7 +64,9 @@
     <ng-container *ngTemplateOutlet="upload"></ng-container>
     <ng-container *ngTemplateOutlet="fileValidation"></ng-container>
     <ng-container *ngTemplateOutlet="importOptionsTextarea"></ng-container>
-    <ng-container *ngTemplateOutlet="submitUpload"></ng-container>
+    <ng-template [ngIf]="!uploadOptions.isModal">
+        <ng-container *ngTemplateOutlet="submitUpload"></ng-container>
+    </ng-template>
 </ng-template>
 
 <ng-template #upload>

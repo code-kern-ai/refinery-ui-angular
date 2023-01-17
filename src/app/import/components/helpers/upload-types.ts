@@ -22,6 +22,7 @@ export type UploadOptions = {
  * @knowledgeBaseId {string, optional} - Knowledge base id used for the upload terms
  * @projectNameList {Project[], optional} - List of all projects
  * @projectName {string, optional} - Name of the project
+ * @isModal {boolean, optional} - If true, it indicates that the upload component is used in a modal
  */
     deleteProjectOnFail?: boolean;
     reloadOnFinish?: boolean;
@@ -29,6 +30,7 @@ export type UploadOptions = {
     knowledgeBaseId?: string;
     projectNameList?: Project[];
     projectName?: string;
+    isModal?: boolean;
 };
 
 export type UploadTask = {
