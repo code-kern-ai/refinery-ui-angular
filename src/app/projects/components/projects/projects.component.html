@@ -346,15 +346,6 @@
 
 </ng-template>
 
-<!-- <kern-modal [isOpen]="projectsModals.uploadProject.open" closeButton="X" [modalBoxStyle]="{'width':'35rem'}"
-    [acceptButton]="{
-    closeAfterClick:false,
-    disabled:projectsModals.uploadProject.doingSomething || !file,
-    buttonCaption:'Upload'
-}" (optionClicked)="$event == 'CLOSE'?projectsModals.uploadProject.open = false:importExistingProject();">
-    <kern-modal-upload [uploadFileType]="UploadFileType.PROJECT"></kern-modal-upload>
-</kern-modal> -->
-
 <kern-modal-upload [uploadFileType]="UploadFileType.PROJECT" [isModalOpen]="projectsModals.uploadProject.open"
     [uploadOptions]="{
     reloadOnFinish: true,

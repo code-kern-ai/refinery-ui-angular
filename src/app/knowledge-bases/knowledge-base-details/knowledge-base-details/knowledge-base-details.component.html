@@ -284,14 +284,6 @@
     </div>
 </kern-modal>
 
-<!-- <kern-modal [isOpen]="lookupListDetailsModals.uploadLookupList.open" closeButton="X" [modalBoxStyle]="{'width':'35rem'}"
-    [acceptButton]="{
-    buttonCaption: 'Upload',
-    emitObject: this, emitFunction: uploadToMinio
-}" (optionClicked)="lookupListDetailsModals.uploadLookupList.open = false">
-    <kern-modal-upload [uploadFileType]="UploadFileType.KNOWLEDGE_BASE"></kern-modal-upload>
-</kern-modal> -->
-
 <kern-modal-upload [uploadFileType]="UploadFileType.KNOWLEDGE_BASE"
     [isModalOpen]="lookupListDetailsModals.uploadLookupList.open" [projectId]="projectId" [uploadOptions]="{
         deleteProjectOnFail: false,

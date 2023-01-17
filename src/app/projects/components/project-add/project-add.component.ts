@@ -26,23 +26,15 @@ export class ProjectAddComponent implements OnInit, AfterViewChecked {
 
   user$: any;
   subscriptions$: Subscription[] = [];
-  uploadData: FormGroup;
-  selectedTokenizer = 'en_core_web_sm';
-  tokenizerValues = [];
-  checkIfUpload: boolean;
   project: Project;
   project$: any;
   projectQuery$: any;
-  submitted: boolean = false;
-  @ViewChild(UploadRecordsComponent) uploadRecordsComponent;
   organizationName: string;
   organizationInactive: boolean;
   projectId: string;
-  hasFileUploaded: boolean = false;
 
   constructor(
     private routeService: RouteService,
-    private formBuilder: FormBuilder,
     private organizationApolloService: OrganizationApolloService,
     private activatedRoute: ActivatedRoute,
     private projectApolloService: ProjectApolloService,
@@ -67,35 +59,9 @@ export class ProjectAddComponent implements OnInit, AfterViewChecked {
           this.organizationName = org.name;
         }
       });
-
-    this.uploadData = this.formBuilder.group({
-      uploadFile: [0, Validators.required]
-    });
-
-
   }
 
   ngOnDestroy(): void {
     this.subscriptions$.forEach(subscription => subscription.unsubscribe());
-  }
-
-
-  uploadDataToProject(uploadType: UploadType = UploadType.DEFAULT): boolean {
-    this.uploadRecordsComponent.uploadComponent.uploadType = uploadType;
-    this.uploadRecordsComponent.submitted = true;
-    this.submitted = true;
-    if (this.submitted && this.hasFileUploaded) {
-      this.uploadRecordsComponent.submitUploadRecords();
-      return true;
-    }
-    return false;
-  }
-
-  checkIfFileUploaded(hasFileUploaded: boolean) {
-    this.hasFileUploaded = hasFileUploaded;
-  }
-
-  getProjectName(): string {
-    return this.project?.name;
   }
 }

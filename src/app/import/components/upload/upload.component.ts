@@ -2,6 +2,8 @@ import { Component, ElementRef, EventEmitter, Input, OnInit, Output, SimpleChang
 import { Router } from '@angular/router';
 import { forkJoin, Observable, timer } from 'rxjs';
 import { first, tap } from 'rxjs/operators';
+import { PreparationStep } from 'src/app/base/components/upload-assistant/label-studio/label-studio-assistant-helper';
+import { LabelStudioAssistantComponent } from 'src/app/base/components/upload-assistant/label-studio/label-studio-assistant.component';
 import { UploadState } from 'src/app/base/entities/upload-state';
 import { NotificationService } from 'src/app/base/services/notification.service';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
@@ -35,6 +37,7 @@ export class UploadComponent implements OnInit {
 
   @ViewChild('importOptions', { read: ElementRef }) importOptionsHTML: ElementRef;
   @ViewChild('fileUpload') fileUpload: ElementRef;
+  @ViewChild(LabelStudioAssistantComponent) labelStudioUploadAssistant;
   uploadHelper: UploadHelper;
   recordNewUploadHelper: RecordNewUploadHelper;
   recordAddUploadHelper: RecordAddUploadHelper;
@@ -52,6 +55,7 @@ export class UploadComponent implements OnInit {
   isProjectTitleEmpty: boolean = false;
   isProjectTitleDuplicate: boolean = false;
   submitted: boolean = false;
+  disableInput: boolean = false;
 
   constructor(private projectApolloService: ProjectApolloService, private router: Router, private s3Service: S3Service) {
     this.recordNewUploadHelper = new RecordNewUploadHelper(this.projectApolloService, this);
@@ -68,6 +72,11 @@ export class UploadComponent implements OnInit {
       whitelist: ['file_upload'],
       func: this.handleWebsocketNotification
     });
+    if (this.uploadType == UploadType.LABEL_STUDIO) {
+      if (this.labelStudioUploadAssistant?.states.preparation != PreparationStep.MAPPING_TRANSFERRED) {
+        this.deleteExistingProject();
+      }
+    }
   }
 
   ngOnChanges(changes: SimpleChanges) {

@@ -29,30 +29,18 @@ export class ProjectNewComponent implements OnInit, AfterViewChecked {
 
   user$: any;
   subscriptions$: Subscription[] = [];
-  // createNewProject: FormGroup;
-  selectedTokenizer = 'en_core_web_sm';
   tokenizerValues = [];
-  checkIfUpload: boolean;
   project: Project;
   projectNameList$;
   projectNameListQuery$: any;
   projectNameList: Project[] = [];
-  hasFileUploaded: boolean = false;
-  submitted: boolean = false;
-  file: File;
-  @ViewChild(UploadRecordsComponent) uploadRecordsComponent;
-  @ViewChild(LabelStudioAssistantComponent) labelStudioUploadAssistant;
-  openTab: number = 0;
   organizationName: string;
   organizationInactive: boolean;
   avatarUri: string;
-  disableInput: boolean = false;
-
 
   constructor(
     private routeService: RouteService,
     private activatedRoute: ActivatedRoute,
-    private formBuilder: FormBuilder,
     private organizationApolloService: OrganizationApolloService,
     private projectApolloService: ProjectApolloService,
     private cdRef: ChangeDetectorRef) { }
@@ -78,12 +66,6 @@ export class ProjectNewComponent implements OnInit, AfterViewChecked {
         this.avatarUri = getUserAvatarUri(user);
       });
 
-    // this.createNewProject = this.formBuilder.group({
-    //   projectTitle: ['', [Validators.required, Validators.pattern(/^(\s+\S+\s*)*(?!\s).*$/), this.orgExists()]],
-    //   description: [''],
-    //   tokenizerForm: [this.selectedTokenizer]
-    // });
-
     [this.projectNameListQuery$, this.projectNameList$] = this.projectApolloService.getProjects();
     this.subscriptions$.push(this.projectNameList$.subscribe((projectList) => {
       this.projectNameList = projectList;
@@ -94,7 +76,6 @@ export class ProjectNewComponent implements OnInit, AfterViewChecked {
       func: this.handleWebsocketNotification
     });
 
-
     this.projectApolloService
       .getAllTokenizerOptions()
       .pipe(first())
@@ -102,8 +83,6 @@ export class ProjectNewComponent implements OnInit, AfterViewChecked {
         this.tokenizerValues = this.checkWhitelistTokenizer(v);
       });
   }
-
-  // get f() { return this.createNewProject.controls; }
 
   handleWebsocketNotification(msgParts) {
     if (!this.projectNameListQuery$) return;
@@ -119,44 +98,6 @@ export class ProjectNewComponent implements OnInit, AfterViewChecked {
   ngOnDestroy(): void {
     this.subscriptions$.forEach(subscription => subscription.unsubscribe());
     NotificationService.unsubscribeFromNotification(this);
-
-    if (this.uploadRecordsComponent?.uploadComponent?.uploadType == UploadType.LABEL_STUDIO) {
-      if (this.labelStudioUploadAssistant?.states.preparation != PreparationStep.MAPPING_TRANSFERRED) this.checkProjectToDelete();
-    }
-  }
-
-  // canCreateProject(): boolean {
-  //   if (!this.createNewProject.get('projectTitle')?.value) return false;
-  //   if (this.createNewProject.get('projectTitle').value.trim() == '') return false;
-  //   for (const p of this.projectNameList) if (p.name == this.createNewProject.get('projectTitle').value) return false;
-  //   return true;
-  // }
-  initProjectEvent(event: Event) {
-    event.preventDefault();
-    this.initializeProject();
-  }
-  initializeProject(uploadType: UploadType = UploadType.DEFAULT): boolean {
-    this.uploadRecordsComponent.uploadComponent.uploadType = uploadType;
-    this.uploadRecordsComponent.submitted = true;
-    this.submitted = true;
-    // if (this.createNewProject.invalid) return false;
-    // this.createNewProject.setValue({
-    //   projectTitle: (this.createNewProject.get('projectTitle').value).trim(),
-    //   description: (this.createNewProject.get('description').value).trim(),
-    //   tokenizerForm: this.createNewProject.get('tokenizerForm').value,
-    // });
-
-    // if (this.submitted && this.hasFileUploaded) {
-    //   this.projectApolloService
-    //     .createProject(this.createNewProject.get('projectTitle').value.trim(), this.createNewProject.get('description').value.trim())
-    //     .pipe(first()).subscribe((p: Project) => {
-    //       this.project = p;
-    //       this.uploadRecordsComponent.projectId = p.id;
-    //       this.uploadRecordsComponent.selectedTokenizer = this.createNewProject.get('tokenizerForm').value;
-    //       this.uploadRecordsComponent.submitUploadRecords();
-    //     });
-    // }
-    return true;
   }
 
   checkWhitelistTokenizer(tokenizer) {
@@ -197,20 +138,4 @@ export class ProjectNewComponent implements OnInit, AfterViewChecked {
     return tokenizer
   }
 
-  orgExists(): ValidatorFn {
-    return (control: AbstractControl): { [key: string]: any } | null =>
-      this.projectNameList && this.projectNameList.find(project => project.name.toLowerCase() == (control.value as string)?.trim().toLowerCase())
-        ? { projectTitleExists: control.value } : null;
-  }
-
-  checkIfFileUploaded(hasFileUploaded: boolean) {
-    this.hasFileUploaded = hasFileUploaded;
-  }
-
-  checkProjectToDelete() {
-    if (this.uploadRecordsComponent.uploadComponent.projectId) {
-      this.uploadRecordsComponent.uploadComponent.deleteExistingProject();
-    }
-
-  }
 }

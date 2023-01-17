@@ -312,27 +312,6 @@ export class KnowledgeBaseDetailsComponent implements OnInit, AfterViewInit, OnD
     document.body.removeChild(element);
   }
 
-
-  getFile(file: File) {
-    this.file = file;
-  }
-
-  uploadToMinio() {
-    if (this.file) {
-      // this.uploadComponent.projectId = this.projectId;
-      // this.uploadComponent.reloadOnFinish = true;
-      // this.uploadComponent.uploadStarted = true;
-      // const finalFileName = this.uploadComponent.getLookupListName(this.file?.name, this.knowledgeBaseId);
-      // this.uploadComponent.reSubscribeToNotifications();
-      // this.uploadComponent.uploadFileType.setValue("knowledge_base");
-      // this.uploadComponent.finishUpUpload(finalFileName, '');
-
-
-      const finalFileName = this.uploadComponent.uploadFileToMinio(this.projectId, UploadFileType.KNOWLEDGE_BASE, this.knowledgeBaseId);
-      this.uploadComponent.finishUpUpload(finalFileName, '');
-    }
-  }
-
   pasteLookupList() {
     const pasteValues = this.lookupListDetailsModals.pasteLookupList;
     this.knowledgeBaseApolloService.pasteTerm(this.projectId, this.knowledgeBaseId, pasteValues.inputArea, pasteValues.inputSplit, pasteValues.remove)
