@@ -11,7 +11,7 @@ export class UploadHelper {
     existingProjectUploadHelper: ExistingProjectUploadHelper;
     lookupListsUploadHelper: LookupListsUploadHelper;
 
-    constructor(private router: Router, baseComponent?: UploadComponent, recordNewUploadHelper?: RecordNewUploadHelper, recordAddUploadHelper?: RecordAddUploadHelper, existingProjectUploadHelper?: ExistingProjectUploadHelper, lookupListsUploadHelper?: LookupListsUploadHelper) {
+    constructor(baseComponent?: UploadComponent, recordNewUploadHelper?: RecordNewUploadHelper, recordAddUploadHelper?: RecordAddUploadHelper, existingProjectUploadHelper?: ExistingProjectUploadHelper, lookupListsUploadHelper?: LookupListsUploadHelper) {
         this.baseComponent = baseComponent;
         this.recordNewUploadHelper = recordNewUploadHelper;
         this.recordAddUploadHelper = recordAddUploadHelper;
@@ -43,9 +43,7 @@ export class UploadHelper {
         this.baseComponent.projectId = projectId;
         this.baseComponent.reSubscribeToNotifications();
         this.baseComponent.executeOnFinish = () => {
-            timer(200).subscribe(() => {
-                this.router.navigate(['projects', this.baseComponent.projectId, 'settings'])
-            });
+            this.baseComponent.navigateToSettings();
         }
         return this.getFileNameBasedOnType(uploadFileType, this.baseComponent.file?.name, knowledgeBaseId);
     }

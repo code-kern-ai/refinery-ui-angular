@@ -3,7 +3,7 @@
         closeAfterClick:false,
         emitObject: this, emitFunction: submitUpload,
         disabled:uploadModals.uploadFile.doingSomething || !file
-    }">
+    }" (optionClicked)="optionClicked($event)">
     <h1 class="flex flex-grow justify-center text-lg text-gray-900 font-bold">{{title}}</h1>
     <div class="text-sm text-gray-500 mb-4 text-center">
         {{subTitle}}

@@ -54,11 +54,11 @@ export class UploadComponent implements OnInit {
   submitted: boolean = false;
 
   constructor(private projectApolloService: ProjectApolloService, private router: Router, private s3Service: S3Service) {
-    this.recordNewUploadHelper = new RecordNewUploadHelper(this.projectApolloService, this.router, this);
-    this.recordAddUploadHelper = new RecordAddUploadHelper(this.router, this);
-    this.existingProjectUploadHelper = new ExistingProjectUploadHelper(this.projectApolloService, this.router, this);
-    this.lookupListsUploadHelper = new LookupListsUploadHelper(this.router, this)
-    this.uploadHelper = new UploadHelper(this.router, this, this.recordNewUploadHelper, this.recordAddUploadHelper, this.existingProjectUploadHelper, this.lookupListsUploadHelper);
+    this.recordNewUploadHelper = new RecordNewUploadHelper(this.projectApolloService, this);
+    this.recordAddUploadHelper = new RecordAddUploadHelper(this);
+    this.existingProjectUploadHelper = new ExistingProjectUploadHelper(this.projectApolloService, this);
+    this.lookupListsUploadHelper = new LookupListsUploadHelper(this)
+    this.uploadHelper = new UploadHelper(this, this.recordNewUploadHelper, this.recordAddUploadHelper, this.existingProjectUploadHelper, this.lookupListsUploadHelper);
   }
 
   ngOnInit(): void {
@@ -136,6 +136,7 @@ export class UploadComponent implements OnInit {
     [this.uploadTaskQuery$, this.uploadTask$] = this.projectApolloService.getUploadTaskByTaskId(this.projectId, uploadTaskId);
     const firstReturn = this.uploadTask$.pipe(first());
     this.uploadTask$ = this.uploadTask$.subscribe((task) => {
+      console.log(this.uploadStarted)
       this.uploadTask = task;
       if (task.state == UploadStates.DONE || task.progress == 100) {
         this.clearUploadTask();
@@ -237,6 +238,12 @@ export class UploadComponent implements OnInit {
   checkIfProjectTitleExist() {
     const findProjectName = this.uploadOptions.projectNameList.find(project => project.name === this.recordNewUploadHelper.projectTitle);
     return findProjectName != undefined ? true : false;
+  }
+
+  navigateToSettings() {
+    timer(200).subscribe(() => {
+      this.router.navigate(['projects', this.projectId, 'settings'])
+    });
   }
 
 }

@@ -12,8 +12,8 @@ export class RecordNewUploadHelper {
     selectedTokenizer: string = 'en_core_web_sm';
     uploadHelper: UploadHelper;
 
-    constructor(private projectApolloService: ProjectApolloService, private router: Router, private baseComponent: UploadComponent) {
-        this.uploadHelper = new UploadHelper(router);
+    constructor(private projectApolloService: ProjectApolloService, private baseComponent: UploadComponent) {
+        this.uploadHelper = new UploadHelper();
         this.baseComponent = baseComponent;
     }
 
@@ -32,8 +32,8 @@ export class RecordAddUploadHelper {
     uploadHelper: UploadHelper;
     projectName: string = '';
 
-    constructor(private router: Router, private baseComponent: UploadComponent) {
-        this.uploadHelper = new UploadHelper(router);
+    constructor(private baseComponent: UploadComponent) {
+        this.uploadHelper = new UploadHelper();
         this.baseComponent = baseComponent;
     }
 
@@ -46,8 +46,8 @@ export class RecordAddUploadHelper {
 export class ExistingProjectUploadHelper {
     uploadHelper: UploadHelper;
 
-    constructor(private projectApolloService: ProjectApolloService, private router: Router, private baseComponent: UploadComponent) {
-        this.uploadHelper = new UploadHelper(router);
+    constructor(private projectApolloService: ProjectApolloService, private baseComponent: UploadComponent) {
+        this.uploadHelper = new UploadHelper();
         this.baseComponent = baseComponent;
     }
 
@@ -64,8 +64,8 @@ export class ExistingProjectUploadHelper {
 export class LookupListsUploadHelper {
     uploadHelper: UploadHelper;
 
-    constructor(private router: Router, private baseComponent: UploadComponent) {
-        this.uploadHelper = new UploadHelper(router);
+    constructor(private baseComponent: UploadComponent) {
+        this.uploadHelper = new UploadHelper();
         this.baseComponent = baseComponent;
     }
 

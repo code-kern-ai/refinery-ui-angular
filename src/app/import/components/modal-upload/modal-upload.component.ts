@@ -41,7 +41,7 @@ export class ModalUploadComponent implements OnChanges {
 
   constructor(private projectApolloService: ProjectApolloService, private router: Router, private s3Service: S3Service) {
     this.baseComponent = new UploadComponent(this.projectApolloService, this.router, this.s3Service);
-    this.uploadHelper = new UploadHelper(router, this.baseComponent, this.baseComponent.recordNewUploadHelper, this.baseComponent.recordAddUploadHelper, this.baseComponent.existingProjectUploadHelper, this.baseComponent.lookupListsUploadHelper);
+    this.uploadHelper = new UploadHelper(this.baseComponent, this.baseComponent.recordNewUploadHelper, this.baseComponent.recordAddUploadHelper, this.baseComponent.existingProjectUploadHelper, this.baseComponent.lookupListsUploadHelper);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -67,6 +67,10 @@ export class ModalUploadComponent implements OnChanges {
 
   setFile(file: File): void {
     this.file = file;
+  }
+
+  optionClicked(button: string) {
+    if (button == 'CLOSE') this.closeModal();
   }
 
 }
