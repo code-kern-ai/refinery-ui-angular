@@ -1,17 +1,12 @@
 import { AfterViewChecked, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { first } from 'rxjs/operators';
-import { AuthApiService } from 'src/app/base/services/auth-api.service';
-import { NotificationService } from 'src/app/base/services/notification.service';
 import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
-import { ProjectStatus } from '../../enums/project-status.enum';
 import { Project } from 'src/app/base/entities/project';
 import { RouteService } from 'src/app/base/services/route.service';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription, timer } from 'rxjs';
-import { UploadRecordsComponent } from 'src/app/import/components/upload-records/upload-records.component';
-import { UploadFileType, UploadType } from 'src/app/import/components/helpers/upload-types';
+import { ActivatedRoute } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { UploadFileType } from 'src/app/import/components/helpers/upload-types';
 
 @Component({
   selector: 'kern-project-add',

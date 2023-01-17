@@ -1,5 +1,4 @@
 import { AfterViewChecked, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { first } from 'rxjs/operators';
 import { NotificationService } from 'src/app/base/services/notification.service';
 import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
@@ -8,11 +7,8 @@ import { Project } from 'src/app/base/entities/project';
 import { RouteService } from 'src/app/base/services/route.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription, timer } from 'rxjs';
-import { UploadRecordsComponent } from 'src/app/import/components/upload-records/upload-records.component';
 import { ConfigManager } from 'src/app/base/services/config-service';
 import { getUserAvatarUri } from 'src/app/util/helper-functions';
-import { LabelStudioAssistantComponent } from 'src/app/base/components/upload-assistant/label-studio/label-studio-assistant.component';
-import { PreparationStep } from 'src/app/base/components/upload-assistant/label-studio/label-studio-assistant-helper';
 import { UploadFileType, UploadType } from 'src/app/import/components/helpers/upload-types';
 
 @Component({
