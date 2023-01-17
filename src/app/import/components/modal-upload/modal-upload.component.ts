@@ -36,6 +36,8 @@ export class ModalUploadComponent implements OnChanges {
   file: File | null = null;
   uploadHelper: UploadHelper;
   baseComponent: UploadComponent;
+  title: string;
+  subTitle: string;
 
   constructor(private projectApolloService: ProjectApolloService, private router: Router, private s3Service: S3Service) {
     this.baseComponent = new UploadComponent(this.projectApolloService, this.router, this.s3Service);
@@ -44,18 +46,14 @@ export class ModalUploadComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.isModalOpen) {
-      this.uploadModals.uploadProject.open = changes.isModalOpen.currentValue;
-      this.uploadModals.uploadLookupLists.open = changes.isModalOpen.currentValue;
+      this.uploadModals.uploadFile.open = changes.isModalOpen.currentValue;
+      this.title = this.getTitle();
+      this.subTitle = this.getSubtitle();
     }
   }
 
   closeModal(): void {
-    this.uploadModals.uploadProject.open = false;
-    this.closeModalEvent.emit();
-  }
-
-  closeModalLookupLists(): void {
-    this.uploadModals.uploadLookupLists.open = false;
+    this.uploadModals.uploadFile.open = false;
     this.closeModalEvent.emit();
   }
 
@@ -63,10 +61,33 @@ export class ModalUploadComponent implements OnChanges {
     this.baseComponent.uploadFileType = this.uploadFileType;
     this.baseComponent.uploadOptions = this.uploadOptions;
     if (this.projectId) this.baseComponent.projectId = this.projectId;
+    this.uploadModals.uploadFile.doingSomething = true;
     this.uploadHelper.upload(this.file);
   }
 
   setFile(file: File): void {
     this.file = file;
+  }
+
+  getTitle(): string {
+    switch (this.uploadFileType) {
+      case UploadFileType.PROJECT:
+        return 'Upload Project Data';
+      case UploadFileType.KNOWLEDGE_BASE:
+        return 'Upload List Data';
+      default:
+        return 'Upload File';
+    }
+  }
+
+  getSubtitle(): string {
+    switch (this.uploadFileType) {
+      case UploadFileType.PROJECT:
+        return 'Upload data from an existing project';
+      case UploadFileType.KNOWLEDGE_BASE:
+        return 'Upload data to your lookup list';
+      default:
+        return 'Upload a file';
+    }
   }
 }

@@ -50,6 +50,9 @@ export class UploadComponent implements OnInit {
   uploadType: UploadType = UploadType.DEFAULT;
   uploadTask$;
   progressState: UploadState;
+  isProjectTitleEmpty: boolean = false;
+  isProjectTitleDuplicate: boolean = false;
+  submitted: boolean = false;
 
   constructor(private projectApolloService: ProjectApolloService, private router: Router, private s3Service: S3Service) {
     this.recordNewUploadHelper = new RecordNewUploadHelper(this.projectApolloService, this.router, this);
@@ -191,6 +194,20 @@ export class UploadComponent implements OnInit {
   }
 
   submitUploadFile() {
+    this.submitted = true;
+    if (this.file == null) return;
+
+    if (this.uploadFileType == UploadFileType.RECORDS_NEW) {
+      if (this.recordNewUploadHelper.projectTitle == '') {
+        this.isProjectTitleEmpty = true;
+        return;
+      }
+
+      if (this.checkIfProjectTitleExist()) {
+        this.isProjectTitleDuplicate = true;
+        return;
+      }
+    }
     this.uploadHelper.upload();
   }
 
@@ -204,6 +221,16 @@ export class UploadComponent implements OnInit {
 
   toggleTab(tabNum: number) {
     this.openTab = tabNum;
+  }
+
+  initProjectEvent(event: Event) {
+    event.preventDefault();
+    this.submitUploadFile();
+  }
+
+  checkIfProjectTitleExist() {
+    const findProjectName = this.uploadOptions.projectNameList.find(project => project.name === this.recordNewUploadHelper.projectTitle);
+    return findProjectName != undefined ? true : false;
   }
 
 }

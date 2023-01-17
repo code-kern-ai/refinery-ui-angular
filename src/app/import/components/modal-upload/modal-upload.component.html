@@ -1,8 +1,9 @@
-<ng-template [ngIf]="uploadFileType == UploadFileType.PROJECT">
+<!-- <ng-template [ngIf]="uploadFileType == UploadFileType.PROJECT">
     <kern-modal [isOpen]="uploadModals.uploadProject.open" closeButton="X" [modalBoxStyle]="{'width':'35rem'}"
         [acceptButton]="{
         buttonCaption: 'Upload',
         closeAfterClick:false,
+        disabled:uploadModals.uploadProject.doingSomething || !file,
         emitObject: this, emitFunction: submitUpload
     }" (optionClicked)="closeModal()">
         <h1 class="flex flex-grow justify-center text-lg text-gray-900 font-bold">Upload Project Data
@@ -33,4 +34,22 @@
             knowledgeBaseId:uploadOptions.knowledgeBaseId
         }" (fileAttached)="setFile($event)"></kern-upload>
     </kern-modal>
-</ng-template>
+</ng-template> -->
+
+
+
+<kern-modal [isOpen]="uploadModals.uploadFile.open" closeButton="X" [modalBoxStyle]="{'width':'35rem'}" [acceptButton]="{
+        buttonCaption: 'Upload',
+        closeAfterClick:false,
+        emitObject: this, emitFunction: submitUpload,
+        disabled:uploadModals.uploadFile.doingSomething || !file
+    }" (optionClicked)="closeModal()">
+    <h1 class="flex flex-grow justify-center text-lg text-gray-900 font-bold">{{title}}</h1>
+    <div class="text-sm text-gray-500 mb-4 text-center">
+        {{subTitle}}
+    </div>
+    <kern-upload [uploadFileType]="uploadFileType" [uploadOptions]="{
+            deleteProjectOnFail: uploadFileType == UploadFileType.PROJECT ? true : false,
+            knowledgeBaseId: uploadFileType == UploadFileType.KNOWLEDGE_BASE ? uploadOptions.knowledgeBaseId : null
+        }" (fileAttached)="setFile($event)"></kern-upload>
+</kern-modal>

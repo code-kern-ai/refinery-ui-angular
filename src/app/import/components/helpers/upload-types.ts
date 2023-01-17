@@ -1,3 +1,5 @@
+import { Project } from "src/app/base/entities/project";
+
 export enum UploadType {
     DEFAULT = "DEFAULT",
     LABEL_STUDIO = "LABEL_STUDIO"
@@ -18,11 +20,13 @@ export type UploadOptions = {
  * @reloadOnFinish {boolean, optional} - If true, the page will reload after the upload is finished
  * @tokenizerValues {string[], optional} - If set, the tokenizer dropdown will be shown and the values will be used as options
  * @knowledgeBaseId {string, optional} - Knowledge base id used for the upload terms
+ * @projectNameList {Project[], optional} - List of all projects
  */
     deleteProjectOnFail?: boolean;
     reloadOnFinish?: boolean;
     tokenizerValues?: string[];
     knowledgeBaseId?: string;
+    projectNameList?: Project[]
 };
 
 export type UploadTask = {

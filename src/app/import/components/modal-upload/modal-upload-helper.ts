@@ -1,9 +1,8 @@
 export type UploadModals = {
-    uploadProject: UploadProjectModal;
-    uploadLookupLists: UploadLookupListsModal;
+    uploadFile: UploadFileModal;
 };
 
-export type UploadProjectModal = {
+export type UploadFileModal = {
     open: boolean;
     doingSomething: boolean;
 };
@@ -14,12 +13,9 @@ export type UploadLookupListsModal = {
 
 export function createDefaultModalUploadModal(): UploadModals {
     return {
-        uploadProject: {
+        uploadFile: {
             open: false,
-            doingSomething: false,
-        },
-        uploadLookupLists: {
-            open: false,
-        },
+            doingSomething: false
+        }
     };
 }
