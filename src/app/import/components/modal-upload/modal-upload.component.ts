@@ -1,5 +1,5 @@
 import { Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
-import { createDefaultModalUploadModal, UploadModals } from './modal-upload-helper';
+import { createDefaultModalUploadModal, getSubtitle, getTitle, UploadModals } from './modal-upload-helper';
 import { UploadFileType, UploadOptions } from '../helpers/upload-types';
 import { UploadComponent } from '../upload/upload.component';
 import { UploadHelper } from '../helpers/upload-helper';
@@ -47,8 +47,8 @@ export class ModalUploadComponent implements OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.isModalOpen) {
       this.uploadModals.uploadFile.open = changes.isModalOpen.currentValue;
-      this.title = this.getTitle();
-      this.subTitle = this.getSubtitle();
+      this.title = getTitle(this.uploadFileType);
+      this.subTitle = getSubtitle(this.uploadFileType);
     }
   }
 
@@ -69,25 +69,4 @@ export class ModalUploadComponent implements OnChanges {
     this.file = file;
   }
 
-  getTitle(): string {
-    switch (this.uploadFileType) {
-      case UploadFileType.PROJECT:
-        return 'Upload Project Data';
-      case UploadFileType.KNOWLEDGE_BASE:
-        return 'Upload List Data';
-      default:
-        return 'Upload File';
-    }
-  }
-
-  getSubtitle(): string {
-    switch (this.uploadFileType) {
-      case UploadFileType.PROJECT:
-        return 'Upload data from an existing project';
-      case UploadFileType.KNOWLEDGE_BASE:
-        return 'Upload data to your lookup list';
-      default:
-        return 'Upload a file';
-    }
-  }
 }

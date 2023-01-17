@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { forkJoin, Observable, timer } from 'rxjs';
 import { first, tap } from 'rxjs/operators';
@@ -45,7 +45,6 @@ export class UploadComponent implements OnInit {
   uploadStarted: boolean = false;
   uploadTask: UploadTask;
   uploadTaskQuery$: any;
-  selectedTokenizer: string = "en_core_web_sm";
   executeOnFinish: () => void;
   uploadType: UploadType = UploadType.DEFAULT;
   uploadTask$;
@@ -98,7 +97,7 @@ export class UploadComponent implements OnInit {
   }
 
   updateTokenizerAndProjectStatus(projectId: string) {
-    this.projectApolloService.changeProjectTokenizer(projectId, this.selectedTokenizer).pipe(first()).subscribe();
+    this.projectApolloService.changeProjectTokenizer(projectId, this.recordNewUploadHelper.selectedTokenizer).pipe(first()).subscribe();
     this.projectApolloService.updateProjectStatus(projectId, ProjectStatus.INIT_COMPLETE).pipe(first()).subscribe();
   }
 
