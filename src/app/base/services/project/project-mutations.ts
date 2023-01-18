@@ -77,6 +77,14 @@ export const mutations = {
     }
   }
   `,
+  CREATE_TASK_AND_LABELS: gql`
+  mutation ($projectId: ID!, $labelingTaskName: String!,$labelingTaskType:String!, $labelingTaskTargetId: ID,$labels:[String]) {
+    createTaskAndLabels(projectId: $projectId, labelingTaskName: $labelingTaskName,labelingTaskType:$labelingTaskType, labelingTaskTargetId: $labelingTaskTargetId,labels:$labels) {
+      ok
+      taskId
+    }
+  }
+  `,
 
   CREATE_LABEL: gql`
   mutation ($projectId: ID!, $labelingTaskId: ID!, $labelName: String!, $labelColor: String!) {
@@ -85,6 +93,13 @@ export const mutations = {
         id
         name
       }
+    }
+  }
+  `,
+  CREATE_LABELS: gql`
+  mutation ($projectId: ID!, $labelingTaskId: ID!, $labels: [String]!) {
+    createLabels(projectId: $projectId, labelingTaskId: $labelingTaskId, labels: $labels) {
+      ok
     }
   }
   `,

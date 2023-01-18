@@ -76,6 +76,7 @@ export class RouteManager {
     }
 
     private static checkRouteHighlight(url: string) {
+        url = url.split('?')[0];
         for (const key in this.routeColor) {
             this.routeColor[key].active = this.routeColor[key].checkFor.some(s => url.includes(s));
         }

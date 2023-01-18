@@ -409,6 +409,32 @@ export class ProjectApolloService {
       ],
     });
   }
+  addLabelingTaskAndLabels(
+    projectId: string,
+    labelingTaskName: string,
+    labelingTaskType: string,
+    labelingTaskTargetId: string,
+    labels: string[],
+  ) {
+    return this.apollo.mutate({
+      mutation: mutations.CREATE_TASK_AND_LABELS,
+      variables: {
+        projectId: projectId,
+        labelingTaskName: labelingTaskName,
+        labelingTaskType: labelingTaskType,
+        labelingTaskTargetId: labelingTaskTargetId,
+        labels: labels
+      },
+      refetchQueries: [
+        {
+          query: queries.GET_LABELING_TASKS_BY_PROJECT_ID,
+          variables: {
+            projectId: projectId,
+          },
+        },
+      ],
+    });
+  }
 
   updateLabelingTask(
     projectId: string,
@@ -508,6 +534,24 @@ export class ProjectApolloService {
         labelName: labelName,
         labelingTaskId: labelingTaskId,
         labelColor: labelColor
+      },
+      refetchQueries: [
+        {
+          query: queries.GET_LABELING_TASKS_BY_PROJECT_ID,
+          variables: {
+            projectId: projectId,
+          },
+        },
+      ],
+    });
+  }
+  createLabels(projectId: string, labelingTaskId: string, labels: string[]) {
+    return this.apollo.mutate({
+      mutation: mutations.CREATE_LABELS,
+      variables: {
+        projectId: projectId,
+        labelingTaskId: labelingTaskId,
+        labels: labels
       },
       refetchQueries: [
         {
