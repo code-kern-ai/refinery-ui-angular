@@ -1,31 +1,19 @@
-import { FormArray, FormBuilder, FormGroup } from "@angular/forms";
-import { interval, Subscription, timer } from "rxjs";
+import { FormBuilder } from "@angular/forms";
+import { interval, timer } from "rxjs";
 import { debounceTime, first } from "rxjs/operators";
 import { ProjectApolloService } from "src/app/base/services/project/project-apollo.service";
-import { attributeVisibilityStates } from "../../create-new-attribute/attributes-visibility-helper";
 import { Attribute } from "../entities/attribute.type";
 import { Embedding } from "../entities/embedding.type";
 import { SettingModals } from "./modal-helper";
+import { granularityTypesArray } from "./project-settings-helper";
 
 export class DataHandlerHelper {
 
-    attributesSchema: FormGroup;
-    get attributesArray() {
-        return this.attributesSchema.get('attributes') as FormArray;
-    }
-    subscriptions$: Subscription[] = [];
-    attributeVisibilityStates = attributeVisibilityStates;
-    attributes: any[] = [];
+    granularityTypesArray = granularityTypesArray;
+    pKeyValid: boolean = null;
     pKeyCheckTimer: any;
-    granularityTypesArray = [
-        { name: 'Attribute', value: 'ON_ATTRIBUTE' },
-        { name: 'Token', value: 'ON_TOKEN' }
-    ];
 
     constructor(private formBuilder: FormBuilder, private projectApolloService: ProjectApolloService) {
-        this.attributesSchema = this.formBuilder.group({
-            attributes: this.formBuilder.array([]),
-        });
     }
 
     focusModalInputBox(inputBoxName: string) {
@@ -38,9 +26,10 @@ export class DataHandlerHelper {
         }
     }
 
-    getAttributeArrayAttribute(attributeId: string, valueID: string) {
-        for (let att of this.attributesArray.controls) {
-            if (attributeId == att.get('id').value) return att.get(valueID).value;
+    getAttributeArrayAttribute(attributeId: string, valueID: string, attributes: Attribute[]) {
+        for (let i = 0; i < attributes.length; i++) {
+            const att = attributes[i];
+            if (attributeId == att.id) return att[valueID];
         }
         return 'UNKNOWN';
     }
@@ -49,38 +38,44 @@ export class DataHandlerHelper {
         return this.projectApolloService.getAttributesByProjectId(projectId, ['ALL']);
     }
 
-    attributeChangedToText(): boolean {
-        for (let i = 0; i < this.attributes.length; i++) {
-            const att = this.attributes[i]
-            const wantedDataType = this.getAttributeArrayAttribute(att.id, 'dataType');
+    attributeChangedToText(attributes: Attribute[]): boolean {
+        for (let i = 0; i < attributes.length; i++) {
+            const att = attributes[i]
+            const wantedDataType = this.getAttributeArrayAttribute(att.id, 'dataType', attributes);
             if (att.dataType != wantedDataType && wantedDataType == "TEXT") return true;
         }
         return false;
-    }
-
-    requestPKeyCheck(attributes: Attribute[], primaryKey: boolean): any {
-        let pKeyValid: boolean = primaryKey;
-        if (this.pKeyCheckTimer) this.pKeyCheckTimer.unsubscribe();
-        this.pKeyCheckTimer = timer(500).subscribe(() => {
-            this.pKeyCheckTimer = null;
-            if (this.anyPKey(attributes)) {
-                pKeyValid = primaryKey;
-            }
-            else pKeyValid = null;
-            return pKeyValid;
-        });
-        return pKeyValid;
     }
 
     createAttributeTokenStatistics(projectId: string, attributeId: string) {
         this.projectApolloService.createAttributeTokenStatistics(projectId, attributeId).pipe(first()).subscribe();
     }
 
+    requestPKeyCheck(projectId: string, attributes: Attribute[]) {
+        this.pKeyValid = null;
+        if (this.pKeyCheckTimer) this.pKeyCheckTimer.unsubscribe();
+        this.pKeyCheckTimer = timer(500).subscribe(() => {
+            this.projectApolloService.getCompositeKeyIsValid(projectId).pipe(first()).subscribe((r) => {
+                this.pKeyCheckTimer = null;
+                if (this.anyPKey(attributes)) this.pKeyValid = r;
+                else this.pKeyValid = null;
+            })
+        });
+    }
+
     anyPKey(attributes: Attribute[]): boolean {
         if (!attributes) return false;
         for (let i = 0; i < attributes.length; i++) {
-            const att = attributes[i];
+            const att = attributes[i]
             if (att.isPrimaryKey) return true;
+        }
+        return false;
+    }
+
+    pKeyChanged(attributes: Attribute[]): boolean {
+        for (let i = 0; i < attributes.length; i++) {
+            const att = attributes[i]
+            if (att.isPrimaryKey != this.getAttributeArrayAttribute(att.id, 'isPrimaryKey', attributes)) return true;
         }
         return false;
     }
@@ -93,22 +88,22 @@ export class DataHandlerHelper {
                 granularity: this.granularityTypesArray[0].value
             });
             settingModals.embedding.create.embeddingCreationFormGroup.valueChanges.pipe(debounceTime(200)).subscribe(() =>
-                settingModals.embedding.create.blocked = !this.canCreateEmbedding(settingModals, embeddings)
+                settingModals.embedding.create.blocked = !this.canCreateEmbedding(settingModals, embeddings, attributes)
             )
         }
     }
 
-    buildExpectedEmbeddingName(settingModals: SettingModals): string {
+    buildExpectedEmbeddingName(settingModals: SettingModals, attributes: Attribute[]): string {
         const values = settingModals.embedding.create.embeddingCreationFormGroup.getRawValue();
-        let toReturn = this.getAttributeArrayAttribute(values.targetAttribute, 'name');
+        let toReturn = this.getAttributeArrayAttribute(values.targetAttribute, 'name', attributes);
         toReturn += "-" + (values.granularity == 'ON_ATTRIBUTE' ? 'classification' : 'extraction');
         toReturn += "-" + values.embeddingHandle;
 
         return toReturn;
     }
 
-    canCreateEmbedding(settingModals: SettingModals, embeddings: any): boolean {
-        const currentName = this.buildExpectedEmbeddingName(settingModals);
+    canCreateEmbedding(settingModals: SettingModals, embeddings: any, attributes: Attribute[]): boolean {
+        const currentName = this.buildExpectedEmbeddingName(settingModals, attributes);
         if (currentName.slice(-1) == "-") return false;
         else {
             settingModals.embedding.create.blocked = true;

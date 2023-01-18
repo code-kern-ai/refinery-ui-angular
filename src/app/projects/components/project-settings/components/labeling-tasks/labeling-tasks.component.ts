@@ -6,6 +6,7 @@ import { Project } from 'src/app/base/entities/project';
 import { LabelingTask, LabelingTaskTarget, labelingTaskToString } from 'src/app/base/enum/graphql-enums';
 import { NotificationService } from 'src/app/base/services/notification.service';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
+import { Attribute } from '../../entities/attribute.type';
 import { DataHandlerHelper } from '../../helper/data-handler-helper';
 import { LabelHelper } from '../../helper/label-helper';
 import { SettingModals } from '../../helper/modal-helper';
@@ -21,6 +22,7 @@ export class LabelingTasksComponent implements OnInit {
   @Input() settingModals: SettingModals;
   @Input() dataHandlerHelper: DataHandlerHelper;
   @Input() attributesArrayUsableUploaded: { id: string, name: string }[];
+  @Input() attributes: Attribute[];
 
   @ViewChildren('inputTaskName') inputTaskName: QueryList<ElementRef>;
   labelingTasksQuery$: any;
@@ -168,7 +170,7 @@ export class LabelingTasksComponent implements OnInit {
       dropdownValue == LabelingTask.INFORMATION_EXTRACTION
     ) {
       if (this.attributeAlreadyHasInformationExtraction(targetID)) return true;
-      else if (this.dataHandlerHelper.getAttributeArrayAttribute(targetID, 'dataType') != 'TEXT')
+      else if (this.dataHandlerHelper.getAttributeArrayAttribute(targetID, 'dataType', this.attributes) != 'TEXT')
         return true;
     } else if (
       targetID == '' &&
@@ -256,7 +258,7 @@ export class LabelingTasksComponent implements OnInit {
     let labelingTaskType = LabelingTask.MULTICLASS_CLASSIFICATION;
     if (
       labelingTask.taskId &&
-      this.dataHandlerHelper.getAttributeArrayAttribute(labelingTask.taskId, 'dataType') == 'TEXT'
+      this.dataHandlerHelper.getAttributeArrayAttribute(labelingTask.taskId, 'dataType', this.attributes) == 'TEXT'
     )
       labelingTaskType = LabelingTask.NOT_SET;
 

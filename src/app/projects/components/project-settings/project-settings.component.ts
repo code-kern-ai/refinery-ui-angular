@@ -42,7 +42,6 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
   tokenizationProgress: Number;
   downloadMessage: DownloadState = DownloadState.NONE;
   embeddingHandlesMap: { [key: string]: any } = {};
-  pKeyValid: boolean = null;
   isManaged: boolean = true;
   attributeVisibilityStates = attributeVisibilityStates;
   settingModals: SettingModals = createDefaultSettingModals();
@@ -73,8 +72,15 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     UserManager.checkUserAndRedirect(this);
     this.routeService.updateActivatedRoute(this.activatedRoute);
-
     const projectId = this.activatedRoute.parent.snapshot.paramMap.get('projectId');
+    NotificationService.subscribeToNotification(this, {
+      projectId: projectId,
+      whitelist: ['tokenization', 'embedding', 'embedding_deleted', 'label_created', 'label_deleted', 'attributes_updated', 'labeling_task_deleted', 'labeling_task_updated', 'labeling_task_created', 'project_update', 'project_export', 'calculate_attribute'],
+      func: this.handleWebsocketNotification
+    });
+    this.setUpCommentRequests(projectId);
+    this.checkProjectTokenization(projectId);
+
     [this.projectQuery$, this.project$] = this.projectApolloService.getProjectByIdQuery(projectId);
     this.subscriptions$.push(this.project$.subscribe((project) => {
       this.project = project;
@@ -96,7 +102,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
           attribute.dataTypeName = this.dataTypesArray.find((type) => type.value === attribute?.dataType).name;
           attribute.visibilityIndex = this.attributeVisibilityStates.findIndex((type) => type.value === attribute?.visibility);
         });
-        this.pKeyValid = this.dataHandlerHelper.requestPKeyCheck(this.attributes, res[3]);
+        this.dataHandlerHelper.requestPKeyCheck(projectId, this.attributes);
 
         // prepare embeddings
         this.embeddings = res[1];
@@ -110,14 +116,6 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
       })
     }));
 
-    NotificationService.subscribeToNotification(this, {
-      projectId: projectId,
-      whitelist: ['tokenization', 'embedding', 'embedding_deleted', 'label_created', 'label_deleted', 'attributes_updated', 'labeling_task_deleted', 'labeling_task_updated', 'labeling_task_created', 'project_update', 'project_export', 'calculate_attribute'],
-      func: this.handleWebsocketNotification
-    });
-    this.setUpCommentRequests(projectId);
-    this.checkProjectTokenization(projectId);
-
     const openModal = JSON.parse(localStorage.getItem("openModal"));
     if (openModal) {
       const subscription = interval(250).subscribe(() => {
@@ -130,7 +128,6 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
       })
     }
     this.checkIfManagedVersion();
-    this.initForms();
   }
 
   private setUpCommentRequests(projectId: string) {
@@ -142,22 +139,12 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
     CommentDataManager.registerCommentRequests(this, requests);
   }
 
-  private initForms() {
-    this.settingModals.projectExport.projectExportSchema = this.formBuilder.group({
-      attributes: this.formBuilder.array([]),
-    });
-  }
-
   checkIfManagedVersion() {
     if (!ConfigManager.isInit()) {
       timer(250).subscribe(() => this.checkIfManagedVersion());
       return;
     }
     this.isManaged = ConfigManager.getIsManaged();
-  }
-
-  getAttributes() {
-    return this.dataHandlerHelper.attributesArray.controls.values();
   }
 
   checkProjectTokenization(projectId: string) {
@@ -390,9 +377,10 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
   updateDataType(dataType: string) {
     this.settingModals.attribute.type = dataType;
   }
+
   changeAttributeName(event: any) {
     this.settingModals.attribute.name = toPythonFunctionName(event.target.value);
-    const findDuplicate = this.dataHandlerHelper.attributesArray.getRawValue().find(att => att.name == event.target.value);
+    const findDuplicate = this.attributes.find(att => att.name == event.target.value);
     this.settingModals.attribute.duplicateNameExists = findDuplicate != undefined ? true : false;
   }
 

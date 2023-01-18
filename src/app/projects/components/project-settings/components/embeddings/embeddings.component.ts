@@ -23,6 +23,7 @@ export class EmbeddingsComponent implements OnInit {
   @Input() embeddings: Embedding[];
   @Input() embeddingHandlesMap: { [key: string]: any };
   @Input() dataHandlerHelper: DataHandlerHelper;
+  @Input() attributes: Attribute[];
 
   downloadedModels: DownloadedModel[];
   subscriptions$: Subscription[] = [];
@@ -76,12 +77,12 @@ export class EmbeddingsComponent implements OnInit {
       .deleteEmbedding(this.project.id, embeddingId).pipe(first())
       .subscribe(() => {
         this.embeddings = this.embeddings.filter(e => e.id != embeddingId);
-        this.settingModals.embedding.create.blocked = !this.dataHandlerHelper.canCreateEmbedding(this.settingModals, this.embeddings);
+        this.settingModals.embedding.create.blocked = !this.dataHandlerHelper.canCreateEmbedding(this.settingModals, this.embeddings, this.attributes);
       });
   }
 
   addEmbedding() {
-    if (!this.dataHandlerHelper.canCreateEmbedding(this.settingModals, this.embeddings)) return;
+    if (!this.dataHandlerHelper.canCreateEmbedding(this.settingModals, this.embeddings, this.attributes)) return;
     const embeddingForm = this.settingModals.embedding.create.embeddingCreationFormGroup;
     const embeddingHandle = embeddingForm.get("embeddingHandle").value;
     const attributeId = embeddingForm.get("targetAttribute").value;
