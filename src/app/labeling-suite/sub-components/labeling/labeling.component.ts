@@ -9,7 +9,7 @@ import { GOLD_STAR_USER_ID } from '../../helper/manager/user';
 import { LabelingSuiteComponent } from '../../main-component/labeling-suite.component';
 import { getDefaultLabelingVars, LabelingVars, FULL_RECORD_ID } from './helper';
 
-const SWIM_LANE_SIZE_PX = 10;
+const SWIM_LANE_SIZE_PX = 12;
 @Component({
   selector: 'kern-labeling-suite-labeling',
   templateUrl: './labeling.component.html',
@@ -180,7 +180,6 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
 
   private tasksChanged() {
     if (!this.lsm.taskManager.labelingTasks) return;
-    console.log("tasks changed - labeling", this.lsm.taskManager.labelingTasks)
     this.rebuildLabelLookup();
     this.rebuildTaskLookup();
     this.rebuildHotkeyLookup();
@@ -271,8 +270,6 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
       }
     }
 
-    // this.rebuildLabelButtonAmount();
-    console.log("rebuild lVars", this.lVars);
     if (this.activeTasks) {
       const activeTaskIds = this.activeTasks.map(x => x.task.id);
       for (const key in this.lVars.taskLookup) {
@@ -349,7 +346,6 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
       if (!this.rlaDataToDisplay[rla.taskId]) this.rlaDataToDisplay[rla.taskId] = [];
       this.rlaDataToDisplay[rla.taskId].push(rla);
     }
-    console.log("filterRlaDataForCurrent", this.fullRlaData, this.rlaDataToDisplay)
     this.prepareRlaTokenLookup();
   }
 
@@ -497,7 +493,6 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
   }
 
   private addLabelToSelection(attributeId: string, labelingTaskId: string, labelId: string) {
-    console.log("addLabelToSelection", attributeId, labelingTaskId, labelId)
     const selectionData = this.collectSelectionData(attributeId);
     if (!selectionData) return;
 
@@ -518,6 +513,7 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
         }
       }
     }
+    if (endIdx == -1) endIdx = this.tokenLookup[attributeId].token.length - 1;
     const tokenData = this.getTokenData(attributeId);
     if (!tokenData) return null;
     const value = tokenData.raw.substring(
@@ -538,11 +534,6 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
     if (existingLabels.length == 1) return;
     this.lsm.recordManager.addClassificationLabelToRecord(labelingTaskId, labelId);
 
-
-
-    // if (this.autoNextRecord) {
-    //   this.nextRecord();
-    // }
     this.activeTasks = null;
   }
 
@@ -634,9 +625,6 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
         }
       }
     }
-
-
-    console.log("token lookup", this.tokenLookup, orderLookup)
 
   }
 

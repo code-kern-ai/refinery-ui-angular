@@ -198,7 +198,6 @@ export class LabelingSuiteTaskHeaderComponent implements OnInit, OnChanges, OnDe
   private settingsChanged() {
     if (JSON.stringify(this.settings) == JSON.stringify(this.htmlSettings)) return;
     this.htmlSettings = jsonCopy(this.settings);
-    console.log("settings changed", this.htmlSettings);
   }
 
   //mouse

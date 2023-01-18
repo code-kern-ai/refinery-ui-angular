@@ -34,6 +34,7 @@ export class LabelingSuiteRecordManager implements DoBeforeDestroy {
         record: null as Subscription,
         token: null as Subscription,
         rla: null as Subscription,
+        combineLatest: null as Subscription,
         rlaQuery: null as any,
     };
 
@@ -53,6 +54,10 @@ export class LabelingSuiteRecordManager implements DoBeforeDestroy {
     }
 
     doBeforeDestroy(): void {
+        for (const key in this.recordRequests) {
+            if (key == 'rlaQuery') continue;
+            if (this.recordRequests[key]) this.recordRequests[key].unsubscribe();
+        }
         NotificationService.unsubscribeFromNotification(this, this.projectId);
     }
 
@@ -99,11 +104,12 @@ export class LabelingSuiteRecordManager implements DoBeforeDestroy {
 
         //   this.labelingTasksQuery$.refetch();
         //call parallel so time isn't lost for each request
+        if (this.recordRequests.combineLatest) this.recordRequests.combineLatest.unsubscribe();
         let collectionTasks = [];
         collectionTasks.push(this.prepareTokenizedRecord(recordId));
         collectionTasks.push(this.prepareRecordRequest(recordId));
         collectionTasks.push(this.prepareRlaRequest(recordId));
-        combineLatest(collectionTasks).subscribe((results: any[]) => this.finishUpRecordData(results));
+        this.recordRequests.combineLatest = combineLatest(collectionTasks).subscribe((results: any[]) => this.finishUpRecordData(results));
         // combineLatest(this.prepareTokenizedRecord(recordId),this.prepareTokenizedRecord(recordId),this.prepareTokenizedRecord(recordId)).subscribe();
 
     }
@@ -122,8 +128,7 @@ export class LabelingSuiteRecordManager implements DoBeforeDestroy {
             return;
         }
         this.rlaPreparator.setRlas(rlas, this.recordData.token.attributes);
-        // rlas = jsonCopy(rlas);
-        // this.recordData.rlas = this.finalizeRlas(rlas,this.recordData.token.attributes);
+        this.baseManager.userManager.prepareUserIcons(rlas);
         this.baseManager.runUpdateListeners(UpdateType.RECORD);
     }
 
@@ -133,12 +138,6 @@ export class LabelingSuiteRecordManager implements DoBeforeDestroy {
         const firstPipe = this.recordApolloService.getTokenizedRecord(recordId).pipe(first());
         this.recordRequests.token = firstPipe.subscribe((r) => {
             if (!r) return;
-            //   this.addTokenDataToTask(r);
-            //   this.prepareInformationExtractionDisplay();
-            //   if (fullRefresh) {
-            //     this.userTaskGold.clear();
-            //     this.prepareFullRecord();
-            //   }
             this.recordRequests.token = null;
         });
         return firstPipe;
@@ -149,16 +148,10 @@ export class LabelingSuiteRecordManager implements DoBeforeDestroy {
         const firstPipe = this.recordApolloService.getRecordByRecordId(this.projectId, recordId).pipe(first());
         this.recordRequests.record = firstPipe.subscribe((recordData) => {
             if (!recordData) {
-                // this.huddleData.recordIds[this.huddleData.linkData.requestedPos - 1] = "deleted"
-                // this.jumpToPosition(this.project.id, this.huddleData.linkData.requestedPos);
                 this.recordData.deleted = true;
                 console.log("no record data found (collect record data)")
                 return;
             }
-
-            //   this.recordData = recordData;
-            //   this.prepareFullRecord();
-            //   this.prepareInformationExtractionDisplay();
             this.recordRequests.record = null;
         });
         return firstPipe;
@@ -170,16 +163,8 @@ export class LabelingSuiteRecordManager implements DoBeforeDestroy {
         [this.recordRequests.rlaQuery, observable] = this.recordApolloService.getRecordLabelAssociations(this.projectId, recordId);
         this.recordRequests.rla = observable
             .subscribe((recordLabelAssociations) => {
-
                 if (this.ignoreRlas(recordLabelAssociations)) return;
-
-                // const rlaData = this.prepareRLADataForRole(recordLabelAssociations);
-                // this.extendRecordLabelAssociations(rlaData);
-                // this.parseRlaToGroups(rlaData)
-                // this.prepareFullRecord();
-                // this.prepareInformationExtractionDisplay();
                 this.baseManager.somethingLoading = false;
-
             });
         return observable;
     }

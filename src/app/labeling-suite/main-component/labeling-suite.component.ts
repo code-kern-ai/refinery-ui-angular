@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   CommentDataManager,
@@ -102,7 +102,19 @@ export class LabelingSuiteComponent implements OnInit, OnDestroy {
     throw new Error("Method not implemented.");
 
   }
+  @HostListener('document:keyup', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) {
+    if (event.getModifierState('Control')) return;
 
+    if ('123456789'.includes(event.key)) {
+      const selectedPos = Number(event.key) - 1;
+      console.log(selectedPos);
+      // if (selectedPos < this.userIcons.length) {
+      //   this.showUserData(this.userIcons[selectedPos].id);
+      // }
+    }
+
+  }
 
 
 }

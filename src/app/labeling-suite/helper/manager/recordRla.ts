@@ -11,7 +11,6 @@ export class LabelingSuiteRlaManager {
     public setRlas(rlas: any, tokenAttribute: any) {
         if (rlas) this.rlas = this.finalizeRlas(jsonCopy(rlas), tokenAttribute);
         else this.rlas = null;
-        console.log("rlas after set", this.rlas)
     }
 
     public rlasLoaded(): boolean {

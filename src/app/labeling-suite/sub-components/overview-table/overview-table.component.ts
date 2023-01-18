@@ -47,6 +47,7 @@ export class LabelingSuiteOverviewTableComponent implements OnInit, OnDestroy, O
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.lsm) {
       this.lsm.registerUpdateListenerAndDo(UpdateType.RECORD, this, () => this.prepareDataForTableDisplay());
+      this.lsm.registerUpdateListenerAndDo(UpdateType.DISPLAY_USER, this, () => this.settingsChanged());
       this.lsm.settingManager.registerSettingListener(ComponentType.OVERVIEW_TABLE, this, () => this.settingsChanged());
       this.lsm.settingManager.registerSettingListener(ComponentType.TASK_HEADER, this, () => this.settings.includeLabelDisplaySettings ? this.rebuildDataForDisplay() : null);
     }
@@ -55,6 +56,7 @@ export class LabelingSuiteOverviewTableComponent implements OnInit, OnDestroy, O
   ngOnDestroy() {
     if (this.lsm) {
       this.lsm.unregisterUpdateListener(UpdateType.RECORD, this);
+      this.lsm.unregisterUpdateListener(UpdateType.DISPLAY_USER, this);
       this.lsm.settingManager.unregisterSettingListener(ComponentType.OVERVIEW_TABLE, this);
       this.lsm.settingManager.unregisterSettingListener(ComponentType.TASK_HEADER, this);
     }
