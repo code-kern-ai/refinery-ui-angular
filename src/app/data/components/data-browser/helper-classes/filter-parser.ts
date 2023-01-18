@@ -341,7 +341,7 @@ export class DataBrowserFilterParser {
                         TARGET_TABLE: 'RECORD',
                         TARGET_COLUMN: 'DATA',
                         OPERATOR: prepareOperator(searchElement, this.dataBrowser.attributesSortOrder[i].type),
-                        VALUES: prepareFilterElements(searchElement, this.dataBrowser.attributes.get(this.dataBrowser.attributesSortOrder[i].key).name, this.dataBrowser.dataBrowserModals.configuration.separator, this.dataBrowser.attributesSortOrder[i].type),
+                        VALUES: prepareFilterElements(searchElement, this.dataBrowser.attributes[this.dataBrowser.attributesSortOrder[i].key].name, this.dataBrowser.dataBrowserModals.configuration.separator, this.dataBrowser.attributesSortOrder[i].type),
                     });
                 }
             }
