@@ -69,7 +69,7 @@ export class ModalUploadComponent implements OnInit, AfterViewInit, OnChanges {
     }
   }
 
-  submitUpload() {
+  submitUpload(): void {
     this.baseComponent.uploadFileType = this.uploadFileType;
     this.baseComponent.uploadOptions = this.uploadOptions;
     if (this.projectId) this.baseComponent.projectId = this.projectId;
@@ -81,7 +81,7 @@ export class ModalUploadComponent implements OnInit, AfterViewInit, OnChanges {
     this.file = file;
   }
 
-  optionClicked(button: string) {
+  optionClicked(button: string): void {
     if (button == 'CLOSE') this.closeModal();
     if (button == 'ACCEPT') {
       const x = interval(1000).subscribe(() => {
@@ -95,7 +95,7 @@ export class ModalUploadComponent implements OnInit, AfterViewInit, OnChanges {
     }
   }
 
-  handleWebsocketNotification(msgParts: string[]) {
+  handleWebsocketNotification(msgParts: string[]): void {
     if (msgParts[1] === 'file_upload' && msgParts[4] === UploadStates.ERROR) {
       this.baseComponent.deleteExistingProject();
     }

@@ -1,6 +1,6 @@
 import { Component, ElementRef, EventEmitter, Input, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { timer } from 'rxjs';
+import { Observable, timer } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { PreparationStep } from 'src/app/base/components/upload-assistant/label-studio/label-studio-assistant-helper';
 import { LabelStudioAssistantComponent } from 'src/app/base/components/upload-assistant/label-studio/label-studio-assistant.component';
@@ -80,7 +80,7 @@ export class UploadComponent implements OnInit {
     }
   }
 
-  ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges(changes: SimpleChanges): void {
     if (changes.uploadOptions) {
       this.recordAddUploadHelper.projectName = this.uploadOptions.projectName;
       const tokenizerValuesDisplay = [];
@@ -93,39 +93,39 @@ export class UploadComponent implements OnInit {
     }
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     if (this.uploadTask$) this.uploadTask$.unsubscribe();
     NotificationService.unsubscribeFromNotification(this, this.projectId)
   }
 
-  onFileDropped(files: File[]) {
+  onFileDropped(files: File[]): void {
     this.file = files.length > 0 ? files[0] : null;
     this.fileAttached.emit(this.file);
   }
 
-  onFileInput(event: any) {
+  onFileInput(event: any): void {
     event.stopPropagation();
     this.onFileDropped(event.target.files);
     this.fileUpload.nativeElement.value = '';
   }
 
-  onFileRemove(event: Event) {
+  onFileRemove(event: Event): void {
     event.stopPropagation();
     this.onFileDropped([]);
     this.fileUpload.nativeElement.value = '';
   }
 
-  createProject() {
+  createProject(): Observable<any> {
     return this.projectApolloService
       .createProject("Imported Project", "Created during file upload " + this.file.name).pipe(first());
   }
 
-  updateTokenizerAndProjectStatus(projectId: string) {
+  updateTokenizerAndProjectStatus(projectId: string): void {
     this.projectApolloService.changeProjectTokenizer(projectId, this.recordNewUploadHelper.selectedTokenizer).pipe(first()).subscribe();
     this.projectApolloService.updateProjectStatus(projectId, ProjectStatus.INIT_COMPLETE).pipe(first()).subscribe();
   }
 
-  finishUpUpload(filename: string, importOptions: string) {
+  finishUpUpload(filename: string, importOptions: string): void {
     this.projectApolloService
       .getUploadCredentialsAndId(this.projectId, filename, this.uploadFileType, importOptions, this.uploadType)
       .pipe(first()).subscribe((results) => {
@@ -133,7 +133,7 @@ export class UploadComponent implements OnInit {
       });
   }
 
-  uploadFileToMinIO(uploadInformation: any, filename: string) {
+  uploadFileToMinIO(uploadInformation: any, filename: string): void {
     this.uploadStarted = true;
     const credentialsAndUploadId = JSON.parse(JSON.parse(uploadInformation))
     this.startProgressCall(credentialsAndUploadId.uploadTaskId).subscribe(() => {
@@ -149,7 +149,7 @@ export class UploadComponent implements OnInit {
     })
   }
 
-  startProgressCall(uploadTaskId: string) {
+  startProgressCall(uploadTaskId: string): any {
     [this.uploadTaskQuery$, this.uploadTask$] = this.projectApolloService.getUploadTaskByTaskId(this.projectId, uploadTaskId);
     const firstReturn = this.uploadTask$.pipe(first());
     this.uploadTask$ = this.uploadTask$.subscribe((task) => {
@@ -166,7 +166,7 @@ export class UploadComponent implements OnInit {
     return firstReturn;
   }
 
-  clearUploadTask() {
+  clearUploadTask(): void {
     this.uploadTask$.unsubscribe();
     this.uploadTask$ = null;
     this.uploadTask = null;
@@ -174,18 +174,18 @@ export class UploadComponent implements OnInit {
     this.progressState = null;
   }
 
-  deleteExistingProject() {
+  deleteExistingProject(): void {
     this.projectApolloService.deleteProjectById(this.projectId).pipe(first()).subscribe();
   }
 
-  resetUpload() {
+  resetUpload(): void {
     this.file = null;
     this.clearUploadTask();
     this.uploadStarted = false;
     this.fileAttached.emit(null);
   }
 
-  reSubscribeToNotifications() {
+  reSubscribeToNotifications(): void {
     NotificationService.unsubscribeFromNotification(this, null);
     NotificationService.subscribeToNotification(this, {
       projectId: this.projectId,
@@ -194,7 +194,7 @@ export class UploadComponent implements OnInit {
     });
   }
 
-  handleWebsocketNotification(msgParts: string[]) {
+  handleWebsocketNotification(msgParts: string[]): void {
     if (!this.uploadTask || !this.uploadTaskQuery$) return;
     if (msgParts[2] != this.uploadTask.id) return;
     if (msgParts[3] == 'state') {
@@ -217,7 +217,7 @@ export class UploadComponent implements OnInit {
     }
   }
 
-  submitUploadFile(uploadType: UploadType = UploadType.DEFAULT) {
+  submitUploadFile(uploadType: UploadType = UploadType.DEFAULT): void {
     this.uploadType = uploadType;
     this.submitted = true;
     if (this.file == null) return;
@@ -236,35 +236,35 @@ export class UploadComponent implements OnInit {
     this.uploadHelper.upload();
   }
 
-  changeProjectTitle(event: any) {
+  changeProjectTitle(event: any): void {
     this.recordNewUploadHelper.projectTitle = event.target.value;
   }
 
-  changeProjectDescription(event: any) {
+  changeProjectDescription(event: any): void {
     this.recordNewUploadHelper.description = event.target.value;
   }
 
-  toggleTab(tabNum: number) {
+  toggleTab(tabNum: number): void {
     this.openTab = tabNum;
   }
 
-  initProjectEvent(event: Event) {
+  initProjectEvent(event: Event): void {
     event.preventDefault();
     this.submitUploadFile();
   }
 
-  checkIfProjectTitleExist() {
+  checkIfProjectTitleExist(): boolean {
     const findProjectName = this.uploadOptions.projectNameList.find(project => project.name === this.recordNewUploadHelper.projectTitle);
     return findProjectName != undefined ? true : false;
   }
 
-  navigateToSettings() {
+  navigateToSettings(): void {
     timer(200).subscribe(() => {
       this.router.navigate(['projects', this.projectId, 'settings'])
     });
   }
 
-  setTokenizer(tokenizer: string) {
+  setTokenizer(tokenizer: string): void {
     this.recordNewUploadHelper.selectedTokenizer = tokenizer;
   }
 
