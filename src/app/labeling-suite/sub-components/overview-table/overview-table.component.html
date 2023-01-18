@@ -32,17 +32,21 @@
                                 <tr *ngFor="let ovItem of dataToDisplay; let i = index"
                                     [ngClass]="i%2 ==0 ? 'bg-white':'bg-gray-50'">
                                     <td class="whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-500 sm:pl-6"
-                                        hover-group-class="bg-green-200" hover-group="{{ovItem.hoverGroups.type}}">
+                                        hover-group-class="{{lsm.settingManager.settings.main.hoverGroupBackgroundColorClass}}"
+                                        hover-group="{{ovItem.hoverGroups.type}}">
                                         {{ovItem.sourceType}}</td>
                                     <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500"
-                                        hover-group-class="bg-green-200" hover-group="{{ovItem.hoverGroups.task}}">
+                                        hover-group-class="{{lsm.settingManager.settings.main.hoverGroupBackgroundColorClass}}"
+                                        hover-group="{{ovItem.hoverGroups.task}}">
                                         {{ovItem.taskName}}</td>
                                     <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500"
-                                        hover-group-class="bg-green-200" hover-group="{{ovItem.hoverGroups.createdBy}}">
+                                        hover-group-class="{{lsm.settingManager.settings.main.hoverGroupBackgroundColorClass}}"
+                                        hover-group="{{ovItem.hoverGroups.createdBy}}">
                                         {{ovItem.createdBy}}
                                     </td>
                                     <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500"
-                                        hover-group-class="bg-green-200" hover-group="{{ovItem.hoverGroups.label}}">
+                                        hover-group-class="{{lsm.settingManager.settings.main.hoverGroupBackgroundColorClass}}"
+                                        hover-group="{{ovItem.hoverGroups.label}}">
 
                                         <span
                                             class="inline-flex items-center px-2.5 py-0.5 rounded-md text-sm font-medium border border-0 cursor-default relative"
@@ -54,7 +58,8 @@
                                         <span class="ml-2" *ngIf="ovItem.label.value">{{ovItem.label.value}}</span>
                                     </td>
                                     <td *ngIf="!lsm.settingManager.settings.main.disableHoverGroups"
-                                        hover-group-class="bg-green-200" hover-group="{{ovItem.hoverGroups.rlaId}}">
+                                        hover-group-class="{{lsm.settingManager.settings.main.hoverGroupBackgroundColorClass}}"
+                                        hover-group="{{ovItem.hoverGroups.rlaId}}">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                             stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                                             <path stroke-linecap="round" stroke-linejoin="round"

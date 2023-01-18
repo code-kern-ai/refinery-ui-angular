@@ -41,7 +41,7 @@
                 <div class="flex-grow flex flex-col justify-center p-3">
                     <ng-template [ngIf]="activeTask">
                         <button #labelButton *ngFor="let label of activeTask.task.labels; "
-                            (click)="addRla(activeTask.task,label)"
+                            (click)="addRla(activeTask.task,label.id)"
                             class="text-sm font-medium px-2 py-0.5 rounded-md border mb-2 focus:outline-none"
                             role="button" [ngStyle]="{'display':labelLookup[label.id].visibleInSearch?null:'none'}"
                             [ngClass]="[labelLookup[label.id].color.backgroundColor,labelLookup[label.id].color.textColor, labelLookup[label.id].color.borderColor]">
@@ -107,7 +107,7 @@
                                     <div #labelDiv *ngFor="let label of task.task.displayLabels; let i = index"
                                         class="text-sm font-medium px-2 py-0.5 rounded-md border focus:outline-none cursor-pointer"
                                         [ngClass]="[labelLookup[label.id].color.backgroundColor,labelLookup[label.id].color.textColor, labelLookup[label.id].color.borderColor, labelLookup[label.id].color.hoverColor]"
-                                        (click)="addRla(task.task,label)">
+                                        (click)="addRla(task.task,label,id)">
                                         <div class="truncate" style="max-width: 260px;">{{label.name}}
                                             <kbd *ngIf="label.hotkey"
                                                 class="ml-1 uppercase inline-flex items-center border bg-white border-gray-200 rounded px-2 text-sm font-sans font-medium text-gray-400">{{label.hotkey}}</kbd>
@@ -130,6 +130,7 @@
                                     <div *ngFor="let rlaLabel of rlaLabels" class="tooltip w-max"
                                         attr.data-tip="{{rlaLabel.dataTip}}">
                                         <div class="text-sm font-medium px-2 py-0.5 rounded-md border focus:outline-none relative flex items-center"
+                                            (click)="rlaLabel.sourceTypeKey == 'WEAK_SUPERVISION'?addRla(task.task,rlaLabel.labelId):null"
                                             hover-group-class="" hover-group="{{rlaLabel.hoverGroups.rlaId}}"
                                             [ngClass]="[labelLookup[rlaLabel.labelId].color.backgroundColor,labelLookup[rlaLabel.labelId].color.textColor, labelLookup[rlaLabel.labelId].color.borderColor,rlaLabel.sourceTypeKey == 'WEAK_SUPERVISION'?'cursor-pointer':'cursor-default']">
                                             <div class="label-overlay-base"
@@ -284,6 +285,7 @@
                         [ngClass]="[labelLookup[rlaItem.labelId].color.backgroundColor,labelLookup[rlaItem.labelId].color.textColor, labelLookup[rlaItem.labelId].color.borderColor]"
                         hover-group-class="full-overlay-height" hover-group="{{rlaItem.hoverGroups.rlaId}}"
                         style="border-bottom-width:1px; border-top-width:1px; border-style:solid;left:-2px;"
+                        style.border-style="{{rlaItem.rla.sourceType == 'MANUAL'?'solid':'dashed'}}"
                         style.border-left-width="{{rlaItem.isFirst?'1px':null}}"
                         style.border-top-left-radius="{{rlaItem.isFirst?'0.375rem':null}}"
                         style.border-bottom-left-radius="{{rlaItem.isFirst?'0.375rem':null}}"

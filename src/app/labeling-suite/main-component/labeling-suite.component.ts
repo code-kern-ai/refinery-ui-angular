@@ -70,16 +70,17 @@ export class LabelingSuiteComponent implements OnInit, OnDestroy {
 
   //function shorthands
   public toggleShowHeuristics() {
-    this.lsm.settingManager.settings.overviewTable.showHeuristics = !this.lsm.settingManager.settings.overviewTable.showHeuristics;
-    this.lsm.settingManager.runSettingListeners(ComponentType.OVERVIEW_TABLE);
+    this.lsm.settingManager.changeSetting(ComponentType.OVERVIEW_TABLE, 'showHeuristics');
   }
   public toggleAutoNextRecord() {
-    this.lsm.settingManager.settings.main.autoNextRecord = !this.lsm.settingManager.settings.main.autoNextRecord;
-    this.lsm.settingManager.runSettingListeners(ComponentType.MAIN);
+    this.lsm.settingManager.changeSetting(ComponentType.MAIN, 'autoNextRecord');
   }
   public setShowNLabelButton(value: number) {
-    this.lsm.settingManager.settings.labeling.showNLabelButton = value;
-    this.lsm.settingManager.runSettingListeners(ComponentType.LABELING);
+    this.lsm.settingManager.changeSetting(ComponentType.LABELING, 'showNLabelButton', value);
+  }
+
+  public changeSetting(component: ComponentType, setting: string, value?: any) {
+    this.lsm.settingManager.changeSetting(component, setting, value);
   }
 
 

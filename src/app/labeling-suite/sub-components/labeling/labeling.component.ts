@@ -113,17 +113,25 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
     }
     switch (componentType) {
       case ComponentType.LABELING:
+        const displayChanged = this.htmlSettings.labeling?.compactExtractionLabelDisplay != this.settings.labeling.compactExtractionLabelDisplay;
         this.htmlSettings.labeling = jsonCopy(this.settings.labeling);
+        if (displayChanged) {
+          this.prepareRlaTokenLookup();
+        }
         // this.rebuildLabelButtonAmount();
         break;
       case ComponentType.TASK_HEADER:
+        const onlyGlobalChanged = this.onlyGlobalSettingsChanged();
         this.htmlSettings.task = jsonCopy(this.settings.task[this.lsm.projectId]);
-        this.filterRlaDataForCurrent();
+        if (!onlyGlobalChanged) this.filterRlaDataForCurrent();
         break;
       default:
         break;
     }
 
+  }
+  private onlyGlobalSettingsChanged(): boolean {
+    return JSON.stringify(this.htmlSettings.task) == JSON.stringify(this.settings.task[this.lsm.projectId]);
   }
 
   private rebuildLabelLookup() {
@@ -410,9 +418,9 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
     if (this.labelAddButtonDisabled) return;
     this.lsm.taskManager.createLabelInTask(labelName, taskId);
   }
-  public addRla(task: any, label: any) {
+  public addRla(task: any, labelId: string) {
     if (task.taskType == LabelingTask.MULTICLASS_CLASSIFICATION) {
-      this.addLabelToTask(task.id, label.id);
+      this.addLabelToTask(task.id, labelId);
     } else {
       console.log("not implemented")
     }
@@ -475,11 +483,12 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
         if (!rlas) continue;
         for (const rla of rlas) {
           if (!orderLookup[attribute.id]) orderLookup[attribute.id] = [];
+          const orderPos = this.getFirstFitPos(this.tokenLookup[attribute.id], rla.rla.tokenStartIdx, rla.rla.tokenEndIdx);
           orderLookup[attribute.id].push(this.getOrderLookupItem(rla.rla));
           for (let tokenIdx = rla.rla.tokenStartIdx; tokenIdx <= rla.rla.tokenEndIdx; tokenIdx++) {
             if (!this.tokenLookup[attribute.id][tokenIdx]) this.tokenLookup[attribute.id][tokenIdx] = { rlaArray: [], tokenMarginBottom: null };
             this.tokenLookup[attribute.id][tokenIdx].rlaArray.push({
-              orderPos: -1,
+              orderPos: orderPos,
               bottomPos: null,
               isFirst: tokenIdx == rla.rla.tokenStartIdx,
               isLast: tokenIdx == rla.rla.tokenEndIdx,
@@ -491,7 +500,6 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
         }
       }
     }
-
     //build order logic
     for (const attributeId in orderLookup) {
       //ensure unique
@@ -509,12 +517,14 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
       for (const tokenIdx in this.tokenLookup[attributeId]) {
         if (tokenIdx == 'token') continue;
         for (const rla of this.tokenLookup[attributeId][tokenIdx].rlaArray) {
-          const orderLookupItem = this.getOrderLookupItem(rla.rla);
-          const foundPosItem = orderLookup[attributeId].find(e => this.findOrderPosItem(e, orderLookupItem));
-          if (foundPosItem) {
-            rla.orderPos = foundPosItem.orderPos;
-            rla.bottomPos = ((SWIM_LANE_SIZE_PX * foundPosItem.orderPos) * -1) + 'px';
+          if (rla.orderPos == -1) {
+            const orderLookupItem = this.getOrderLookupItem(rla.rla);
+            const foundPosItem = orderLookup[attributeId].find(e => this.findOrderPosItem(e, orderLookupItem));
+            if (foundPosItem) {
+              rla.orderPos = foundPosItem.orderPos;
+            }
           }
+          rla.bottomPos = ((SWIM_LANE_SIZE_PX * rla.orderPos) * -1) + 'px';
         }
         const maxPos = Math.max(...this.tokenLookup[attributeId][tokenIdx].rlaArray.map(e => e.orderPos));
         if (maxPos) {
@@ -527,6 +537,20 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
     console.log("token lookup", this.tokenLookup, orderLookup)
 
   }
+
+  private getFirstFitPos(takenPositions: any, start: number, end: number): number {
+    if (!this.settings.labeling.compactExtractionLabelDisplay) return -1;
+    let pos = 1;
+    while (!this.checkFit(takenPositions, start, end, pos)) pos++;
+    return pos;
+  }
+  private checkFit(takenPositions: any, start: number, end: number, pos: number): boolean {
+    for (let i = start; i <= end; i++) {
+      if (takenPositions[i] && takenPositions[i].rlaArray.find(e => e.orderPos == pos)) return false;
+    }
+    return true;
+  }
+
   private getOrderLookupSort(a: any, b: any): number {
     const aOrder = getLabelSourceOrder(a.sourceType, a.isType);
     const bOrder = getLabelSourceOrder(b.sourceType, b.isType);

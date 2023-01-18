@@ -11,22 +11,26 @@ export type LabelingSuiteSettings = {
 }
 
 export type LabelingSuiteOverviewTableSettings = {
+    show: boolean;
     showHeuristics: boolean;
     includeLabelDisplaySettings: boolean;
 }
 
 export type LabelingSuiteMainSettings = {
     autoNextRecord: boolean;
-    disableHoverGroups: boolean;
+    hoverGroupBackgroundColor: string;
+    hoverGroupBackgroundColorClass: string;
 }
 export type LabelingSuiteLabelingSettings = {
     showNLabelButton: number;
     showTaskNames: boolean;
     compactClassificationLabelDisplay: boolean;
+    compactExtractionLabelDisplay: boolean;
 }
 
 //labeling task
 export type LabelingSuiteTaskHeaderSettings = {
+    show: boolean;
     isCollapsed: boolean;
     alwaysShowQuickButtons: boolean;
     //caution technically irritating because the line below is not for projectIds but for any string key -> thats why any needs to be added to allow isCollapsed boolean
@@ -56,15 +60,29 @@ export enum ComponentType {
     TASK_HEADER,
 }
 
+export const colorOptions = [
+    "red", "orange", "amber",
+    "yellow", "lime", "green",
+    "emerald", "teal", "cyan",
+    "sky", "blue", "indigo",
+    "violet", "purple", "fuchsia",
+    "pink", "rose"]
+
+
+
 export class LabelingSuiteSettingManager implements DoBeforeDestroy {
     static localStorageKey = "labelingSuiteSettings";
     public settings: LabelingSuiteSettings;
+    public page: ComponentType = ComponentType.MAIN;
 
     private registeredSettingsListeners: Map<ComponentType, Map<Object, () => void>> = new Map<ComponentType, Map<Object, () => void>>();
     private projectId: string;
 
+    public hoverColorOptions;
+
     constructor(projectId: string) {
         this.projectId = projectId;
+        this.prepareColorOptions();
         enumToArray(ComponentType).forEach(ct => {
             this.registeredSettingsListeners.set(ct, new Map<Object, () => void>());
         });
@@ -73,6 +91,10 @@ export class LabelingSuiteSettingManager implements DoBeforeDestroy {
     }
     doBeforeDestroy(): void {
         this.saveSettings();
+    }
+
+    private prepareColorOptions() {
+        this.hoverColorOptions = ['None', ...colorOptions];
     }
 
     public loadSettings() {
@@ -95,22 +117,65 @@ export class LabelingSuiteSettingManager implements DoBeforeDestroy {
     }
 
     public setDefaultSettings() {
-        this.settings = this.getDefaultLabelingSuiteSettings();
-        localStorage.removeItem(LabelingSuiteSettingManager.localStorageKey);
+        const tmpSettings = this.getDefaultLabelingSuiteSettings();
+        transferNestedDict(tmpSettings, this.settings);
+        this.settings.task[this.projectId] = {};
         this.runSettingListeners(ComponentType.ALL);
+    }
+
+    public changeSetting(componentType: ComponentType, settingsPath: string, value?: any) {
+        let settings;
+        switch (componentType) {
+            case ComponentType.MAIN:
+                settings = this.settings.main;
+                break;
+            case ComponentType.OVERVIEW_TABLE:
+                settings = this.settings.overviewTable;
+                break;
+            case ComponentType.LABELING:
+                settings = this.settings.labeling;
+                break;
+            case ComponentType.TASK_HEADER:
+                settings = this.settings.task;
+                break;
+        }
+        if (!settings) return;
+        const keyParts = settingsPath.split('.');
+        const lastKey = keyParts.pop();
+        for (const key of keyParts) {
+            if (!settings[key]) return;
+            settings = settings[key];
+        }
+
+        const currentValue = settings[lastKey];
+        if (currentValue != value) {
+            if (value === undefined) {
+                if (typeof currentValue === "boolean") value = !currentValue;
+                else throw Error("something isn't right")
+            }
+            settings[lastKey] = value;
+            this.runSettingListeners(componentType);
+        }
+    }
+
+    public switchToPage(page: ComponentType) {
+        this.page = page;
     }
 
     private getDefaultLabelingSuiteSettings(): LabelingSuiteSettings {
         return {
             main: {
                 autoNextRecord: false,
-                disableHoverGroups: false,
+                hoverGroupBackgroundColor: "green",
+                hoverGroupBackgroundColorClass: "bg-green-100",
             },
             overviewTable: {
+                show: true,
                 showHeuristics: false,
                 includeLabelDisplaySettings: true,
             },
             task: {
+                show: true,
                 isCollapsed: false,
                 alwaysShowQuickButtons: false,
             },
@@ -118,6 +183,7 @@ export class LabelingSuiteSettingManager implements DoBeforeDestroy {
                 showNLabelButton: 5,
                 showTaskNames: true,
                 compactClassificationLabelDisplay: true,
+                compactExtractionLabelDisplay: false,
             }
         }
     }
@@ -145,14 +211,15 @@ export class LabelingSuiteSettingManager implements DoBeforeDestroy {
     public runSettingListeners(type: ComponentType, saveSettings: boolean = true) {
         if (type == ComponentType.ALL) {
             enumToArray(ComponentType).forEach(ct => ct != ComponentType.ALL ? this.runSettingListeners(ct, false) : null);
+            if (saveSettings) this.saveSettings();
             return;
         }
-        if (type == ComponentType.MAIN) {
-            if (this.settings.main.disableHoverGroups != HoverGroupDirective.disableHover) {
-                HoverGroupDirective.disableHover = this.settings.main.disableHoverGroups;
-            }
-        }
         if (!this.registeredSettingsListeners.has(type)) throw Error("Component type not available");
+
+        if (type == ComponentType.MAIN) {
+            this.settings.main.hoverGroupBackgroundColorClass = "bg-" + this.settings.main.hoverGroupBackgroundColor + "-200";
+        }
+
         if (this.registeredSettingsListeners.get(type).size != 0) {
             this.registeredSettingsListeners.get(type).forEach((func, key) => func.call(key));
         }
@@ -184,7 +251,16 @@ export class LabelingSuiteSettingManager implements DoBeforeDestroy {
 
     private filterRlaLabelCondition(rla: any): boolean {
         const taskId = rla.labelingTaskLabel.labelingTask.id;
-        const rlaSettings: LabelingSuiteTaskHeaderLabelSettings = this.settings.task[this.projectId][taskId][rla.labelingTaskLabelId];
+        let taskSettings = this.settings.task[this.projectId][taskId];
+        if (!taskSettings) {
+            taskSettings = {};
+            this.settings.task[this.projectId][taskId] = taskSettings;
+        }
+        let rlaSettings: LabelingSuiteTaskHeaderLabelSettings = taskSettings[rla.labelingTaskLabelId];
+        if (!rlaSettings) {
+            rlaSettings = this.getDefaultTaskOverviewLabelSettings();
+            taskSettings[rla.labelingTaskLabelId] = rlaSettings;
+        }
         switch (rla.sourceType) {
             case LabelSource.MANUAL:
                 return rlaSettings.showManual;

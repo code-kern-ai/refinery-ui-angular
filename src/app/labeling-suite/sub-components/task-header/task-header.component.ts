@@ -77,10 +77,7 @@ export class LabelingSuiteTaskHeaderComponent implements OnInit, OnChanges, OnDe
   }
 
   toggleIsCollapsed() {
-    this.lsm.settingManager.settings.task.isCollapsed = !this.lsm.settingManager.settings.task.isCollapsed;
-    // this.htmlSettings.isCollapsed =this.lsm.settingManager.settings.task.isCollapsed; 
-    this.lsm.settingManager.saveSettings();
-    // no need to run listeners since this is a project independent setting
+    this.lsm.settingManager.changeSetting(ComponentType.TASK_HEADER, 'isCollapsed');
   }
 
   setAllLabelDisplaySetting(value: boolean, labelSettingsLabel?: any, attribute?: string, deactivateOthers?: boolean) {
@@ -199,7 +196,9 @@ export class LabelingSuiteTaskHeaderComponent implements OnInit, OnChanges, OnDe
 
 
   private settingsChanged() {
+    if (JSON.stringify(this.settings) == JSON.stringify(this.htmlSettings)) return;
     this.htmlSettings = jsonCopy(this.settings);
+    console.log("settings changed", this.htmlSettings);
   }
 
   //mouse

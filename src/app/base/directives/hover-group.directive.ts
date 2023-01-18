@@ -18,7 +18,7 @@ export class HoverGroupDirective implements OnDestroy, OnInit {
   @Input('hover-group-class') hoverClass: any;
 
   private finalGroups: string[];
-  public static disableHover = true;
+  public static disableHover = false;
 
   @HostListener('mouseenter') onMouseEnter() {
     if (HoverGroupDirective.disableHover) return;
