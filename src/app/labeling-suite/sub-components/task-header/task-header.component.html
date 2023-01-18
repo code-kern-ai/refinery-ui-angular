@@ -18,7 +18,7 @@
     <table class="min-w-full border">
       <tbody class="bg-white divide-y divide-gray-200">
         <tr *ngFor="let task of displayData;let i = index" [ngClass]="i%2 == 0 ? 'bg-white':'bg-gray-50'">
-          <td class="font-bold py-2 pl-4 pr-3 text-sm text-gray-500 sm:pl-6"
+          <td class="font-bold py-2 pl-4 pr-3 text-sm text-gray-500 sm:pl-6 whitespace-nowrap"
             hover-group-class="{{lsm.settingManager.settings.main.hoverGroupBackgroundColorClass}}"
             hover-group="{{task.hoverGroups}}">
             {{task.name}}

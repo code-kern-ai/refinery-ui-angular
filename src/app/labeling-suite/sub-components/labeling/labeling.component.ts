@@ -36,6 +36,7 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
   lVars: LabelingVars = getDefaultLabelingVars();
 
   @ViewChild('labelSelectionBox', { read: ElementRef }) labelSelectionBox: ElementRef;
+  @ViewChild('baseDomElement', { read: ElementRef }) baseDomElement: ElementRef;
 
   //list of active tasks for label selection (multiple for extraction possible)
   activeTasks: any[];
@@ -113,7 +114,7 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
     }
     switch (componentType) {
       case ComponentType.LABELING:
-        const displayChanged = this.htmlSettings.labeling?.compactExtractionLabelDisplay != this.settings.labeling.compactExtractionLabelDisplay;
+        const displayChanged = this.htmlSettings.labeling?.swimLaneExtractionDisplay != this.settings.labeling.swimLaneExtractionDisplay;
         this.htmlSettings.labeling = jsonCopy(this.settings.labeling);
         if (displayChanged) {
           this.prepareRlaTokenLookup();
@@ -165,7 +166,7 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
       if (searchValue) {
         label.visibleInSearch = label.label.name.toLowerCase().includes(searchValue.toLowerCase());
       } else {
-        if (searchValue) {
+        if (label.task.taskType == LabelingTask.INFORMATION_EXTRACTION) {
           label.visibleInSearch = true;
         } else {
           label.visibleInSearch = !label.task.displayLabels.find(x => x.id == labelId);
@@ -272,6 +273,16 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
 
     // this.rebuildLabelButtonAmount();
     console.log("rebuild lVars", this.lVars);
+    if (this.activeTasks) {
+      const activeTaskIds = this.activeTasks.map(x => x.task.id);
+      for (const key in this.lVars.taskLookup) {
+        const found = this.lVars.taskLookup[key].lookup.filter(t => activeTaskIds.includes(t.task.id));
+        if (found.length != 0) {
+          this.setActiveTasks(found);
+          break;
+        }
+      }
+    }
     this.prepareRlaTokenLookup();
   }
 
@@ -296,19 +307,16 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
 
   setActiveTasks(tasks: any | any[]) {
     if (Array.isArray(tasks)) {
-      if (this.activeTasks && this.activeTasks[0] == tasks[0]) this.activeTasks = null;
-      else this.activeTasks = tasks;
+      this.activeTasks = tasks;
     } else {
-      if (this.activeTasks && this.activeTasks[0] == tasks) this.activeTasks = null;
-      else this.activeTasks = [tasks];
+      this.activeTasks = [tasks];
     }
-
-    if (this.activeTasks) this.checkLabelVisibleInSearch();
+    this.checkLabelVisibleInSearch();
   }
 
-  labelBoxPosition(labelDomElement: HTMLElement, baseDomElement: HTMLElement) {
+  labelBoxPosition(labelDomElement: HTMLElement) {
     const labelBox: DOMRect = labelDomElement.getBoundingClientRect();
-    const baseBox: DOMRect = baseDomElement.getBoundingClientRect();
+    const baseBox: DOMRect = this.baseDomElement.nativeElement.getBoundingClientRect();
 
     this.labelSelectionBox.nativeElement.style.top = (labelBox.top + labelBox.height - baseBox.top + 10) + 'px';
     this.labelSelectionBox.nativeElement.style.left = (labelBox.left - baseBox.left) + 'px';
@@ -407,6 +415,68 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
 
   }
 
+  @HostListener('document:mouseup', ['$event'])
+  onMouseup(event: MouseEvent) {
+    if (!this.parseSelectionData()) {
+      this.clearSelected();
+    }
+  }
+
+  private parseSelectionData(): boolean {
+    let selection = window.getSelection();
+    if (selection.type != 'Range') return false;
+
+    const startElement = this.getSelectionElement(selection, true);
+    const endElement = this.getSelectionElement(selection, false);
+    if (!startElement || !endElement) return false;
+    let attributeIdStart: any = startElement.getAttribute('attributeId');
+    let attributeIdEnd: any = endElement.getAttribute('attributeId');
+
+    if (attributeIdStart == null || attributeIdEnd == null || attributeIdStart != attributeIdEnd) return false;
+    let tokenStart: any = startElement.getAttribute('tokenIdx');
+    let tokenEnd: any = endElement.getAttribute('tokenIdx');
+    if (tokenStart == null || tokenEnd == null) return false;
+    tokenStart = Number(tokenStart);
+    tokenEnd = Number(tokenEnd);
+    if (tokenStart > tokenEnd) {
+      let tmp = tokenStart;
+      tokenStart = tokenEnd;
+      tokenEnd = tmp;
+    }
+    this.clearBrowserSelection();
+    this.setSelected(attributeIdStart, tokenStart, tokenEnd, startElement);
+    return true;
+  }
+
+  private getSelectionElement(selection: Selection, start: boolean, maxSteps: number = 5): HTMLElement {
+    let element = start ? selection.anchorNode : selection.focusNode;
+    let steps = 0;
+    while (steps < maxSteps) {
+      if (element instanceof HTMLElement && element.getAttribute('tokenIdx') != null) return element;
+      element = element.parentElement;
+      steps++;
+    }
+    return null;
+  }
+
+  public setSelected(attributeId: string, tokenStart: number, tokenEnd: number, baseDiv?: HTMLElement) {
+    for (const token of this.tokenLookup[attributeId].token) {
+      token.selected = token.idx >= tokenStart && token.idx <= tokenEnd;
+    }
+    this.setActiveTasks(this.lVars.taskLookup[attributeId].lookup);
+    this.labelBoxPosition(baseDiv);
+  }
+  private clearSelected() {
+    for (const attributeId in this.tokenLookup) {
+      for (const token of this.tokenLookup[attributeId].token) {
+        if ('selected' in token) delete token.selected;
+      }
+    }
+  }
+
+  private clearBrowserSelection() {
+    window.getSelection().empty();
+  }
 
   public preventDefaultEvent(event: MouseEvent) {
     event.stopPropagation();
@@ -422,9 +492,41 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
     if (task.taskType == LabelingTask.MULTICLASS_CLASSIFICATION) {
       this.addLabelToTask(task.id, labelId);
     } else {
-      console.log("not implemented")
+      this.addLabelToSelection(task.attribute.id, task.id, labelId);
     }
   }
+
+  private addLabelToSelection(attributeId: string, labelingTaskId: string, labelId: string) {
+    console.log("addLabelToSelection", attributeId, labelingTaskId, labelId)
+    const selectionData = this.collectSelectionData(attributeId);
+    if (!selectionData) return;
+
+    this.lsm.recordManager.addExtractionLabelToRecord(labelingTaskId, labelId, selectionData.startIdx, selectionData.endIdx, selectionData.value);
+
+  }
+
+  private collectSelectionData(attributeId: string): any {
+    let startIdx = -1;
+    let endIdx = -1;
+    for (const token of this.tokenLookup[attributeId].token) {
+      if (token.selected) {
+        if (startIdx == -1) startIdx = token.idx;
+      } else {
+        if (startIdx != -1) {
+          endIdx = token.idx - 1;
+          break;
+        }
+      }
+    }
+    const tokenData = this.getTokenData(attributeId);
+    if (!tokenData) return null;
+    const value = tokenData.raw.substring(
+      tokenData.token[startIdx].posStart,
+      tokenData.token[endIdx].posEnd
+    )
+    return { startIdx: startIdx, endIdx: endIdx, value: value };
+  }
+
 
   private addLabelToTask(labelingTaskId: string, labelId: string) {
     if (!this.canEditLabels) return;
@@ -434,19 +536,17 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
       e.sourceTypeKey == LabelSource.MANUAL && e.createdBy == this.lsm.userManager.displayUserId && e.labelId == labelId);
 
     if (existingLabels.length == 1) return;
-    this.lsm.recordManager.addLabelToRecord(labelingTaskId, labelId);
+    this.lsm.recordManager.addClassificationLabelToRecord(labelingTaskId, labelId);
 
 
 
     // if (this.autoNextRecord) {
     //   this.nextRecord();
     // }
-
-    // this.closeLabelBox();
+    this.activeTasks = null;
   }
 
   public deleteRecordLabelAssociation(rlaLabel: any) {
-    console.log(rlaLabel);
     this.lsm.recordManager.deleteLabelFromRecord(rlaLabel.rla.id);
   }
 
@@ -526,6 +626,8 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
           }
           rla.bottomPos = ((SWIM_LANE_SIZE_PX * rla.orderPos) * -1) + 'px';
         }
+        //order reverse so hover elements work with z index as expected
+        this.tokenLookup[attributeId][tokenIdx].rlaArray.sort((a, b) => b.orderPos - a.orderPos);
         const maxPos = Math.max(...this.tokenLookup[attributeId][tokenIdx].rlaArray.map(e => e.orderPos));
         if (maxPos) {
           this.tokenLookup[attributeId][tokenIdx].tokenMarginBottom = (SWIM_LANE_SIZE_PX * maxPos) + 'px';
@@ -539,7 +641,7 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
   }
 
   private getFirstFitPos(takenPositions: any, start: number, end: number): number {
-    if (!this.settings.labeling.compactExtractionLabelDisplay) return -1;
+    if (this.settings.labeling.swimLaneExtractionDisplay) return -1;
     let pos = 1;
     while (!this.checkFit(takenPositions, start, end, pos)) pos++;
     return pos;

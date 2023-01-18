@@ -2,7 +2,7 @@
     [ngClass]="lsm.somethingLoading?'wait':null">
 
     <ng-container [ngTemplateOutlet]="navigationBarTop"></ng-container>
-    <div class="flex-grow">
+    <div class="flex-grow overflow-y-auto" style="max-height:calc(100vh - 190px);">
         <kern-labeling-suite-task-header *ngIf="lsm.settingManager.settings.task.show"
             [lsm]="lsm"></kern-labeling-suite-task-header>
         <kern-labeling-suite-labeling [lsm]="lsm"></kern-labeling-suite-labeling>
@@ -461,13 +461,13 @@
             <ng-container [ngTemplateOutlet]="settingInfo"
                 [ngTemplateOutletContext]="{dataTip:'Reduce the display size of classification labels by ordering them into less rows'}">
             </ng-container>
-            <span class="">Compact extraction label display</span>
+            <span class="">Swim lane extraction labels</span>
             <span class="cursor-pointer flex justify-center items-center"
-                (click)="changeSetting(componentTypeEnum.LABELING,'compactExtractionLabelDisplay')"><input
+                (click)="changeSetting(componentTypeEnum.LABELING,'swimLaneExtractionDisplay')"><input
                     class="h-5 w-5 cursor-pointer" type="checkbox"
-                    [checked]='lsm.settingManager.settings.labeling.compactExtractionLabelDisplay'></span>
+                    [checked]='lsm.settingManager.settings.labeling.swimLaneExtractionDisplay'></span>
             <ng-container [ngTemplateOutlet]="settingInfo"
-                [ngTemplateOutletContext]="{dataTip:'Reduce the display size of extraction labels. If inactive swim lanes will be used'}">
+                [ngTemplateOutletContext]="{dataTip:'Use swim lanes to display extraction labels (caution might use a lot of space)'}">
             </ng-container>
         </div>
     </div>

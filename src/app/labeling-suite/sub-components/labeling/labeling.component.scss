@@ -11,3 +11,11 @@
 .full-overlay-height>div {
   display: block;
 }
+
+.z-n-1 {
+  z-index: -1 !important;
+}
+
+.z-n-2 {
+  z-index: -2;
+}

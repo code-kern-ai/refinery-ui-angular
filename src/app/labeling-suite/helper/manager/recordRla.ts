@@ -63,6 +63,7 @@ export class LabelingSuiteRlaManager {
                 sourceTypeKey: e.sourceType,
                 orderPos: getLabelSourceOrder(e.sourceType, e.informationSource?.type),
                 labelId: e.labelingTaskLabelId,
+                labelName: e.labelingTaskLabel.name,
                 taskId: e.labelingTaskLabel.labelingTask.id,
                 createdBy: e.isGoldStar ? GOLD_STAR_USER_ID : e.createdBy,
                 createdByName: this.getCreatedByName(e),
@@ -73,7 +74,7 @@ export class LabelingSuiteRlaManager {
                 rla: e
             };
         }
-        result.sort((a, b) => a.orderPos - b.orderPos || a.createdByName.localeCompare(b.createdByName));
+        result.sort((a, b) => a.orderPos - b.orderPos || a.createdByName.localeCompare(b.createdByName) || a.labelName.localeCompare(b.labelName));
         return result;
 
     }
@@ -95,7 +96,7 @@ export class LabelingSuiteRlaManager {
                 rla: e
             };
         }
-        result.sort((a, b) => a.orderPos - b.orderPos || a.orderPosSec - b.orderPosSec || a.createdBy.localeCompare(b.createdBy));
+        result.sort((a, b) => a.orderPos - b.orderPos || a.orderPosSec - b.orderPosSec || a.createdBy.localeCompare(b.createdBy) || a.label.name.localeCompare(b.label.name));
         return result;
     }
 

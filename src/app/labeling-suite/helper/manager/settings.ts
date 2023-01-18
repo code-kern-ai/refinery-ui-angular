@@ -25,7 +25,7 @@ export type LabelingSuiteLabelingSettings = {
     showNLabelButton: number;
     showTaskNames: boolean;
     compactClassificationLabelDisplay: boolean;
-    compactExtractionLabelDisplay: boolean;
+    swimLaneExtractionDisplay: boolean;
 }
 
 //labeling task
@@ -183,7 +183,7 @@ export class LabelingSuiteSettingManager implements DoBeforeDestroy {
                 showNLabelButton: 5,
                 showTaskNames: true,
                 compactClassificationLabelDisplay: true,
-                compactExtractionLabelDisplay: false,
+                swimLaneExtractionDisplay: false,
             }
         }
     }

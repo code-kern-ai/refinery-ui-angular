@@ -72,6 +72,7 @@ export class LabelingSuiteTaskManager implements DoBeforeDestroy {
         if (this.labelingTasks[0].displayLabels && this.labelingTasks[0].displayLabels.length == displayLabelAmount) return;
         for (const task of this.labelingTasks) {
             task.displayLabels = task.labels.slice(0, displayLabelAmount);
+            task.displayLabels.sort((a, b) => a.name.localeCompare(b.name));
         }
 
     }

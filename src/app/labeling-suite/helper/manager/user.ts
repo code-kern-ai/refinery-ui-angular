@@ -63,7 +63,7 @@ export class LabelingSuiteUserManager implements DoBeforeDestroy {
 
 
     public filterRlaDataForUser(rlaData: any[], rlaKey?: string): any[] {
-        if (rlaKey) rlaData.filter(entry => this.filterRlaCondition(entry[rlaKey]));
+        if (rlaKey) return rlaData.filter(entry => this.filterRlaCondition(entry[rlaKey]));
         return rlaData.filter(rla => this.filterRlaCondition(rla));
     }
 

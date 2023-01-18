@@ -190,7 +190,7 @@ export class LabelingSuiteRecordManager implements DoBeforeDestroy {
         return false;
     }
 
-    public addLabelToRecord(taskId: string, labelId: string, sourceId: string = null) {
+    public addClassificationLabelToRecord(taskId: string, labelId: string, sourceId: string = null) {
         //sourceId necessary for crowd labels
         this.baseManager.somethingLoading = true;
         const asGoldStar = this.baseManager.userManager.displayUserId == GOLD_STAR_USER_ID ? true : null;
@@ -202,6 +202,25 @@ export class LabelingSuiteRecordManager implements DoBeforeDestroy {
                 labelId,
                 asGoldStar,
                 sourceId,
+            )
+            .pipe(first())
+            .subscribe();
+    }
+
+    public addExtractionLabelToRecord(taskId: string, labelId: string, startIdx: number, endIdx: number, value: string, sourceId: string = null) {
+        this.baseManager.somethingLoading = true;
+        const asGoldStar = this.baseManager.userManager.displayUserId == GOLD_STAR_USER_ID ? true : null;
+        this.recordApolloService
+            .addExtractionLabelToRecord(
+                this.projectId,
+                this.activeRecordId,
+                taskId,
+                startIdx,
+                endIdx,
+                value,
+                labelId,
+                asGoldStar,
+                sourceId
             )
             .pipe(first())
             .subscribe();
