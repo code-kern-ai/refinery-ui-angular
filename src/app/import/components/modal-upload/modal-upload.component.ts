@@ -1,17 +1,18 @@
-import { Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { createDefaultModalUploadModal, getSubtitle, getTitle, UploadModals } from './modal-upload-helper';
 import { UploadFileType, UploadOptions } from '../helpers/upload-types';
 import { UploadComponent } from '../upload/upload.component';
 import { UploadHelper } from '../helpers/upload-helper';
 import { UploadStates } from '../../services/s3.enums';
 import { interval } from 'rxjs';
+import { NotificationService } from 'src/app/base/services/notification.service';
 
 @Component({
   selector: 'kern-modal-upload',
   templateUrl: './modal-upload.component.html',
   styleUrls: ['./modal-upload.component.scss']
 })
-export class ModalUploadComponent implements OnChanges {
+export class ModalUploadComponent implements OnInit, AfterViewInit, OnChanges {
 
   @Input() uploadFileType: UploadFileType;
   @Input() isModalOpen: boolean;
@@ -39,6 +40,14 @@ export class ModalUploadComponent implements OnChanges {
   subTitle: string;
 
   constructor() { }
+
+  ngOnInit(): void {
+    NotificationService.subscribeToNotification(this, {
+      projectId: this.projectId,
+      whitelist: ['file_upload'],
+      func: this.handleWebsocketNotification
+    });
+  }
 
   ngAfterViewInit(): void {
     this.uploadHelper = new UploadHelper(this.baseComponent, this.baseComponent.recordNewUploadHelper, this.baseComponent.recordAddUploadHelper, this.baseComponent.existingProjectUploadHelper, this.baseComponent.lookupListsUploadHelper);
@@ -77,9 +86,8 @@ export class ModalUploadComponent implements OnChanges {
     if (button == 'ACCEPT') {
       const x = interval(1000).subscribe(() => {
         if (this.baseComponent.progressState?.progress === 100 && this.baseComponent.progressState?.state === UploadStates.DONE) {
-          this.uploadModals.uploadFile.doingSomething = false;
           this.baseComponent.resetUpload();
-          this.baseComponent.reSubscribeToNotifications();
+          this.uploadModals.uploadFile.doingSomething = false;
           this.closeModal();
           x.unsubscribe();
         }
@@ -87,4 +95,9 @@ export class ModalUploadComponent implements OnChanges {
     }
   }
 
+  handleWebsocketNotification(msgParts: string[]) {
+    if (msgParts[1] === 'file_upload' && msgParts[4] === UploadStates.ERROR) {
+      this.baseComponent.deleteExistingProject();
+    }
+  }
 }
