@@ -1,7 +1,7 @@
 import { Component, ElementRef, EventEmitter, Input, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { forkJoin, Observable, timer } from 'rxjs';
-import { first, tap } from 'rxjs/operators';
+import { timer } from 'rxjs';
+import { first } from 'rxjs/operators';
 import { PreparationStep } from 'src/app/base/components/upload-assistant/label-studio/label-studio-assistant-helper';
 import { LabelStudioAssistantComponent } from 'src/app/base/components/upload-assistant/label-studio/label-studio-assistant.component';
 import { UploadState } from 'src/app/base/entities/upload-state';
@@ -56,6 +56,7 @@ export class UploadComponent implements OnInit {
   isProjectTitleDuplicate: boolean = false;
   submitted: boolean = false;
   disableInput: boolean = false;
+  tokenizerValuesDisabled: boolean[] = [];
 
   constructor(private projectApolloService: ProjectApolloService, private router: Router, private s3Service: S3Service) {
     this.recordNewUploadHelper = new RecordNewUploadHelper(this.projectApolloService, this);
@@ -82,6 +83,13 @@ export class UploadComponent implements OnInit {
   ngOnChanges(changes: SimpleChanges) {
     if (changes.uploadOptions) {
       this.recordAddUploadHelper.projectName = this.uploadOptions.projectName;
+      const tokenizerValuesDisplay = [];
+      this.uploadOptions.tokenizerValues?.forEach((tokenizer: any, index: number) => {
+        tokenizer.name += (tokenizer.configString != undefined) ? ` (${tokenizer.configString})` : '';
+        tokenizerValuesDisplay[index] = tokenizer;
+        this.tokenizerValuesDisabled[index] = tokenizer.disabled;
+      });
+      this.uploadOptions.tokenizerValues = tokenizerValuesDisplay;
     }
   }
 
@@ -254,6 +262,10 @@ export class UploadComponent implements OnInit {
     timer(200).subscribe(() => {
       this.router.navigate(['projects', this.projectId, 'settings'])
     });
+  }
+
+  setTokenizer(tokenizer: string) {
+    this.recordNewUploadHelper.selectedTokenizer = tokenizer;
   }
 
 }
