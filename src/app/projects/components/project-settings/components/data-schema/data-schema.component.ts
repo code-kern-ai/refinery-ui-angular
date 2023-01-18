@@ -3,7 +3,7 @@ import { first } from 'rxjs/operators';
 import { Project } from 'src/app/base/entities/project';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { attributeVisibilityStates, getTooltipVisibilityState } from '../../../create-new-attribute/attributes-visibility-helper';
-import { Attribute, AttributeVisibilityStates } from '../../entities/attribute.type';
+import { Attribute } from '../../entities/attribute.type';
 
 
 @Component({
@@ -14,30 +14,37 @@ import { Attribute, AttributeVisibilityStates } from '../../entities/attribute.t
 export class DataSchemaComponent implements OnChanges {
 
   @Input() project: Project;
-  @Input() attributeVisibilityStates: AttributeVisibilityStates;
   @Input() attributes: Attribute[];
   @Input() pKeyValid: boolean;
 
   tooltipsArray: string[] = [];
+  attributeVisibilityStates = attributeVisibilityStates;
+  somethingLoading: boolean = false;
 
   constructor(private projectApolloService: ProjectApolloService) {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    this.attributes = changes.attributes?.currentValue;
-    this.pKeyValid = changes.pKeyValid?.currentValue;
-    this.attributes.forEach((attribute) => {
-      this.tooltipsArray.push(getTooltipVisibilityState(attribute.visibility));
-    });
+    this.tooltipsArray = [];
+    this.checkStillLoading();
+    if (changes.attributes) {
+      this.attributeVisibilityStates.forEach((attribute) => {
+        this.tooltipsArray.push(getTooltipVisibilityState(attribute.value));
+      });
+    }
   }
 
   updateVisibility(option: string, attribute: Attribute) {
     const visibility = attributeVisibilityStates[option].value;
-    this.projectApolloService.updateAttribute(this.project.id, attribute.id, attribute.dataType, attribute.isPrimaryKey, attribute.name, attribute.sourceCode, visibility).pipe(first()).subscribe();
+    this.projectApolloService.updateAttribute(this.project.id, attribute.id, null, null, null, null, visibility).pipe(first()).subscribe();
   }
 
   updatePrimaryKey(attribute: Attribute) {
-    this.projectApolloService.updateAttribute(this.project.id, attribute.id, attribute.dataType, !attribute.isPrimaryKey, attribute.name, attribute.sourceCode, attribute.visibility).pipe(first()).subscribe();
+    this.projectApolloService.updateAttribute(this.project.id, attribute.id, null, !attribute.isPrimaryKey, null, null, null).pipe(first()).subscribe();
+  }
+
+  private checkStillLoading() {
+    this.somethingLoading = this.attributes.length == 0;
   }
 }
 

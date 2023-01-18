@@ -9,8 +9,6 @@ import { SettingModals } from "./modal-helper";
 
 export class DataHandlerHelper {
 
-    attributesArrayUsableUploaded: { id: string, name: string }[] = [];
-    attributesArrayTextUsableUploaded: { id: string, name: string }[] = [];
     attributesSchema: FormGroup;
     get attributesArray() {
         return this.attributesSchema.get('attributes') as FormArray;
@@ -122,7 +120,7 @@ export class DataHandlerHelper {
     }
 
     prepareEmbeddingHandles(projectId: string, attributes: any, tokenizer: string, encoderSuggestions: any): any {
-        let embeddingHandlesMap: Map<string, any> = new Map<string, any>();
+        let embeddingHandlesMap: { [key: string]: any } = {};
         if (!projectId) {
             let timer = interval(250).subscribe(() => {
                 if (!projectId) {
@@ -136,8 +134,8 @@ export class DataHandlerHelper {
         return embeddingHandlesMap;
     }
 
-    private parseEncoderToSuggestions(encoderSuggestions, attributes, tokenizer: string): any {
-        let embeddingHandlesMap: Map<string, any> = new Map<string, any>();;
+    private parseEncoderToSuggestions(encoderSuggestions: any, attributes: Attribute[], tokenizer: string): any {
+        let embeddingHandlesMap: { [key: string]: any } = {}
         encoderSuggestions = encoderSuggestions.filter(e => e.tokenizers.includes("all") || e.tokenizers.includes(tokenizer))
         if (!encoderSuggestions.length) return;
         if (encoderSuggestions) encoderSuggestions.forEach(element => {
@@ -149,7 +147,7 @@ export class DataHandlerHelper {
             }
         });
         attributes.forEach(att => {
-            embeddingHandlesMap.set(att.id, encoderSuggestions);
+            embeddingHandlesMap[att.id] = encoderSuggestions;
         });
         return embeddingHandlesMap;
     }

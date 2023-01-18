@@ -41,7 +41,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
   embeddingQuery$: any;
   tokenizationProgress: Number;
   downloadMessage: DownloadState = DownloadState.NONE;
-  embeddingHandlesMap: Map<string, any> = new Map<string, any>();
+  embeddingHandlesMap: { [key: string]: any } = {};
   pKeyValid: boolean = null;
   isManaged: boolean = true;
   attributeVisibilityStates = attributeVisibilityStates;
@@ -50,6 +50,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
   projectId: string;
   attributes: Attribute[] = [];
   attributesArrayTextUsableUploaded: Attribute[];
+  attributesArrayUsableUploaded: Attribute[];
   embeddings$: any;
   suggestions$: any;
   primaryKey$: any;
@@ -100,6 +101,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
         // prepare embeddings
         this.embeddings = res[1];
         this.attributesArrayTextUsableUploaded = this.attributesArrayTextUsableUploaded.filter((attribute: any) => (attribute.state == 'UPLOADED' || attribute.state == 'AUTOMATICALLY_CREATED' || attribute.state == 'USABLE') && attribute.dataType == 'TEXT');
+        this.attributesArrayUsableUploaded = this.attributesArrayTextUsableUploaded.filter((attribute: any) => (attribute.state == 'UPLOADED' || attribute.state == 'AUTOMATICALLY_CREATED' || attribute.state == 'USABLE'));
 
         // prepare embedding suggestions
         const onlyTextAttributes = this.attributes.filter(a => a.dataType == 'TEXT');

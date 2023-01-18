@@ -8,5 +8,4 @@ export interface Project {
   description?: string;
   numDataScaleUploaded?: number;
   tokenizer?: string;
-  containsUniqueAttribute?: boolean;
 }

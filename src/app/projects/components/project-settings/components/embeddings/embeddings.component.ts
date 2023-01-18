@@ -1,5 +1,4 @@
 import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { Project } from 'src/app/base/entities/project';
@@ -18,47 +17,48 @@ import { SettingModals } from '../../helper/modal-helper';
 export class EmbeddingsComponent implements OnInit {
 
   @Input() project: Project;
-  @Input() attributesArrayTextUsableUploaded: Attribute[] = [];
+  @Input() attributesArrayTextUsableUploaded: Attribute[];
   @Input() settingModals: SettingModals;
   @Input() isManaged: boolean;
-  @Input() embeddings: Embedding[] = [];
-  @Input() embeddingHandlesMap: Map<string, any> = new Map<string, any>();
+  @Input() embeddings: Embedding[];
+  @Input() embeddingHandlesMap: { [key: string]: any };
+  @Input() dataHandlerHelper: DataHandlerHelper;
 
-  downloadedModelsList$: any;
-  downloadedModelsQuery$: any;
-  downloadedModels: DownloadedModel[] = [];
+  downloadedModels: DownloadedModel[];
   subscriptions$: Subscription[] = [];
-  dataHandlerHelper: DataHandlerHelper;
+  somethingLoading: boolean = false;
 
-  constructor(private projectApolloService: ProjectApolloService, private formBuilder: FormBuilder) {
-    this.dataHandlerHelper = new DataHandlerHelper(this.formBuilder, this.projectApolloService);
-  }
+  constructor(private projectApolloService: ProjectApolloService) { }
 
   ngOnInit(): void {
     this.prepareDownloadedModels();
   }
 
+  ngOnDestroy() {
+    this.subscriptions$.forEach((subscription) => subscription.unsubscribe());
+  }
+
   ngOnChanges(changes: SimpleChanges) {
-    this.attributesArrayTextUsableUploaded = changes.attributesArrayTextUsableUploaded?.currentValue;
-    this.embeddings = changes.embeddings?.currentValue;
-    this.embeddingHandlesMap = changes.embeddingHandlesMap?.currentValue;
-    this.embeddingHandlesMap.forEach((value: any) => {
-      value.forEach((element: any) => {
-        element.isModelDownloaded = this.checkIfModelIsDownloaded(element.configString);
-      });
-    });
+    this.checkStillLoading();
+    if (changes.embeddingHandlesMap) {
+      this.checkModelDownloaded();
+    }
   }
 
   prepareDownloadedModels() {
-    [this.downloadedModelsQuery$, this.downloadedModelsList$] = this.projectApolloService.getModelProviderInfo();
+    let downloadedModelsQuery$, downloadedModelsList$;
+    [downloadedModelsQuery$, downloadedModelsList$] = this.projectApolloService.getModelProviderInfo();
     this.subscriptions$.push(
-      this.downloadedModelsList$.subscribe((downloadedModels) => this.downloadedModels = downloadedModels));
+      downloadedModelsList$.subscribe((downloadedModels) => {
+        this.downloadedModels = downloadedModels;
+        this.checkModelDownloaded();
+      }));
   }
 
   checkForceHiddenHandles() {
     const granularity = this.settingModals.embedding.create.embeddingCreationFormGroup.get('granularity').value;
     const attId = this.settingModals.embedding.create.embeddingCreationFormGroup.get('targetAttribute').value;
-    const suggestionList = this.embeddingHandlesMap.get(attId)
+    const suggestionList = this.embeddingHandlesMap[attId];
     for (let element of suggestionList) {
       element = { ...element };
       element.forceHidden = true;
@@ -91,7 +91,7 @@ export class EmbeddingsComponent implements OnInit {
   }
 
   selectFirstUnhiddenEmbeddingHandle(inputElement: HTMLInputElement) {
-    const suggestionList = this.embeddingHandlesMap.get(this.settingModals.embedding.create.embeddingCreationFormGroup.get("targetAttribute").value)
+    const suggestionList = this.embeddingHandlesMap[this.settingModals.embedding.create.embeddingCreationFormGroup.get("targetAttribute").value];
     for (let embeddingHandle of suggestionList) {
       if (!embeddingHandle.hidden && !embeddingHandle.forceHidden) {
         this.selectEmbeddingHandle(embeddingHandle, inputElement);
@@ -102,7 +102,7 @@ export class EmbeddingsComponent implements OnInit {
 
   selectEmbeddingHandle(embeddingHandle: Embedding, inputElement: HTMLInputElement, hoverBox?: any) {
     inputElement.value = embeddingHandle.configString;
-    hoverBox.style.display = 'none';
+    if (hoverBox) hoverBox.style.display = 'none';
     if (document.activeElement instanceof HTMLElement) {
       document.activeElement.blur();
     }
@@ -112,7 +112,7 @@ export class EmbeddingsComponent implements OnInit {
   checkEmbeddingHandles(eventTarget: HTMLInputElement) {
     const embeddingForm = this.settingModals.embedding.create.embeddingCreationFormGroup;
     embeddingForm.get('embeddingHandle').setValue(eventTarget.value);
-    const suggestionList = this.embeddingHandlesMap.get(embeddingForm.get("targetAttribute").value);
+    const suggestionList = this.embeddingHandlesMap[embeddingForm.get("targetAttribute").value];
     if (!suggestionList || suggestionList.length == 0) return;
     const lowerEventValue = eventTarget.value.toLowerCase();
     let suggestionsSave = [];
@@ -120,10 +120,11 @@ export class EmbeddingsComponent implements OnInit {
       embeddingHandle = { ...embeddingHandle, hidden: !embeddingHandle.configString.toLowerCase().includes(lowerEventValue) };
       suggestionsSave.push(embeddingHandle)
     }
-    this.embeddingHandlesMap.set(embeddingForm.get("targetAttribute").value, suggestionsSave);
+    this.embeddingHandlesMap[embeddingForm.get("targetAttribute").value] = suggestionsSave;
   }
 
-  setCurrentEmbeddingHandle(embeddingHandle, hoverBox: HTMLElement, listElement: HTMLElement) {
+  setCurrentEmbeddingHandle(embeddingHandle: any, hoverBox: HTMLElement, listElement: HTMLElement) {
+    if (hoverBox != null) hoverBox.style.display = 'block';
     this.settingModals.embedding.create.currentEmbeddingHandle = embeddingHandle;
     if (embeddingHandle) {
       const dataBoundingBox: DOMRect = listElement.getBoundingClientRect();
@@ -132,8 +133,22 @@ export class EmbeddingsComponent implements OnInit {
     }
   }
 
+  checkModelDownloaded() {
+    if (!this.embeddingHandlesMap || !this.downloadedModels) return;
+    for (let key in this.embeddingHandlesMap) {
+      let value = this.embeddingHandlesMap[key];
+      value.forEach((element: any) => {
+        element.isModelDownloaded = this.checkIfModelIsDownloaded(element.configString);
+      });
+    }
+  }
+
   checkIfModelIsDownloaded(modelName: string) {
     const findModel = this.downloadedModels && this.downloadedModels.find(el => el.name === modelName);
     return findModel !== undefined ? true : false;
+  }
+
+  private checkStillLoading() {
+    this.somethingLoading = this.attributesArrayTextUsableUploaded == undefined || this.attributesArrayTextUsableUploaded?.length == 0 || this.embeddingHandlesMap == undefined || this.downloadedModels?.length == 0;
   }
 }
