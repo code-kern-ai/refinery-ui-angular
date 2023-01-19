@@ -44,15 +44,15 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
   embeddingQuery$: any;
   tokenizationProgress: Number;
   downloadMessage: DownloadState = DownloadState.NONE;
-  embeddingHandlesMap: { [key: string]: any } = {};
+  embeddingHandles: { [embeddingId: string]: any } = {};
   isManaged: boolean = true;
   attributeVisibilityStates = attributeVisibilityStates;
   settingModals: SettingModals = createDefaultSettingModals();
   dataHandlerHelper: DataHandlerHelper;
   projectId: string;
   attributes: Attribute[] = [];
-  attributesArrayTextUsableUploaded: Attribute[];
-  attributesArrayUsableUploaded: Attribute[];
+  useableTextAttributes: Attribute[];
+  useableAttributes: Attribute[];
   embeddings$: any;
   suggestions$: any;
   lh: LabelHelper;
@@ -99,7 +99,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
       combineLatest(tasks$).subscribe((res: any[]) => {
         // prepare attributes
         this.attributes = res[0];
-        this.attributesArrayTextUsableUploaded = res[0];
+        this.useableTextAttributes = res[0];
         this.attributes.forEach((attribute) => {
           attribute.dataTypeName = this.dataTypesArray.find((type) => type.value === attribute?.dataType).name;
           attribute.visibilityIndex = this.attributeVisibilityStates.findIndex((type) => type.value === attribute?.visibility);
@@ -108,13 +108,13 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
 
         // prepare embeddings
         this.embeddings = res[1];
-        this.attributesArrayTextUsableUploaded = this.attributesArrayTextUsableUploaded.filter((attribute: any) => (attribute.state == 'UPLOADED' || attribute.state == 'AUTOMATICALLY_CREATED' || attribute.state == 'USABLE') && attribute.dataType == 'TEXT');
-        this.attributesArrayUsableUploaded = this.attributesArrayTextUsableUploaded.filter((attribute: any) => (attribute.state == 'UPLOADED' || attribute.state == 'AUTOMATICALLY_CREATED' || attribute.state == 'USABLE'));
+        this.useableTextAttributes = this.useableTextAttributes.filter((attribute: any) => (attribute.state == 'UPLOADED' || attribute.state == 'AUTOMATICALLY_CREATED' || attribute.state == 'USABLE') && attribute.dataType == 'TEXT');
+        this.useableAttributes = this.attributes.filter((attribute: any) => (attribute.state == 'UPLOADED' || attribute.state == 'AUTOMATICALLY_CREATED' || attribute.state == 'USABLE'));
 
         // prepare embedding suggestions
         const onlyTextAttributes = this.attributes.filter(a => a.dataType == 'TEXT');
         this.dataHandlerHelper.prepareEmbeddingFormGroup(onlyTextAttributes, this.settingModals, this.embeddings);
-        this.embeddingHandlesMap = this.dataHandlerHelper.prepareEmbeddingHandles(projectId, onlyTextAttributes, project.tokenizer, res[2]);
+        this.embeddingHandles = this.dataHandlerHelper.prepareEmbeddingHandles(projectId, onlyTextAttributes, project.tokenizer, res[2]);
       })
     }));
 

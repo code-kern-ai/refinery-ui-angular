@@ -53,7 +53,7 @@
                                 <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
                                     <select formControlName="taskType"
                                         class="select select-sm select-bordered pr-8 max-w-xs">
-                                        <option *ngFor="let dropdown of labelingTasksDropdownValues()"
+                                        <option *ngFor="let dropdown of labelingTasksDropdownArray"
                                             [attr.disabled]="isLabelingTaskOptionDisabled(labelingTaskContainer,dropdown.value)?true:null"
                                             [value]="dropdown.value">{{
                                             dropdown.name }}
@@ -161,7 +161,7 @@
 <kern-modal [isOpen]="settingModals.label.create.open" closeButton="X" [modalBoxStyle]="{'width':'30rem'}"
     [acceptButton]="{
     buttonCaption: 'Add label',
-    disabled: !isLabelNameUnique(settingModals.label.create.taskId,labelName.value) || labelName.value == '',
+    disabled: !settingModals.label.create.isDuplicateName || labelName.value == '',
     emitObject: this, emitFunction: addLabel
 }" (optionClicked)="settingModals.label.create.open = false">
     <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
@@ -209,7 +209,7 @@
         <select #labelingTaskTarget class="select select-bordered select-sm"
             (change)="setLabelingTaskTarget(labelingTaskTarget.value)">
             <option value="@@NO_ATTRIBUTE@@" selected="selected">Full Record</option>
-            <option *ngFor="let attribute of attributesArrayUsableUploaded" [value]="attribute.id">
+            <option *ngFor="let attribute of useableAttributes" [value]="attribute.id">
                 {{attribute.name}}
             </option>
         </select>

@@ -26,29 +26,16 @@ export class DataHandlerHelper {
         }
     }
 
-    getAttributeArrayAttribute(attributeId: string, valueID: string, attributes: Attribute[]) {
+    getAttributeArrayAttribute(attributeId: string, valueKey: string, attributes: Attribute[]) {
         for (let i = 0; i < attributes.length; i++) {
             const att = attributes[i];
-            if (attributeId == att.id) return att[valueID];
+            if (attributeId == att.id) return att[valueKey];
         }
         return 'UNKNOWN';
     }
 
     prepareAttributesRequest(projectId: string): any {
         return this.projectApolloService.getAttributesByProjectId(projectId, ['ALL']);
-    }
-
-    attributeChangedToText(attributes: Attribute[]): boolean {
-        for (let i = 0; i < attributes.length; i++) {
-            const att = attributes[i]
-            const wantedDataType = this.getAttributeArrayAttribute(att.id, 'dataType', attributes);
-            if (att.dataType != wantedDataType && wantedDataType == "TEXT") return true;
-        }
-        return false;
-    }
-
-    createAttributeTokenStatistics(projectId: string, attributeId: string) {
-        this.projectApolloService.createAttributeTokenStatistics(projectId, attributeId).pipe(first()).subscribe();
     }
 
     requestPKeyCheck(projectId: string, attributes: Attribute[]) {
@@ -115,22 +102,22 @@ export class DataHandlerHelper {
     }
 
     prepareEmbeddingHandles(projectId: string, attributes: any, tokenizer: string, encoderSuggestions: any): any {
-        let embeddingHandlesMap: { [key: string]: any } = {};
+        let embeddingHandles: { [embeddingId: string]: any } = {};
         if (!projectId) {
             let timer = interval(250).subscribe(() => {
                 if (!projectId) {
-                    embeddingHandlesMap = this.parseEncoderToSuggestions(encoderSuggestions, attributes, tokenizer);
+                    embeddingHandles = this.parseEncoderToSuggestions(encoderSuggestions, attributes, tokenizer);
                     timer.unsubscribe();
                 }
             });
         } else {
-            embeddingHandlesMap = this.parseEncoderToSuggestions(encoderSuggestions, attributes, tokenizer);
+            embeddingHandles = this.parseEncoderToSuggestions(encoderSuggestions, attributes, tokenizer);
         }
-        return embeddingHandlesMap;
+        return embeddingHandles;
     }
 
     private parseEncoderToSuggestions(encoderSuggestions: any, attributes: Attribute[], tokenizer: string): any {
-        let embeddingHandlesMap: { [key: string]: any } = {}
+        let embeddingHandles: { [embeddingId: string]: any } = {}
         encoderSuggestions = encoderSuggestions.filter(e => e.tokenizers.includes("all") || e.tokenizers.includes(tokenizer))
         if (!encoderSuggestions.length) return;
         if (encoderSuggestions) encoderSuggestions.forEach(element => {
@@ -142,9 +129,9 @@ export class DataHandlerHelper {
             }
         });
         attributes.forEach(att => {
-            embeddingHandlesMap[att.id] = encoderSuggestions;
+            embeddingHandles[att.id] = encoderSuggestions;
         });
-        return embeddingHandlesMap;
+        return embeddingHandles;
     }
 
     prepareEmbeddingsRequest(projectId: string) {

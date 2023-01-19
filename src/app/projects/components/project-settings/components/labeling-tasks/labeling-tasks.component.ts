@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, Input, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, Input, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { Subscription, timer } from 'rxjs';
 import { distinctUntilChanged, first } from 'rxjs/operators';
@@ -16,12 +16,12 @@ import { SettingModals } from '../../helper/modal-helper';
   templateUrl: './labeling-tasks.component.html',
   styleUrls: ['./labeling-tasks.component.scss']
 })
-export class LabelingTasksComponent implements OnInit {
+export class LabelingTasksComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @Input() project: Project;
   @Input() settingModals: SettingModals;
   @Input() dataHandlerHelper: DataHandlerHelper;
-  @Input() attributesArrayUsableUploaded: { id: string, name: string }[];
+  @Input() useableAttributes: { id: string, name: string }[];
   @Input() attributes: Attribute[];
   @Input() lh: LabelHelper;
 
@@ -49,6 +49,7 @@ export class LabelingTasksComponent implements OnInit {
 
   ngOnInit(): void {
     this.prepareLabelingTasksRequest(this.project.id);
+    this.labelingTasksDropdownArray = this.labelingTasksDropdownValues();
     NotificationService.subscribeToNotification(this, {
       projectId: this.project.id,
       whitelist: ['label_created', 'label_deleted', 'labeling_task_deleted', 'labeling_task_updated', 'labeling_task_created'],
@@ -78,7 +79,6 @@ export class LabelingTasksComponent implements OnInit {
     [this.labelingTasksQuery$, labelingTasks$] = this.projectApolloService.getLabelingTasksByProjectId(projectId);
     this.subscriptions$.push(labelingTasks$.subscribe((tasks) => {
       tasks.sort((a, b) => a.relativePosition - b.relativePosition || a.name.localeCompare(b.name))
-
       if (this.onlyLabelsChanged(tasks)) {
         this.lh.setLabelMap(tasks);
       } else {
@@ -105,7 +105,6 @@ export class LabelingTasksComponent implements OnInit {
           this.labelingTasksArray.push(group);
         });
       }
-
     }));
     return labelingTasks$;
   }
@@ -216,6 +215,7 @@ export class LabelingTasksComponent implements OnInit {
   checkAndModifyLabelName(eventTarget: HTMLInputElement) {
     eventTarget.value = eventTarget.value.replace("-", " ");
     this.settingModals.label.create.labelName = eventTarget;
+    this.settingModals.label.create.isDuplicateName = this.isLabelNameUnique(this.settingModals.label.create.taskId, eventTarget.value);
   }
 
   onlyLabelsChanged(tasks: any): boolean {
@@ -240,12 +240,17 @@ export class LabelingTasksComponent implements OnInit {
   }
 
   removeLabel() {
+    if (!this.settingModals.label.delete.open) return;
     const labelDeleteData = this.settingModals.label.delete;
     this.lh.removeLabel(this.project.id, labelDeleteData.taskId, labelDeleteData.label.id, labelDeleteData.label.color);
   }
 
   addLabel(): void {
-    this.requestTimeOut = this.lh.addLabel(this.project.id, this.settingModals.label.create.taskId, this.settingModals.label.create.labelName, this.requestTimeOut);
+    this.subscriptions$.push(
+      this.lh.addLabel(this.project.id, this.settingModals.label.create.taskId, this.settingModals.label.create.labelName, this.requestTimeOut).subscribe((r: any) => {
+        this.requestTimeOut = r;
+      })
+    );
   }
 
   addLabelingTask() {

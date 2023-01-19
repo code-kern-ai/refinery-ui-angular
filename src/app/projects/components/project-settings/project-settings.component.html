@@ -1,6 +1,6 @@
 <div *ngIf="project" class="p-4 bg-gray-100 h-full overflow-y-auto flex-1 flex flex-col">
     <kern-data-schema [project]="project" [settingModals]="settingModals" [attributes]="attributes"
-        [pKeyValid]="dataHandlerHelper.pKeyValid" [dataHandlerHelper]="dataHandlerHelper">
+        [pKeyValid]="dataHandlerHelper.pKeyValid">
     </kern-data-schema>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-2 mt-1 align-top">
@@ -81,13 +81,12 @@
         </div>
     </div>
 
-    <kern-embeddings [embeddingHandlesMap]="embeddingHandlesMap"
-        [attributesArrayTextUsableUploaded]="attributesArrayTextUsableUploaded" [embeddings]="embeddings"
-        [settingModals]="settingModals" [project]="project" [isManaged]="isManaged"
+    <kern-embeddings [embeddingHandles]="embeddingHandles" [useableTextAttributes]="useableTextAttributes"
+        [embeddings]="embeddings" [settingModals]="settingModals" [project]="project" [isManaged]="isManaged"
         [dataHandlerHelper]="dataHandlerHelper" [attributes]="attributes"></kern-embeddings>
 
     <kern-labeling-tasks [settingModals]="settingModals" [project]="project" [dataHandlerHelper]="dataHandlerHelper"
-        [attributesArrayUsableUploaded]="attributesArrayUsableUploaded" [attributes]="attributes" [lh]="lh">
+        [useableAttributes]="useableAttributes" [attributes]="attributes" [lh]="lh">
     </kern-labeling-tasks>
 
     <kern-project-metadata [project]="project"></kern-project-metadata>

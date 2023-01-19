@@ -178,7 +178,7 @@
         Add an embedding </div>
     <div class="mb-2 flex flex-grow justify-center text-sm text-gray-500">
         Pick from the below solutions to build a vector representation</div>
-    <div *ngIf="attributesArrayTextUsableUploaded && settingModals.embedding.create.embeddingCreationFormGroup">
+    <div *ngIf="useableTextAttributes && settingModals.embedding.create.embeddingCreationFormGroup">
         <form [formGroup]="settingModals.embedding.create.embeddingCreationFormGroup"
             class="grid grid-cols-2  gap-2 items-center" style="grid-template-columns: max-content auto;">
             <div class="tooltip tooltip-right" data-tip="Choose attribute that will be encoded">
@@ -188,7 +188,7 @@
             </div>
             <select formControlName="targetAttribute" class="select select-bordered select-sm max-w-xs"
                 data-intercom-target="Settings Page Embedding Mask Target Attribute Selector">
-                <option *ngFor="let attribute of attributesArrayTextUsableUploaded" [value]="attribute.id">
+                <option *ngFor="let attribute of useableTextAttributes" [value]="attribute.id">
                     {{attribute.name}}
                 </option>
             </select>
@@ -207,7 +207,7 @@
                         style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Configuration</span></span>
             </div>
             <div class="dropdown" data-intercom-target="Settings Page Embedding Mask Handle Selector With Suggestions"
-                *ngIf="embeddingHandlesMap && embeddingHandlesMap[settingModals.embedding.create.embeddingCreationFormGroup.get('targetAttribute').value] as suggestions;else noSuggestions">
+                *ngIf="embeddingHandles && embeddingHandles[settingModals.embedding.create.embeddingCreationFormGroup.get('targetAttribute').value] as suggestions;else noSuggestions">
                 <div tabindex="0" class="flex flex-row select select-bordered select-sm pl-0 pr-8">
                     <input #inputEmbeddingHandle type="text" placeholder="Type to search..."
                         class="w-full font-bold input input-sm" style="outline:none; box-shadow:none;height:1.9rem;"

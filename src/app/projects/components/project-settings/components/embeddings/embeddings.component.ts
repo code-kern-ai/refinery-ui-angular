@@ -1,7 +1,8 @@
-import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { Subscription, timer } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { Project } from 'src/app/base/entities/project';
+import { NotificationService } from 'src/app/base/services/notification.service';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { Attribute } from '../../entities/attribute.type';
 import { DownloadedModel } from '../../entities/downloaded-model.type';
@@ -14,41 +15,48 @@ import { SettingModals } from '../../helper/modal-helper';
   templateUrl: './embeddings.component.html',
   styleUrls: ['./embeddings.component.scss'],
 })
-export class EmbeddingsComponent implements OnInit {
+export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
 
   @Input() project: Project;
-  @Input() attributesArrayTextUsableUploaded: Attribute[];
+  @Input() useableTextAttributes: Attribute[];
   @Input() settingModals: SettingModals;
   @Input() isManaged: boolean;
   @Input() embeddings: Embedding[];
-  @Input() embeddingHandlesMap: { [key: string]: any };
+  @Input() embeddingHandles: { [embeddingId: string]: any };
   @Input() dataHandlerHelper: DataHandlerHelper;
   @Input() attributes: Attribute[];
 
   downloadedModels: DownloadedModel[];
   subscriptions$: Subscription[] = [];
   somethingLoading: boolean = false;
+  downloadedModelsQuery$: any;
 
   constructor(private projectApolloService: ProjectApolloService) { }
 
   ngOnInit(): void {
     this.prepareDownloadedModels();
+
+    NotificationService.subscribeToNotification(this, {
+      whitelist: ['model_provider_download'],
+      func: this.handleWebsocketNotification
+    });
   }
 
   ngOnDestroy() {
     this.subscriptions$.forEach((subscription) => subscription.unsubscribe());
+    NotificationService.unsubscribeFromNotification(this, this.project.id);
   }
 
   ngOnChanges(changes: SimpleChanges) {
     this.checkStillLoading();
-    if (changes.embeddingHandlesMap) {
+    if (changes.embeddingHandles) {
       this.checkModelDownloaded();
     }
   }
 
   prepareDownloadedModels() {
-    let downloadedModelsQuery$, downloadedModelsList$;
-    [downloadedModelsQuery$, downloadedModelsList$] = this.projectApolloService.getModelProviderInfo();
+    let downloadedModelsList$;
+    [this.downloadedModelsQuery$, downloadedModelsList$] = this.projectApolloService.getModelProviderInfo();
     this.subscriptions$.push(
       downloadedModelsList$.subscribe((downloadedModels) => {
         this.downloadedModels = downloadedModels;
@@ -59,9 +67,8 @@ export class EmbeddingsComponent implements OnInit {
   checkForceHiddenHandles() {
     const granularity = this.settingModals.embedding.create.embeddingCreationFormGroup.get('granularity').value;
     const attId = this.settingModals.embedding.create.embeddingCreationFormGroup.get('targetAttribute').value;
-    const suggestionList = this.embeddingHandlesMap[attId];
+    const suggestionList = this.embeddingHandles[attId];
     for (let element of suggestionList) {
-      element = { ...element };
       element.forceHidden = true;
       if ((granularity == 'ON_ATTRIBUTE' && element.applicability?.attribute)
         || (granularity == 'ON_TOKEN' && element.applicability?.token)) {
@@ -92,7 +99,7 @@ export class EmbeddingsComponent implements OnInit {
   }
 
   selectFirstUnhiddenEmbeddingHandle(inputElement: HTMLInputElement) {
-    const suggestionList = this.embeddingHandlesMap[this.settingModals.embedding.create.embeddingCreationFormGroup.get("targetAttribute").value];
+    const suggestionList = this.embeddingHandles[this.settingModals.embedding.create.embeddingCreationFormGroup.get("targetAttribute").value];
     for (let embeddingHandle of suggestionList) {
       if (!embeddingHandle.hidden && !embeddingHandle.forceHidden) {
         this.selectEmbeddingHandle(embeddingHandle, inputElement);
@@ -113,7 +120,7 @@ export class EmbeddingsComponent implements OnInit {
   checkEmbeddingHandles(eventTarget: HTMLInputElement) {
     const embeddingForm = this.settingModals.embedding.create.embeddingCreationFormGroup;
     embeddingForm.get('embeddingHandle').setValue(eventTarget.value);
-    const suggestionList = this.embeddingHandlesMap[embeddingForm.get("targetAttribute").value];
+    const suggestionList = this.embeddingHandles[embeddingForm.get("targetAttribute").value];
     if (!suggestionList || suggestionList.length == 0) return;
     const lowerEventValue = eventTarget.value.toLowerCase();
     let suggestionsSave = [];
@@ -121,7 +128,7 @@ export class EmbeddingsComponent implements OnInit {
       embeddingHandle = { ...embeddingHandle, hidden: !embeddingHandle.configString.toLowerCase().includes(lowerEventValue) };
       suggestionsSave.push(embeddingHandle)
     }
-    this.embeddingHandlesMap[embeddingForm.get("targetAttribute").value] = suggestionsSave;
+    this.embeddingHandles[embeddingForm.get("targetAttribute").value] = suggestionsSave;
   }
 
   setCurrentEmbeddingHandle(embeddingHandle: any, hoverBox: HTMLElement, listElement: HTMLElement) {
@@ -135,9 +142,9 @@ export class EmbeddingsComponent implements OnInit {
   }
 
   checkModelDownloaded() {
-    if (!this.embeddingHandlesMap || !this.downloadedModels) return;
-    for (let key in this.embeddingHandlesMap) {
-      let value = this.embeddingHandlesMap[key];
+    if (!this.embeddingHandles || !this.downloadedModels) return;
+    for (let key in this.embeddingHandles) {
+      let value = this.embeddingHandles[key];
       value.forEach((element: any) => {
         element.isModelDownloaded = this.checkIfModelIsDownloaded(element.configString);
       });
@@ -150,6 +157,12 @@ export class EmbeddingsComponent implements OnInit {
   }
 
   private checkStillLoading() {
-    this.somethingLoading = this.attributesArrayTextUsableUploaded == undefined || this.attributesArrayTextUsableUploaded?.length == 0 || this.embeddingHandlesMap == undefined || this.downloadedModels?.length == 0;
+    this.somethingLoading = this.useableTextAttributes == undefined || this.useableTextAttributes?.length == 0 || this.embeddingHandles == undefined || this.downloadedModels?.length == 0;
+  }
+
+  handleWebsocketNotification(msgParts) {
+    if (msgParts[1] === 'model_provider_download' && msgParts[2] === 'finished') {
+      timer(2500).subscribe(() => this.downloadedModelsQuery$.refetch());
+    }
   }
 }

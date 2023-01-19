@@ -1,4 +1,4 @@
-import { timer } from "rxjs";
+import { Subject, timer } from "rxjs";
 import { first } from "rxjs/operators";
 import { ProjectApolloService } from "src/app/base/services/project/project-apollo.service";
 import { ProjectSettingsComponent } from "../project-settings.component";
@@ -75,11 +75,14 @@ export class LabelHelper {
 
         labelInput.value = '';
         labelInput.focus();
+
+        let subject = new Subject<boolean>();
         requestTimeOut = true;
         timer(100).subscribe(() => {
             requestTimeOut = false;
-            return requestTimeOut;
+            subject.next(requestTimeOut);
         });
+        return subject.asObservable();
     }
 
     public checkRenameLabel() {

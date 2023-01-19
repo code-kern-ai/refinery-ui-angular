@@ -53,6 +53,7 @@ export type CreateLabelModal = {
     open: boolean;
     taskId: string;
     labelName: HTMLInputElement;
+    isDuplicateName: boolean;
 };
 
 export type DeleteLabelModal = {
@@ -107,7 +108,8 @@ export function createDefaultSettingModals(): SettingModals {
             create: {
                 open: false,
                 taskId: null,
-                labelName: null
+                labelName: null,
+                isDuplicateName: false
             },
             delete: {
                 open: false,
