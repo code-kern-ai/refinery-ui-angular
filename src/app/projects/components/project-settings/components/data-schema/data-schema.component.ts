@@ -19,7 +19,7 @@ export class DataSchemaComponent implements OnInit {
   @Input() pKeyValid: boolean;
   @Input() dataHandlerHelper: DataHandlerHelper;
 
-  tooltipsArray: string[] = [];
+  tooltipsArray: string[];
   attributeVisibilityStates = attributeVisibilityStates;
   somethingLoading: boolean = false;
 

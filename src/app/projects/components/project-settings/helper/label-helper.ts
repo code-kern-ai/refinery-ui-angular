@@ -1,9 +1,7 @@
 import { timer } from "rxjs";
 import { first } from "rxjs/operators";
-import { LabelSource } from "src/app/base/enum/graphql-enums";
 import { ProjectApolloService } from "src/app/base/services/project/project-apollo.service";
 import { LabelingTasksComponent } from "../components/labeling-tasks/labeling-tasks.component";
-import { ProjectSettingsComponent } from "../project-settings.component";
 
 
 

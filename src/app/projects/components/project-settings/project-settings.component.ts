@@ -12,13 +12,16 @@ import { ConfigManager } from 'src/app/base/services/config-service';
 import { UserManager } from 'src/app/util/user-manager';
 import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
 import { dataTypes } from 'src/app/util/data-types';
-import { toPythonFunctionName } from 'src/app/util/helper-functions';
+import { formatBytes, toPythonFunctionName } from 'src/app/util/helper-functions';
 import { createDefaultSettingModals, SettingModals } from './helper/modal-helper';
 import { attributeVisibilityStates } from '../create-new-attribute/attributes-visibility-helper';
 import { DataHandlerHelper } from './helper/data-handler-helper';
 import { Project } from 'src/app/base/entities/project';
 import { Embedding } from './entities/embedding.type';
 import { Attribute } from './entities/attribute.type';
+import { downloadBlob, downloadText } from 'src/app/util/download-helper-functions';
+import { findFreeAttributeName, getMoveRight } from './helper/project-settings-helper';
+import { LabelHelper } from './helper/label-helper';
 
 @Component({
   selector: 'kern-project-settings',
@@ -52,7 +55,6 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
   attributesArrayUsableUploaded: Attribute[];
   embeddings$: any;
   suggestions$: any;
-  primaryKey$: any;
 
   get projectExportArray() {
     return this.settingModals.projectExport.projectExportSchema.get('attributes') as FormArray;
@@ -87,12 +89,10 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
       [this.attributesQuery$, this.attributes$] = this.dataHandlerHelper.prepareAttributesRequest(projectId);
       [this.embeddingQuery$, this.embeddings$] = this.dataHandlerHelper.prepareEmbeddingsRequest(projectId);
       this.suggestions$ = this.projectApolloService.getRecommendedEncodersForEmbeddings(projectId);
-      this.primaryKey$ = this.projectApolloService.getCompositeKeyIsValid(projectId);
       let tasks$ = [];
       tasks$.push(this.attributes$);
       tasks$.push(this.embeddings$);
       tasks$.push(this.suggestions$);
-      tasks$.push(this.primaryKey$);
 
       combineLatest(tasks$).subscribe((res: any[]) => {
         // prepare attributes
@@ -127,6 +127,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
         }
       })
     }
+    this.initForms();
     this.checkIfManagedVersion();
   }
 
@@ -137,6 +138,12 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
     requests.push({ commentType: CommentType.EMBEDDING, projectId: projectId });
     requests.push({ commentType: CommentType.LABEL, projectId: projectId });
     CommentDataManager.registerCommentRequests(this, requests);
+  }
+
+  private initForms() {
+    this.settingModals.projectExport.projectExportSchema = this.formBuilder.group({
+      attributes: this.formBuilder.array([]),
+    });
   }
 
   checkIfManagedVersion() {
@@ -206,46 +213,6 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
     }
   }
 
-  private downloadText(filename, text) {
-    if (!text) return;
-    const element = document.createElement('a');
-
-    element.setAttribute(
-      'href',
-      'data:text/plain;charset=utf-8,' + encodeURIComponent(text)
-    );
-    element.setAttribute('download', filename);
-
-    element.style.display = 'none';
-    document.body.appendChild(element);
-
-    element.click();
-
-    document.body.removeChild(element);
-  }
-
-  private downloadBlob(byteData: any, filename = 'file.zip') {
-    const blob = new Blob([byteData], {
-      type: "application/octet-stream"
-    })
-    const blobUrl = URL.createObjectURL(blob);
-
-    // Create a link element
-    const link = document.createElement("a");
-    link.href = blobUrl;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.dispatchEvent(
-      new MouseEvent('click', {
-        bubbles: true,
-        cancelable: true,
-        view: window
-      })
-    );
-
-    document.body.removeChild(link);
-  }
-
   requestProjectExportCredentials() {
     this.projectApolloService.getLastProjectExportCredentials(this.project.id).pipe(first()).subscribe((c) => {
       if (!c) this.settingModals.projectExport.projectExportCredentials = null;
@@ -256,7 +223,6 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
       }
     });
   }
-
 
   prepareDownload(projectId: string) {
     if (this.settingModals.projectExport.downloadPrepareMessage == DownloadState.PREPARATION || this.settingModals.projectExport.downloadPrepareMessage == DownloadState.DOWNLOAD) return;
@@ -271,8 +237,8 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
     this.settingModals.projectExport.downloadPrepareMessage = DownloadState.DOWNLOAD;
     const fileName = this.settingModals.projectExport.projectExportCredentials.downloadFileName;
     this.s3Service.downloadFile(this.settingModals.projectExport.projectExportCredentials, isText).subscribe((data) => {
-      if (isText) this.downloadText(fileName, data);
-      else this.downloadBlob(data, fileName);
+      if (isText) downloadText(fileName, data);
+      else downloadBlob(data, fileName);
       timer(5000).subscribe(
         () => (this.settingModals.projectExport.downloadPrepareMessage = DownloadState.NONE)
       );
@@ -284,7 +250,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
     this.projectApolloService.exportRecords(projectId).subscribe((e) => {
       this.downloadMessage = DownloadState.DOWNLOAD;
       const downloadContent = JSON.parse(e);
-      this.downloadText('export.json', downloadContent);
+      downloadText('export.json', downloadContent);
       const timerTime = Math.max(2000, e.length * 0.0001);
       timer(timerTime).subscribe(
         () => (this.downloadMessage = DownloadState.NONE)
@@ -314,21 +280,9 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
       if (element.export) downloadSize += element.sizeNumber;
     }
     if (downloadSize) {
-      var i = Math.floor(Math.log(downloadSize) / Math.log(1024));
-      this.settingModals.projectExport.downloadSizeText = Number((downloadSize / Math.pow(1024, i)).toFixed(2)) * 1 + ' ' + ['bytes', 'kB', 'MB', 'GB', 'TB'][i];
+      this.settingModals.projectExport.downloadSizeText = formatBytes(downloadSize, 2);
     } else {
       this.settingModals.projectExport.downloadSizeText = "0 bytes";
-    }
-  }
-
-  getMoveRight(tblName: string): boolean {
-    //at some point a better grouping would be useful
-    switch (tblName) {
-      case "embedding tensors":
-      case "information sources payloads":
-        return true;
-      default:
-        return false;
     }
   }
 
@@ -338,7 +292,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
       size.forEach((element) => {
         let group = this.formBuilder.group({
           export: element.default,
-          moveRight: this.getMoveRight(element.table),
+          moveRight: getMoveRight(element.table),
           name: element.table,
           desc: element.description,
           sizeNumber: element.byteSize,
@@ -356,10 +310,9 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
   }
 
   createUserAttribute() {
-    const attributeType = this.dataTypesArray.find((type) => type.name === this.settingModals.attribute.type).value;
-
     if (this.settingModals.attribute.duplicateNameExists) return;
 
+    const attributeType = this.dataTypesArray.find((type) => type.name === this.settingModals.attribute.type).value;
     this.projectApolloService
       .createUserAttribute(this.project.id, this.settingModals.attribute.name, attributeType)
       .pipe(first())
@@ -386,18 +339,8 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
 
   openModalAttribute() {
     this.settingModals.attribute.open = true;
-    this.settingModals.attribute.name = this.findFreeAttributeName();
+    this.settingModals.attribute.name = findFreeAttributeName(this.attributes);
     this.dataHandlerHelper.focusModalInputBox('attributeName');
-  }
-
-  findFreeAttributeName(): string {
-    const regEx = "^attribute_([0-9]+)$"
-    let counterList = [];
-    for (const item of this.attributes) {
-      const match = item.name.match(regEx);
-      if (match) counterList.push(parseInt(match[1]));
-    }
-    return "attribute_" + (counterList.length > 0 ? (Math.max(...counterList) + 1) : (this.attributes.length + 1));
   }
 }
 
