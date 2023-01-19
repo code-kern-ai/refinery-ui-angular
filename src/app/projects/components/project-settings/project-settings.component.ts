@@ -55,6 +55,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
   attributesArrayUsableUploaded: Attribute[];
   embeddings$: any;
   suggestions$: any;
+  lh: LabelHelper;
 
   get projectExportArray() {
     return this.settingModals.projectExport.projectExportSchema.get('attributes') as FormArray;
@@ -69,6 +70,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
     private s3Service: S3Service
   ) {
     this.dataHandlerHelper = new DataHandlerHelper(this.formBuilder, this.projectApolloService);
+    this.lh = new LabelHelper(this, this.projectApolloService);
   }
 
   ngOnInit(): void {

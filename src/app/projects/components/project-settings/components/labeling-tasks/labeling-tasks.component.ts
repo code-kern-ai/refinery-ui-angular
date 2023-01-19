@@ -23,11 +23,11 @@ export class LabelingTasksComponent implements OnInit {
   @Input() dataHandlerHelper: DataHandlerHelper;
   @Input() attributesArrayUsableUploaded: { id: string, name: string }[];
   @Input() attributes: Attribute[];
+  @Input() lh: LabelHelper;
 
   @ViewChildren('inputTaskName') inputTaskName: QueryList<ElementRef>;
   labelingTasksQuery$: any;
   isTaskNameUnique: boolean = true;
-  lh: LabelHelper;
   requestTimeOut: boolean = false;
   subscriptions$: Subscription[] = [];
   labelingTasksDropdownArray: { name: string, value: string }[] = [];
@@ -45,7 +45,6 @@ export class LabelingTasksComponent implements OnInit {
   }
 
   constructor(private formBuilder: FormBuilder, private projectApolloService: ProjectApolloService) {
-    this.lh = new LabelHelper(this, this.projectApolloService);
   }
 
   ngOnInit(): void {
@@ -246,7 +245,7 @@ export class LabelingTasksComponent implements OnInit {
   }
 
   addLabel(): void {
-    this.lh.addLabel(this.project.id, this.settingModals.label.create.taskId, this.settingModals.label.create.labelName);
+    this.requestTimeOut = this.lh.addLabel(this.project.id, this.settingModals.label.create.taskId, this.settingModals.label.create.labelName, this.requestTimeOut);
   }
 
   addLabelingTask() {
