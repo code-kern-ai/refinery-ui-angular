@@ -1,13 +1,12 @@
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, timer } from 'rxjs';
+import { timer } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { PreparationStep } from 'src/app/base/components/upload-assistant/label-studio/label-studio-assistant-helper';
 import { LabelStudioAssistantComponent } from 'src/app/base/components/upload-assistant/label-studio/label-studio-assistant.component';
 import { UploadState } from 'src/app/base/entities/upload-state';
 import { NotificationService } from 'src/app/base/services/notification.service';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
-import { ProjectStatus } from 'src/app/projects/enums/project-status.enum';
 import { UploadStates } from '../../services/s3.enums';
 import { S3Service } from '../../services/s3.service';
 import { UploadHelper } from '../helpers/upload-helper';
@@ -19,7 +18,7 @@ import { UploadFileType, UploadOptions, UploadTask, UploadType } from '../helper
   templateUrl: './upload.component.html',
   styleUrls: ['./upload.component.scss']
 })
-export class UploadComponent implements OnInit {
+export class UploadComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input() uploadFileType: UploadFileType;
   @Input() projectId?: string;
@@ -63,7 +62,7 @@ export class UploadComponent implements OnInit {
     this.recordAddUploadHelper = new RecordAddUploadHelper(this);
     this.existingProjectUploadHelper = new ExistingProjectUploadHelper(this.projectApolloService, this);
     this.lookupListsUploadHelper = new LookupListsUploadHelper(this)
-    this.uploadHelper = new UploadHelper(this, this.recordNewUploadHelper, this.recordAddUploadHelper, this.existingProjectUploadHelper, this.lookupListsUploadHelper);
+    this.uploadHelper = new UploadHelper(this, this.projectApolloService);
   }
 
   ngOnInit(): void {
@@ -76,6 +75,7 @@ export class UploadComponent implements OnInit {
     if (this.uploadType == UploadType.LABEL_STUDIO) {
       if (this.labelStudioUploadAssistant?.states.preparation != PreparationStep.MAPPING_TRANSFERRED) {
         this.deleteExistingProject();
+        this.submitted = false;
       }
     }
   }
@@ -85,7 +85,8 @@ export class UploadComponent implements OnInit {
       this.recordAddUploadHelper.projectName = this.uploadOptions.projectName;
       const tokenizerValuesDisplay = [];
       this.uploadOptions.tokenizerValues?.forEach((tokenizer: any, index: number) => {
-        tokenizer.name += (tokenizer.configString != undefined) ? ` (${tokenizer.configString})` : '';
+        const tokenizerNameContainsBrackets = tokenizer.name.includes('(') && tokenizer.name.includes(')');
+        tokenizer.name = tokenizer.name + (tokenizer.configString != undefined && !tokenizerNameContainsBrackets ? ` (${tokenizer.configString})` : '');
         tokenizerValuesDisplay[index] = tokenizer;
         this.tokenizerValuesDisabled[index] = tokenizer.disabled;
       });
@@ -115,16 +116,6 @@ export class UploadComponent implements OnInit {
     this.fileUpload.nativeElement.value = '';
   }
 
-  createProject(): Observable<any> {
-    return this.projectApolloService
-      .createProject("Imported Project", "Created during file upload " + this.file.name).pipe(first());
-  }
-
-  updateTokenizerAndProjectStatus(projectId: string): void {
-    this.projectApolloService.changeProjectTokenizer(projectId, this.recordNewUploadHelper.selectedTokenizer).pipe(first()).subscribe();
-    this.projectApolloService.updateProjectStatus(projectId, ProjectStatus.INIT_COMPLETE).pipe(first()).subscribe();
-  }
-
   finishUpUpload(filename: string, importOptions: string): void {
     this.projectApolloService
       .getUploadCredentialsAndId(this.projectId, filename, this.uploadFileType, importOptions, this.uploadType)
@@ -140,9 +131,13 @@ export class UploadComponent implements OnInit {
       this.s3Service.uploadFile(credentialsAndUploadId, this.file, filename).subscribe((progress) => {
         this.progressState = progress;
         if (this.progressState.state === UploadStates.DONE || this.progressState.state === UploadStates.ERROR) {
-          timer(500).subscribe(() => this.file = null);
+          timer(500).subscribe(() => {
+            this.file = null;
+            this.submitted = false;
+          });
           if (this.progressState.state === UploadStates.ERROR && this.uploadOptions.deleteProjectOnFail) {
             this.deleteExistingProject();
+            this.submitted = false;
           }
         }
       });
@@ -201,7 +196,10 @@ export class UploadComponent implements OnInit {
       if (msgParts[4] == UploadStates.DONE) this.uploadTaskQuery$.refetch();
       else if (msgParts[4] == UploadStates.ERROR) {
         this.resetUpload();
-        if (this.uploadOptions.deleteProjectOnFail) this.deleteExistingProject();
+        if (this.uploadOptions.deleteProjectOnFail) {
+          this.deleteExistingProject();
+          this.submitted = false;
+        }
       }
       else {
         this.uploadTask = { ...this.uploadTask };
@@ -238,6 +236,8 @@ export class UploadComponent implements OnInit {
 
   changeProjectTitle(event: any): void {
     this.recordNewUploadHelper.projectTitle = event.target.value;
+    this.isProjectTitleDuplicate = this.checkIfProjectTitleExist();
+    this.isProjectTitleEmpty = this.recordNewUploadHelper.projectTitle == '' ? true : false;
   }
 
   changeProjectDescription(event: any): void {
@@ -265,7 +265,8 @@ export class UploadComponent implements OnInit {
   }
 
   setTokenizer(tokenizer: string): void {
-    this.recordNewUploadHelper.selectedTokenizer = tokenizer;
+    const findName: any = this.uploadOptions.tokenizerValues.find((tok: any) => tok.configString === tokenizer);
+    this.recordNewUploadHelper.selectedTokenizer = findName.name;
   }
 
 }

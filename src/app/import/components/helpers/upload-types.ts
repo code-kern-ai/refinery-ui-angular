@@ -23,6 +23,7 @@ export type UploadOptions = {
  * @projectNameList {Project[], optional} - List of all projects
  * @projectName {string, optional} - Name of the project
  * @isModal {boolean, optional} - If true, it indicates that the upload component is used in a modal
+ * @closeModalOnClick {boolean, optional} - If true, the modal will be closed after the upload is finished
  */
     deleteProjectOnFail?: boolean;
     reloadOnFinish?: boolean;
@@ -31,6 +32,7 @@ export type UploadOptions = {
     projectNameList?: Project[];
     projectName?: string;
     isModal?: boolean;
+    closeModalOnClick?: boolean;
 };
 
 export type UploadTask = {

@@ -1,43 +1,35 @@
-import { Router } from "@angular/router";
-import { timer } from "rxjs";
-import { ExistingProjectUploadHelper, LookupListsUploadHelper, RecordAddUploadHelper, RecordNewUploadHelper } from "./upload-specific";
 import { UploadFileType } from "./upload-types";
 import { UploadComponent } from "../upload/upload.component";
+import { ProjectStatus } from "src/app/projects/enums/project-status.enum";
+import { first } from "rxjs/operators";
+import { ProjectApolloService } from "src/app/base/services/project/project-apollo.service";
 
 export class UploadHelper {
     baseComponent: UploadComponent;
-    recordNewUploadHelper: RecordNewUploadHelper;
-    recordAddUploadHelper: RecordAddUploadHelper;
-    existingProjectUploadHelper: ExistingProjectUploadHelper;
-    lookupListsUploadHelper: LookupListsUploadHelper;
 
-    constructor(baseComponent?: UploadComponent, recordNewUploadHelper?: RecordNewUploadHelper, recordAddUploadHelper?: RecordAddUploadHelper, existingProjectUploadHelper?: ExistingProjectUploadHelper, lookupListsUploadHelper?: LookupListsUploadHelper) {
+    constructor(baseComponent: UploadComponent, private projectApolloService: ProjectApolloService) {
         this.baseComponent = baseComponent;
-        this.recordNewUploadHelper = recordNewUploadHelper;
-        this.recordAddUploadHelper = recordAddUploadHelper;
-        this.existingProjectUploadHelper = existingProjectUploadHelper;
-        this.lookupListsUploadHelper = lookupListsUploadHelper;
     }
 
     upload(file?: File): void {
         if (file) this.baseComponent.file = file;
         switch (this.baseComponent.uploadFileType) {
             case UploadFileType.RECORDS_NEW:
-                this.recordNewUploadHelper.doUpload();
+                this.baseComponent.recordNewUploadHelper.doUpload();
                 break;
             case UploadFileType.RECORDS_ADD:
-                this.recordAddUploadHelper.doUpload();
+                this.baseComponent.recordAddUploadHelper.doUpload();
                 break;
             case UploadFileType.PROJECT:
-                this.existingProjectUploadHelper.doUpload();
+                this.baseComponent.existingProjectUploadHelper.doUpload();
                 break;
             case UploadFileType.KNOWLEDGE_BASE:
-                this.lookupListsUploadHelper.doUpload();
+                this.baseComponent.lookupListsUploadHelper.doUpload();
                 break;
         }
     }
 
-    getFinalFileName(projectId: string, uploadFileType: UploadFileType, knowledgeBaseId?: string): string {
+    executionStepsBeforeUploadingToMinIO(projectId: string, uploadFileType: UploadFileType, knowledgeBaseId?: string): string {
         this.baseComponent.projectId = projectId;
         this.baseComponent.reSubscribeToNotifications();
         this.baseComponent.executeOnFinish = () => {
@@ -57,16 +49,21 @@ export class UploadHelper {
         }
     }
 
-    setProjectId(projectId: string, baseComponent: UploadComponent): void {
-        this.baseComponent = baseComponent;
+    setProjectId(projectId: string): void {
         this.baseComponent.projectId = projectId;
     }
 
     executeUploadFile(uploadFileType: UploadFileType, baseComponent: UploadComponent): void {
         this.baseComponent = baseComponent;
-        this.baseComponent.updateTokenizerAndProjectStatus(this.baseComponent.projectId);
-        const finalFileName = this.getFinalFileName(this.baseComponent.projectId, uploadFileType, this.baseComponent.uploadOptions.knowledgeBaseId);
+        this.updateTokenizerAndProjectStatus(this.baseComponent.projectId);
+        const finalFileName = this.executionStepsBeforeUploadingToMinIO(this.baseComponent.projectId, uploadFileType, this.baseComponent.uploadOptions.knowledgeBaseId);
         const importOptions = uploadFileType == UploadFileType.RECORDS ? this.baseComponent.importOptionsHTML.nativeElement.value : '';
         this.baseComponent.finishUpUpload(finalFileName, importOptions);
+    }
+
+    updateTokenizerAndProjectStatus(projectId: string): void {
+        const parseTokenizer = this.baseComponent.recordNewUploadHelper.selectedTokenizer.split('(')[1].split(')')[0];
+        this.projectApolloService.changeProjectTokenizer(projectId, parseTokenizer).pipe(first()).subscribe();
+        this.projectApolloService.updateProjectStatus(projectId, ProjectStatus.INIT_COMPLETE).pipe(first()).subscribe();
     }
 }

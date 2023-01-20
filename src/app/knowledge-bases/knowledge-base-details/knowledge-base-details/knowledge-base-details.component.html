@@ -288,7 +288,9 @@
     [isModalOpen]="lookupListDetailsModals.uploadLookupList.open" [projectId]="projectId" [uploadOptions]="{
         deleteProjectOnFail: false,
         reloadOnFinish: false,
-        knowledgeBaseId: knowledgeBaseId
+        knowledgeBaseId: knowledgeBaseId,
+        closeModalOnClick: true,
+        isModal: true
     }" (closeModalEvent)="lookupListDetailsModals.uploadLookupList.open = false;"
     (refetchLookupLists)="refetchLookupLists($event)">
 </kern-modal-upload>

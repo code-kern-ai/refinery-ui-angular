@@ -11,6 +11,7 @@
     <kern-upload [uploadFileType]="uploadFileType" [uploadOptions]="{
             deleteProjectOnFail: uploadOptions.deleteProjectOnFail,
             reloadOnFinish: uploadOptions.reloadOnFinish,
-            knowledgeBaseId: uploadFileType == UploadFileType.KNOWLEDGE_BASE ? uploadOptions.knowledgeBaseId : null
+            knowledgeBaseId: uploadFileType == UploadFileType.KNOWLEDGE_BASE ? uploadOptions.knowledgeBaseId : null,
+            isModal: uploadOptions.isModal
         }" (fileAttached)="setFile($event)"></kern-upload>
 </kern-modal>

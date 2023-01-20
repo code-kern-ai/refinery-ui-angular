@@ -1,4 +1,4 @@
-<section class="p-4">
+<section [ngClass]="!uploadOptions.isModal ? 'p-4' : ''">
     <ng-template [ngIf]="uploadFileType == UploadFileType.RECORDS_NEW">
 
         <div class="form-control">
@@ -6,7 +6,7 @@
 
             <div class="flex flex-row">
                 <input [attr.disabled]="disableInput?true:null" name="projectTitle"
-                    [value]="recordNewUploadHelper.projectTitle" type="submit" (change)="changeProjectTitle($event)"
+                    [value]="recordNewUploadHelper.projectTitle" type="submit" (input)="changeProjectTitle($event)"
                     (keydown.enter)="initProjectEvent($event)" type="text" placeholder="Enter some title here ..."
                     required autocomplete="off" class="input input-sm input-bordered w-full placeholder-italic">
             </div>
@@ -18,7 +18,7 @@
         <div class="form-control mt-6">
             <label class="text-gray-500 text-sm font-normal">Project description <em>- optional</em></label>
             <textarea [attr.disabled]="disableInput?true:null" [value]="recordNewUploadHelper.description"
-                (change)="changeProjectDescription($event)" class="textarea-bordered placeholder-italic input input-sm"
+                (input)="changeProjectDescription($event)" class="textarea-bordered placeholder-italic input input-sm"
                 style="height: 2.2rem;" placeholder="Enter some description here ..."></textarea>
         </div>
 
@@ -228,7 +228,8 @@
 </ng-template>
 
 <ng-template #fileValidation>
-    <div class="rounded-md bg-yellow-50 p-4" *ngIf="submitted && !file && openTab === 0">
+    <div class="rounded-md bg-yellow-50 p-4"
+        *ngIf="submitted && !file && openTab === 0 && uploadTask?.state!==UploadStatesType.IN_PROGRESS ">
         <div class="flex">
             <div class="flex-shrink-0">
                 <svg class="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
