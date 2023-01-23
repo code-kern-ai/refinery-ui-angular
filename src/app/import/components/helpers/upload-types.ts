@@ -24,6 +24,7 @@ export type UploadOptions = {
  * @projectName {string, optional} - Name of the project
  * @isModal {boolean, optional} - If true, it indicates that the upload component is used in a modal
  * @closeModalOnClick {boolean, optional} - If true, the modal will be closed after the upload is finished
+ * @tokenizer {string, optional} - Tokenizer used for the upload
  */
     deleteProjectOnFail?: boolean;
     reloadOnFinish?: boolean;
@@ -33,6 +34,7 @@ export type UploadOptions = {
     projectName?: string;
     isModal?: boolean;
     closeModalOnClick?: boolean;
+    tokenizer?: string;
 };
 
 export type UploadTask = {

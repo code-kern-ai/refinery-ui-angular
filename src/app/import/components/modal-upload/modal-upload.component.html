@@ -12,6 +12,7 @@
             deleteProjectOnFail: uploadOptions.deleteProjectOnFail,
             reloadOnFinish: uploadOptions.reloadOnFinish,
             knowledgeBaseId: uploadFileType == UploadFileType.KNOWLEDGE_BASE ? uploadOptions.knowledgeBaseId : null,
-            isModal: uploadOptions.isModal
+            isModal: uploadOptions.isModal,
+            tokenizer: uploadOptions.tokenizer
         }" (fileAttached)="setFile($event)"></kern-upload>
 </kern-modal>

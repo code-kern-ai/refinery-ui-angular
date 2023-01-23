@@ -13,20 +13,7 @@ export class UploadHelper {
 
     upload(file?: File): void {
         if (file) this.baseComponent.file = file;
-        switch (this.baseComponent.uploadFileType) {
-            case UploadFileType.RECORDS_NEW:
-                this.baseComponent.recordNewUploadHelper.doUpload();
-                break;
-            case UploadFileType.RECORDS_ADD:
-                this.baseComponent.recordAddUploadHelper.doUpload();
-                break;
-            case UploadFileType.PROJECT:
-                this.baseComponent.existingProjectUploadHelper.doUpload();
-                break;
-            case UploadFileType.KNOWLEDGE_BASE:
-                this.baseComponent.lookupListsUploadHelper.doUpload();
-                break;
-        }
+        this.baseComponent.uploadSpecificHelper.doUpload();
     }
 
     executionStepsBeforeUploadingToMinIO(projectId: string, uploadFileType: UploadFileType, knowledgeBaseId?: string): string {
@@ -62,8 +49,13 @@ export class UploadHelper {
     }
 
     updateTokenizerAndProjectStatus(projectId: string): void {
-        const parseTokenizer = this.baseComponent.recordNewUploadHelper.selectedTokenizer.split('(')[1].split(')')[0];
-        this.projectApolloService.changeProjectTokenizer(projectId, parseTokenizer).pipe(first()).subscribe();
+        let tokenizer;
+        if (this.baseComponent.uploadFileType == UploadFileType.RECORDS_NEW) {
+            tokenizer = this.baseComponent.uploadSpecificHelper.selectedTokenizer.split('(')[1].split(')')[0];
+        } else {
+            tokenizer = this.baseComponent.uploadOptions.tokenizer;
+        }
+        this.projectApolloService.changeProjectTokenizer(projectId, tokenizer).pipe(first()).subscribe();
         this.projectApolloService.updateProjectStatus(projectId, ProjectStatus.INIT_COMPLETE).pipe(first()).subscribe();
     }
 }

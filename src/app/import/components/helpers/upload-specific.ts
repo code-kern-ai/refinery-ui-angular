@@ -38,6 +38,7 @@ export class RecordAddUploadHelper {
 }
 
 export class ExistingProjectUploadHelper {
+    selectedTokenizer: string = '(en_core_web_sm)';
 
     constructor(private projectApolloService: ProjectApolloService, private baseComponent: UploadComponent) {
         this.baseComponent = baseComponent;
@@ -48,6 +49,7 @@ export class ExistingProjectUploadHelper {
             .createProject("Imported Project", "Created during file upload " + this.baseComponent.file.name)
             .pipe(first()).subscribe((p: Project) => {
                 this.baseComponent.uploadHelper.setProjectId(p.id);
+                this.baseComponent.uploadOptions.tokenizer = this.selectedTokenizer;
                 this.baseComponent.uploadHelper.executeUploadFile(UploadFileType.PROJECT, this.baseComponent);
             });
     }

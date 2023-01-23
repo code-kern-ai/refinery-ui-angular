@@ -113,12 +113,12 @@ export class LabelStudioAssistantComponent implements OnInit, OnChanges, OnDestr
     else {
       if (this.inputData.uploadComponent.file) this.prepareData.fileName = this.inputData.uploadComponent.file.name;
       const obj = this.inputData.uploadFunctionThisObject;
-      if (obj['recordNewUploadHelper'].projectTitle) {
+      if (obj['uploadSpecificHelper'].projectTitle) {
         //project - new
-        this.prepareData.projectName = obj['recordNewUploadHelper'].projectTitle;
-      } else if (obj['recordAddUploadHelper'].projectName) {
+        this.prepareData.projectName = obj['uploadSpecificHelper'].projectTitle;
+      } else if (obj['uploadSpecificHelper'].projectName) {
         //project - add
-        this.prepareData.projectName = obj['recordAddUploadHelper'].projectName;
+        this.prepareData.projectName = obj['uploadSpecificHelper'].projectName;
       }
       this.canProceed = this.canProceed && !!this.prepareData.projectName && !!this.prepareData.fileName;
     }

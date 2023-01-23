@@ -259,4 +259,9 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     if (!this.adminData.isAdmin || !this.adminData.prjDeleteProject) return;
     this.projectApolloService.deleteProjectById(this.adminData.prjDeleteProject.id).pipe(first()).subscribe();
   }
+
+  refetchProjects(refetch: boolean) {
+    if (!refetch) return;
+    this.projectListQuery$.refetch();
+  }
 }

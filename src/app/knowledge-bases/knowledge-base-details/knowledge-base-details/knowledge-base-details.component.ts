@@ -21,6 +21,8 @@ import { UserManager } from 'src/app/util/user-manager';
 import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
 import { createDefaultLookupListDetailsModals, LookupListsDetailsModals } from './knowledge-bases-details-helper';
 import { UploadFileType } from 'src/app/import/components/helpers/upload-types';
+import { Project } from 'src/app/base/entities/project';
+import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 
 
 @Component({
@@ -59,6 +61,7 @@ export class KnowledgeBaseDetailsComponent implements OnInit, AfterViewInit, OnD
     return DownloadState;
   }
   lookupListDetailsModals: LookupListsDetailsModals = createDefaultLookupListDetailsModals();
+  project: Project;
 
   get UploadFileType(): typeof UploadFileType {
     return UploadFileType;
@@ -69,6 +72,7 @@ export class KnowledgeBaseDetailsComponent implements OnInit, AfterViewInit, OnD
     private activatedRoute: ActivatedRoute,
     private knowledgeBaseApolloService: KnowledgeBasesApolloService,
     private router: Router,
+    private projectApolloService: ProjectApolloService
   ) { }
   ngOnDestroy(): void {
     this.subscriptions$.forEach(element => element.unsubscribe());
@@ -85,6 +89,10 @@ export class KnowledgeBaseDetailsComponent implements OnInit, AfterViewInit, OnD
 
 
     this.projectId = this.activatedRoute.parent.snapshot.paramMap.get('projectId');
+    let projectQuery$, project$;
+    [projectQuery$, project$] = this.projectApolloService.getProjectByIdQuery(this.projectId);
+    this.subscriptions$.push(project$.subscribe((project) => this.project = project));
+
     this.knowledgeBaseId = this.activatedRoute.snapshot.paramMap.get('knowledgeBaseId');
     [this.knowledgeBaseQuery$, this.knowledgeBase$] = this.knowledgeBaseApolloService.getKnowledgeBaseByKnowledgeBaseId(this.projectId, this.knowledgeBaseId);
     [this.termsQuery$, this.terms$] = this.knowledgeBaseApolloService.getTermsByKnowledgeBaseId(this.projectId, this.knowledgeBaseId);

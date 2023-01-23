@@ -352,5 +352,5 @@
     deleteProjectOnFail: true,
     closeModalOnClick: true,
     isModal: true
-}" (closeModalEvent)="projectsModals.uploadProject.open = false;">
+}" (closeModalEvent)="projectsModals.uploadProject.open = false;" (refetchProjects)="refetchProjects($event)">
 </kern-modal-upload>

@@ -25,6 +25,7 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
   @Input() uploadOptions: UploadOptions;
 
   @Output() fileAttached = new EventEmitter<File>();
+  @Output() refetchProjects = new EventEmitter<boolean>();
 
   get UploadFileType(): typeof UploadFileType {
     return UploadFileType;
@@ -38,10 +39,7 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
   @ViewChild('fileUpload') fileUpload: ElementRef;
   @ViewChild(LabelStudioAssistantComponent) labelStudioUploadAssistant;
   uploadHelper: UploadHelper;
-  recordNewUploadHelper: RecordNewUploadHelper;
-  recordAddUploadHelper: RecordAddUploadHelper;
-  existingProjectUploadHelper: ExistingProjectUploadHelper;
-  lookupListsUploadHelper: LookupListsUploadHelper;
+  uploadSpecificHelper: any;
   file: File | null = null;
   openTab: number = 0;
   uploadStarted: boolean = false;
@@ -58,21 +56,19 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
   tokenizerValuesDisabled: boolean[] = [];
 
   constructor(private projectApolloService: ProjectApolloService, private router: Router, private s3Service: S3Service) {
-    this.recordNewUploadHelper = new RecordNewUploadHelper(this.projectApolloService, this);
-    this.recordAddUploadHelper = new RecordAddUploadHelper(this);
-    this.existingProjectUploadHelper = new ExistingProjectUploadHelper(this.projectApolloService, this);
-    this.lookupListsUploadHelper = new LookupListsUploadHelper(this)
     this.uploadHelper = new UploadHelper(this, this.projectApolloService);
   }
 
   ngOnInit(): void {
-    this.recordAddUploadHelper.projectName = this.uploadOptions.projectName;
+    this.createHelper();
     this.subscribeToNotifications();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.uploadOptions) {
-      this.recordAddUploadHelper.projectName = this.uploadOptions.projectName;
+      if (this.uploadFileType == UploadFileType.RECORDS_ADD && this.uploadSpecificHelper) {
+        this.uploadSpecificHelper.projectName = this.uploadOptions.projectName;
+      }
       const tokenizerValuesDisplay = [];
       this.uploadOptions.tokenizerValues?.forEach((tokenizer: any, index: number) => {
         const tokenizerNameContainsBrackets = tokenizer.name.includes('(') && tokenizer.name.includes(')');
@@ -87,11 +83,28 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
   ngOnDestroy(): void {
     if (this.uploadTask$) this.uploadTask$.unsubscribe();
     NotificationService.unsubscribeFromNotification(this, this.projectId);
-    if (this.uploadType == UploadType.LABEL_STUDIO) {
+    if (this.uploadType == UploadType.LABEL_STUDIO && this.uploadFileType == UploadFileType.RECORDS_NEW) {
       if (this.labelStudioUploadAssistant?.states.preparation != PreparationStep.MAPPING_TRANSFERRED) {
         this.deleteExistingProject();
         this.submitted = false;
       }
+    }
+  }
+
+  createHelper(): void {
+    switch (this.uploadFileType) {
+      case UploadFileType.RECORDS_NEW:
+        this.uploadSpecificHelper = new RecordNewUploadHelper(this.projectApolloService, this);
+        break;
+      case UploadFileType.RECORDS_ADD:
+        this.uploadSpecificHelper = new RecordAddUploadHelper(this);
+        break;
+      case UploadFileType.PROJECT:
+        this.uploadSpecificHelper = new ExistingProjectUploadHelper(this.projectApolloService, this);
+        break;
+      case UploadFileType.KNOWLEDGE_BASE:
+        this.uploadSpecificHelper = new LookupListsUploadHelper(this);
+        break;
     }
   }
 
@@ -181,7 +194,9 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   deleteExistingProject(): void {
-    this.projectApolloService.deleteProjectById(this.projectId).pipe(first()).subscribe();
+    this.projectApolloService.deleteProjectById(this.projectId).pipe(first()).subscribe(() => {
+      this.refetchProjects.emit(true);
+    });
   }
 
   resetUpload(): void {
@@ -228,7 +243,7 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
     if (this.file == null) return;
 
     if (this.uploadFileType == UploadFileType.RECORDS_NEW) {
-      if (this.recordNewUploadHelper.projectTitle == '') {
+      if (this.uploadSpecificHelper.projectTitle == '') {
         this.isProjectTitleEmpty = true;
         return;
       }
@@ -247,13 +262,13 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   changeProjectTitle(event: any): void {
-    this.recordNewUploadHelper.projectTitle = event.target.value;
+    this.uploadSpecificHelper.projectTitle = event.target.value;
     this.isProjectTitleDuplicate = this.checkIfProjectTitleExist();
-    this.isProjectTitleEmpty = this.recordNewUploadHelper.projectTitle == '' ? true : false;
+    this.isProjectTitleEmpty = this.uploadSpecificHelper.projectTitle == '' ? true : false;
   }
 
   changeProjectDescription(event: any): void {
-    this.recordNewUploadHelper.description = event.target.value;
+    this.uploadSpecificHelper.description = event.target.value;
   }
 
   toggleTab(tabNum: number): void {
@@ -266,7 +281,7 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   checkIfProjectTitleExist(): boolean {
-    const findProjectName = this.uploadOptions.projectNameList.find(project => project.name === this.recordNewUploadHelper.projectTitle);
+    const findProjectName = this.uploadOptions.projectNameList.find(project => project.name === this.uploadSpecificHelper.projectTitle);
     return findProjectName != undefined ? true : false;
   }
 
@@ -278,7 +293,7 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
 
   setTokenizer(tokenizer: string): void {
     const findName: any = this.uploadOptions.tokenizerValues.find((tok: any) => tok.configString === tokenizer);
-    this.recordNewUploadHelper.selectedTokenizer = findName.name;
+    this.uploadSpecificHelper.selectedTokenizer = findName.name;
   }
 
 }
