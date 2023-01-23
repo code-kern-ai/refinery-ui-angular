@@ -2,11 +2,17 @@ import { getLabelSourceOrder, InformationSourceReturnType, informationSourceType
 import { jsonCopy } from "src/app/util/helper-functions";
 import { TableDisplayData } from "../../sub-components/overview-table/helper";
 import { getHoverGroupsOverviewTable } from "../util-functions";
+import { LabelingSuiteManager } from "./manager";
 import { GOLD_STAR_USER_ID } from "./user";
 
-export class LabelingSuiteRlaManager {
+export class LabelingSuiteRlaPreparator {
 
     private rlas: any[];
+    private baseManager: LabelingSuiteManager;
+
+    constructor(baseManager: LabelingSuiteManager) {
+        this.baseManager = baseManager;
+    }
 
     public setRlas(rlas: any, tokenAttribute: any) {
         if (rlas) this.rlas = this.finalizeRlas(jsonCopy(rlas), tokenAttribute);
@@ -92,12 +98,14 @@ export class LabelingSuiteRlaManager {
                 taskName: e.labelingTaskLabel.labelingTask.name,
                 createdBy: this.getCreatedByName(e),
                 label: this.getLabelData(e),
+                canBeDeleted: this.baseManager.userManager.canDeleteRla(e),
                 rla: e
             };
         }
         result.sort((a, b) => a.orderPos - b.orderPos || a.orderPosSec - b.orderPosSec || a.createdBy.localeCompare(b.createdBy) || a.label.name.localeCompare(b.label.name));
         return result;
     }
+
 
     private getOrderPos(e: any): number {
         let pos = e.labelingTaskLabel.labelingTask.attribute?.relativePosition * 1000;
@@ -107,8 +115,9 @@ export class LabelingSuiteRlaManager {
     }
     private getSourceTypeText(e: any): string {
         if (e.sourceType == LabelSource.INFORMATION_SOURCE) return informationSourceTypeToString(e.informationSource.type, false);
-        return labelSourceToString(e.sourceType);
-
+        let final = labelSourceToString(e.sourceType);
+        if (e.isGoldStar) final += ' gold ⭐';
+        return final;
     }
 
 

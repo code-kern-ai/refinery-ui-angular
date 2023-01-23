@@ -3,7 +3,7 @@ import { timer } from 'rxjs';
 import { getLabelSourceOrder, getTaskTypeOrder, LabelingTask, LabelSource, UserRole } from 'src/app/base/enum/graphql-enums';
 import { enumToArray, jsonCopy } from 'src/app/util/helper-functions';
 import { LabelingSuiteManager, UpdateType } from '../../helper/manager/manager';
-import { LabelingSuiteRlaManager } from '../../helper/manager/recordRla';
+import { LabelingSuiteRlaPreparator } from '../../helper/manager/recordRla';
 import { ComponentType, LabelingSuiteLabelingSettings, LabelingSuiteMainSettings, LabelingSuiteSettings, LabelingSuiteTaskHeaderProjectSettings } from '../../helper/manager/settings';
 import { GOLD_STAR_USER_ID } from '../../helper/manager/user';
 import { LabelingSuiteComponent } from '../../main-component/labeling-suite.component';
@@ -30,7 +30,7 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
     task: null as LabelingSuiteTaskHeaderProjectSettings,
   };
 
-  get rlaPreparator(): LabelingSuiteRlaManager {
+  get rlaPreparator(): LabelingSuiteRlaPreparator {
     return this.lsm.recordManager.rlaPreparator;
   }
   lVars: LabelingVars = getDefaultLabelingVars();
@@ -95,6 +95,7 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
       this.lsm.unregisterUpdateListener(UpdateType.LABELING_TASKS, this);
       this.lsm.unregisterUpdateListener(UpdateType.RECORD, this);
       this.lsm.unregisterUpdateListener(UpdateType.ATTRIBUTES, this);
+      this.lsm.unregisterUpdateListener(UpdateType.DISPLAY_USER, this);
       this.lsm.settingManager.unregisterSettingListener(ComponentType.TASK_HEADER, this);
       this.lsm.settingManager.unregisterSettingListener(ComponentType.LABELING, this);
     }
@@ -490,6 +491,7 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
     } else {
       this.addLabelToSelection(task.attribute.id, task.id, labelId);
     }
+    if (this.htmlSettings.labeling.closeLabelBoxAfterLabel) this.activeTasks = null;
   }
 
   private addLabelToSelection(attributeId: string, labelingTaskId: string, labelId: string) {
@@ -533,8 +535,6 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
 
     if (existingLabels.length == 1) return;
     this.lsm.recordManager.addClassificationLabelToRecord(labelingTaskId, labelId);
-
-    this.activeTasks = null;
   }
 
   public deleteRecordLabelAssociation(rlaLabel: any) {

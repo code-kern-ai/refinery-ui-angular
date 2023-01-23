@@ -10,7 +10,7 @@ import { getLabelSourceOrder, informationSourceTypeToString, LabelSource, labelS
 import { LabelHelper } from 'src/app/projects/components/project-settings/helper/label-helper';
 import { dateAsUTCDate, jsonCopy } from 'src/app/util/helper-functions';
 import { LabelingSuiteManager, UpdateType } from '../../helper/manager/manager';
-import { LabelingSuiteRlaManager } from '../../helper/manager/recordRla';
+import { LabelingSuiteRlaPreparator } from '../../helper/manager/recordRla';
 import { ComponentType, LabelingSuiteOverviewTableSettings, LabelingSuiteSettings } from '../../helper/manager/settings';
 import { getHoverGroupsOverviewTable } from '../../helper/util-functions';
 import { LabelingSuiteComponent } from '../../main-component/labeling-suite.component';
@@ -38,7 +38,7 @@ export class LabelingSuiteOverviewTableComponent implements OnInit, OnDestroy, O
   //copy of settings for html so get methods doesn't need to be run on update but change management takes effect
   htmlSettings: LabelingSuiteOverviewTableSettings;
 
-  get rlaManager(): LabelingSuiteRlaManager {
+  get rlaManager(): LabelingSuiteRlaPreparator {
     return this.lsm.recordManager.rlaPreparator;
   }
   constructor(

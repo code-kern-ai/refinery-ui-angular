@@ -1,3 +1,4 @@
+import { ActivatedRoute } from "@angular/router";
 import { first, map } from "rxjs/operators";
 import { NotificationService } from "src/app/base/services/notification.service";
 import { ProjectApolloService } from "src/app/base/services/project/project-apollo.service";
@@ -8,6 +9,7 @@ import { LabelingSuiteComponent } from "../../main-component/labeling-suite.comp
 import { LabelingSuiteAttributeManager } from "./attribute";
 import { LabelingSuiteModalManager } from "./modals";
 import { LabelingSuiteRecordManager } from "./record";
+import { LabelingSuiteSessionManager } from "./session";
 import { LabelingSuiteSettingManager } from "./settings";
 import { LabelingSuiteTaskManager } from "./task";
 import { LabelingSuiteUserManager } from "./user";
@@ -21,6 +23,7 @@ export class LabelingSuiteManager implements DoBeforeDestroy {
     public settingManager: LabelingSuiteSettingManager;
     public modalManager: LabelingSuiteModalManager;
     public userManager: LabelingSuiteUserManager;
+    public sessionManager: LabelingSuiteSessionManager;
 
     //data manager
     public recordManager: LabelingSuiteRecordManager;
@@ -33,7 +36,20 @@ export class LabelingSuiteManager implements DoBeforeDestroy {
     //private changeListener
     private registeredUpdateListeners: Map<UpdateType, Map<Object, () => void>> = new Map<UpdateType, Map<Object, () => void>>();
 
-    constructor(projectId: string, projectApolloService: ProjectApolloService, recordApolloService: RecordApolloService, baseComponent: LabelingSuiteComponent) {
+    constructor(baseComponent: LabelingSuiteComponent, route: ActivatedRoute, projectId: string, projectApolloService: ProjectApolloService, recordApolloService: RecordApolloService) {
+
+        //first check session manager and redirect if necessary
+
+        this.sessionManager = new LabelingSuiteSessionManager(this, route);
+
+        if (this.sessionManager.redirectIfNecessary()) {
+            console.log("LabelingSuiteManager redirectIfNessecary")
+            return;
+        }
+
+        console.log("LabelingSuiteManager no redirect")
+
+
         this.projectId = projectId;
         this.baseComponent = baseComponent;
         this.settingManager = new LabelingSuiteSettingManager(projectId);

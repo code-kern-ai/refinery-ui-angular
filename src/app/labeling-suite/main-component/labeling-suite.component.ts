@@ -11,6 +11,7 @@ import { findProjectIdFromRoute } from 'src/app/util/helper-functions';
 import { UserManager } from 'src/app/util/user-manager';
 import { LabelingSuiteManager } from '../helper/manager/manager';
 import { ComponentType } from '../helper/manager/settings';
+import { UserType } from '../helper/manager/user';
 import { LabelingSuiteOverviewTableComponent } from '../sub-components/overview-table/overview-table.component';
 
 @Component({
@@ -23,7 +24,9 @@ export class LabelingSuiteComponent implements OnInit, OnDestroy {
 
   //HTML enums
   userRoleEnum: typeof UserRole = UserRole;
+  userTypeEnum: typeof UserType = UserType;
   componentTypeEnum: typeof ComponentType = ComponentType;
+
 
   //manager
   lsm: LabelingSuiteManager;
@@ -49,8 +52,8 @@ export class LabelingSuiteComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.lsm = new LabelingSuiteManager(projectId, this.projectApolloService, this.recordApolloService, this);
-    const recordId = '07837035-a31c-4e3f-bc6f-3c86637f6def';
+    this.lsm = new LabelingSuiteManager(this, this.activatedRoute, projectId, this.projectApolloService, this.recordApolloService);
+    const recordId = 'd045055b-c6d2-46f9-aff1-2cba38167dbc';
     this.lsm.recordManager.collectRecordData(recordId);
     this.setUpCommentRequests(projectId);
   }
@@ -108,10 +111,7 @@ export class LabelingSuiteComponent implements OnInit, OnDestroy {
 
     if ('123456789'.includes(event.key)) {
       const selectedPos = Number(event.key) - 1;
-      console.log(selectedPos);
-      // if (selectedPos < this.userIcons.length) {
-      //   this.showUserData(this.userIcons[selectedPos].id);
-      // }
+      this.lsm.userManager.selectUserByIdx(selectedPos);
     }
 
   }

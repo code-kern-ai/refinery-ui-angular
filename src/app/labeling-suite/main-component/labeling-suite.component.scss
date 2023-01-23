@@ -71,3 +71,21 @@ input[type="number"] {
 .wait * {
   cursor: wait;
 }
+
+
+svg.specialUserInActive:hover {
+  fill: #6DD87F;
+  opacity: 0.75;
+  stroke: none;
+}
+
+.specialUserActive {
+  fill: #6DD87F;
+  stroke: none;
+
+}
+
+.specialUserInActive {
+  fill: none;
+  stroke: #6DD87F;
+}

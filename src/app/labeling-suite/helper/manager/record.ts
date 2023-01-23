@@ -7,7 +7,7 @@ import { RecordApolloService } from "src/app/base/services/record/record-apollo.
 import { jsonCopy } from "src/app/util/helper-functions";
 import { DoBeforeDestroy } from "src/app/util/interfaces";
 import { LabelingSuiteManager, UpdateType } from "./manager";
-import { LabelingSuiteRlaManager as LabelingSuiteRlaPreparator } from "./recordRla";
+import { LabelingSuiteRlaPreparator } from "./recordRla";
 import { GOLD_STAR_USER_ID } from "./user";
 
 type RecordData = {
@@ -43,7 +43,7 @@ export class LabelingSuiteRecordManager implements DoBeforeDestroy {
         this.projectId = projectId;
         this.recordApolloService = recordApolloService;
         this.baseManager = baseManager;
-        this.rlaPreparator = new LabelingSuiteRlaPreparator();
+        this.rlaPreparator = new LabelingSuiteRlaPreparator(baseManager);
 
 
         NotificationService.subscribeToNotification(this, {

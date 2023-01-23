@@ -12,8 +12,12 @@ type UserData = {
     isLoggedInUser: boolean;
 }
 export const GOLD_STAR_USER_ID = "GOLD_STAR"
-export const ALL_USERS_USER_ID = "ALL_USERS_USER_ID"
-
+export const ALL_USERS_USER_ID = "ALL_USERS"
+export enum UserType {
+    GOLD,
+    ALL,
+    REGISTERED
+}
 
 export class LabelingSuiteUserManager implements DoBeforeDestroy {
     public mainUser: UserData;
@@ -22,6 +26,7 @@ export class LabelingSuiteUserManager implements DoBeforeDestroy {
 
     //list of users to switch through rla da
     public userIcons: any[];
+    public showUserIcons: boolean = false;
 
 
     private _displayUserId: string;
@@ -33,6 +38,7 @@ export class LabelingSuiteUserManager implements DoBeforeDestroy {
     }
     public set displayUserId(userId: string) {
         this._displayUserId = userId;
+        if (this.userIcons) this.userIcons.forEach(icon => icon.active = icon.id == userId);
         this.baseManager.runUpdateListeners(UpdateType.DISPLAY_USER);
     }
 
@@ -75,9 +81,23 @@ export class LabelingSuiteUserManager implements DoBeforeDestroy {
     private filterRlaCondition(rla): boolean {
         if (this.currentRole != UserRole.ENGINEER) return rla.sourceType == LabelSource.MANUAL && rla.createdBy == this.displayUserId;
         if (rla.sourceType != LabelSource.MANUAL) return true;
-        if (this.displayUserId == GOLD_STAR_USER_ID) return !!rla.isGoldStar;
+        if (this.displayUserId == ALL_USERS_USER_ID) return true;
+        if (!!rla.isGoldStar) return this.displayUserId == GOLD_STAR_USER_ID;
         return rla.createdBy == this.displayUserId;
     }
+
+    public canDeleteRla(rla): boolean {
+        if (rla.sourceType != LabelSource.MANUAL) return false;
+        if (this.currentRole != UserRole.ENGINEER) return false;
+        if (rla.isGoldStar) return true;
+        return rla.createdBy == this.mainUser.data.id;
+    }
+    public selectUserByIdx(idx: number) {
+        if (!this.showUserIcons) return;
+        if (idx >= this.userIcons.length) return;
+        this.displayUserId = this.userIcons[idx].id;
+    }
+
 
     public prepareUserIcons(rlaData: any[]) {
         if (!this.allUsers) {
@@ -88,7 +108,13 @@ export class LabelingSuiteUserManager implements DoBeforeDestroy {
         for (const rla of rlaData) {
             if (rla.sourceType != LabelSource.MANUAL) continue;
             if (rla.isGoldStar && !dict[GOLD_STAR_USER_ID]) {
-                dict[GOLD_STAR_USER_ID] = { id: GOLD_STAR_USER_ID, order: 0, name: "Combined Gold Labels" };
+                dict[GOLD_STAR_USER_ID] = {
+                    id: GOLD_STAR_USER_ID,
+                    order: 0,
+                    name: "Combined gold labels",
+                    userType: UserType.GOLD,
+                    active: false,
+                };
             } else {
                 const userId = rla.createdBy;
                 if (!dict[userId]) {
@@ -98,14 +124,18 @@ export class LabelingSuiteUserManager implements DoBeforeDestroy {
                             id: rla.createdBy,
                             order: 4,
                             name: 'Unknown User ID',
-                            avatarUri: getUserAvatarUri(null)
+                            userType: UserType.REGISTERED,
+                            avatarUri: getUserAvatarUri(null),
+                            active: false
                         };
                     } else {
                         dict[userId] = {
                             id: rla.createdBy,
                             order: rla.createdBy == this.mainUser.data.id ? 2 : 3,
                             name: user.data.firstName + ' ' + user.data.lastName,
-                            avatarUri: user.avatarUri
+                            userType: UserType.REGISTERED,
+                            avatarUri: user.avatarUri,
+                            active: rla.createdBy == this.mainUser.data.id
                         };
                     }
 
@@ -117,13 +147,15 @@ export class LabelingSuiteUserManager implements DoBeforeDestroy {
             dict[ALL_USERS_USER_ID] = {
                 id: ALL_USERS_USER_ID,
                 order: 1,
-                name: 'All Labels'
+                name: 'All users',
+                userType: UserType.ALL,
+                active: false
             };
         }
-
         this.userIcons = Object.values(dict);
         this.userIcons.sort((a, b) => a.order - b.order);
-        console.log("user icons", this.userIcons, this.allUsers);
+        this.showUserIcons = this.userIcons.length > 1;
+        if (this.userIcons.length > 10) console.log("warning: more than 10 users on this record");
 
     }
 

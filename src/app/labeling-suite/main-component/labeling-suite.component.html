@@ -38,44 +38,51 @@
                         </div>
                     </div>
 
-                    <div *ngIf="userIcons">
-                        user switch not yet implemented
-                        <!-- <ng-template [ngIf]="userIcons.length <=5" [ngIfElse]="userDropdown">
+                    <div *ngIf="lsm.userManager.userIcons">
+                        <ng-template [ngIf]="lsm.userManager.showUserIcons">
                             <div class="flex justify-center overflow-visible">
-                                <div *ngFor="let userIcon of userIcons" [attr.data-tip]="userIcon.name"
-                                    class="tooltip mr-3" [ngClass]="isBottom?'tooltip-top':'tooltip-bottom'">
-                                    <ng-template [ngIf]="userIcon.id != GOLD_USER_ID" [ngIfElse]="goldStar">
+                                <div *ngFor="let userIcon of lsm.userManager.userIcons"
+                                    attr.data-tip="{{userIcon.name}}" class="tooltip mr-3 tooltip-bottom">
+                                    <ng-template [ngIf]="userIcon.userType == userTypeEnum.REGISTERED"
+                                        [ngIfElse]="specialType">
                                         <div class="w-8 h-8 flex cursor-pointer rounded-full justify-center items-center"
-                                            (click)="showUserData(userIcon.id)"
-                                            [ngClass]="userIcon.id == displayUserId ? 'opacity-100' : 'opacity-50'">
+                                            (click)="lsm.userManager.displayUserId = userIcon.id"
+                                            [ngClass]="userIcon.active ? 'opacity-100' : 'opacity-50'">
                                             <img class="h-8 w-8" [src]="userIcon.avatarUri">
                                         </div>
                                     </ng-template>
-                                    <ng-template #goldStar>
-                                        <div (click)="showUserData(userIcon.id)"
-                                            class="w-8 h-8 flex cursor-pointer justify-center items-center">
-                                            <ng-template [ngIf]="displayUserId == GOLD_USER_ID"
-                                                [ngIfElse]="noFillGoldStar">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
-                                                    viewBox="0 0 20 20" fill="#6DD87F">
-                                                    <path
-                                                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                </svg>
+                                    <ng-template #specialType>
+                                        <div (click)="lsm.userManager.displayUserId = userIcon.id"
+                                            class="w-8 h-8 cursor-pointer relative">
+                                            <ng-template #goldStar [ngIf]="userIcon.userType == userTypeEnum.GOLD">
+                                                <div class="absolute -top-1 -left-1 -right-1 -bottom-1">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-full h-full"
+                                                        style="position: relative;top: 4px;left: 3px;"
+                                                        [ngClass]="userIcon.active?'specialUserActive':'specialUserInActive'"
+                                                        viewBox="0 0 24 24" stroke-width="2">
+                                                        <path
+                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                    </svg>
+                                                </div>
                                             </ng-template>
-                                            <ng-template #noFillGoldStar>
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 noFillStar"
-                                                    fill="none" viewBox="0 0 24 24" stroke="#6DD87F"
-                                                    stroke-width="2">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-                                                </svg>
+                                            <ng-template #allUsers [ngIf]="userIcon.userType == userTypeEnum.ALL">
+                                                <div class="absolute top-0 left-0 right-0 bottom-0">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-full h-full"
+                                                        width="24" height="24"
+                                                        [ngClass]="userIcon.active?'specialUserActive':'specialUserInActive'"
+                                                        viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"
+                                                        stroke-linejoin="round">
+                                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                                        <circle cx="12" cy="12" r="9"></circle>
+                                                    </svg>
+                                                </div>
                                             </ng-template>
                                         </div>
                                     </ng-template>
                                 </div>
                             </div>
                         </ng-template>
-                        <ng-template #userDropdown>
+                        <!-- <ng-template #userDropdown>
                             <div class="flex flex-row justify-center overflow-visible">
                                 <div *ngFor="let userIcon of userIcons | slice:0:2" [attr.data-tip]="userIcon.name"
                                     class="tooltip mr-3" [ngClass]="isBottom?'tooltip-top':'tooltip-bottom'">
@@ -445,6 +452,14 @@
             <ng-container [ngTemplateOutlet]="settingInfo"
                 [ngTemplateOutletContext]="{dataTip:'Amount of label buttons shown before hiding the rest under \'other \<task\> options\''}">
             </ng-container>
+            <span class="">Close label box</span>
+            <span class="cursor-pointer flex justify-center items-center"
+                (click)="changeSetting(componentTypeEnum.LABELING,'closeLabelBoxAfterLabel')"><input
+                    class="h-5 w-5 cursor-pointer" type="checkbox"
+                    [checked]='lsm.settingManager.settings.labeling.closeLabelBoxAfterLabel'></span>
+            <ng-container [ngTemplateOutlet]="settingInfo"
+                [ngTemplateOutletContext]="{dataTip:'Close the label box after assigning a label'}">
+            </ng-container>
             <span class="">Show task names</span>
             <span class="cursor-pointer flex justify-center items-center"
                 (click)="changeSetting(componentTypeEnum.LABELING,'showTaskNames')"><input
@@ -469,6 +484,8 @@
             <ng-container [ngTemplateOutlet]="settingInfo"
                 [ngTemplateOutletContext]="{dataTip:'Use swim lanes to display extraction labels (caution might use a lot of space)'}">
             </ng-container>
+
+
         </div>
     </div>
     <!--Page OVERVIEW_TABLE-->
