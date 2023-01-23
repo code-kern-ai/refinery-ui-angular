@@ -72,12 +72,6 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
       whitelist: ['file_upload'],
       func: this.handleWebsocketNotification
     });
-    if (this.uploadType == UploadType.LABEL_STUDIO) {
-      if (this.labelStudioUploadAssistant?.states.preparation != PreparationStep.MAPPING_TRANSFERRED) {
-        this.deleteExistingProject();
-        this.submitted = false;
-      }
-    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -96,7 +90,13 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnDestroy(): void {
     if (this.uploadTask$) this.uploadTask$.unsubscribe();
-    NotificationService.unsubscribeFromNotification(this, this.projectId)
+    NotificationService.unsubscribeFromNotification(this, this.projectId);
+    if (this.uploadType == UploadType.LABEL_STUDIO) {
+      if (this.labelStudioUploadAssistant?.states.preparation != PreparationStep.MAPPING_TRANSFERRED) {
+        this.deleteExistingProject();
+        this.submitted = false;
+      }
+    }
   }
 
   onFileDropped(files: File[]): void {
@@ -215,7 +215,7 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  submitUploadFile(uploadType: UploadType = UploadType.DEFAULT): void {
+  submitUploadFile(uploadType: UploadType = UploadType.DEFAULT): any {
     this.uploadType = uploadType;
     this.submitted = true;
     if (this.file == null) return;
@@ -231,7 +231,12 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
         return;
       }
     }
-    this.uploadHelper.upload();
+
+    if (this.submitted && this.file) {
+      this.uploadHelper.upload();
+      return true;
+    }
+    return false;
   }
 
   changeProjectTitle(event: any): void {
