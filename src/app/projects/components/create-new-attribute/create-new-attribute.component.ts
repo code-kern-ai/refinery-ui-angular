@@ -19,6 +19,7 @@ import { getColorForDataType, isStringTrue, toPythonFunctionName } from 'src/app
 import { KnowledgeBasesApolloService } from 'src/app/base/services/knowledge-bases/knowledge-bases-apollo.service';
 import { AttributeCalculationModals, createDefaultAttributeCalculationModals } from './create-new-attribute-helper';
 import { AttributeVisibility, attributeVisibilityStates, getTooltipVisibilityState } from './attributes-visibility-helper';
+import { Attributes } from 'src/app/base/components/record-display/record-display.helper';
 
 @Component({
   selector: 'kern-create-new-attribute',
@@ -65,6 +66,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
   tooltipsArray: string[] = [];
 
   attributeCalculationModals: AttributeCalculationModals = createDefaultAttributeCalculationModals();
+  attributeDetails: Attributes;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -411,6 +413,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
         attribute.color = getColorForDataType(attribute.dataType);
         attribute.dataTypeName = this.dataTypesArray.find((type) => type.value === attribute.dataType).name;
       });
+      this.attributeDetails = Object.fromEntries(this.attributesUsableUploaded.map((attribute) => [attribute.id, attribute]));
       this.checkIfAtLeastRunning = this.checkIfSomethingRunning();
     }));
     return attributes$.pipe(first());
@@ -422,7 +425,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
       .getRecordByRecordId(this.project.id, recordId)
       .pipe(first())
       .subscribe((record) => {
-        this.attributeCalculationModals.attributeDetails.recordData = record.data;
+        this.attributeCalculationModals.attributeDetails.recordData = record;
       });
   }
 

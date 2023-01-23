@@ -26,6 +26,8 @@ import { HeuristicStatusesComponent } from './components/heuristic-statuses/heur
 import { LogsComponent } from './components/logs/logs.component';
 import { DefaultOrderKeyvaluePipe } from './pipes/default-order-key-value.pipe';
 import { NotificationCenterComponent } from './components/notification-center/notification-center.component';
+import { RecordDisplayComponent } from './components/record-display/record-display.component';
+import { RecordTableComponent } from './components/record-table/record-table.component';
 
 @NgModule({
   declarations: [
@@ -47,7 +49,9 @@ import { NotificationCenterComponent } from './components/notification-center/no
     HeuristicStatusesComponent,
     LogsComponent,
     DefaultOrderKeyvaluePipe,
-    NotificationCenterComponent
+    NotificationCenterComponent,
+    RecordDisplayComponent,
+    RecordTableComponent
   ],
   imports: [CommonModule, AppRoutingModule],
   exports: [
@@ -77,7 +81,9 @@ import { NotificationCenterComponent } from './components/notification-center/no
     HeuristicStatusesComponent,
     LogsComponent,
     DefaultOrderKeyvaluePipe,
-    NotificationCenterComponent
+    NotificationCenterComponent,
+    RecordDisplayComponent,
+    RecordTableComponent
   ]
 })
 export class BaseModule { }
