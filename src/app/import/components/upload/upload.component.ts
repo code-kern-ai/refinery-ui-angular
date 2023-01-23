@@ -67,11 +67,7 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnInit(): void {
     this.recordAddUploadHelper.projectName = this.uploadOptions.projectName;
-    NotificationService.subscribeToNotification(this, {
-      projectId: this.projectId,
-      whitelist: ['file_upload'],
-      func: this.handleWebsocketNotification
-    });
+    this.subscribeToNotifications();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -96,6 +92,21 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
         this.deleteExistingProject();
         this.submitted = false;
       }
+    }
+  }
+
+  subscribeToNotifications(): void {
+    if (this.uploadFileType == UploadFileType.PROJECT) {
+      NotificationService.subscribeToNotification(this, {
+        whitelist: ['file_upload'],
+        func: this.handleWebsocketNotification
+      });
+    } else {
+      NotificationService.subscribeToNotification(this, {
+        projectId: this.projectId,
+        whitelist: ['file_upload'],
+        func: this.handleWebsocketNotification
+      });
     }
   }
 
@@ -182,11 +193,7 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
 
   reSubscribeToNotifications(): void {
     NotificationService.unsubscribeFromNotification(this, null);
-    NotificationService.subscribeToNotification(this, {
-      projectId: this.projectId,
-      whitelist: ['file_upload'],
-      func: this.handleWebsocketNotification
-    });
+    this.subscribeToNotifications();
   }
 
   handleWebsocketNotification(msgParts: string[]): void {

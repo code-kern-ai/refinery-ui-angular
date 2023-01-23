@@ -1,17 +1,16 @@
-import { Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { createDefaultModalUploadModal, getSubtitle, getTitle, UploadModals } from './modal-upload-helper';
 import { UploadFileType, UploadOptions } from '../helpers/upload-types';
 import { UploadComponent } from '../upload/upload.component';
 import { UploadStates } from '../../services/s3.enums';
 import { interval } from 'rxjs';
-import { NotificationService } from 'src/app/base/services/notification.service';
 
 @Component({
   selector: 'kern-modal-upload',
   templateUrl: './modal-upload.component.html',
   styleUrls: ['./modal-upload.component.scss']
 })
-export class ModalUploadComponent implements OnInit, OnChanges, OnDestroy {
+export class ModalUploadComponent implements OnInit, OnChanges {
 
   @Input() uploadFileType: UploadFileType;
   @Input() isModalOpen: boolean;
@@ -42,16 +41,6 @@ export class ModalUploadComponent implements OnInit, OnChanges, OnDestroy {
   ngOnInit(): void {
     this.title = getTitle(this.uploadFileType);
     this.subTitle = getSubtitle(this.uploadFileType);
-
-    NotificationService.subscribeToNotification(this, {
-      projectId: this.projectId,
-      whitelist: ['file_upload'],
-      func: this.handleWebsocketNotification
-    });
-  }
-
-  ngOnDestroy(): void {
-    NotificationService.unsubscribeFromNotification(this, this.projectId);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -93,12 +82,6 @@ export class ModalUploadComponent implements OnInit, OnChanges, OnDestroy {
           x.unsubscribe();
         }
       });
-    }
-  }
-
-  handleWebsocketNotification(msgParts: string[]): void {
-    if (msgParts[1] === 'file_upload' && msgParts[4] === UploadStates.ERROR) {
-      if (this.uploadOptions.deleteProjectOnFail) this.baseComponent.deleteExistingProject();
     }
   }
 }
