@@ -7,4 +7,5 @@ export interface Project {
   projectType: string;
   description?: string;
   numDataScaleUploaded?: number;
+  tokenizer?: string;
 }
