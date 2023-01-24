@@ -74,14 +74,16 @@ export class ModalUploadComponent implements OnInit, OnChanges {
   optionClicked(button: string): void {
     if (button == 'CLOSE') this.closeModal();
     else if (button == 'ACCEPT') {
-      const x = interval(1000).subscribe(() => {
-        if (this.baseComponent.progressState?.progress === 100 && this.baseComponent.progressState?.state === UploadStates.DONE) {
-          this.baseComponent.resetUpload();
-          this.uploadModals.uploadFile.doingSomething = false;
-          this.closeModal();
-          x.unsubscribe();
-        }
-      });
+      this.uploadModals.uploadFile.doingSomething = false;
+      if (!this.uploadOptions.navigateToProject) {
+        const x = interval(1000).subscribe(() => {
+          if (this.baseComponent.progressState?.progress === 100 && this.baseComponent.progressState?.state === UploadStates.DONE) {
+            this.baseComponent.resetUpload();
+            this.closeModal();
+            x.unsubscribe();
+          }
+        });
+      }
     }
   }
 }

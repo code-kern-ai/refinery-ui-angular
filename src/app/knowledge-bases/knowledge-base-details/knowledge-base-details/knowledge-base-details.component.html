@@ -291,7 +291,8 @@
         knowledgeBaseId: knowledgeBaseId,
         closeModalOnClick: true,
         isModal: true,
-        tokenizer: project?.tokenizer
+        tokenizer: project?.tokenizer,
+        navigateToProject: false
     }" (closeModalEvent)="lookupListDetailsModals.uploadLookupList.open = false;"
     (refetchLookupLists)="refetchLookupLists($event)">
 </kern-modal-upload>
