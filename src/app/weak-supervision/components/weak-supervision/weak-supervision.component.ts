@@ -109,7 +109,7 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
     this.prepareCurrentWeakSupervisionInfo(projectId);
     this.prepareEmbeddingsRequest(projectId);
 
-    [this.downloadedModelsQuery$, this.downloadedModelsList$] = this.informationSourceApolloService.getModelProviderInfo();
+    [this.downloadedModelsQuery$, this.downloadedModelsList$] = this.projectApolloService.getModelProviderInfo();
     this.subscriptions$.push(
       this.downloadedModelsList$.subscribe((downloadedModels) => this.downloadedModels = downloadedModels));
 

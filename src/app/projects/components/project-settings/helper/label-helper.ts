@@ -1,6 +1,5 @@
-import { timer } from "rxjs";
+import { Subject, timer } from "rxjs";
 import { first } from "rxjs/operators";
-import { LabelSource } from "src/app/base/enum/graphql-enums";
 import { ProjectApolloService } from "src/app/base/services/project/project-apollo.service";
 import { ProjectSettingsComponent } from "../project-settings.component";
 
@@ -52,9 +51,10 @@ export class LabelHelper {
     public addLabel(
         projectId: string,
         taskId: string,
-        labelInput: HTMLInputElement
+        labelInput: HTMLInputElement,
+        timeOutWrapper: { requestTimeOut: boolean }
     ): void {
-        if (this.settings.requestTimeOut) return;
+        if (timeOutWrapper.requestTimeOut) return;
         if (!labelInput.value) return;
         if (!this.isLabelNameUnique(taskId, labelInput.value)) return;
         let labelColor = "yellow"
@@ -75,8 +75,11 @@ export class LabelHelper {
 
         labelInput.value = '';
         labelInput.focus();
-        this.settings.requestTimeOut = true;
-        timer(100).subscribe(() => this.settings.requestTimeOut = false);
+
+        timeOutWrapper.requestTimeOut = true;
+        timer(100).subscribe(() => {
+            timeOutWrapper.requestTimeOut = false;
+        });
     }
 
     public checkRenameLabel() {
