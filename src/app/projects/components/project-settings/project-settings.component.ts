@@ -86,39 +86,37 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
     this.checkProjectTokenization(projectId);
 
     [this.projectQuery$, this.project$] = this.projectApolloService.getProjectByIdQuery(projectId);
-    this.subscriptions$.push(
-      this.project$.pipe(first()).subscribe((project) => {
-        this.project = project;
-        [this.attributesQuery$, this.attributes$] = this.dataHandlerHelper.prepareAttributesRequest(projectId);
-        [this.embeddingQuery$, this.embeddings$] = this.dataHandlerHelper.prepareEmbeddingsRequest(projectId);
-        this.suggestions$ = this.projectApolloService.getRecommendedEncodersForEmbeddings(projectId);
-        let tasks$ = [];
-        tasks$.push(this.attributes$);
-        tasks$.push(this.embeddings$);
-        tasks$.push(this.suggestions$);
+    this.subscriptions$.push(this.project$.subscribe((project) => this.project = project));
+    this.project$.pipe(first()).subscribe((project) => {
+      [this.attributesQuery$, this.attributes$] = this.dataHandlerHelper.prepareAttributesRequest(projectId);
+      [this.embeddingQuery$, this.embeddings$] = this.dataHandlerHelper.prepareEmbeddingsRequest(projectId);
+      this.suggestions$ = this.projectApolloService.getRecommendedEncodersForEmbeddings(projectId);
+      let tasks$ = [];
+      tasks$.push(this.attributes$);
+      tasks$.push(this.embeddings$);
+      tasks$.push(this.suggestions$);
 
-        combineLatest(tasks$).subscribe((res: any[]) => {
-          // prepare attributes
-          this.attributes = res[0];
-          this.useableTextAttributes = res[0];
-          this.attributes.forEach((attribute) => {
-            attribute.dataTypeName = this.dataTypesArray.find((type) => type.value === attribute?.dataType).name;
-            attribute.visibilityIndex = this.attributeVisibilityStates.findIndex((type) => type.value === attribute?.visibility);
-          });
-          this.dataHandlerHelper.requestPKeyCheck(projectId, this.attributes);
-
-          // prepare embeddings
-          this.embeddings = JSON.parse(JSON.stringify((res[1])));
-          this.useableTextAttributes = this.useableTextAttributes.filter((attribute: any) => (attribute.state == 'UPLOADED' || attribute.state == 'AUTOMATICALLY_CREATED' || attribute.state == 'USABLE') && attribute.dataType == 'TEXT');
-          this.useableAttributes = this.attributes.filter((attribute: any) => (attribute.state == 'UPLOADED' || attribute.state == 'AUTOMATICALLY_CREATED' || attribute.state == 'USABLE'));
-
-          // prepare embedding suggestions
-          const onlyTextAttributes = this.attributes.filter(a => a.dataType == 'TEXT');
-          this.dataHandlerHelper.prepareEmbeddingFormGroup(onlyTextAttributes, this.settingModals, this.embeddings);
-          this.embeddingHandles = this.dataHandlerHelper.prepareEmbeddingHandles(projectId, onlyTextAttributes, project.tokenizer, res[2]);
+      combineLatest(tasks$).subscribe((res: any[]) => {
+        // prepare attributes
+        this.attributes = res[0];
+        this.useableTextAttributes = res[0];
+        this.attributes.forEach((attribute) => {
+          attribute.dataTypeName = this.dataTypesArray.find((type) => type.value === attribute?.dataType).name;
+          attribute.visibilityIndex = this.attributeVisibilityStates.findIndex((type) => type.value === attribute?.visibility);
         });
-      })
-    );
+        this.dataHandlerHelper.requestPKeyCheck(projectId, this.attributes);
+
+        // prepare embeddings
+        this.embeddings = JSON.parse(JSON.stringify((res[1])));
+        this.useableTextAttributes = this.useableTextAttributes.filter((attribute: any) => (attribute.state == 'UPLOADED' || attribute.state == 'AUTOMATICALLY_CREATED' || attribute.state == 'USABLE') && attribute.dataType == 'TEXT');
+        this.useableAttributes = this.attributes.filter((attribute: any) => (attribute.state == 'UPLOADED' || attribute.state == 'AUTOMATICALLY_CREATED' || attribute.state == 'USABLE'));
+
+        // prepare embedding suggestions
+        const onlyTextAttributes = this.attributes.filter(a => a.dataType == 'TEXT');
+        this.dataHandlerHelper.prepareEmbeddingFormGroup(onlyTextAttributes, this.settingModals, this.embeddings);
+        this.embeddingHandles = this.dataHandlerHelper.prepareEmbeddingHandles(projectId, onlyTextAttributes, project.tokenizer, res[2]);
+      });
+    })
 
     const openModal = JSON.parse(localStorage.getItem("openModal"));
     if (openModal) {
