@@ -62,6 +62,7 @@ import { CommentsFilter } from './helper-classes/comments-filter';
 import { AttributeVisibility } from 'src/app/projects/components/create-new-attribute/attributes-visibility-helper';
 import { HighlightSearch } from 'src/app/base/components/highlight/helper';
 import { Attributes } from 'src/app/base/components/record-display/record-display.helper';
+import { ConfigManager } from 'src/app/base/services/config-service';
 
 
 type DataSlice = {
@@ -197,6 +198,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   dataBrowserModals: DataBrowserModals = createDefaultDataBrowserModals();
   recordComments: any = {};
   commentsFilter: CommentsFilter;
+  isManaged: boolean = true;
 
   getSearchFormArray(groupKey: string): FormArray {
     return this.fullSearch.get(groupKey).get('groupElements') as FormArray;
@@ -251,6 +253,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
         this.getOperatorDropdownValues();
       });
     this.prepareDataSlicesRequest();
+    this.checkIfManagedVersion();
 
     NotificationService.subscribeToNotification(this, {
       projectId: this.projectId,
@@ -2107,5 +2110,13 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     localStorage.setItem('huddleData', JSON.stringify(huddleData));
     this.router.navigate(['../labeling/' + this.extendedRecords.sessionId],
       { queryParams: { pos: index + 1, type: 'SESSION' }, relativeTo: this.route });
+  }
+
+  checkIfManagedVersion() {
+    if (!ConfigManager.isInit()) {
+      timer(250).subscribe(() => this.checkIfManagedVersion());
+      return;
+    }
+    this.isManaged = ConfigManager.getIsManaged();
   }
 }
