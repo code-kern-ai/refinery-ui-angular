@@ -52,9 +52,9 @@ export class LabelHelper {
         projectId: string,
         taskId: string,
         labelInput: HTMLInputElement,
-        requestTimeOut: boolean
-    ): any {
-        if (requestTimeOut) return;
+        timeOutWrapper: { requestTimeOut: boolean }
+    ): void {
+        if (timeOutWrapper.requestTimeOut) return;
         if (!labelInput.value) return;
         if (!this.isLabelNameUnique(taskId, labelInput.value)) return;
         let labelColor = "yellow"
@@ -76,13 +76,10 @@ export class LabelHelper {
         labelInput.value = '';
         labelInput.focus();
 
-        let subject = new Subject<boolean>();
-        requestTimeOut = true;
+        timeOutWrapper.requestTimeOut = true;
         timer(100).subscribe(() => {
-            requestTimeOut = false;
-            subject.next(requestTimeOut);
+            timeOutWrapper.requestTimeOut = false;
         });
-        return subject.asObservable();
     }
 
     public checkRenameLabel() {

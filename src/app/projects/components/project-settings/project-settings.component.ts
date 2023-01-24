@@ -86,7 +86,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
     this.checkProjectTokenization(projectId);
 
     [this.projectQuery$, this.project$] = this.projectApolloService.getProjectByIdQuery(projectId);
-    this.subscriptions$.push(this.project$.subscribe((project) => {
+    this.project$.pipe(first()).subscribe((project) => {
       this.project = project;
       [this.attributesQuery$, this.attributes$] = this.dataHandlerHelper.prepareAttributesRequest(projectId);
       [this.embeddingQuery$, this.embeddings$] = this.dataHandlerHelper.prepareEmbeddingsRequest(projectId);
@@ -107,7 +107,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
         this.dataHandlerHelper.requestPKeyCheck(projectId, this.attributes);
 
         // prepare embeddings
-        this.embeddings = res[1];
+        this.embeddings = JSON.parse(JSON.stringify((res[1])));
         this.useableTextAttributes = this.useableTextAttributes.filter((attribute: any) => (attribute.state == 'UPLOADED' || attribute.state == 'AUTOMATICALLY_CREATED' || attribute.state == 'USABLE') && attribute.dataType == 'TEXT');
         this.useableAttributes = this.attributes.filter((attribute: any) => (attribute.state == 'UPLOADED' || attribute.state == 'AUTOMATICALLY_CREATED' || attribute.state == 'USABLE'));
 
@@ -115,8 +115,8 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
         const onlyTextAttributes = this.attributes.filter(a => a.dataType == 'TEXT');
         this.dataHandlerHelper.prepareEmbeddingFormGroup(onlyTextAttributes, this.settingModals, this.embeddings);
         this.embeddingHandles = this.dataHandlerHelper.prepareEmbeddingHandles(projectId, onlyTextAttributes, project.tokenizer, res[2]);
-      })
-    }));
+      });
+    });
 
     const openModal = JSON.parse(localStorage.getItem("openModal"));
     if (openModal) {
@@ -177,7 +177,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
         return;
       }
       for (let e of this.embeddings) {
-        e = { ...e };
+        e = JSON.parse(JSON.stringify((e)));
         if (e.id == msgParts[2]) {
           if (msgParts[3] == "state") {
             if (msgParts[4] == "FINISHED") this.embeddingQuery$.refetch();

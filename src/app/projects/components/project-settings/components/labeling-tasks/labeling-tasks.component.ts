@@ -246,11 +246,7 @@ export class LabelingTasksComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   addLabel(): void {
-    this.subscriptions$.push(
-      this.lh.addLabel(this.project.id, this.settingModals.label.create.taskId, this.settingModals.label.create.labelName, this.requestTimeOut).subscribe((r: any) => {
-        this.requestTimeOut = r;
-      })
-    );
+    this.lh.addLabel(this.project.id, this.settingModals.label.create.taskId, this.settingModals.label.create.labelName, { requestTimeOut: this.requestTimeOut });
   }
 
   addLabelingTask() {
