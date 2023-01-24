@@ -63,7 +63,6 @@ export class ModalUploadComponent implements OnInit, OnChanges {
     this.baseComponent.uploadFileType = this.uploadFileType;
     this.baseComponent.uploadOptions = this.uploadOptions;
     if (this.projectId) this.baseComponent.projectId = this.projectId;
-    this.uploadModals.uploadFile.doingSomething = true;
     this.baseComponent.uploadHelper.upload(this.file);
   }
 
@@ -74,7 +73,6 @@ export class ModalUploadComponent implements OnInit, OnChanges {
   optionClicked(button: string): void {
     if (button == 'CLOSE') this.closeModal();
     else if (button == 'ACCEPT') {
-      this.uploadModals.uploadFile.doingSomething = false;
       if (!this.uploadOptions.navigateToProject) {
         const x = interval(1000).subscribe(() => {
           if (this.baseComponent.progressState?.progress === 100 && this.baseComponent.progressState?.state === UploadStates.DONE) {

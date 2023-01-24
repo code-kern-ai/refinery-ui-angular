@@ -54,6 +54,7 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
   submitted: boolean = false;
   disableInput: boolean = false;
   tokenizerValuesDisabled: boolean[] = [];
+  doingSomething: boolean = false;
 
   constructor(private projectApolloService: ProjectApolloService, private router: Router, private s3Service: S3Service) {
     this.uploadHelper = new UploadHelper(this, this.projectApolloService);
@@ -87,6 +88,7 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
       if (this.labelStudioUploadAssistant?.states.preparation != PreparationStep.MAPPING_TRANSFERRED) {
         this.deleteExistingProject();
         this.submitted = false;
+        this.doingSomething = false;
       }
     }
   }
@@ -150,6 +152,7 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
 
   uploadFileToMinIO(uploadInformation: any, filename: string): void {
     this.uploadStarted = true;
+    this.doingSomething = true;
     const credentialsAndUploadId = JSON.parse(JSON.parse(uploadInformation))
     this.startProgressCall(credentialsAndUploadId.uploadTaskId).subscribe(() => {
       this.s3Service.uploadFile(credentialsAndUploadId, this.file, filename).subscribe((progress) => {
@@ -173,6 +176,7 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
     const firstReturn = this.uploadTask$.pipe(first());
     this.uploadTask$ = this.uploadTask$.subscribe((task) => {
       this.uploadTask = task;
+      this.doingSomething = true;
       if (task.state == UploadStates.DONE || task.progress == 100) {
         this.clearUploadTask();
         if (this.uploadOptions.reloadOnFinish) location.reload();
@@ -191,6 +195,7 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
     this.uploadTask = null;
     this.uploadTaskQuery$ = null;
     this.progressState = null;
+    this.doingSomething = false;
   }
 
   deleteExistingProject(): void {
@@ -221,6 +226,7 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
         if (this.uploadOptions.deleteProjectOnFail) {
           this.deleteExistingProject();
           this.submitted = false;
+          this.doingSomething = false;
         }
       }
       else {
@@ -237,7 +243,7 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  submitUploadFile(uploadType: UploadType = UploadType.DEFAULT): any {
+  submitUploadFile(uploadType: UploadType = UploadType.DEFAULT): void {
     this.uploadType = uploadType;
     this.submitted = true;
     if (this.file == null) return;
@@ -256,9 +262,7 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
 
     if (this.submitted && this.file) {
       this.uploadHelper.upload();
-      return true;
     }
-    return false;
   }
 
   changeProjectTitle(event: any): void {
