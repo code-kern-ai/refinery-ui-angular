@@ -67,7 +67,10 @@ export class LabelingSuiteOverviewTableComponent implements OnInit, OnDestroy, O
   }
 
   private prepareDataForTableDisplay() {
-    if (!this.rlaManager.rlasLoaded()) return;
+    if (!this.rlaManager.rlasLoaded()) {
+      this.dataToDisplay = null;
+      return;
+    }
     this.fullData = this.rlaManager.buildOverviewTableDisplayArray();
     this.settingsChanged();
     this.dataHasHeuristics = this.rlaManager.rlasHaveHeuristicData();

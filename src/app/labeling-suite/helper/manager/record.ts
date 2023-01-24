@@ -21,12 +21,7 @@ export class LabelingSuiteRecordManager implements DoBeforeDestroy {
     private baseManager: LabelingSuiteManager;
     private recordApolloService: RecordApolloService;
     private projectId: string;
-    public recordData: RecordData = {
-        deleted: false,
-        baseRecord: null,
-        token: null,
-        // rlas: null,
-    };
+    public recordData: RecordData;
     public rlaPreparator: LabelingSuiteRlaPreparator;
 
     private activeRecordId: string;
@@ -44,6 +39,7 @@ export class LabelingSuiteRecordManager implements DoBeforeDestroy {
         this.recordApolloService = recordApolloService;
         this.baseManager = baseManager;
         this.rlaPreparator = new LabelingSuiteRlaPreparator(baseManager);
+        this.initRecordData();
 
 
         NotificationService.subscribeToNotification(this, {
@@ -51,6 +47,16 @@ export class LabelingSuiteRecordManager implements DoBeforeDestroy {
             whitelist: this.getWebsocketWhitelist(),
             func: this.handleWebsocketNotification
         });
+    }
+
+    public initRecordData() {
+        this.recordData = {
+            deleted: false,
+            baseRecord: null,
+            token: null,
+        };
+        this.rlaPreparator.setRlas(null, null);
+        this.baseManager.runUpdateListeners(UpdateType.RECORD);
     }
 
     doBeforeDestroy(): void {
@@ -102,7 +108,6 @@ export class LabelingSuiteRecordManager implements DoBeforeDestroy {
         this.activeRecordId = recordId;
         CommentDataManager.registerCommentRequests(this, [{ commentType: CommentType.RECORD, projectId: this.projectId, commentKey: this.activeRecordId }]);
 
-        //   this.labelingTasksQuery$.refetch();
         //call parallel so time isn't lost for each request
         if (this.recordRequests.combineLatest) this.recordRequests.combineLatest.unsubscribe();
         let collectionTasks = [];
@@ -110,14 +115,11 @@ export class LabelingSuiteRecordManager implements DoBeforeDestroy {
         collectionTasks.push(this.prepareRecordRequest(recordId));
         collectionTasks.push(this.prepareRlaRequest(recordId));
         this.recordRequests.combineLatest = combineLatest(collectionTasks).subscribe((results: any[]) => this.finishUpRecordData(results));
-        // combineLatest(this.prepareTokenizedRecord(recordId),this.prepareTokenizedRecord(recordId),this.prepareTokenizedRecord(recordId)).subscribe();
 
     }
 
     private finishUpRecordData(results: any[]) {
         //through combine latest token data should always be present
-
-        console.log("fully loaded", results);
 
         this.recordData.token = results[0];
         this.recordData.baseRecord = results[1];
@@ -254,5 +256,35 @@ export class LabelingSuiteRecordManager implements DoBeforeDestroy {
         if (!this.recordData.token) return null;
         return this.recordData.token.attributes.find((a) => a.attributeId == attributeId)?.token;
     }
+
+
+    public toggleGoldStar(taskId: string, currentState: boolean) {
+        if (currentState) {
+            this.removeTaskAsGoldStar(taskId);
+        } else {
+            this.selectTaskAsGoldStar(taskId, this.baseManager.userManager.displayUserId);
+        }
+    }
+
+    private selectTaskAsGoldStar(taskId: string, goldUserId: string) {
+        if (!this.activeRecordId) return;
+        this.baseManager.somethingLoading = true;
+        this.recordApolloService.setGoldStarAnnotationForTask(this.projectId, this.activeRecordId, taskId, goldUserId)
+            .pipe(first()).subscribe();
+        // (r) => {
+        //     if (r.data.setGoldStarAnnotationForTask.ok) goldState.isGold = true;
+        // });
+    }
+
+    private removeTaskAsGoldStar(taskId: string) {
+        if (!this.activeRecordId) return;
+        this.baseManager.somethingLoading = true;
+        this.recordApolloService.removeGoldStarAnnotationForTask(this.projectId, this.activeRecordId, taskId)
+            .pipe(first()).subscribe();
+        // (r) => {
+        //     if (r.data.removeGoldStarAnnotationForTask.ok) goldState.isGold = false;
+        // });
+    }
+
 
 }

@@ -59,6 +59,7 @@ const routes: Routes = [
       { path: 'settings', component: ProjectSettingsComponent, data: { name: 'ProjectSettingsComponent' } },
       { path: 'admin', component: ProjectAdminComponent, data: { name: 'ProjectAdminComponent' } },
       { path: 'labeling', component: LabelingSuiteComponent, data: { name: 'LabelingSuiteComponent' } },
+      { path: 'labeling/:id', component: LabelingSuiteComponent, data: { name: 'LabelingSuiteComponent' } },
       { path: 'labeling-old', component: LabelingComponent, data: { name: 'LabelingComponent' } },
       { path: 'labeling-old/:id', component: LabelingComponent, data: { name: 'LabelingComponent' } },
       { path: 'record-ide/:id', component: RecordIDEComponent, data: { name: 'RecordIDEComponent' } },

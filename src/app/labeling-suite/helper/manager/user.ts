@@ -41,13 +41,20 @@ export class LabelingSuiteUserManager implements DoBeforeDestroy {
         if (this.userIcons) this.userIcons.forEach(icon => icon.active = icon.id == userId);
         this.baseManager.runUpdateListeners(UpdateType.DISPLAY_USER);
     }
+    public get roleAssumed(): boolean {
+        return this.currentRole != this.mainUser.data.role;
+    }
 
     public get canEditManualRlas(): boolean {
-        return (this.displayUserId == GOLD_STAR_USER_ID && this.currentRole == UserRole.ENGINEER) || this.displayUserId == this.mainUser.data.id;
+        return (this.displayUserId == GOLD_STAR_USER_ID && this.currentRole == UserRole.ENGINEER)
+            || (this.displayUserId == ALL_USERS_USER_ID && this.currentRole == UserRole.ENGINEER)
+            || this.displayUserId == this.mainUser.data.id;
     }
 
     constructor(baseManager: LabelingSuiteManager) {
         this.baseManager = baseManager;
+    }
+    public finishUpSetup() {
         UserManager.registerAfterInitActionOrRun(this, this.prepareUserData, true);
     }
 
@@ -63,13 +70,14 @@ export class LabelingSuiteUserManager implements DoBeforeDestroy {
             avatarUri: getUserAvatarUri(user),
             isLoggedInUser: true
         }
-        this._displayUserId = user.id;
+        if (!this._displayUserId) this._displayUserId = user.id;
         this.allUsers = UserManager.getAllUsers().map(u => ({
             data: u,
             avatarUri: getUserAvatarUri(u),
             isLoggedInUser: u.id == this.mainUser.data.id
         }));
         UserManager.registerRoleChangeListenerAndRun(this, () => this.currentRole = UserManager.currentRole);
+        this.baseManager.setupAfterUserInit();
     }
 
 
@@ -96,6 +104,10 @@ export class LabelingSuiteUserManager implements DoBeforeDestroy {
         if (!this.showUserIcons) return;
         if (idx >= this.userIcons.length) return;
         this.displayUserId = this.userIcons[idx].id;
+        if (this.displayUserId == GOLD_STAR_USER_ID && this.baseManager.modalManager.modals.goldStar.firstVisit) {
+            this.baseManager.modalManager.modals.goldStar.open = true;
+            this.baseManager.modalManager.modals.goldStar.firstVisit = false;
+        }
     }
 
 
@@ -105,6 +117,15 @@ export class LabelingSuiteUserManager implements DoBeforeDestroy {
             return;
         }
         const dict = {}
+
+        dict[this.mainUser.data.id] = {
+            id: this.mainUser.data.id,
+            order: 2,
+            name: this.mainUser.data.firstName + ' ' + this.mainUser.data.lastName,
+            userType: UserType.REGISTERED,
+            avatarUri: this.mainUser.avatarUri,
+            active: this._displayUserId == this.mainUser.data.id
+        };
         for (const rla of rlaData) {
             if (rla.sourceType != LabelSource.MANUAL) continue;
             if (rla.isGoldStar && !dict[GOLD_STAR_USER_ID]) {
@@ -126,7 +147,7 @@ export class LabelingSuiteUserManager implements DoBeforeDestroy {
                             name: 'Unknown User ID',
                             userType: UserType.REGISTERED,
                             avatarUri: getUserAvatarUri(null),
-                            active: false
+                            active: this._displayUserId == rla.createdBy
                         };
                     } else {
                         dict[userId] = {
@@ -135,7 +156,7 @@ export class LabelingSuiteUserManager implements DoBeforeDestroy {
                             name: user.data.firstName + ' ' + user.data.lastName,
                             userType: UserType.REGISTERED,
                             avatarUri: user.avatarUri,
-                            active: rla.createdBy == this.mainUser.data.id
+                            active: this._displayUserId == rla.createdBy
                         };
                     }
 
@@ -154,6 +175,8 @@ export class LabelingSuiteUserManager implements DoBeforeDestroy {
         }
         this.userIcons = Object.values(dict);
         this.userIcons.sort((a, b) => a.order - b.order);
+        let c = 1;
+        this.userIcons.forEach(u => u.name += ' [' + c++ + ']')
         this.showUserIcons = this.userIcons.length > 1;
         if (this.userIcons.length > 10) console.log("warning: more than 10 users on this record");
 

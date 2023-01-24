@@ -51,10 +51,7 @@ export class LabelingSuiteComponent implements OnInit, OnDestroy {
       this.router.navigate(['/']);
       return;
     }
-
-    this.lsm = new LabelingSuiteManager(this, this.activatedRoute, projectId, this.projectApolloService, this.recordApolloService);
-    const recordId = 'd045055b-c6d2-46f9-aff1-2cba38167dbc';
-    this.lsm.recordManager.collectRecordData(recordId);
+    this.lsm = new LabelingSuiteManager(projectId, this, this.activatedRoute, this.router, this.projectApolloService, this.recordApolloService);
     this.setUpCommentRequests(projectId);
   }
 
@@ -89,26 +86,27 @@ export class LabelingSuiteComponent implements OnInit, OnDestroy {
 
   //navigation
   public goToRecordIde() {
-    throw new Error("Method not implemented.");
-    // const sessionId = this.labelingLinkData.id;
-    // const pos = this.labelingLinkData.requestedPos;
-
-    // this.router.navigate(["projects", this.project.id, "record-ide", sessionId], { queryParams: { pos: pos } });
+    this.lsm.sessionManager.goToRecordIde();
   }
 
   public nextRecord() {
-    throw new Error("Method not implemented.");
+    this.lsm.nextRecord();
 
   }
 
   public previousRecord() {
-    throw new Error("Method not implemented.");
-
+    this.lsm.previousRecord();
   }
+
   @HostListener('document:keyup', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {
     if (event.getModifierState('Control')) return;
 
+    if (event.key == 'ArrowRight') {
+      this.nextRecord();
+    } else if (event.key == 'ArrowLeft') {
+      this.previousRecord();
+    }
     if ('123456789'.includes(event.key)) {
       const selectedPos = Number(event.key) - 1;
       this.lsm.userManager.selectUserByIdx(selectedPos);

@@ -76,6 +76,7 @@ export class LabelingSuiteRlaPreparator {
                 dataTip: this.getLabelDataTip(e),
                 labelDisplay: this.getLabelForDisplay(e),
                 icon: this.getIcon(e),
+                canBeDeleted: this.baseManager.userManager.canDeleteRla(e),
                 rla: e
             };
         }

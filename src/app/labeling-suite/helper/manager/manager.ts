@@ -1,4 +1,4 @@
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { first, map } from "rxjs/operators";
 import { NotificationService } from "src/app/base/services/notification.service";
 import { ProjectApolloService } from "src/app/base/services/project/project-apollo.service";
@@ -17,7 +17,7 @@ import { LabelingSuiteUserManager } from "./user";
 
 export class LabelingSuiteManager implements DoBeforeDestroy {
     //base component reference for communication
-    public baseComponent: LabelingSuiteComponent;
+    // public baseComponent: LabelingSuiteComponent;
 
     //general manager
     public settingManager: LabelingSuiteSettingManager;
@@ -30,36 +30,19 @@ export class LabelingSuiteManager implements DoBeforeDestroy {
     public taskManager: LabelingSuiteTaskManager;
     public attributeManager: LabelingSuiteAttributeManager;
 
-    public projectId: string;
     public somethingLoading: boolean = true;
+    public sufficientInitialized: boolean = false;
 
     //private changeListener
     private registeredUpdateListeners: Map<UpdateType, Map<Object, () => void>> = new Map<UpdateType, Map<Object, () => void>>();
 
-    constructor(baseComponent: LabelingSuiteComponent, route: ActivatedRoute, projectId: string, projectApolloService: ProjectApolloService, recordApolloService: RecordApolloService) {
-
-        //first check session manager and redirect if necessary
-
-        this.sessionManager = new LabelingSuiteSessionManager(this, route);
-
-        if (this.sessionManager.redirectIfNecessary()) {
-            console.log("LabelingSuiteManager redirectIfNessecary")
-            return;
-        }
-
-        console.log("LabelingSuiteManager no redirect")
-
-
-        this.projectId = projectId;
-        this.baseComponent = baseComponent;
-        this.settingManager = new LabelingSuiteSettingManager(projectId);
-        this.modalManager = new LabelingSuiteModalManager();
-        this.userManager = new LabelingSuiteUserManager(this);
-
-        this.recordManager = new LabelingSuiteRecordManager(projectId, recordApolloService, this);
-        this.taskManager = new LabelingSuiteTaskManager(projectId, projectApolloService, this);
-        this.attributeManager = new LabelingSuiteAttributeManager(projectId, projectApolloService, this);
-
+    constructor(
+        public projectId: string,
+        public baseComponent: LabelingSuiteComponent,
+        private route: ActivatedRoute,
+        private router: Router,
+        private projectApolloService: ProjectApolloService,
+        private recordApolloService: RecordApolloService) {
 
         enumToArray(UpdateType).forEach(ct => {
             this.registeredUpdateListeners.set(ct, new Map<Object, () => void>());
@@ -72,20 +55,56 @@ export class LabelingSuiteManager implements DoBeforeDestroy {
             func: this.handleWebsocketNotification
         });
 
+        //first setup User manager since some roles are barred from collecting data though other managers
+        //the userManager calls the setupAfterUserInit function after the user is initialized
+        this.userManager = new LabelingSuiteUserManager(this);
+        this.userManager.finishUpSetup();
 
+    }
+
+    public nextRecord() {
+        if (this.sessionManager.nextDisabled) return;
+        this.recordManager.initRecordData();
+        this.sessionManager.nextRecord();
+    }
+    public previousRecord() {
+        if (this.sessionManager.prevDisabled) return;
+        this.recordManager.initRecordData();
+        this.sessionManager.previousRecord();
+    }
+
+    public setupAfterUserInit() {
+        //next check if session stuff is valid or needs redirection
+        this.sessionManager = new LabelingSuiteSessionManager(this, this.route, this.router, this.projectApolloService);
+        if (!this.sessionManager.redirected) this.sessionManager.setupInitialTasks();
+    }
+
+    public setupAfterSessionInit() {
+        // last other mangers can be initialized
+        this.settingManager = new LabelingSuiteSettingManager(this.projectId);
+        this.modalManager = new LabelingSuiteModalManager();
+
+        this.recordManager = new LabelingSuiteRecordManager(this.projectId, this.recordApolloService, this);
+        this.taskManager = new LabelingSuiteTaskManager(this.projectId, this.projectApolloService, this);
+        this.attributeManager = new LabelingSuiteAttributeManager(this.projectId, this.projectApolloService, this);
+        this.sufficientInitialized = true;
+        this.sessionManager.prepareLabelingSession();
     }
 
     public doBeforeDestroy(): void {
         NotificationService.unsubscribeFromNotification(this);
 
         //destroy for other managers
-        this.settingManager.doBeforeDestroy();
-        // this.modalManager.doBeforeDestroy(); //atm nothing to do
-        this.userManager.doBeforeDestroy();
+        if (this.userManager) this.userManager.doBeforeDestroy();
 
-        this.taskManager.doBeforeDestroy();
-        this.recordManager.doBeforeDestroy();
-        this.attributeManager.doBeforeDestroy();
+        if (this.sessionManager) this.sessionManager.doBeforeDestroy();
+
+        if (this.settingManager) this.settingManager.doBeforeDestroy();
+        // this.modalManager.doBeforeDestroy(); //atm nothing to do
+        if (this.taskManager) this.taskManager.doBeforeDestroy();
+        if (this.recordManager) this.recordManager.doBeforeDestroy();
+        if (this.attributeManager) this.attributeManager.doBeforeDestroy();
+        if (this.sessionManager) this.sessionManager.doBeforeDestroy();
     }
 
 

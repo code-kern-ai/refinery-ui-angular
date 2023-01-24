@@ -1,13 +1,13 @@
 import { Component, ElementRef, HostListener, Input, OnChanges, OnDestroy, OnInit, QueryList, SimpleChanges, ViewChild, ViewChildren } from '@angular/core';
 import { timer } from 'rxjs';
-import { getLabelSourceOrder, getTaskTypeOrder, LabelingTask, LabelSource, UserRole } from 'src/app/base/enum/graphql-enums';
+import { getLabelSourceOrder, getTaskTypeOrder, InformationSourceReturnType, LabelingTask, LabelSource, UserRole } from 'src/app/base/enum/graphql-enums';
 import { enumToArray, jsonCopy } from 'src/app/util/helper-functions';
 import { LabelingSuiteManager, UpdateType } from '../../helper/manager/manager';
 import { LabelingSuiteRlaPreparator } from '../../helper/manager/recordRla';
 import { ComponentType, LabelingSuiteLabelingSettings, LabelingSuiteMainSettings, LabelingSuiteSettings, LabelingSuiteTaskHeaderProjectSettings } from '../../helper/manager/settings';
-import { GOLD_STAR_USER_ID } from '../../helper/manager/user';
+import { ALL_USERS_USER_ID, GOLD_STAR_USER_ID } from '../../helper/manager/user';
 import { LabelingSuiteComponent } from '../../main-component/labeling-suite.component';
-import { getDefaultLabelingVars, LabelingVars, FULL_RECORD_ID } from './helper';
+import { getDefaultLabelingVars, LabelingVars, FULL_RECORD_ID, TokenLookup, HotkeyLookup } from './helper';
 
 const SWIM_LANE_SIZE_PX = 12;
 @Component({
@@ -41,32 +41,11 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
   //list of active tasks for label selection (multiple for extraction possible)
   activeTasks: any[];
   canEditLabels: boolean = true;
-  tokenLookup: {
-    [attributeId: string]: {
-      token: any[],
-      [tokenIdx: number]: {
-        rlaArray: {
-          orderPos: number,// globalPosition used for absolute positioning
-          bottomPos: string,
-          isFirst: boolean,
-          isLast: boolean,
-          hoverGroups: any,
-          labelId: string,
-          rla: any,
-        }[],
-        tokenMarginBottom: string,
-      }
-    }
-  }
+  tokenLookup: TokenLookup;
   labelLookup: any;
   labelAddButtonDisabled: boolean = true;
 
-  labelHotkeys: {
-    [hotkey: string]: {
-      taskId: string,
-      labelId: string
-    }
-  };
+  labelHotkeys: HotkeyLookup;
 
 
   //list of prepared rla entries
@@ -106,6 +85,7 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
   private displayUserChanged() {
     this.canEditLabels = this.lsm.userManager.canEditManualRlas;
     this.filterRlaDataForCurrent();
+    this.rebuildGoldInfo();
   }
 
   private settingsChanged(componentType: ComponentType) {
@@ -199,6 +179,7 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
     this.lVars.loading = !(this.lsm.recordManager.recordData.baseRecord && this.lsm.recordManager.recordData.token && this.lsm.recordManager.rlaPreparator.rlasLoaded());
     this.rebuildTaskLookup();
     this.prepareRlaData();
+    this.rebuildGoldInfo();
   }
 
   private attributesChanged() {
@@ -252,6 +233,7 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
           showText: true,
           orderKey: 0,
           showGridLabelPart: true,
+
           task: {
             taskType: LabelingTask.NOT_USEABLE,
             name: "No Task",
@@ -270,6 +252,7 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
 
       }
     }
+    this.rebuildGoldInfo();
 
     if (this.activeTasks) {
       const activeTaskIds = this.activeTasks.map(x => x.task.id);
@@ -284,13 +267,64 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
     this.prepareRlaTokenLookup();
   }
 
-  // private rebuildLabelButtonAmount() {
-  //   if (!this.lsm.taskManager.labelingTasks) return;
-  //   for (const task of this.lsm.taskManager.labelingTasks) {
-  //     task.displayLabels = task.labels.slice(0, this.htmlSettings.labeling.showNLabelButton);
-  //   }
+  private rebuildGoldInfo() {
+    if (!this.lVars?.taskLookup || !this.fullRlaData) return;
+    for (const attributeId in this.lVars.taskLookup) {
+      for (const task of this.lVars.taskLookup[attributeId].lookup) {
+        task.goldInfo = this.getGoldInfoForTask(task);
+      }
+    }
+  }
 
-  // }
+  private getGoldInfoForTask(task: any): { can: boolean, is: boolean } {
+    if (this.lsm.userManager.currentRole != UserRole.ENGINEER) return { can: false, is: false };
+    if (this.lsm.userManager.displayUserId == ALL_USERS_USER_ID) return { can: false, is: false };
+    if (task.task.taskType == LabelingTask.NOT_USEABLE) return { can: false, is: false };
+    const userId = this.lsm.userManager.displayUserId;
+    const taskRlaData = this.fullRlaData.filter(x => x.sourceTypeKey == LabelSource.MANUAL && x.taskId == task.task.id);
+    const goldRlas = taskRlaData.filter(x => x.rla.isGoldStar);
+    if (userId == GOLD_STAR_USER_ID) return { can: goldRlas.length > 0, is: goldRlas.length > 0 };
+
+    const userRlas = taskRlaData.filter(x => x.createdBy == userId && !x.rla.isGoldStar);
+    if (userRlas.length == 0) return { can: false, is: false };
+    const otherRlas = taskRlaData.filter(x => x.createdBy != userId && !x.rla.isGoldStar);
+
+    const allOtherGroups = otherRlas.reduce((f, c) => {
+      if (!f[c.createdBy]) f[c.createdBy] = [];
+      f[c.createdBy].push(c);
+      return f;
+    }, {});
+    let allMatch = true;
+    for (const key in allOtherGroups) {
+      const group = allOtherGroups[key];
+      if (!this.allRlasMatch(userRlas, group)) {
+        allMatch = false;
+        break;
+      }
+    }
+    return { can: !allMatch, is: goldRlas.length > 0 && this.allRlasMatch(goldRlas, userRlas) }
+  }
+  private allRlasMatch(groupA: any[], groupB: any[]): boolean {
+    if (groupA.length != groupB.length) return false;
+    for (let i = 0; i < groupA.length; i++) {
+      const found = groupB.find(x => this.rlaIsEqual(x.rla, groupA[i].rla));
+      if (!found) return false;
+    }
+    return true;
+  }
+
+  public toggleGoldStar(taskId: string, currentState: boolean) {
+    this.lsm.recordManager.toggleGoldStar(taskId, currentState);
+  }
+
+  private rlaIsEqual(rlaA: any, rlaB: any): boolean {
+    if (rlaA.sourceType != rlaB.sourceType) return false;
+    if (rlaA.returnType != rlaB.returnType) return false;
+    if (rlaA.labelingTaskLabelId != rlaB.labelingTaskLabelId) return false;
+    if (rlaA.returnType == InformationSourceReturnType.YIELD && (rlaA.tokenStartIdx != rlaB.tokenStartIdx || rlaA.tokenEndIdx != rlaB.tokenEndIdx)) return false;
+
+    return true;
+  }
 
   private getTokenData(attributeId: string) {
     if (!this.lsm.recordManager.recordData.token) return null;
@@ -304,6 +338,10 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
   }
 
   setActiveTasks(tasks: any | any[]) {
+    if (!this.canEditLabels) {
+      if (this.activeTasks) this.activeTasks = null;
+      return;
+    }
     if (Array.isArray(tasks)) {
       this.activeTasks = tasks;
     } else {
@@ -322,16 +360,9 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
 
 
   private prepareRlaData() {
-    // const rlaData = this.lsm.recordManager.recordData.rlas;
-    // if (!rlaData) return;
-
     if (!this.rlaPreparator.rlasLoaded()) return;
     this.fullRlaData = this.rlaPreparator.buildLabelingRlaData();
-    // this.settingsChanged();
-    // this.dataHasHeuristics = this.rlaManager.rlasHaveHeuristicData();
     this.filterRlaDataForCurrent();
-
-
   }
 
   private filterRlaDataForCurrent() {
@@ -366,49 +397,13 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
     if (activeElement && activeElement instanceof HTMLInputElement && activeElement.type == 'text') return;
     for (const key in this.labelHotkeys) {
       if (key == event.key) {
-        console.log("hotkey -> i want to add", key, this.labelHotkeys[key])
-        // event.preventDefault();
-        // event.stopPropagation();
+        const task = this.lsm.taskManager.labelingTasks.find(t => t.id == this.labelHotkeys[key].taskId);
+        this.addRla(task, this.labelHotkeys[key].labelId);
+        event.preventDefault();
+        event.stopPropagation();
+        return;
       }
     }
-
-    // if (!this.labelSearchBlinker || !this.labelSearchBlinker.nativeElement.classList.contains('blink_me')) {
-    //   //only blinks when box is "clicked"
-    //   this.labelHotkeys.forEach((v, k) => {
-    //     if (k == event.key) {
-    //       const type = this.labelingTasksMap.get(v.taskId).taskType
-    //       if (type == LabelingTask.MULTICLASS_CLASSIFICATION) {
-    //         this.addLabelToTask(v.taskId, v.labelId);
-    //       } else if (this.isLabelBoxOpen && type == LabelingTask.INFORMATION_EXTRACTION) {
-    //         this.addLabelToMarkedText(v.taskId, v.labelId);
-    //       }
-    //     }
-    //   })
-    // }
-
-    // if (this.isLabelBoxOpen) {
-    //   if (event.key == 'Escape' || event.key == 'Esc') {
-    //     this.closeLabelBox();
-    //     return;
-    //   }
-    //   event.preventDefault();
-    //   event.stopPropagation();
-    //   this.handleFakeInputBox(event);
-    //   return;
-    // }
-    // if (this.isCommentBoxOpen) return;
-
-    // if (event.key == 'ArrowRight') {
-    //   this.nextRecord();
-    // } else if (event.key == 'ArrowLeft') {
-    //   this.previousRecord();
-    // }
-    // if ('123456789'.includes(event.key)) {
-    //   const selectedPos = Number(event.key) - 1;
-    //   if (selectedPos < this.userIcons.length) {
-    //     this.showUserData(this.userIcons[selectedPos].id);
-    //   }
-    // }
 
   }
 
@@ -457,6 +452,7 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
   }
 
   public setSelected(attributeId: string, tokenStart: number, tokenEnd: number, baseDiv?: HTMLElement) {
+    if (!this.canEditLabels) return;
     for (const token of this.tokenLookup[attributeId].token) {
       token.selected = token.idx >= tokenStart && token.idx <= tokenEnd;
     }
@@ -486,6 +482,7 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
     this.lsm.taskManager.createLabelInTask(labelName, taskId);
   }
   public addRla(task: any, labelId: string) {
+    if (!this.canEditLabels) return;
     if (task.taskType == LabelingTask.MULTICLASS_CLASSIFICATION) {
       this.addLabelToTask(task.id, labelId);
     } else {
@@ -585,6 +582,7 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
               isLast: tokenIdx == rla.rla.tokenEndIdx,
               hoverGroups: rla.hoverGroups,
               labelId: rla.rla.labelingTaskLabelId,
+              canBeDeleted: rla.canBeDeleted,
               rla: rla.rla
             });
           }

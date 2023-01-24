@@ -1,5 +1,8 @@
 export type LabelingSuiteModals = {
-    goldStar: { open: boolean };
+    goldStar: {
+        open: boolean;
+        firstVisit: boolean
+    };
     deleteRecord: { open: boolean };
     taskHeaderInfo: { open: boolean };
     settings: SettingsModal;
@@ -17,7 +20,10 @@ export class LabelingSuiteModalManager {
     }
     private createDefaultLabelingModals(): LabelingSuiteModals {
         return {
-            goldStar: { open: false },
+            goldStar: {
+                open: false,
+                firstVisit: true
+            },
             deleteRecord: {
                 open: false,
             },
