@@ -875,7 +875,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
 
     let tmp = this._labelingTaskBuildSearchParamTextPart(
       values.manualLabels,
-      'ML-label'
+      'M-label'
     );
     if (tmp) text += '(' + tmp + ')';
 
