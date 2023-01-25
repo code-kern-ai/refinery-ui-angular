@@ -20,6 +20,9 @@ import { UploadComponent } from 'src/app/import/components/upload/upload.compone
 import { UserManager } from 'src/app/util/user-manager';
 import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
 import { createDefaultLookupListDetailsModals, LookupListsDetailsModals } from './knowledge-bases-details-helper';
+import { UploadFileType } from 'src/app/import/components/helpers/upload-types';
+import { Project } from 'src/app/base/entities/project';
+import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 
 
 @Component({
@@ -58,12 +61,18 @@ export class KnowledgeBaseDetailsComponent implements OnInit, AfterViewInit, OnD
     return DownloadState;
   }
   lookupListDetailsModals: LookupListsDetailsModals = createDefaultLookupListDetailsModals();
+  project: Project;
+
+  get UploadFileType(): typeof UploadFileType {
+    return UploadFileType;
+  }
 
   constructor(
     private routeService: RouteService,
     private activatedRoute: ActivatedRoute,
     private knowledgeBaseApolloService: KnowledgeBasesApolloService,
     private router: Router,
+    private projectApolloService: ProjectApolloService
   ) { }
   ngOnDestroy(): void {
     this.subscriptions$.forEach(element => element.unsubscribe());
@@ -80,6 +89,10 @@ export class KnowledgeBaseDetailsComponent implements OnInit, AfterViewInit, OnD
 
 
     this.projectId = this.activatedRoute.parent.snapshot.paramMap.get('projectId');
+    let projectQuery$, project$;
+    [projectQuery$, project$] = this.projectApolloService.getProjectByIdQuery(this.projectId);
+    this.subscriptions$.push(project$.subscribe((project) => this.project = project));
+
     this.knowledgeBaseId = this.activatedRoute.snapshot.paramMap.get('knowledgeBaseId');
     [this.knowledgeBaseQuery$, this.knowledgeBase$] = this.knowledgeBaseApolloService.getKnowledgeBaseByKnowledgeBaseId(this.projectId, this.knowledgeBaseId);
     [this.termsQuery$, this.terms$] = this.knowledgeBaseApolloService.getTermsByKnowledgeBaseId(this.projectId, this.knowledgeBaseId);
@@ -307,23 +320,6 @@ export class KnowledgeBaseDetailsComponent implements OnInit, AfterViewInit, OnD
     document.body.removeChild(element);
   }
 
-
-  getFile(file: File) {
-    this.file = file;
-  }
-
-  uploadToMinio() {
-    if (this.file) {
-      this.uploadComponent.projectId = this.projectId;
-      this.uploadComponent.reloadOnFinish = true;
-      this.uploadComponent.uploadStarted = true;
-      const finalFileName = this.uploadComponent.getLookupListName(this.file?.name, this.knowledgeBaseId);
-      this.uploadComponent.reSubscribeToNotifications();
-      this.uploadComponent.uploadFileType.setValue("knowledge_base");
-      this.uploadComponent.finishUpUpload(finalFileName, '');
-    }
-  }
-
   pasteLookupList() {
     const pasteValues = this.lookupListDetailsModals.pasteLookupList;
     this.knowledgeBaseApolloService.pasteTerm(this.projectId, this.knowledgeBaseId, pasteValues.inputArea, pasteValues.inputSplit, pasteValues.remove)
@@ -369,5 +365,11 @@ export class KnowledgeBaseDetailsComponent implements OnInit, AfterViewInit, OnD
     } else {
       this.lookupListDetailsModals.pasteLookupList.inputArea = value;
     }
+  }
+
+  closeModalAndRefetchList() {
+    this.lookupListDetailsModals.uploadLookupList.open = false;
+    this.knowledgeBaseQuery$.refetch();
+    this.termsQuery$.refetch();
   }
 }

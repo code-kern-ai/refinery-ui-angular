@@ -8,7 +8,7 @@ import { ProjectApolloService } from '../../../services/project/project-apollo.s
 import { UserManager } from 'src/app/util/user-manager';
 import { AssistantConstants, AssistantInputData, AssistantSetupData, AssistantStep, LabelStudioTaskMapping, PreparationStep } from './label-studio-assistant-helper';
 import { ModalButtonType } from '../../modal/modal-helper';
-import { UploadType } from 'src/app/import/components/upload/upload-helper';
+import { UploadType } from 'src/app/import/components/helpers/upload-types';
 
 
 
@@ -113,19 +113,15 @@ export class LabelStudioAssistantComponent implements OnInit, OnChanges, OnDestr
     else {
       if (this.inputData.uploadComponent.file) this.prepareData.fileName = this.inputData.uploadComponent.file.name;
       const obj = this.inputData.uploadFunctionThisObject;
-      if (obj.hasOwnProperty('createNewProject')) {
+      if (obj['uploadSpecificHelper'].projectTitle) {
         //project - new
-        this.prepareData.projectName = obj['createNewProject'].get('projectTitle').value;
-      } else if (obj.hasOwnProperty('projectId') && obj['project']) {
+        this.prepareData.projectName = obj['uploadSpecificHelper'].projectTitle;
+      } else if (obj['uploadSpecificHelper'].projectName) {
         //project - add
-        this.prepareData.projectName = obj['project'].name;
+        this.prepareData.projectName = obj['uploadSpecificHelper'].projectName;
       }
       this.canProceed = this.canProceed && !!this.prepareData.projectName && !!this.prepareData.fileName;
     }
-  }
-
-  logMe(me) {
-    console.log(me)
   }
 
   private handleWebsocketNotification(msgParts: string[]) {
