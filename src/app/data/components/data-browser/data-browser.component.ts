@@ -2072,7 +2072,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
           pattern = operatorValue == 'IN' ? /^[0-9.,]$/i : operatorValue == 'IN WC' ? /^[0-9.,_%*?]$/i : /^[0-9.]$/i;
         }
       }
-      if (!pattern.test(event.key) && event.key != 'Backspace') {
+      if (!pattern.test(event.key) && event.key != 'Backspace' && event.key != 'ArrowLeft' && event.key != 'ArrowRight') {
         event.preventDefault();
         return;
       }
