@@ -38,7 +38,8 @@ export class UserManager {
         else UserManager.currentRole = UserManager.user.role;
         UserManager.roleChangeListener.forEach((func, key) => func.call(key));
     }
-    public static assumeUserRole(role: UserRole) {
+    public static assumeUserRole(role: UserRole, force: boolean = false) {
+        if (role == UserManager.currentRole && !force) return;
         UserManager.currentRole = role;
         UserManager.roleChangeListener.forEach((func, key) => func.call(key));
     }

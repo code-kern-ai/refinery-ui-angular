@@ -1,7 +1,8 @@
 import { first } from "rxjs/operators";
+import { UserRole } from "src/app/base/enum/graphql-enums";
 import { NotificationService } from "src/app/base/services/notification.service";
 import { ProjectApolloService } from "src/app/base/services/project/project-apollo.service";
-import { enumToArray, transferNestedDict } from "src/app/util/helper-functions";
+import { enumToArray, jsonCopy, transferNestedDict } from "src/app/util/helper-functions";
 import { DoBeforeDestroy } from "src/app/util/interfaces";
 import { LabelingSuiteManager, UpdateType } from "./manager";
 import { ComponentType } from "./settings";
@@ -59,10 +60,19 @@ export class LabelingSuiteTaskManager implements DoBeforeDestroy {
         let q, vc;
         [q, vc] = this.projectApolloService.getLabelingTasksByProjectId(this.projectId);
         vc.pipe(first()).subscribe(lt => {
-            this.labelingTasks = lt;
+            this.labelingTasks = this.prepareTasksForRole(jsonCopy(lt));
             this.rebuildLabelButtonAmount();
             this.baseManager.runUpdateListeners(UpdateType.LABELING_TASKS);
         });
+    }
+
+    private prepareTasksForRole(taskData: any[]): any[] {
+
+        if (this.baseManager.userManager.currentRole != UserRole.ANNOTATOR) return taskData;
+
+        const taskId = this.baseManager.sessionManager.getAllowedTaskId();
+        if (!taskId) return [];
+        else return taskData.filter(t => t.id == taskId);
     }
 
     private rebuildLabelButtonAmount() {

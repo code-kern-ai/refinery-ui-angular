@@ -1,12 +1,10 @@
-import { Component, ElementRef, HostListener, Input, OnChanges, OnDestroy, OnInit, QueryList, SimpleChanges, ViewChild, ViewChildren } from '@angular/core';
-import { timer } from 'rxjs';
+import { Component, ElementRef, HostListener, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { getLabelSourceOrder, getTaskTypeOrder, InformationSourceReturnType, LabelingTask, LabelSource, UserRole } from 'src/app/base/enum/graphql-enums';
 import { enumToArray, jsonCopy } from 'src/app/util/helper-functions';
 import { LabelingSuiteManager, UpdateType } from '../../helper/manager/manager';
 import { LabelingSuiteRlaPreparator } from '../../helper/manager/recordRla';
-import { ComponentType, LabelingSuiteLabelingSettings, LabelingSuiteMainSettings, LabelingSuiteSettings, LabelingSuiteTaskHeaderProjectSettings } from '../../helper/manager/settings';
+import { ComponentType, LabelingSuiteLabelingSettings, LabelingSuiteSettings, LabelingSuiteTaskHeaderProjectSettings } from '../../helper/manager/settings';
 import { ALL_USERS_USER_ID, GOLD_STAR_USER_ID } from '../../helper/manager/user';
-import { LabelingSuiteComponent } from '../../main-component/labeling-suite.component';
 import { getDefaultLabelingVars, LabelingVars, FULL_RECORD_ID, TokenLookup, HotkeyLookup } from './helper';
 
 const SWIM_LANE_SIZE_PX = 12;
@@ -338,7 +336,7 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
   }
 
   setActiveTasks(tasks: any | any[]) {
-    if (!this.canEditLabels) {
+    if (!this.canEditLabels && this.lsm.userManager.currentRole != 'ANNOTATOR') {
       if (this.activeTasks) this.activeTasks = null;
       return;
     }
@@ -452,7 +450,7 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
   }
 
   public setSelected(attributeId: string, tokenStart: number, tokenEnd: number, baseDiv?: HTMLElement) {
-    if (!this.canEditLabels) return;
+    if (!this.canEditLabels && this.lsm.userManager.currentRole != 'ANNOTATOR') return;
     for (const token of this.tokenLookup[attributeId].token) {
       token.selected = token.idx >= tokenStart && token.idx <= tokenEnd;
     }
@@ -488,14 +486,17 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
     } else {
       this.addLabelToSelection(task.attribute.id, task.id, labelId);
     }
-    if (this.htmlSettings.labeling.closeLabelBoxAfterLabel) this.activeTasks = null;
+    if (this.htmlSettings.labeling.closeLabelBoxAfterLabel) {
+      this.activeTasks = null;
+      this.clearSelected();
+    }
   }
 
   private addLabelToSelection(attributeId: string, labelingTaskId: string, labelId: string) {
     const selectionData = this.collectSelectionData(attributeId);
     if (!selectionData) return;
-
-    this.lsm.recordManager.addExtractionLabelToRecord(labelingTaskId, labelId, selectionData.startIdx, selectionData.endIdx, selectionData.value);
+    const sourceId = this.lsm.sessionManager.getSourceId();
+    this.lsm.recordManager.addExtractionLabelToRecord(labelingTaskId, labelId, selectionData.startIdx, selectionData.endIdx, selectionData.value, sourceId);
 
   }
 
@@ -531,7 +532,8 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
       e.sourceTypeKey == LabelSource.MANUAL && e.createdBy == this.lsm.userManager.displayUserId && e.labelId == labelId);
 
     if (existingLabels.length == 1) return;
-    this.lsm.recordManager.addClassificationLabelToRecord(labelingTaskId, labelId);
+    const sourceId = this.lsm.sessionManager.getSourceId();
+    this.lsm.recordManager.addClassificationLabelToRecord(labelingTaskId, labelId, sourceId);
   }
 
   public deleteRecordLabelAssociation(rlaLabel: any) {

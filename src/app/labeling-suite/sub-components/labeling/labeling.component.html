@@ -69,8 +69,8 @@
                     {{j==0?attribute.name:''}}
                 </div>
                 <!-- task-->
-                <div *ngIf="htmlSettings.labeling.showTaskNames" [ngClass]="i%2 == 0 ? 'bg-white':'bg-gray-50'"
-                    class="col-start-2 pr-3 py-1.5 h-full flex">
+                <div *ngIf="htmlSettings.labeling.showTaskNames && lsm.userManager.currentRole != 'ANNOTATOR'"
+                    [ngClass]="i%2 == 0 ? 'bg-white':'bg-gray-50'" class="col-start-2 pr-3 py-1.5 h-full flex">
                     {{task.task.taskType !='NOT_USEABLE'?task.task.name:''}}
                 </div>
                 <div class="col-start-3 h-full py-1.5 flex" [ngClass]="i%2 == 0 ? 'bg-white':'bg-gray-50'">
@@ -122,7 +122,7 @@
                         <!-- Classification labels -->
                         <ng-template [ngIf]="task.task.taskType == 'MULTICLASS_CLASSIFICATION'">
                             <!--show label buttons-->
-                            <ng-template [ngIf]="canEditLabels">
+                            <ng-template [ngIf]="canEditLabels || lsm.userManager.currentRole == 'ANNOTATOR'">
                                 <div class="flex flex-row flex-wrap gap-2">
                                     <div #labelDiv *ngFor="let label of task.task.displayLabels; let i = index"
                                         class="text-sm font-medium px-2 py-0.5 rounded-md border focus:outline-none cursor-pointer"

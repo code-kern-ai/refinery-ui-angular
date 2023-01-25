@@ -2,10 +2,13 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { forkJoin, timer } from "rxjs";
 import { first } from "rxjs/operators";
 import { UserRole } from "src/app/base/enum/graphql-enums";
+import { NotificationService } from "src/app/base/services/notification.service";
 import { ProjectApolloService } from "src/app/base/services/project/project-apollo.service";
-import { dateAsUTCDate } from "src/app/util/helper-functions";
+import { assumeUserRole } from "src/app/labeling/components/helper/labeling-helper";
+import { dateAsUTCDate, parseLinkFromText } from "src/app/util/helper-functions";
 import { DoBeforeDestroy } from "src/app/util/interfaces";
 import { RouteManager } from "src/app/util/route-manager";
+import { UserManager } from "src/app/util/user-manager";
 import { LabelingSuiteManager } from "./manager";
 
 
@@ -43,6 +46,7 @@ export class LabelingSuiteSessionManager implements DoBeforeDestroy {
     public availableLinks: any[];
     public availableLinksLookup: {};
     public selectedLink: any;
+    public absoluteWarning: string;
     private debounceTimer: any;
 
     public nextDisabled: boolean = true;
@@ -59,11 +63,43 @@ export class LabelingSuiteSessionManager implements DoBeforeDestroy {
         this.baseManager = baseManager;
         this.labelingLinkData = this.parseLabelingLinkData(activeRoute);
         this.redirected = this.redirectIfNecessary();
-        if (!this.redirected) this.readHuddleDataFromLocal();
+        if (this.redirected) return;
+        UserManager.assumeUserRole(this.guessRoleFromLinkType(this.labelingLinkData.linkType));
+
+        this.readHuddleDataFromLocal();
+
+        NotificationService.subscribeToNotification(this, {
+            projectId: this.baseManager.projectId,
+            whitelist: this.getWebsocketWhitelist(),
+            func: this.handleWebsocketNotification
+        });
     }
 
     doBeforeDestroy(): void {
+
+        if (this.baseManager.userManager.roleAssumed) localStorage.removeItem("huddleData");
+        NotificationService.unsubscribeFromNotification(this, this.baseManager.projectId);
     }
+
+    private getWebsocketWhitelist(): string[] {
+        let toReturn = ['access_link_changed', 'access_link_removed'];
+        return toReturn;
+    }
+
+    private handleWebsocketNotification(msgParts: string[]) {
+        if (['access_link_changed', 'access_link_removed'].includes(msgParts[1])) {
+            if (this.router.url.indexOf(msgParts[3]) > -1 && this.labelingLinkData) {
+                //python "True" string
+                this.labelingLinkData.linkLocked = !msgParts[4] || msgParts[4] === 'True';
+                location.reload();
+            }
+        }
+    }
+
+    public getAllowedTaskId() {
+        return this.huddleData?.allowedTask;
+    }
+
 
     public prepareLabelingSession() {
         this.prepareLabelingSessionInternal(this.labelingLinkData.huddleId, this.labelingLinkData.requestedPos);
@@ -105,7 +141,7 @@ export class LabelingSuiteSessionManager implements DoBeforeDestroy {
                 if (!huddleData.huddleId) {
                     //nothing was found (no slice / heuristic available)        
                     this.baseManager.somethingLoading = false;
-                    if (this.labelingLinkData) this.labelingLinkData.linkLocked = true;
+                    if (this.labelingLinkData) this.changeLinkLockState(true);
                     return;
                 }
                 if (huddleData.startPos != -1) this.labelingLinkData.requestedPos = huddleData.startPos;
@@ -125,6 +161,12 @@ export class LabelingSuiteSessionManager implements DoBeforeDestroy {
             });
     }
 
+    private changeLinkLockState(state: boolean) {
+        if (!this.labelingLinkData) return;
+        this.labelingLinkData.linkLocked = state;
+        this.absoluteWarning = state ? 'his link is locked, contact your supervisor to request access' : null;
+        this.baseManager.checkAbsoluteWarning();
+    }
 
     public jumpToPosition(projectId: string, pos: number) {
         if (!this.huddleData || !this.huddleData.recordIds) return;
@@ -187,6 +229,21 @@ export class LabelingSuiteSessionManager implements DoBeforeDestroy {
 
         this.router.navigate(["projects", this.baseManager.projectId, "record-ide", sessionId], { queryParams: { pos: pos } });
     }
+    public getSourceId(): string {
+        if (!this.huddleData) return null;
+        if (this.huddleData.linkData.linkType != LabelingLinkType.HEURISTIC) return null;
+        return this.huddleData.linkData.huddleId;
+    }
+
+    public dropdownSelectLink(linkId: string) {
+        if (linkId == this.selectedLink?.id) return;
+        this.selectedLink = this.availableLinksLookup[linkId];
+        if (!this.selectedLink) return;
+        const linkData = parseLinkFromText(this.selectedLink.link);
+        this.router.navigate([linkData.route], { queryParams: linkData.queryParams });
+        timer(200).subscribe(() => location.reload());
+    }
+
 
     private continueSetup() {
         this.collectAvailableLinks();
@@ -233,7 +290,7 @@ export class LabelingSuiteSessionManager implements DoBeforeDestroy {
             .pipe(first());
 
         pipeFirst.subscribe((isLocked) => {
-            this.labelingLinkData.linkLocked = isLocked;
+            this.changeLinkLockState(isLocked);
             if (isLocked) this.baseManager.somethingLoading = false;
         });
         return pipeFirst;
@@ -261,6 +318,18 @@ export class LabelingSuiteSessionManager implements DoBeforeDestroy {
             case 'SESSION':
             default:
                 return LabelingLinkType.SESSION;
+        }
+    }
+
+    private guessRoleFromLinkType(linkType: LabelingLinkType): UserRole {
+        switch (linkType) {
+            case LabelingLinkType.DATA_SLICE:
+                return UserRole.EXPERT;
+            case LabelingLinkType.HEURISTIC:
+                return UserRole.ANNOTATOR;
+            case LabelingLinkType.SESSION:
+            default:
+                return UserRole.ENGINEER;
         }
     }
 

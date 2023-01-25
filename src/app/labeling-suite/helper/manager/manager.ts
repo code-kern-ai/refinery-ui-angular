@@ -1,6 +1,5 @@
 import { ActivatedRoute, Router } from "@angular/router";
 import { first, map } from "rxjs/operators";
-import { NotificationService } from "src/app/base/services/notification.service";
 import { ProjectApolloService } from "src/app/base/services/project/project-apollo.service";
 import { RecordApolloService } from "src/app/base/services/record/record-apollo.service";
 import { enumToArray } from "src/app/util/helper-functions";
@@ -32,6 +31,7 @@ export class LabelingSuiteManager implements DoBeforeDestroy {
 
     public somethingLoading: boolean = true;
     public sufficientInitialized: boolean = false;
+    public absoluteWarning: string;
 
     //private changeListener
     private registeredUpdateListeners: Map<UpdateType, Map<Object, () => void>> = new Map<UpdateType, Map<Object, () => void>>();
@@ -46,13 +46,6 @@ export class LabelingSuiteManager implements DoBeforeDestroy {
 
         enumToArray(UpdateType).forEach(ct => {
             this.registeredUpdateListeners.set(ct, new Map<Object, () => void>());
-        });
-
-
-        NotificationService.subscribeToNotification(this, {
-            projectId: projectId,
-            whitelist: this.getWebsocketWhitelist(),
-            func: this.handleWebsocketNotification
         });
 
         //first setup User manager since some roles are barred from collecting data though other managers
@@ -92,8 +85,6 @@ export class LabelingSuiteManager implements DoBeforeDestroy {
     }
 
     public doBeforeDestroy(): void {
-        NotificationService.unsubscribeFromNotification(this);
-
         //destroy for other managers
         if (this.userManager) this.userManager.doBeforeDestroy();
 
@@ -107,22 +98,11 @@ export class LabelingSuiteManager implements DoBeforeDestroy {
         if (this.sessionManager) this.sessionManager.doBeforeDestroy();
     }
 
-
-
-    private getWebsocketWhitelist(): string[] {
-        let toReturn = [];
-        toReturn.push(...['access_link_changed', 'access_link_removed']);
-        return toReturn;
+    public checkAbsoluteWarning() {
+        if (this.sessionManager?.absoluteWarning) this.absoluteWarning = this.sessionManager.absoluteWarning;
+        else if (this.userManager?.absoluteWarning) this.absoluteWarning = this.userManager.absoluteWarning;
+        else this.absoluteWarning = null;
     }
-
-
-    private handleWebsocketNotification(msgParts: string[]) {
-        {
-            console.log("unknown message in labeling suite data handler: " + msgParts);
-        }
-
-    }
-
 
     public registerUpdateListenerAndDo(type: UpdateType, caller: Object, func: () => void) {
         if (!this.registeredUpdateListeners.has(type)) throw Error("Update type not available");

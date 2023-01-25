@@ -1,4 +1,4 @@
-import { getLabelSourceOrder, InformationSourceReturnType, informationSourceTypeToString, LabelSource, labelSourceToString } from "src/app/base/enum/graphql-enums";
+import { getLabelSourceOrder, InformationSourceReturnType, informationSourceTypeToString, LabelSource, labelSourceToString, UserRole } from "src/app/base/enum/graphql-enums";
 import { jsonCopy } from "src/app/util/helper-functions";
 import { TableDisplayData } from "../../sub-components/overview-table/helper";
 import { getHoverGroupsOverviewTable } from "../util-functions";
@@ -15,8 +15,12 @@ export class LabelingSuiteRlaPreparator {
     }
 
     public setRlas(rlas: any, tokenAttribute: any) {
-        if (rlas) this.rlas = this.finalizeRlas(jsonCopy(rlas), tokenAttribute);
-        else this.rlas = null;
+        if (!rlas) {
+            this.rlas = null;
+            return;
+        }
+        const rlaData = this.prepareRLADataForRole(jsonCopy(rlas));
+        this.rlas = this.finalizeRlas(rlaData, tokenAttribute);
     }
 
     public rlasLoaded(): boolean {
@@ -36,6 +40,28 @@ export class LabelingSuiteRlaPreparator {
         }
         return rlas;
     }
+
+
+    private prepareRLADataForRole(rlaData: any[]): any[] {
+        if (this.baseManager.userManager.currentRole != UserRole.ANNOTATOR) return rlaData;
+        const currentSourceId = this.baseManager.sessionManager.getSourceId();
+        const userId = this.baseManager.userManager.displayUserId;
+        const allowedTask = this.baseManager.sessionManager.getAllowedTaskId();
+        rlaData.forEach((rla) => {
+            if ((rla.sourceId && rla.sourceId == currentSourceId)) {
+                rla.sourceType = LabelSource.MANUAL;
+                rla.sourceId = null;
+            } else if (this.baseManager.userManager.roleAssumed && rla.createdBy == userId && rla.labelingTaskLabel.labelingTask.id == allowedTask
+                && rla.sourceType == LabelSource.MANUAL) {
+
+            } else {
+                rla.id = "x";
+            }
+        });
+        return rlaData.filter(rla => rla.id != "x");
+    }
+
+
     private getTokenizedAttribute(attributeId: string, tokenAttribute: any) {
         for (let att of tokenAttribute) {
             if (att.attributeId == attributeId) return att;

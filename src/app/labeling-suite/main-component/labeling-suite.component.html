@@ -1,9 +1,16 @@
 <div *ngIf="lsm.sufficientInitialized" class="h-full bg-white flex flex-col"
     [ngClass]="lsm.somethingLoading?'wait':null">
+    <div *ngIf="lsm.absoluteWarning"
+        class="absolute left-0 right-0 flex items-center justify-center pointer-events-none"
+        style="top:17px;z-index:100">
+        <span class="inline-flex items-center px-2 py-0.5 rounded font-medium bg-red-100 text-red-800">
+            {{lsm.absoluteWarning}}</span>
+    </div>
 
     <ng-container [ngTemplateOutlet]="navigationBarTop"></ng-container>
     <div class="flex-grow overflow-y-auto" style="max-height:calc(100vh - 190px);">
-        <kern-labeling-suite-task-header *ngIf="lsm.settingManager.settings.task.show"
+        <kern-labeling-suite-task-header
+            *ngIf="lsm.settingManager.settings.task.show && lsm.userManager.currentRole != userRoleEnum.ANNOTATOR"
             [lsm]="lsm"></kern-labeling-suite-task-header>
         <kern-labeling-suite-labeling [lsm]="lsm"></kern-labeling-suite-labeling>
         <kern-labeling-suite-overview-table *ngIf="lsm.settingManager.settings.overviewTable.show"
@@ -85,18 +92,16 @@
                     </div>
                 </ng-template>
                 <ng-template #navTopNoneEngineer>
-                    None engineer role not yet implemented
-                    <!-- <div 
-                    class="flex justify-center items-center overflow-visible">
-                    <span class="mr-2"> Available Tasks:</span>
-                    <kern-dropdown [dropdownOptions]="{
-                        optionArray:availableLinks?.length>0 ? availableLinks: ['No links available'],
-                        buttonCaption:selectedLink?selectedLink.name:'Select slice',
+                    <div class="flex justify-center items-center overflow-visible">
+                        <span class="mr-2"> Available Tasks:</span>
+                        <kern-dropdown [dropdownOptions]="{
+                        optionArray:lsm.sessionManager.availableLinks?.length>0 ? lsm.sessionManager.availableLinks: ['No links available'],
+                        buttonCaption:lsm.sessionManager.selectedLink?lsm.sessionManager.selectedLink.name:'Select slice',
                         valuePropertyPath:'id',
-                        isDisabled:availableLinks?.length == 0
-                    }" (optionClicked)="dropdownSelectLink($event)">
-                    </kern-dropdown>
-                </div> -->
+                        isDisabled:lsm.sessionManager.availableLinks?.length == 0
+                    }" (optionClicked)="lsm.sessionManager.dropdownSelectLink($event)">
+                        </kern-dropdown>
+                    </div>
                 </ng-template>
 
 
@@ -234,7 +239,8 @@
 
                 </div>
             </div>
-            <div class="cursor-pointer tooltip tooltip-left" data-tip="Open Labeling Suite settings"
+            <div *ngIf="lsm.userManager.currentRole != userRoleEnum.ANNOTATOR"
+                class="cursor-pointer tooltip tooltip-left" data-tip="Open Labeling Suite settings"
                 (click)="lsm.modalManager.modals.settings.open = true">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd"
@@ -292,6 +298,9 @@
             <span class="text-lg leading-6 text-gray-900 font-medium">
                 Settings
             </span>
+            <ng-container [ngTemplateOutlet]="settingInfo"
+                [ngTemplateOutletContext]="{dataTip:'Note that your browser stores these settings not your user or your organization'}">
+            </ng-container>
 
         </div>
         <div class="flex justify-center">

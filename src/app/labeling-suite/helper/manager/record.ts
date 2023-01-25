@@ -93,8 +93,6 @@ export class LabelingSuiteRecordManager implements DoBeforeDestroy {
 
     public collectRecordData(recordId: string) {
         if (recordId == null) {
-            // this.fullRecordData = { id: recordId };
-            // if (this.recordLabelAssociations$) this.recordLabelAssociations$.unsubscribe();
             console.log("no record id provided (collect record data)")
             return;
         }
@@ -227,17 +225,11 @@ export class LabelingSuiteRecordManager implements DoBeforeDestroy {
 
     public deleteRecord() {
         if (this.recordData.deleted) return;
-        console.log("delete record -> nothing done though since dev")
-        return;
         const recordId = this.recordData.baseRecord.id;
         this.recordApolloService.deleteRecordByRecordId(this.projectId, recordId)
             .pipe(first()).subscribe((r) => {
                 if (r['data']['deleteRecord']?.ok) {
                     this.setDeletedState();
-                    //   this.huddleData.recordIds[this.huddleData.linkData.requestedPos - 1] = "deleted"
-                    //   let jumpPos = this.huddleData.linkData.requestedPos + 1;
-                    //   if (jumpPos >= this.huddleData.recordIds.length) jumpPos -= 2;
-                    //   this.jumpToPosition(this.project.id, jumpPos);
                 } else {
                     console.log("Something went wrong with deletion of record:" + recordId);
                 }
@@ -271,9 +263,6 @@ export class LabelingSuiteRecordManager implements DoBeforeDestroy {
         this.baseManager.somethingLoading = true;
         this.recordApolloService.setGoldStarAnnotationForTask(this.projectId, this.activeRecordId, taskId, goldUserId)
             .pipe(first()).subscribe();
-        // (r) => {
-        //     if (r.data.setGoldStarAnnotationForTask.ok) goldState.isGold = true;
-        // });
     }
 
     private removeTaskAsGoldStar(taskId: string) {
@@ -281,9 +270,6 @@ export class LabelingSuiteRecordManager implements DoBeforeDestroy {
         this.baseManager.somethingLoading = true;
         this.recordApolloService.removeGoldStarAnnotationForTask(this.projectId, this.activeRecordId, taskId)
             .pipe(first()).subscribe();
-        // (r) => {
-        //     if (r.data.removeGoldStarAnnotationForTask.ok) goldState.isGold = false;
-        // });
     }
 
 

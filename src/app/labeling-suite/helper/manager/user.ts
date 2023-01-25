@@ -28,6 +28,7 @@ export class LabelingSuiteUserManager implements DoBeforeDestroy {
     public userIcons: any[];
     public showUserIcons: boolean = false;
 
+    public absoluteWarning: string;
 
     private _displayUserId: string;
 
@@ -46,6 +47,7 @@ export class LabelingSuiteUserManager implements DoBeforeDestroy {
     }
 
     public get canEditManualRlas(): boolean {
+        if (this.roleAssumed) return false;
         return (this.displayUserId == GOLD_STAR_USER_ID && this.currentRole == UserRole.ENGINEER)
             || (this.displayUserId == ALL_USERS_USER_ID && this.currentRole == UserRole.ENGINEER)
             || this.displayUserId == this.mainUser.data.id;
@@ -76,8 +78,14 @@ export class LabelingSuiteUserManager implements DoBeforeDestroy {
             avatarUri: getUserAvatarUri(u),
             isLoggedInUser: u.id == this.mainUser.data.id
         }));
-        UserManager.registerRoleChangeListenerAndRun(this, () => this.currentRole = UserManager.currentRole);
+        UserManager.registerRoleChangeListenerAndRun(this, this.changeCurrentRole);
         this.baseManager.setupAfterUserInit();
+    }
+
+    private changeCurrentRole() {
+        this.currentRole = UserManager.currentRole;
+        this.absoluteWarning = this.roleAssumed ? 'You are viewing this page as ' + this.currentRole + ' you are not able to edit' : null;
+        this.baseManager.checkAbsoluteWarning();
     }
 
 
