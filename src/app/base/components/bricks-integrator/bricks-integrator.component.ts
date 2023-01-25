@@ -117,11 +117,13 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
       next: (data: any) => {
         this.config.search.requesting = false;
         this.config.search.currentRequest = null;
+        let finalData = data.data;
         if (this.executionTypeFilter) {
-          this.config.search.results = data.data.filter(e => e.attributes.executionType == this.executionTypeFilter);
-        } else {
-          this.config.search.results = data.data;
+          finalData = finalData.filter(e => e.attributes.executionType == this.executionTypeFilter);
         }
+        finalData = this.filterMinVersion(finalData);
+
+        this.config.search.results = finalData;
         this.config.search.results.forEach(e => e.visible = true);
         this.config.search.nothingMatches = this.config.search.results.length == 0;
         this.searchInput.nativeElement.focus();
@@ -134,6 +136,30 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
     });
   }
 
+  private filterMinVersion(data: any[]): any[] {
+    if (!data || data.length == 0) return data;
+    const el = document.getElementById('refineryVersion') as HTMLElement;
+    if (!el) {
+      console.log("no refineryVersion element found");
+      return data;
+    }
+    const currentVersion = el.textContent.trim().replace("v", "").split(".").map(e => parseInt(e));
+    if (currentVersion.length != 3) {
+      console.log("current version is not in correct format");
+      return data;
+    }
+    return data.filter(e => this.refineryCanHandle(currentVersion, e.attributes.minRefineryVersion));
+
+  }
+  private refineryCanHandle(refineryVersion: number[], brickVersion: string): boolean {
+    if (!brickVersion) return true;
+    const brickVersionSplit = brickVersion.split(".").map(e => parseInt(e));
+    if (brickVersionSplit.length != 3) return false;
+    for (let i = 0; i < 3; i++) {
+      if (brickVersionSplit[i] > refineryVersion[i]) return false;
+    }
+    return true;
+  }
 
   selectSearchResult(id: number) {
     this.config.api.moduleId = id;
