@@ -94,7 +94,11 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
     switch (componentType) {
       case ComponentType.LABELING:
         const displayChanged = this.htmlSettings.labeling?.swimLaneExtractionDisplay != this.settings.labeling.swimLaneExtractionDisplay;
+        const labelDisplayChanged = this.htmlSettings.labeling?.showHeuristicConfidence != this.settings.labeling.showHeuristicConfidence;
         this.htmlSettings.labeling = jsonCopy(this.settings.labeling);
+        if (labelDisplayChanged && this.fullRlaData) {
+          this.lsm.recordManager.rlaPreparator.rebuildRLALabelDisplay(this.fullRlaData, 'rla')
+        }
         if (displayChanged) {
           this.prepareRlaTokenLookup();
         }

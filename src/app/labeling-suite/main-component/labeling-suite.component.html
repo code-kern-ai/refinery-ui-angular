@@ -297,7 +297,7 @@
                 Settings
             </span>
             <ng-container [ngTemplateOutlet]="settingInfo"
-                [ngTemplateOutletContext]="{dataTip:'Note that your browser stores these settings. Not your user or your organization'}">
+                [ngTemplateOutletContext]="{dataTip:'Note that your browser stores these settings.&#10;&#10;Not your user or your organization!'}">
             </ng-container>
 
         </div>
@@ -353,7 +353,8 @@
         <!--Page TASK_HEADER-->
         <div [ngClass]="lsm.settingManager.page != componentTypeEnum.TASK_HEADER ? 'hidden':''"
             class="flex flex-col gap-y-2 items-center my-4">
-            <p class="mt-1 text-sm text-gray-600">These are general settings.<br>For label specific settings use the
+            <p class="text-sm text-gray-600 text-center">These are general settings.<br>For label specific settings use
+                the
                 task
                 list
                 at the
@@ -364,7 +365,7 @@
                     (click)="changeSetting(componentTypeEnum.TASK_HEADER,'show')"><input class="h-5 w-5 cursor-pointer"
                         type="checkbox" [checked]='lsm.settingManager.settings.task.show'></span>
                 <ng-container [ngTemplateOutlet]="settingInfo"
-                    [ngTemplateOutletContext]="{dataTip:'Completely hide/show the feature - active settings are preserved'}">
+                    [ngTemplateOutletContext]="{dataTip:'Completely hide/show the feature.&#10;&#10;Active settings are preserved'}">
                 </ng-container>
                 <span class="">Collapse</span>
                 <span class="cursor-pointer flex items-center"
@@ -395,7 +396,7 @@
                     (keydown.enter)="setShowNLabelButton(showNLabelsInput.value)"
                     (blur)="setShowNLabelButton(showNLabelsInput.value)" style="box-shadow:none;">
                 <ng-container [ngTemplateOutlet]="settingInfo"
-                    [ngTemplateOutletContext]="{dataTip:'Amount of label buttons shown before hiding the rest under \'other \<task\> options\''}">
+                    [ngTemplateOutletContext]="{dataTip:'Amount of label buttons shown before hiding the rest under:&#10;\'other \<task\> options\''}">
                 </ng-container>
                 <span class="">Close label box</span>
                 <span class="cursor-pointer flex justify-center items-center"
@@ -413,6 +414,15 @@
                 <ng-container [ngTemplateOutlet]="settingInfo"
                     [ngTemplateOutletContext]="{dataTip:'Display the corresponding task names next to the attribute names in the labeling grid'}">
                 </ng-container>
+                <span class="">Show heuristic confidence</span>
+                <span class="cursor-pointer flex justify-center items-center"
+                    (click)="changeSetting(componentTypeEnum.LABELING,'showHeuristicConfidence')"><input
+                        class="h-5 w-5 cursor-pointer" type="checkbox"
+                        [checked]='lsm.settingManager.settings.labeling.showHeuristicConfidence'></span>
+                <ng-container [ngTemplateOutlet]="settingInfo"
+                    [ngTemplateOutletContext]="{dataTip:'Display the heuristic label confidence.&#10;&#10;Note that this confidence is multiplied with the heuristic accuracy during weak supervision'}">
+                </ng-container>
+
                 <span class="">Compact classification label display</span>
                 <span class="cursor-pointer flex justify-center items-center"
                     (click)="changeSetting(componentTypeEnum.LABELING,'compactClassificationLabelDisplay')"><input
@@ -427,7 +437,7 @@
                         class="h-5 w-5 cursor-pointer" type="checkbox"
                         [checked]='lsm.settingManager.settings.labeling.swimLaneExtractionDisplay'></span>
                 <ng-container [ngTemplateOutlet]="settingInfo"
-                    [ngTemplateOutletContext]="{dataTip:'Use swim lanes to display extraction labels (caution might use a lot of space)'}">
+                    [ngTemplateOutletContext]="{dataTip:'Use swim lanes to display extraction labels.&#10;&#10;Might use a lot of space'}">
                 </ng-container>
             </div>
         </div>
@@ -441,7 +451,7 @@
                         class="h-5 w-5 cursor-pointer" type="checkbox"
                         [checked]='lsm.settingManager.settings.overviewTable.show'></span>
                 <ng-container [ngTemplateOutlet]="settingInfo"
-                    [ngTemplateOutletContext]="{dataTip:'Completely hide/show the feature - active settings are preserved'}">
+                    [ngTemplateOutletContext]="{dataTip:'Completely hide/show the feature.&#10;&#10;Active settings are preserved'}">
                 </ng-container>
                 <span class="">Show heuristics</span>
                 <span class="cursor-pointer flex items-center"
@@ -475,7 +485,7 @@
 
 
     <ng-template #settingInfo let-dataTip="dataTip">
-        <div class="tooltip" attr.data-tip="{{dataTip}}">
+        <div class="tooltip" attr.data-tip="{{dataTip}}" style="white-space: break-spaces;">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 icon icon-tabler icon-tabler-info-circle" width="24"
                 height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
                 stroke-linecap="round" stroke-linejoin="round">

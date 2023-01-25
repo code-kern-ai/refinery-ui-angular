@@ -23,6 +23,7 @@ export type LabelingSuiteMainSettings = {
 export type LabelingSuiteLabelingSettings = {
     showNLabelButton: number;
     showTaskNames: boolean;
+    showHeuristicConfidence: boolean;
     compactClassificationLabelDisplay: boolean;
     swimLaneExtractionDisplay: boolean;
     closeLabelBoxAfterLabel: boolean;
@@ -180,6 +181,7 @@ export class LabelingSuiteSettingManager implements DoBeforeDestroy {
             labeling: {
                 showNLabelButton: 5,
                 showTaskNames: true,
+                showHeuristicConfidence: false,
                 compactClassificationLabelDisplay: true,
                 swimLaneExtractionDisplay: false,
                 closeLabelBoxAfterLabel: true,

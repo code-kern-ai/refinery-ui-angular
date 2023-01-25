@@ -176,10 +176,23 @@ export class LabelingSuiteRlaPreparator {
 
     private getLabelForDisplay(e: any) {
         let final = e.labelingTaskLabel.name;
-        if (e.sourceType != LabelSource.MANUAL && e.confidence != null) {
+        if (e.sourceType == LabelSource.WEAK_SUPERVISION && e.confidence != null) {
+            final += " - " + Math.round((e.confidence + Number.EPSILON) * 10000) / 100 + '%';
+        } else if (this.baseManager.settingManager.settings.labeling.showHeuristicConfidence && e.sourceType == LabelSource.INFORMATION_SOURCE && e.confidence != null) {
             final += " - " + Math.round((e.confidence + Number.EPSILON) * 10000) / 100 + '%';
         }
         return final;
+    }
+
+    public rebuildRLALabelDisplay(rlas: any[], rlaKey?: string) {
+        if (!rlas) return;
+        for (let e of rlas) {
+            if (rlaKey && e[rlaKey]) {
+                e.labelDisplay = this.getLabelForDisplay(e[rlaKey]);
+            } else {
+                e.labelDisplay = this.getLabelForDisplay(e);
+            }
+        }
     }
 
     private getIcon(e: any): string {
