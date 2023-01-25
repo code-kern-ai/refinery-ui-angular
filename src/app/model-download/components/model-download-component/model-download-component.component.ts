@@ -26,7 +26,6 @@ export class ModelDownloadComponentComponent implements OnInit {
   isManaged: boolean = true;
   downloadedModels: any[];
   subscriptions$: Subscription[] = [];
-  lastPage: string;
   loggedInUser: any;
   avatarUri: any;
   downloadedModelsModals: ModelDownloadModals = createDefaultModelDownloadModals();
@@ -43,8 +42,7 @@ export class ModelDownloadComponentComponent implements OnInit {
   ngOnInit(): void {
     this.initForm();
     this.routeService.updateActivatedRoute(this.activatedRoute);
-    this.lastPage = this.activatedRoute.snapshot.queryParamMap.get('lastPage');
-    [this.downloadedModelsQuery$, this.downloadedModelsList$] = this.informationSourceApolloService.getModelProviderInfo();
+    [this.downloadedModelsQuery$, this.downloadedModelsList$] = this.projectApolloService.getModelProviderInfo();
     this.prepareModels();
 
     this.subscriptions$.push(
@@ -83,14 +81,14 @@ export class ModelDownloadComponentComponent implements OnInit {
   }
 
   deleteModel() {
-    this.informationSourceApolloService
+    this.projectApolloService
       .deleteModel(this.downloadedModelsModals.deleteModel.name)
       .pipe(first()).subscribe();
   }
 
   downloadModel() {
     if (this.downloadedModelsModals.addNewModel.form.invalid) return;
-    this.informationSourceApolloService
+    this.projectApolloService
       .downloadModel(this.downloadedModelsModals.addNewModel.form.get('name').value)
       .pipe(first()).subscribe(() => {
         this.downloadedModelsModals.addNewModel.form.reset();
@@ -171,9 +169,6 @@ export class ModelDownloadComponentComponent implements OnInit {
     return findModel !== undefined ? true : false;
   }
 
-  goBack() {
-    this.router.navigate(["../" + this.lastPage], { relativeTo: this.activatedRoute });
-  }
   clickBack() {
     RouteManager.moveBack();
   }
