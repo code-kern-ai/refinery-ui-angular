@@ -161,23 +161,6 @@ export class LabelingTasksComponent implements OnInit, AfterViewInit, OnDestroy 
       });
   }
 
-  isLabelingTaskOptionDisabled(task: AbstractControl, dropdownValue: string) {
-    const targetID = task.get('targetId').value;
-    if (
-      targetID != '' &&
-      dropdownValue == LabelingTask.INFORMATION_EXTRACTION
-    ) {
-      if (this.attributeAlreadyHasInformationExtraction(targetID)) return true;
-      else if (this.dataHandlerHelper.getAttributeArrayAttribute(targetID, 'dataType', this.attributes) != 'TEXT')
-        return true;
-    } else if (
-      targetID == '' &&
-      dropdownValue == LabelingTask.INFORMATION_EXTRACTION
-    )
-      return true;
-    return false;
-  }
-
   isTaskNameUniqueCheck(name: string, ownGroup: FormGroup = null): boolean {
     if (name == '') return true;
     const nameToExclude = ownGroup ? ownGroup.get("name").value : "";
@@ -202,15 +185,6 @@ export class LabelingTasksComponent implements OnInit, AfterViewInit, OnDestroy 
     this.settingModals.labelingTask.create.name = eventTarget.value;
   }
 
-  attributeAlreadyHasInformationExtraction(attributeId: string): boolean {
-    for (let task of this.labelingTasksArray.controls) {
-      if (attributeId == task.get('targetId').value) {
-        if (task.get('taskType').value == LabelingTask.INFORMATION_EXTRACTION)
-          return true;
-      }
-    }
-    return false;
-  }
 
   checkAndModifyLabelName(eventTarget: HTMLInputElement) {
     eventTarget.value = eventTarget.value.replace("-", " ");

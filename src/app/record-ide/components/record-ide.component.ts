@@ -13,11 +13,11 @@ import { FormControl } from '@angular/forms';
 import { RecordApolloService } from 'src/app/base/services/record/record-apollo.service';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { bool } from 'aws-sdk/clients/signer';
-import { labelingHuddle, labelingLinkData, parseLabelingLinkData } from 'src/app/labeling/components/helper/labeling-helper';
 import { UserManager } from 'src/app/util/user-manager';
 import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
 import { caesarCipher, PASS_ME } from 'src/app/util/cipher';
 import { tryParseJSON } from 'src/app/util/helper-functions';
+import { LabelingHuddle, LabelingLinkData, parseLabelingLinkData } from 'src/app/labeling-suite/helper/manager/session';
 
 
 @Component({
@@ -35,8 +35,8 @@ export class RecordIDEComponent implements OnInit, OnDestroy {
   output: string;
   loading: bool;
   screenHeight: string;
-  huddleData: labelingHuddle;
-  linkData: labelingLinkData;
+  huddleData: LabelingHuddle;
+  linkData: LabelingLinkData;
 
   snakeActive: boolean = false;
   vertical: boolean = true;
@@ -165,13 +165,13 @@ export class RecordIDEComponent implements OnInit, OnDestroy {
   }
 
   goToLabelingPage() {
-    this.router.navigate(["projects", this.project.id, "labeling", this.linkData.id], { queryParams: { pos: this.linkData.requestedPos, type: 'SESSION' } });
+    this.router.navigate(["projects", this.project.id, "labeling", this.linkData.huddleId], { queryParams: { pos: this.linkData.requestedPos, type: 'SESSION' } });
   }
 
   nextRecord() {
     this.clearIde();
     this.linkData.requestedPos++;
-    this.router.navigate(["projects", this.project.id, "record-ide", this.linkData.id],
+    this.router.navigate(["projects", this.project.id, "record-ide", this.linkData.huddleId],
       { queryParams: { pos: Math.min(this.linkData.requestedPos, this.huddleData.recordIds.length) } });
 
     this.runRecordIde();
@@ -180,7 +180,7 @@ export class RecordIDEComponent implements OnInit, OnDestroy {
   prevRecord() {
     this.clearIde();
     this.linkData.requestedPos = Math.max(this.linkData.requestedPos - 1, 1);
-    this.router.navigate(["projects", this.project.id, "record-ide", this.linkData.id], { queryParams: { pos: this.linkData.requestedPos, type: 'SESSION' } });
+    this.router.navigate(["projects", this.project.id, "record-ide", this.linkData.huddleId], { queryParams: { pos: this.linkData.requestedPos, type: 'SESSION' } });
 
     this.runRecordIde();
   }

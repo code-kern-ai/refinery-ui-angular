@@ -38,6 +38,35 @@ export enum LabelingLinkType {
 }
 const ONE_DAY = 86400000; // 24 * 60 * 60 * 1000;
 const DUMMY_HUDDLE_ID = "00000000-0000-0000-0000-000000000000";
+
+export function parseLabelingLinkData(route: ActivatedRoute): LabelingLinkData {
+    const projectId = route.parent.snapshot.paramMap.get('projectId');
+    const id = route.snapshot.paramMap.get('id');
+    const requestedPosStr = route.snapshot.queryParamMap.get('pos');
+    const isPosNumber = !Number.isNaN(Number(requestedPosStr));
+    const type = linkTypeFromStr(route.snapshot.queryParamMap.get('type'));
+
+    return {
+        projectId: projectId,
+        huddleId: id,
+        requestedPos: isPosNumber ? Number(requestedPosStr) : 0,
+        linkType: type,
+    };
+}
+
+function linkTypeFromStr(str: string): LabelingLinkType {
+    if (!str) return LabelingLinkType.SESSION;
+    switch (str.toUpperCase()) {
+        case 'DATA_SLICE':
+            return LabelingLinkType.DATA_SLICE;
+        case 'HEURISTIC':
+            return LabelingLinkType.HEURISTIC;
+        case 'SESSION':
+        default:
+            return LabelingLinkType.SESSION;
+    }
+}
+
 export class LabelingSuiteSessionManager implements DoBeforeDestroy {
 
     private labelingLinkData: LabelingLinkData;
@@ -60,7 +89,7 @@ export class LabelingSuiteSessionManager implements DoBeforeDestroy {
         private projectApolloService: ProjectApolloService,) {
 
         this.baseManager = baseManager;
-        this.labelingLinkData = this.parseLabelingLinkData(activeRoute);
+        this.labelingLinkData = parseLabelingLinkData(activeRoute);
         this.redirected = this.redirectIfNecessary();
         if (this.redirected) return;
         UserManager.assumeUserRole(this.guessRoleFromLinkType(this.labelingLinkData.linkType));
@@ -304,18 +333,6 @@ export class LabelingSuiteSessionManager implements DoBeforeDestroy {
                 return LabelingLinkType.SESSION;
         }
     }
-    private linkTypeFromStr(str: string): LabelingLinkType {
-        if (!str) return LabelingLinkType.SESSION;
-        switch (str.toUpperCase()) {
-            case 'DATA_SLICE':
-                return LabelingLinkType.DATA_SLICE;
-            case 'HEURISTIC':
-                return LabelingLinkType.HEURISTIC;
-            case 'SESSION':
-            default:
-                return LabelingLinkType.SESSION;
-        }
-    }
 
     private guessRoleFromLinkType(linkType: LabelingLinkType): UserRole {
         switch (linkType) {
@@ -329,20 +346,6 @@ export class LabelingSuiteSessionManager implements DoBeforeDestroy {
         }
     }
 
-    private parseLabelingLinkData(route: ActivatedRoute): LabelingLinkData {
-        const projectId = route.parent.snapshot.paramMap.get('projectId');
-        const id = route.snapshot.paramMap.get('id');
-        const requestedPosStr = route.snapshot.queryParamMap.get('pos');
-        const isPosNumber = !Number.isNaN(Number(requestedPosStr));
-        const type = this.linkTypeFromStr(route.snapshot.queryParamMap.get('type'));
-
-        return {
-            projectId: projectId,
-            huddleId: id,
-            requestedPos: isPosNumber ? Number(requestedPosStr) : 0,
-            linkType: type,
-        };
-    }
 
     private redirectIfNecessary(): boolean {
         if (!this.labelingLinkData.huddleId) {

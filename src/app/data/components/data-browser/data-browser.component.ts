@@ -53,7 +53,6 @@ import { SimilarSearch } from './helper-classes/search-similar';
 import { UserFilter } from './helper-classes/user-filter';
 import { DownloadState } from 'src/app/import/services/s3.enums';
 import { UserManager } from 'src/app/util/user-manager';
-import { labelingLinkType } from 'src/app/labeling/components/helper/labeling-helper';
 import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
 import { UpdateSearchParameters } from './helper-classes/update-search-parameters';
 import { getAttributeType, getSearchOperatorTooltip, SearchOperator } from './helper-classes/search-operators';
@@ -62,6 +61,7 @@ import { CommentsFilter } from './helper-classes/comments-filter';
 import { AttributeVisibility } from 'src/app/projects/components/create-new-attribute/attributes-visibility-helper';
 import { HighlightSearch } from 'src/app/base/components/highlight/helper';
 import { Attributes } from 'src/app/base/components/record-display/record-display.helper';
+import { LabelingLinkType } from 'src/app/labeling-suite/helper/manager/session';
 
 
 type DataSlice = {
@@ -2097,7 +2097,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
         projectId: this.projectId,
         id: this.extendedRecords.sessionId,
         requestedPos: index,
-        linkType: labelingLinkType.SESSION
+        linkType: LabelingLinkType.SESSION
       },
       allowedTask: null,
       canEdit: true,
