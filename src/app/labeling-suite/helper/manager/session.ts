@@ -4,7 +4,6 @@ import { first } from "rxjs/operators";
 import { UserRole } from "src/app/base/enum/graphql-enums";
 import { NotificationService } from "src/app/base/services/notification.service";
 import { ProjectApolloService } from "src/app/base/services/project/project-apollo.service";
-import { assumeUserRole } from "src/app/labeling/components/helper/labeling-helper";
 import { dateAsUTCDate, parseLinkFromText } from "src/app/util/helper-functions";
 import { DoBeforeDestroy } from "src/app/util/interfaces";
 import { RouteManager } from "src/app/util/route-manager";
@@ -76,7 +75,6 @@ export class LabelingSuiteSessionManager implements DoBeforeDestroy {
     }
 
     doBeforeDestroy(): void {
-
         if (this.baseManager.userManager.roleAssumed) localStorage.removeItem("huddleData");
         NotificationService.unsubscribeFromNotification(this, this.baseManager.projectId);
     }
@@ -183,7 +181,6 @@ export class LabelingSuiteSessionManager implements DoBeforeDestroy {
             { relativeTo: this.activeRoute.parent, queryParams: { pos: jumpPos, type: this.huddleData.linkData.linkType } });
 
         if (this.debounceTimer) this.debounceTimer.unsubscribe();
-        // this.baseManager = this.huddleData.recordIds[jumpPos - 1];
         const jumpIdx = jumpPos - 1;
         this.debounceTimer = timer(200).subscribe(() => this.baseManager.recordManager.collectRecordData(this.huddleData.recordIds[jumpIdx]));
         this.nextDisabled = !this.huddleData || jumpPos == this.huddleData.recordIds.length;
@@ -201,7 +198,6 @@ export class LabelingSuiteSessionManager implements DoBeforeDestroy {
 
     public setupInitialTasks() {
         const initialTasks$ = [];
-        // initialTasks$.push(this.prepareUser());
         if (this.huddleData?.checkedAt.db) {
             initialTasks$.push(this.checkLocalDataOutdated());
         }
@@ -380,7 +376,6 @@ export class LabelingSuiteSessionManager implements DoBeforeDestroy {
     }
 
     private huddleOutdated(): boolean {
-
         if (!this.huddleData) return true;
         for (const key in this.labelingLinkData) {
             if (key == 'linkLocked') continue;

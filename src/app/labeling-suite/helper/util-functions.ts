@@ -8,7 +8,6 @@ export function getHoverGroupsOverviewTable(data: any): any {
         createdBy: "CR_" + (data.sourceType == LabelSource.INFORMATION_SOURCE ? data.informationSource.name : data.user.id),
         rlaId: "ID_" + data.id,
     }
-    // if (data.value) all.value = "VA_" + data.value;
     return {
         type: getHoverGroupFor(HoverGroupTarget.TYPE, all),
         task: getHoverGroupFor(HoverGroupTarget.TASK, all),

@@ -1,5 +1,4 @@
 import { ActivatedRoute, Router } from "@angular/router";
-import { first, map } from "rxjs/operators";
 import { ProjectApolloService } from "src/app/base/services/project/project-apollo.service";
 import { RecordApolloService } from "src/app/base/services/record/record-apollo.service";
 import { enumToArray } from "src/app/util/helper-functions";
@@ -15,9 +14,6 @@ import { LabelingSuiteUserManager } from "./user";
 
 
 export class LabelingSuiteManager implements DoBeforeDestroy {
-    //base component reference for communication
-    // public baseComponent: LabelingSuiteComponent;
-
     //general manager
     public settingManager: LabelingSuiteSettingManager;
     public modalManager: LabelingSuiteModalManager;

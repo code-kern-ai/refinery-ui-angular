@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   CommentDataManager,
@@ -8,11 +8,9 @@ import { UserRole } from 'src/app/base/enum/graphql-enums';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { RecordApolloService } from 'src/app/base/services/record/record-apollo.service';
 import { findProjectIdFromRoute } from 'src/app/util/helper-functions';
-import { UserManager } from 'src/app/util/user-manager';
 import { LabelingSuiteManager } from '../helper/manager/manager';
 import { ComponentType } from '../helper/manager/settings';
 import { UserType } from '../helper/manager/user';
-import { LabelingSuiteOverviewTableComponent } from '../sub-components/overview-table/overview-table.component';
 
 @Component({
   selector: 'kern-labeling-suite',

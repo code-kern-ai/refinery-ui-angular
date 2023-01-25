@@ -1,6 +1,5 @@
-import { HoverGroupDirective } from "src/app/base/directives/hover-group.directive";
 import { LabelSource } from "src/app/base/enum/graphql-enums";
-import { enumToArray, jsonCopy, transferNestedDict } from "src/app/util/helper-functions";
+import { enumToArray, transferNestedDict } from "src/app/util/helper-functions";
 import { DoBeforeDestroy } from "src/app/util/interfaces";
 
 export type LabelingSuiteSettings = {
@@ -68,8 +67,6 @@ export const colorOptions = [
     "sky", "blue", "indigo",
     "violet", "purple", "fuchsia",
     "pink", "rose"]
-
-
 
 export class LabelingSuiteSettingManager implements DoBeforeDestroy {
     static localStorageKey = "labelingSuiteSettings";

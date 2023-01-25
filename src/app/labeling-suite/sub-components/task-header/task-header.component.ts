@@ -2,9 +2,8 @@ import { Component, ElementRef, HostListener, Input, OnChanges, OnDestroy, OnIni
 import { LabelingTask } from 'src/app/base/enum/graphql-enums';
 import { jsonCopy } from 'src/app/util/helper-functions';
 import { LabelingSuiteManager, UpdateType } from '../../helper/manager/manager';
-import { ComponentType, LabelingSuiteSettings, LabelingSuiteTaskHeaderProjectSettings } from '../../helper/manager/settings';
+import { ComponentType, LabelingSuiteTaskHeaderProjectSettings } from '../../helper/manager/settings';
 import { getHoverGroupsTaskOverview } from '../../helper/util-functions';
-import { LabelingSuiteComponent } from '../../main-component/labeling-suite.component';
 import { LabelingSuiteTaskHeaderDisplayData, LabelingSuiteTaskHeaderLabelDisplayData } from './helper';
 
 @Component({

@@ -6,15 +6,11 @@ import {
   OnInit,
   SimpleChanges,
 } from '@angular/core';
-import { getLabelSourceOrder, informationSourceTypeToString, LabelSource, labelSourceToString } from 'src/app/base/enum/graphql-enums';
-import { LabelHelper } from 'src/app/projects/components/project-settings/helper/label-helper';
-import { dateAsUTCDate, jsonCopy } from 'src/app/util/helper-functions';
+import { jsonCopy } from 'src/app/util/helper-functions';
 import { LabelingSuiteManager, UpdateType } from '../../helper/manager/manager';
 import { LabelingSuiteRlaPreparator } from '../../helper/manager/recordRla';
-import { ComponentType, LabelingSuiteOverviewTableSettings, LabelingSuiteSettings } from '../../helper/manager/settings';
-import { getHoverGroupsOverviewTable } from '../../helper/util-functions';
-import { LabelingSuiteComponent } from '../../main-component/labeling-suite.component';
-import { getEmptyHeuristicInfo, HeuristicInfo, TableDisplayData } from './helper';
+import { ComponentType, LabelingSuiteOverviewTableSettings } from '../../helper/manager/settings';
+import { TableDisplayData } from './helper';
 
 @Component({
   selector: 'kern-labeling-suite-overview-table',

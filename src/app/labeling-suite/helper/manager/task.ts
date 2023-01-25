@@ -2,12 +2,10 @@ import { first } from "rxjs/operators";
 import { UserRole } from "src/app/base/enum/graphql-enums";
 import { NotificationService } from "src/app/base/services/notification.service";
 import { ProjectApolloService } from "src/app/base/services/project/project-apollo.service";
-import { enumToArray, jsonCopy, transferNestedDict } from "src/app/util/helper-functions";
+import { jsonCopy } from "src/app/util/helper-functions";
 import { DoBeforeDestroy } from "src/app/util/interfaces";
 import { LabelingSuiteManager, UpdateType } from "./manager";
 import { ComponentType } from "./settings";
-
-
 
 export class LabelingSuiteTaskManager implements DoBeforeDestroy {
     public labelingTasks: any[];
@@ -15,9 +13,6 @@ export class LabelingSuiteTaskManager implements DoBeforeDestroy {
     private baseManager: LabelingSuiteManager;
     private projectApolloService: ProjectApolloService;
     private projectId: string;
-
-
-    // private registeredSettingsListeners: Map<ComponentType, Map<Object, () => void>> = new Map<ComponentType, Map<Object, () => void>>();
 
     constructor(projectId: string, projectApolloService: ProjectApolloService, baseManager: LabelingSuiteManager) {
         this.projectId = projectId;
@@ -52,9 +47,7 @@ export class LabelingSuiteTaskManager implements DoBeforeDestroy {
         else {
             console.log("unknown message in labeling suite task manager" + msgParts);
         }
-
     }
-
 
     private fetchLabelingTasks() {
         let q, vc;

@@ -61,20 +61,19 @@ export class LabelingSuiteRlaPreparator {
         return rlaData.filter(rla => rla.id != "x");
     }
 
-
     private getTokenizedAttribute(attributeId: string, tokenAttribute: any) {
         for (let att of tokenAttribute) {
             if (att.attributeId == attributeId) return att;
         }
         return null;
     }
+
     private getToken(tokenizedAttribute, idx: number) {
         for (let token of tokenizedAttribute.token) {
             if (token.idx == idx) return token;
         }
         return null;
     }
-
 
     public rlasHaveHeuristicData(): boolean {
         if (!this.rlas) return false;
@@ -133,7 +132,6 @@ export class LabelingSuiteRlaPreparator {
         return result;
     }
 
-
     private getOrderPos(e: any): number {
         let pos = e.labelingTaskLabel.labelingTask.attribute?.relativePosition * 1000;
         if (!pos) pos = 100000;
@@ -146,7 +144,6 @@ export class LabelingSuiteRlaPreparator {
         if (e.isGoldStar) final += ' gold ⭐';
         return final;
     }
-
 
     private getCreatedByName(e: any): string {
         if (e.sourceType == LabelSource.INFORMATION_SOURCE) return e.informationSource.name;

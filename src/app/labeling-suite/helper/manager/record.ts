@@ -14,7 +14,6 @@ type RecordData = {
     deleted: boolean;
     token: any;
     baseRecord: any;
-    // rlas: any[];
 }
 
 export class LabelingSuiteRecordManager implements DoBeforeDestroy {
@@ -88,9 +87,6 @@ export class LabelingSuiteRecordManager implements DoBeforeDestroy {
 
     }
 
-
-
-
     public collectRecordData(recordId: string) {
         if (recordId == null) {
             console.log("no record id provided (collect record data)")
@@ -118,7 +114,6 @@ export class LabelingSuiteRecordManager implements DoBeforeDestroy {
 
     private finishUpRecordData(results: any[]) {
         //through combine latest token data should always be present
-
         this.recordData.token = results[0];
         this.recordData.baseRecord = results[1];
         let rlas = results[2];
@@ -222,7 +217,6 @@ export class LabelingSuiteRecordManager implements DoBeforeDestroy {
             .subscribe();
     }
 
-
     public deleteRecord() {
         if (this.recordData.deleted) return;
         const recordId = this.recordData.baseRecord.id;
@@ -237,7 +231,6 @@ export class LabelingSuiteRecordManager implements DoBeforeDestroy {
     }
 
     private setDeletedState() {
-
         this.recordData.deleted = true;
         this.recordData.baseRecord = null;
         this.rlaPreparator.setRlas(null, null);
@@ -248,7 +241,6 @@ export class LabelingSuiteRecordManager implements DoBeforeDestroy {
         if (!this.recordData.token) return null;
         return this.recordData.token.attributes.find((a) => a.attributeId == attributeId)?.token;
     }
-
 
     public toggleGoldStar(taskId: string, currentState: boolean) {
         if (currentState) {
@@ -271,6 +263,4 @@ export class LabelingSuiteRecordManager implements DoBeforeDestroy {
         this.recordApolloService.removeGoldStarAnnotationForTask(this.projectId, this.activeRecordId, taskId)
             .pipe(first()).subscribe();
     }
-
-
 }

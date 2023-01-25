@@ -98,7 +98,6 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
         if (displayChanged) {
           this.prepareRlaTokenLookup();
         }
-        // this.rebuildLabelButtonAmount();
         break;
       case ComponentType.TASK_HEADER:
         const onlyGlobalChanged = this.onlyGlobalSettingsChanged();
@@ -150,7 +149,6 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
         } else {
           label.visibleInSearch = !label.task.displayLabels.find(x => x.id == labelId);
         }
-
       }
     }
     this.checkDisableLabelAddButton(searchValue, activeTask);
@@ -379,13 +377,20 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
     this.prepareRlaTokenLookup();
   }
 
-  //mouse
   @HostListener('window:mousedown', ['$event'])
   onMousedown(event: MouseEvent) {
     if (this.activeTasks) {
       this.activeTasks = null;
     }
   }
+
+  @HostListener('document:mouseup', ['$event'])
+  onMouseup(event: MouseEvent) {
+    if (!this.parseSelectionData()) {
+      this.clearSelected();
+    }
+  }
+
 
   @HostListener('document:keyup', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {
@@ -401,14 +406,6 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
         event.stopPropagation();
         return;
       }
-    }
-
-  }
-
-  @HostListener('document:mouseup', ['$event'])
-  onMouseup(event: MouseEvent) {
-    if (!this.parseSelectionData()) {
-      this.clearSelected();
     }
   }
 
@@ -551,12 +548,8 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
         }
       }
       this.labelAddButtonDisabled = false;
-
     }
-
   }
-
-
 
   private prepareRlaTokenLookup() {
     if (!this.lVars.loopAttributes || !this.rlaDataToDisplay || !this.lsm.recordManager.recordData.token) return;

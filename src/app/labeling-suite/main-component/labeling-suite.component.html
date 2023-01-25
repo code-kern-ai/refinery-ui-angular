@@ -219,8 +219,6 @@
                     </ng-template>
                 </div>
 
-
-
                 <div class="flex justify-center items-center overflow-visible ml-8">
                     <ng-template [ngIf]="!lsm.recordManager.recordData.deleted">
                         <input #showNLabelsInput tabindex="0" type="number"
@@ -299,7 +297,7 @@
                 Settings
             </span>
             <ng-container [ngTemplateOutlet]="settingInfo"
-                [ngTemplateOutletContext]="{dataTip:'Note that your browser stores these settings not your user or your organization'}">
+                [ngTemplateOutletContext]="{dataTip:'Note that your browser stores these settings. Not your user or your organization'}">
             </ng-container>
 
         </div>
@@ -431,8 +429,6 @@
                 <ng-container [ngTemplateOutlet]="settingInfo"
                     [ngTemplateOutletContext]="{dataTip:'Use swim lanes to display extraction labels (caution might use a lot of space)'}">
                 </ng-container>
-
-
             </div>
         </div>
         <!--Page OVERVIEW_TABLE-->

@@ -24,7 +24,7 @@ export class LabelingSuiteUserManager implements DoBeforeDestroy {
     public currentRole: UserRole;
     public allUsers: UserData[];
 
-    //list of users to switch through rla da
+    //list of users to switch through rla data
     public userIcons: any[];
     public showUserIcons: boolean = false;
 
