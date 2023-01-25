@@ -1787,6 +1787,10 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       if (element instanceof FormGroup && element.contains("seedString")) {
         element.get("seedString").setValue("", { emitEvent: false });
       }
+      element.get("active").setValue(false, { emitEvent: false });
+      if (element instanceof FormGroup && element.contains("direction")) {
+        element.get("direction").setValue(-1, { emitEvent: false });
+      }
     }
     //clear rest
     const dummy = orderGroup.get("updateDummy");
