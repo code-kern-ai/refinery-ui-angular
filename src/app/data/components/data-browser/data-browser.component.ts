@@ -1007,7 +1007,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   }
 
   searchValuesChanged(): boolean {
-    if (!this.lastSearchParams) return true;
+    if (!this.lastSearchParams || this.activeSearchParams?.length == 0) return true;
     if (JSON.stringify(this.activeSearchParams) != this.lastSearchParams) return true;
 
     const recordCategory = this.fullSearch.get("RECORD_CATEGORY").get("CATEGORY").value;
@@ -1026,7 +1026,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
 
   requestExtendedSearch(force: boolean = false) {
     if (!force) {
-      if (this.activeSlice && this.activeSlice.static) return;
+      if (this.activeSlice) return;
       if (!this.searchValuesChanged()) return;
     }
     this.similarSearchHelper.setRecordsHelper(false);
