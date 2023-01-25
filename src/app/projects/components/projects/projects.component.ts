@@ -5,23 +5,21 @@ import {
   transition,
   trigger,
 } from '@angular/animations';
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, Subscription, timer } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { Project } from 'src/app/base/entities/project';
 import { ProjectStatistics } from 'src/app/base/entities/project-statistics';
-import { AuthApiService } from 'src/app/base/services/auth-api.service';
 import { ConfigManager } from 'src/app/base/services/config-service';
 import { NotificationService } from 'src/app/base/services/notification.service';
 import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
-import { UploadComponent } from 'src/app/import/components/upload/upload.component';
 import { ProjectStatus } from 'src/app/projects/enums/project-status.enum';
 import { dateAsUTCDate, getUserAvatarUri, isStringTrue } from 'src/app/util/helper-functions';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { createDefaultProjectsModals, ProjectsModals } from './projects-helper';
+import { UploadFileType } from 'src/app/import/components/helpers/upload-types';
 
 @Component({
   selector: 'kern-projects',
@@ -58,22 +56,10 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   projectList: Project[];
   projectStatQuery$: any;
   projectStatisticsById: Map<string, ProjectStatistics> = new Map<string, ProjectStatistics>();
-
   subscriptions$: Subscription[] = [];
-  hasName: boolean;
   useMultiLabel: boolean = false;
-
-  // TODO: add not empty check and highlight
-  name = new FormControl(null);
-  description = new FormControl('');
   projectId: string;
-
-  selectedTokenizer = 'en_core_web_sm';
-  tokenizerForm = new FormControl(this.selectedTokenizer);
   tokenizerValues = [];
-
-  modalOpen: boolean = false;
-
   organizationName: string;
   organizationInactive: boolean;
   project$: Observable<Project>;
@@ -81,14 +67,10 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   user$: any;
   user: any;
   avatarUri: string;
-  @ViewChild(UploadComponent) uploadComponent;
-  file: File;
-
   static youtubeUrl: string = "https://www.youtube.com/embed/Hwlu6GWzDH8?autoplay=1&enablejsapi=1";
   saveUrl: SafeResourceUrl;
   canCreateOrg: boolean = false;
   isManaged: boolean = true;
-
   isProjectInitial: boolean = false;
   previousValue: string;
   isDemoUser: boolean = false;
@@ -103,12 +85,15 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     private projectApolloService: ProjectApolloService,
     private organizationApolloService: OrganizationApolloService,
     private router: Router,
-    private auth: AuthApiService,
     private urlSanatizer: DomSanitizer
   ) { }
 
   get ProjectStatusType(): typeof ProjectStatus {
     return ProjectStatus;
+  }
+
+  get UploadFileType(): typeof UploadFileType {
+    return UploadFileType;
   }
 
   ngOnDestroy(): void {
@@ -199,98 +184,6 @@ export class ProjectsComponent implements OnInit, OnDestroy {
       whitelist: ['project_created', 'project_deleted', 'project_update', 'file_upload'],
       func: this.handleWebsocketNotification
     });
-
-    this.projectApolloService
-      .getAllTokenizerOptions()
-      .pipe(first())
-      .subscribe((v) => {
-        this.tokenizerValues = this.checkWhitelistTokenizer(v);
-      });
-
-    this.name.valueChanges.subscribe((value) => {
-      if (value.length > 0) {
-        this.hasName = true;
-      } else {
-        this.hasName = false;
-      }
-    });
-
-    this.tokenizerForm.valueChanges.subscribe(
-      (value) => (this.selectedTokenizer = value)
-    );
-  }
-
-
-  checkWhitelistTokenizer(tokenizer) {
-    tokenizer = Array.from(tokenizer);
-    let firstNotAvailable = true;
-    let insertPos = -1;
-    for (let i = 0; i < tokenizer.length; i++) {
-      let t = { ...tokenizer[i] };
-      if (t.configString != 'en_core_web_sm' && t.configString != 'de_core_news_sm') {
-        if (firstNotAvailable) {
-          insertPos = i;
-          firstNotAvailable = false;
-        }
-        t.disabled = true;
-      } else {
-        t.disabled = null;
-      }
-    }
-
-    if (insertPos != -1) {
-      tokenizer.splice(insertPos, 0, { disabled: true, name: "------------------------------------------" });
-      tokenizer.splice(insertPos, 0, { disabled: true, name: "if you need the options below feel free to contact us", configString: "intercom/email" });
-      tokenizer.splice(insertPos, 0, { disabled: true, name: "------------------------------------------" });
-    }
-
-    return tokenizer
-  }
-
-  canCreateProject(): boolean {
-    if (!this.name?.value) return false;
-    if (this.name.value.trim() == '') return false;
-    if (this.projectList) for (const p of this.projectList) if (p.name == this.name.value) return false;
-    return true;
-  }
-  initializeProject() {
-    if (!this.canCreateProject()) return;
-    this.projectApolloService
-      .createProject(this.name.value, this.description.value)
-      .pipe(first()).subscribe((p: Project) => {
-        this.project = p;
-        this.projectId = p.id;
-        this.projectApolloService
-          .changeProjectTokenizer(p.id, this.selectedTokenizer)
-          .pipe(first())
-          .subscribe();
-        this.projectApolloService
-          .updateProjectStatus(
-            this.projectId,
-            ProjectStatus.INIT_COMPLETE
-          ).pipe(first()).subscribe()
-        this.router.navigate(['projects', p.id, 'settings'])
-
-      });
-  }
-
-  focusModalInputBox(event: Event, inputBoxName: string) {
-    if (event.target instanceof HTMLInputElement) {
-      const modalDiv = event.target.nextSibling;
-      if (modalDiv instanceof HTMLElement) {
-        const inputChildren = modalDiv.getElementsByTagName('INPUT');
-        for (var i = 0; i < inputChildren.length; ++i) {
-          var node = inputChildren[i];
-          if (
-            node instanceof HTMLElement &&
-            node.getAttribute('name') == inputBoxName
-          ) {
-            node.focus();
-            return;
-          }
-        }
-      }
-    }
   }
 
   manageProject(projectId: string, recordsInProject: Number): void {
@@ -315,36 +208,6 @@ export class ProjectsComponent implements OnInit, OnDestroy {
 
   setFirstName(userName) {
     this.user$ = userName;
-  }
-
-  setFile(file: File) {
-    this.file = file;
-  }
-
-  importExistingProject() {
-    this.projectsModals.uploadProject.doingSomething = true;
-    this.uploadComponent.createEmptyProject().subscribe((project: Project) => {
-      this.projectApolloService
-        .changeProjectTokenizer(project.id, this.selectedTokenizer)
-        .pipe(first())
-        .subscribe();
-      this.projectApolloService
-        .updateProjectStatus(
-          project.id,
-          ProjectStatus.INIT_COMPLETE
-        ).pipe(first()).subscribe()
-
-      // Attach a file to the project
-      this.uploadComponent.projectId = null;
-      this.uploadComponent.reSubscribeToNotifications();
-      this.uploadComponent.projectId = project.id;
-      this.uploadComponent.uploadStarted = true;
-      this.uploadComponent.finishUpUpload(this.file?.name, '');
-      this.uploadComponent.executeOnFinish = () => {
-        this.projectsModals.uploadProject.open = false;
-        this.projectsModals.uploadProject.doingSomething = false;
-      }
-    });
   }
 
   parseUTC(utc: string) {
@@ -395,5 +258,10 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   adminDeleteProject() {
     if (!this.adminData.isAdmin || !this.adminData.prjDeleteProject) return;
     this.projectApolloService.deleteProjectById(this.adminData.prjDeleteProject.id).pipe(first()).subscribe();
+  }
+
+  refetchProjects(refetch: boolean) {
+    if (!refetch) return;
+    this.projectListQuery$.refetch();
   }
 }

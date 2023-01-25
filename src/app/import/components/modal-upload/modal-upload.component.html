@@ -1,0 +1,18 @@
+<kern-modal [isOpen]="uploadModals.uploadFile.open" closeButton="X" [modalBoxStyle]="{'width':'35rem'}" [acceptButton]="{
+        buttonCaption: 'Upload',
+        closeAfterClick:false,
+        emitObject: this, emitFunction: submitUpload,
+        disabled: (baseComponent && baseComponent.doingSomething) || !file
+    }" (optionClicked)="optionClicked($event)">
+    <h1 class="flex flex-grow justify-center text-lg text-gray-900 font-bold">{{title}}</h1>
+    <div class="text-sm text-gray-500 mb-4 text-center">
+        {{subTitle}}
+    </div>
+    <kern-upload [uploadFileType]="uploadFileType" [uploadOptions]="{
+            deleteProjectOnFail: uploadOptions.deleteProjectOnFail,
+            reloadOnFinish: uploadOptions.reloadOnFinish,
+            knowledgeBaseId: uploadFileType == UploadFileType.KNOWLEDGE_BASE ? uploadOptions.knowledgeBaseId : null,
+            isModal: uploadOptions.isModal,
+            tokenizer: uploadOptions.tokenizer
+        }" (fileAttached)="setFile($event)"></kern-upload>
+</kern-modal>

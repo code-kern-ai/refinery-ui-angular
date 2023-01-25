@@ -1,60 +1,255 @@
-<div class="flex flex-col ">
-  <div class="flex items-center justify-between">
-    <div class="flex flex-grow items-center overflow-x-hidden">
-      <div kernDragAndDrop (fileDropped)="onFileDropped($event)" (click)="fileInput.click()"
-        class="w-full border-4 border-dashed rounded-lg h-36 my-6 cursor-pointer"
-        [ngClass]="file || uploadStarted ? 'bg-white' : 'border-slate-400' "
-        [ngStyle]="{'pointer-events': uploadStarted ? 'none' : 'auto'}">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-9 w-8 m-auto block text-gray-500 mt-6" fill="none"
-          viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round"
-            d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
-        </svg>
-        <div #noFileUploaded *ngIf="file==null && !uploadStarted; else fileTemplate"
-          class="text-gray-600 text-sm font-medium text-center mb-6">
-          <button class="text-indigo-700 mt-1">Click to select a file</button>
-          <div class="text-xs font-normal text-gray-500 mt-1">or drag and drop</div>
+<section [ngClass]="!uploadOptions.isModal ? 'p-4' : ''">
+    <ng-template [ngIf]="uploadFileType == UploadFileType.RECORDS_NEW">
+
+        <div class="form-control">
+            <label class="text-gray-500 text-sm font-normal">Project title</label>
+
+            <div class="flex flex-row">
+                <input [attr.disabled]="disableInput?true:null" name="projectTitle"
+                    [value]="uploadSpecificHelper.projectTitle" type="submit" (input)="changeProjectTitle($event)"
+                    (keydown.enter)="initProjectEvent($event)" type="text" placeholder="Enter some title here ..."
+                    required autocomplete="off" class="input input-sm input-bordered w-full placeholder-italic">
+            </div>
         </div>
-        <ng-template #fileTemplate>
-          <div #fileUploaded>
-            <div class="text-indigo-700 text-center text-sm font-medium">{{file?.name}} <span
-                class="uppercase text-gray-600">{{file?.size | filesize}}</span></div>
-            <button (click)="removeFile($event)"
-              class="bg-red-100 text-red-700 border border-red-400 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer m-auto block hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-              Remove
-            </button>
-          </div>
-        </ng-template>
 
-        <ng-template
-          [ngIf]="uploadStarted && !file && (uploadTask?.state==UploadStatesType.IN_PROGRESS || uploadTask?.state==UploadStatesType.WAITING || uploadTask?.state==UploadStatesType.PENDING)">
-          <div class="flex flex-row items-center flex-nowrap -mt-1 mx-2 mb-2">
-            <span class="whitespace-nowrap">Preparing data...</span>
-            <kern-loading size="btn-xs" color="blue"></kern-loading>
+        <div *ngIf="isProjectTitleEmpty" class="text-red-700 text-xs mt-2">Project title is required</div>
+        <div *ngIf="isProjectTitleDuplicate" class="text-red-700 text-xs mt-2">Project title exists</div>
 
-            <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-              <div class="bg-blue-700 h-2.5 rounded-full" [style.width]="uploadTask.progress+'%'"></div>
-            </div>
-          </div>
-        </ng-template>
+        <div class="form-control mt-6">
+            <label class="text-gray-500 text-sm font-normal">Project description <em>- optional</em></label>
+            <textarea [attr.disabled]="disableInput?true:null" [value]="uploadSpecificHelper.description"
+                (input)="changeProjectDescription($event)" class="textarea-bordered placeholder-italic input input-sm"
+                style="height: 2.2rem;" placeholder="Enter some description here ..."></textarea>
+        </div>
 
-        <ng-container *ngIf="file">
-          <div *ngIf="upload$ | async as upload" class="m-2">
-            <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700"
-              *ngIf="!(upload.state === UploadStatesType.ERROR)">
-              <div class="bg-primary h-2.5 rounded-full" [style.width]="upload.progress+'%'"></div>
+        <div class="form-control mt-6">
+            <label class="text-gray-500 text-sm font-normal">
+                Please choose a tokenizer for your project. See our <a
+                    href="https://docs.kern.ai/docs/project-creation-and-data-upload" target="_blank"><span
+                        class="underline cursor-pointer">documentation</span></a> for further
+                details.
+            </label>
+
+            <kern-dropdown [dropdownOptions]="{
+                optionArray: uploadOptions.tokenizerValues,
+                buttonCaption: uploadSpecificHelper.selectedTokenizer,
+                hasFullWidth: true,
+                isOptionDisabled: tokenizerValuesDisabled,
+                valuePropertyPath: 'configString'
+            }" (optionClicked)="setTokenizer($event)"></kern-dropdown>
+        </div>
+        <ng-component *ngTemplateOutlet="uploadWrapper"></ng-component>
+    </ng-template>
+
+    <ng-template [ngIf]="uploadFileType == UploadFileType.RECORDS_ADD">
+        <div class="text-lg leading-6 text-gray-900 font-medium inline-block">
+            Record upload
+        </div>
+        <ng-container *ngTemplateOutlet="uploadWrapper"></ng-container>
+    </ng-template>
+
+    <ng-template [ngIf]="uploadFileType == UploadFileType.PROJECT">
+        <ng-container *ngTemplateOutlet="upload"></ng-container>
+    </ng-template>
+
+    <ng-template [ngIf]="uploadFileType == UploadFileType.KNOWLEDGE_BASE">
+        <ng-container *ngTemplateOutlet="upload"></ng-container>
+    </ng-template>
+
+</section>
+
+
+<ng-template #uploadWrapper>
+    <ng-container *ngTemplateOutlet="dataSourcesUpload"></ng-container>
+    <ng-container *ngTemplateOutlet="upload"></ng-container>
+    <ng-container *ngTemplateOutlet="fileValidation"></ng-container>
+    <ng-container *ngTemplateOutlet="importOptionsTextarea"></ng-container>
+    <ng-template [ngIf]="!uploadOptions.isModal">
+        <ng-container *ngTemplateOutlet="submitUpload"></ng-container>
+    </ng-template>
+</ng-template>
+
+<ng-template #upload>
+    <input type="file" class="hidden" (change)="onFileInput($event)" #fileUpload>
+    <div class="flex flex-col">
+        <div class="flex items-center justify-between">
+            <div class="flex flex-grow items-center overflow-x-hidden">
+                <div kernDragAndDrop (fileDropped)="onFileDropped($event)" (click)="fileUpload.click()"
+                    class="w-full border-4 border-dashed rounded-lg h-36 my-6 cursor-pointer"
+                    [ngClass]="file || uploadStarted ? 'bg-white' : 'border-slate-400' "
+                    [ngStyle]="{'pointer-events': uploadStarted ? 'none' : 'auto'}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-9 w-8 m-auto block text-gray-500 mt-6" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+                    </svg>
+
+                    <div *ngIf="file == null && !uploadStarted; else fileTemplate"
+                        class="text-gray-600 text-sm font-medium text-center mb-6">
+                        <button class="text-indigo-700 mt-1">Click to select a file</button>
+                        <div class="text-xs font-normal text-gray-500 mt-1">or drag and drop</div>
+                    </div>
+                    <ng-template #fileTemplate>
+                        <div class="text-indigo-700 text-center text-sm font-medium">{{file?.name}} <span
+                                class="uppercase text-gray-600"
+                                [ngClass]="doingSomething? 'hidden': 'block'">{{file?.size | filesize}}</span></div>
+                        <button (click)="onFileRemove($event)"
+                            [ngClass]="(uploadStarted && disableInput) || doingSomething?'hidden':'block'"
+                            class="bg-red-100 text-red-700 border border-red-400 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer m-auto block hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                            Remove
+                        </button>
+                    </ng-template>
+                    <ng-template
+                        [ngIf]="uploadStarted && !file && (uploadTask?.state==UploadStatesType.IN_PROGRESS || uploadTask?.state==UploadStatesType.WAITING || uploadTask?.state==UploadStatesType.PENDING)">
+                        <div class="flex flex-row items-center flex-nowrap -mt-1 mx-2 mb-2">
+                            <span class="whitespace-nowrap">Preparing data...</span>
+                            <kern-loading size="btn-xs" color="blue"></kern-loading>
+
+                            <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                                <div class="bg-blue-700 h-2.5 rounded-full" [style.width]="uploadTask.progress+'%'">
+                                </div>
+                            </div>
+                        </div>
+                    </ng-template>
+
+                    <ng-container *ngIf="file">
+                        <div *ngIf="progressState" class="m-2">
+                            <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700"
+                                *ngIf="!(progressState.state === UploadStatesType.ERROR)">
+                                <div class="bg-primary h-2.5 rounded-full" [style.width]="progressState.progress+'%'">
+                                </div>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700"
+                                *ngIf="progressState.state === UploadStatesType.ERROR">
+                                <div class="bg-red-700 h-2.5 rounded-full" [style.width]="progressState.progress+'%'">
+                                </div>
+                            </div>
+                        </div>
+                    </ng-container>
+                </div>
             </div>
-            <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700"
-              *ngIf="upload.state === UploadStatesType.ERROR">
-              <div class="bg-red-700 h-2.5 rounded-full" [style.width]="upload.progress+'%'"></div>
-            </div>
-          </div>
-        </ng-container>
-      </div>
+        </div>
     </div>
+</ng-template>
 
-    <input hidden type="file" #fileInput value=""
-      accept="zip,application/zip,application/x-zip,application/x-zip-compressed,.csv, application/json, text/plain, text/html, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
-      (change)="onFileInput(fileInput.files)" />
-  </div>
-</div>
+<ng-template #submitUpload>
+    <div class="mt-4 flex flex-row gap-x-3">
+        <button (click)="submitUploadFile()" type="button" [attr.disabled]="disableInput?true:null"
+            [ngClass]="disableInput?'opacity-50 cursor-not-allowed':'opacity-100 cursor-pointer'"
+            class="bg-blue-700 text-white text-xs font-semibold px-4 py-2 rounded-md hover:bg-blue-800 focus:outline-none"
+            type="submit">
+            Proceed
+        </button>
+        <kern-label-studio-assistant [inputData]="{
+            uploadComponent: this,
+            uploadFunction: submitUploadFile,
+            uploadFunctionThisObject:this}" (initialUploadTriggered)="disableInput=$event">
+        </kern-label-studio-assistant>
+        <button [routerLink]="[uploadFileType == UploadFileType.RECORDS_NEW ? '/projects' : '../settings']"
+            type="button"
+            class="bg-red-100 border border-red-400 text-red-700 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer hover:bg-red-200 focus:outline-none">
+            {{ uploadFileType == UploadFileType.RECORDS_NEW ? 'Cancel project creation':'Cancel' }}
+        </button>
+    </div>
+</ng-template>
+
+<ng-template #importOptionsTextarea>
+    <div class="form-group">
+        <label class="text-gray-500 text-sm font-normal">
+            You can specify import file upload options for your file. See how this is done for <a
+                href="https://pandas.pydata.org/docs/reference/api/pandas.read_json.html" target="_blank"><span
+                    class="underline cursor-pointer">JSON</span></a>, <a
+                href="https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html" target="_blank"><span
+                    class="underline cursor-pointer">CSV</span></a> and <a
+                href="https://pandas.pydata.org/docs/reference/api/pandas.read_excel.html" target="_blank"><span
+                    class="underline cursor-pointer">spreadsheets</span></a>. If you leave
+            it blank, we'll use default settings
+        </label>
+        <div>
+            <textarea #importOptions class="shadow mt-1 p-4 text-sm w-full placeholder-indigo" rows="3"
+                placeholder="E.g. for uncommon CSV&#10;sep=\t&#10;lineterminator=\r"></textarea>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #dataSourcesUpload>
+    <div class="text-gray-500 text-sm font-normal">Choose from one of the following data
+        sources</div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        <div>
+            <label class="rounded-lg relative border p-4 flex cursor-pointer h-full focus:outline-none bg-white"
+                (click)="toggleTab(0)" [ngClass]="openTab === 0 ? 'border-black' : 'border-gray'">
+                <input type="radio" name="upload-file" [value]="0" [checked]="true"
+                    class="h-4 w-4 mt-0.5 cursor-pointer shrink-0 text-indigo-600 border-gray-300 focus:ring-indigo-500"
+                    aria-labelledby="upload-file-0-label" aria-describedby="upload-file-0-description">
+                <span class="ml-3 flex flex-col">
+                    <span id="upload-file-1-label" class="block text-sm font-medium"
+                        [ngClass]="openTab === 0 ? 'text-indigo-700' : 'text-gray-900'"> Upload file
+                    </span>
+                    <span id="upload-file-1-description" class="block text-sm font-normal"
+                        [ngClass]="openTab === 0 ? 'text-indigo-dark-2' : 'text-gray-500'"> Upload
+                        any kind of CSV, JSON or spreadsheet. </span>
+                </span>
+            </label>
+        </div>
+        <div>
+            <label class="bg-white rounded-lg relative border p-4 flex h-full focus:outline-none">
+                <div class="grid grid-cols-6 gap-4 w-full">
+                    <div class="col-span-3 lg:col-span-4 ml-3">
+                        <span id="integrate-api-0-label" class="block text-sm font-medium text-gray-900">
+                            Integrate via API </span>
+                        <span id="integrate-api-0-description" class="block text-sm font-normal text-gray-500"> Upload
+                            data
+                            via our API. </span>
+                    </div>
+                    <div class="col-span-3 lg:col-span-2 text-right items-center flex">
+                        <button
+                            class="bg-gray-100 text-gray-800 rounded-lg text-xs px-2.5 py-0.5 cursor-default border border-gray-300">Coming
+                            soon!</button>
+                    </div>
+                </div>
+            </label>
+        </div>
+        <div>
+            <label class="bg-white rounded-lg relative border p-4 flex h-full focus:outline-none">
+                <div class="grid grid-cols-6 gap-4 w-full">
+                    <div class="col-span-3 lg:col-span-4 ml-3">
+                        <span id="integrate-database-0-label" class="block text-sm font-medium text-gray-900"> Integrate
+                            database </span>
+                        <span id="integrate-database-0-description" class="block text-sm font-normal text-gray-500">
+                            Integrate data directly from a
+                            DB. </span>
+                    </div>
+                    <div class="col-span-3 lg:col-span-2 text-right items-center flex">
+                        <button
+                            class="bg-gray-100 text-gray-800 rounded-lg text-xs px-2.5 py-0.5 cursor-default border border-gray-300">Coming
+                            soon!</button>
+                    </div>
+                </div>
+            </label>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #fileValidation>
+    <div class="rounded-md bg-yellow-50 p-4"
+        *ngIf="submitted && !file && openTab === 0 && uploadTask?.state!==UploadStatesType.IN_PROGRESS ">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                    fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd"
+                        d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                        clip-rule="evenodd" />
+                </svg>
+            </div>
+            <div class="ml-3">
+                <h3 class="text-sm font-medium text-yellow-800">File required</h3>
+                <div class="mt-2 text-sm text-yellow-700">
+                    <p>If you are choosing to start a project by uploading a file, you must specify one
+                        first. Please upload one.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
