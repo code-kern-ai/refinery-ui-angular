@@ -214,7 +214,7 @@
 
                                                                 <label
                                                                     class="text-xs text-gray-500 cursor-pointer flex items-center pb-2"
-                                                                    *ngIf="groupItem.get('operator').value == 'BEGINS WITH' || groupItem.get('operator').value == 'ENDS WITH' || groupItem.get('operator').value == 'CONTAINS' || groupItem.get('operator').value == 'IN WC'">
+                                                                    *ngIf="(groupItem.get('operator').value == 'BEGINS WITH' || groupItem.get('operator').value == 'ENDS WITH' || groupItem.get('operator').value == 'CONTAINS' || groupItem.get('operator').value == 'IN WC') && (saveAttributeType!='INTEGER' && saveAttributeType !='FLOAT')">
                                                                     <input type="checkbox"
                                                                         formControlName="caseSensitive"
                                                                         class="mr-1 cursor-pointer">

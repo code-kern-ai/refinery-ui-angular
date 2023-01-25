@@ -199,6 +199,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   recordComments: any = {};
   commentsFilter: CommentsFilter;
   isManaged: boolean = true;
+  saveAttributeType: string = "";
 
   getSearchFormArray(groupKey: string): FormArray {
     return this.fullSearch.get(groupKey).get('groupElements') as FormArray;
@@ -2042,6 +2043,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     if (field == 'name') {
       const attributeType = getAttributeType(this.attributesSortOrder, value);
       this.saveDropdownAttribute = value;
+      this.saveAttributeType = attributeType;
       if (attributeType == "BOOLEAN" && formControlsIdx.get("searchValue").value != "") {
         formControlsIdx.get("searchValue").setValue("");
         formControlsIdx.get("searchValueBetween").setValue("");
