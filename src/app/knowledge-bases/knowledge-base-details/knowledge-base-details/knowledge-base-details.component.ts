@@ -367,8 +367,8 @@ export class KnowledgeBaseDetailsComponent implements OnInit, AfterViewInit, OnD
     }
   }
 
-  refetchLookupLists(refetch: boolean) {
-    if (!refetch) return;
+  closeModalAndRefetchList() {
+    this.lookupListDetailsModals.uploadLookupList.open = false;
     this.knowledgeBaseQuery$.refetch();
     this.termsQuery$.refetch();
   }

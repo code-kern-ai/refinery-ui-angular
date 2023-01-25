@@ -19,7 +19,6 @@ export class ModalUploadComponent implements OnInit, OnChanges {
 
   @Output() closeModalEvent = new EventEmitter();
   @Output() fileAttached = new EventEmitter<File>();
-  @Output() refetchLookupLists = new EventEmitter<boolean>();
 
   get UploadFileType(): typeof UploadFileType {
     return UploadFileType;
@@ -53,9 +52,6 @@ export class ModalUploadComponent implements OnInit, OnChanges {
     this.uploadModals.uploadFile.open = false;
     if (this.uploadOptions.closeModalOnClick) {
       this.closeModalEvent.emit();
-    }
-    if (this.uploadOptions.knowledgeBaseId) {
-      this.refetchLookupLists.emit(true);
     }
   }
 
