@@ -167,31 +167,36 @@
                                                                     </svg>
                                                                 </div>
                                                             </div>
-                                                            <div class="flex-grow mr-2 flex flex-col  mt-2 ">
+                                                            <div class="flex-grow mr-2.5 flex flex-col  mt-2 ">
                                                                 <div class="flex-grow flex flex-row flex-wrap gap-1">
-                                                                    <kern-dropdown [dropdownOptions]="{
-                                                                        optionArray: attributesSortOrder,
-                                                                        buttonCaption: groupItem.get('name').value,
-                                                                        fontClass: 'font-dmMono',
-                                                                        backgroundColors: colorsAttributes,
-                                                                        width:  groupItem.get('operator').value != '' ? '154px' : '312px'
-                                                                    }"
-                                                                        (optionClicked)="selectValueDropdown($event, i, 'name', group.key)">
-                                                                    </kern-dropdown>
+                                                                    <div style="width: 50%;" [ngStyle]="{
+                                                                        'width': groupItem.get('operator').value == '' ? '100%' : '49%'
+                                                                    }">
+                                                                        <kern-dropdown [dropdownOptions]="{
+                                                                            optionArray: attributesSortOrder,
+                                                                            buttonCaption: groupItem.get('name').value,
+                                                                            fontClass: 'font-dmMono',
+                                                                            backgroundColors: colorsAttributes,
+                                                                            hasFullWidth: true
+                                                                        }"
+                                                                            (optionClicked)="selectValueDropdown($event, i, 'name', group.key)">
+                                                                        </kern-dropdown>
+                                                                    </div>
 
-                                                                    <kern-dropdown
-                                                                        *ngIf="groupItem.get('operator').value != ''"
-                                                                        [dropdownOptions]="{
+                                                                    <div style="width: 49%;">
+                                                                        <kern-dropdown
+                                                                            *ngIf="groupItem.get('operator').value != ''"
+                                                                            [dropdownOptions]="{
                                                                         optionArray: searchOperatorDropdownArray,
                                                                         buttonCaption: groupItem.get('operator').value,
                                                                         optionTooltips: tooltipsArray,
                                                                         fontClass: 'font-dmMono',
-                                                                        width: '154px',
+                                                                        hasFullWidth: true,
                                                                         buttonTooltipPosition: 'left',
                                                                         tooltipMaxWidthClass: 'tooltip_max_width_200'
-                                                                    }"
-                                                                        (optionClicked)="selectValueDropdown($event, i, 'operator', group.key)">
-                                                                    </kern-dropdown>
+                                                                    }" (optionClicked)="selectValueDropdown($event, i, 'operator', group.key)">
+                                                                        </kern-dropdown>
+                                                                    </div>
                                                                 </div>
 
                                                                 <div class="my-2 flex-grow flex flex-row items-center">
