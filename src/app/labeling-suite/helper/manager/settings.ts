@@ -174,7 +174,7 @@ export class LabelingSuiteSettingManager implements DoBeforeDestroy {
             },
             overviewTable: {
                 show: true,
-                showHeuristics: false,
+                showHeuristics: true,
                 includeLabelDisplaySettings: true,
             },
             task: {
