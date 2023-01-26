@@ -205,6 +205,8 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
     this.config.api.requesting = true;
     this.http.get(this.config.api.requestUrl).pipe(first()).subscribe((c: BricksAPIData) => {
       this.config.api.data = c;
+
+      this.config.api.data.data.attributes.link = "https://bricks.kern.ai/" + c.data.attributes.moduleType + "s/" + c.data.id;
       this.config.api.requesting = false;
       this.config.example.requestData = this.config.api.data.data.attributes.inputExample;
       this.codeParser.prepareCode();
