@@ -200,6 +200,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   commentsFilter: CommentsFilter;
   isManaged: boolean = true;
   saveAttributeType: string = "";
+  calledOnce: boolean = false;
 
   getSearchFormArray(groupKey: string): FormArray {
     return this.fullSearch.get(groupKey).get('groupElements') as FormArray;
@@ -250,6 +251,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       .subscribe((results) => {
         this.prepareSearchGroups();
         this.loading = true;
+        this.calledOnce = true;
         this.requestExtendedSearch();
         this.getOperatorDropdownValues();
       });
@@ -491,8 +493,10 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     combineLatest(tasks$)
       .pipe(debounceTime(500))
       .subscribe((results) => {
-        if (!this.similarSearchHelper.recordsRequested) {
+        if (!this.calledOnce && !this.similarSearchHelper.recordsRequested) {
           this.requestExtendedSearch();
+        } else {
+          this.calledOnce = false;
         }
       });
 
