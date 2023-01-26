@@ -118,7 +118,11 @@ export class LabelingSuiteSettingManager implements DoBeforeDestroy {
     public setDefaultSettings() {
         const tmpSettings = this.getDefaultLabelingSuiteSettings();
         transferNestedDict(tmpSettings, this.settings);
-        this.settings.task[this.projectId] = {};
+        for (let taskId in this.settings.task[this.projectId]) {
+            for (let labelId in this.settings.task[this.projectId][taskId]) {
+                this.settings.task[this.projectId][taskId][labelId] = this.getDefaultTaskOverviewLabelSettings();
+            }
+        }
         this.runSettingListeners(ComponentType.ALL);
     }
 
