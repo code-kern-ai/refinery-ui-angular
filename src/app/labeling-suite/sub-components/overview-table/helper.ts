@@ -46,7 +46,7 @@ export type HeaderHover = {
 export function getEmptyHeaderHover() {
     //holds dummy group as first element to not use a main group
     return {
-        class: 'border-l border-r bg-gray-200 font-bold',
+        class: 'bg-gray-200 font-bold',
         typeCollection: 'TYPE,',
         taskCollection: 'TASK,',
         labelCollection: 'LABEL,',
