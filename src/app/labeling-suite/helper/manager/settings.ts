@@ -176,7 +176,7 @@ export class LabelingSuiteSettingManager implements DoBeforeDestroy {
             task: {
                 show: true,
                 isCollapsed: false,
-                alwaysShowQuickButtons: false,
+                alwaysShowQuickButtons: true,
             },
             labeling: {
                 showNLabelButton: 5,

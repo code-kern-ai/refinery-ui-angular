@@ -5,6 +5,7 @@ export type LabelingSuiteModals = {
     };
     deleteRecord: { open: boolean };
     taskHeaderInfo: { open: boolean };
+    overviewTableInfo: { open: boolean };
     settings: SettingsModal;
 };
 
@@ -28,6 +29,9 @@ export class LabelingSuiteModalManager {
                 open: false,
             },
             taskHeaderInfo: {
+                open: false,
+            },
+            overviewTableInfo: {
                 open: false,
             },
             settings: {

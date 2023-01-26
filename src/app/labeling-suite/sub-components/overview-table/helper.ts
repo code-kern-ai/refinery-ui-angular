@@ -16,7 +16,7 @@ export type TableDisplayData = {
         task: string,
         label: string,
         createdBy: string,
-        value: string,
+        rlaId: string,
     },
     orderPos: number,
     orderPosSec: number,
@@ -32,4 +32,25 @@ export type TableDisplayData = {
         borderColor: string,
     },
     rla: any
+}
+
+export type HeaderHover = {
+    class: string,
+    typeCollection: string,
+    taskCollection: string,
+    labelCollection: string,
+    createdByCollection: string,
+    rlaCollection: string,
+}
+
+export function getEmptyHeaderHover() {
+    //holds dummy group as first element to not use a main group
+    return {
+        class: 'border-l border-r bg-gray-200 font-bold',
+        typeCollection: 'TYPE,',
+        taskCollection: 'TASK,',
+        labelCollection: 'LABEL,',
+        createdByCollection: 'CR,',
+        rlaCollection: 'RLA,',
+    }
 }

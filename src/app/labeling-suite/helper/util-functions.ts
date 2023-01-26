@@ -9,12 +9,12 @@ export function getHoverGroupsOverviewTable(data: any): any {
         rlaId: "ID_" + data.id,
     }
     return {
-        type: getHoverGroupFor(HoverGroupTarget.TYPE, all),
-        task: getHoverGroupFor(HoverGroupTarget.TASK, all),
-        label: getHoverGroupFor(HoverGroupTarget.LABEL, all),
+        type: getHoverGroupFor(HoverGroupTarget.TYPE, all) + ",TYPE",
+        task: getHoverGroupFor(HoverGroupTarget.TASK, all) + ",TASK",
+        label: getHoverGroupFor(HoverGroupTarget.LABEL, all) + ",LABEL",
         labelClass: getHoverClassLabel(data.sourceType),
-        createdBy: getHoverGroupFor(HoverGroupTarget.CREATED_BY, all),
-        rlaId: getHoverGroupFor(HoverGroupTarget.RLA_ID, all),
+        createdBy: getHoverGroupFor(HoverGroupTarget.CREATED_BY, all) + ",CR",
+        rlaId: getHoverGroupFor(HoverGroupTarget.RLA_ID, all) + ",RLA",
     }
 }
 

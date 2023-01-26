@@ -8,20 +8,30 @@
                             <thead class="bg-gray-50">
                                 <tr>
                                     <th scope="col"
-                                        class="py-2 pl-4 pr-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500 sm:pl-6">
+                                        class="py-2 pl-4 pr-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500 sm:pl-6"
+                                        hover-group-class="{{headerHover.class}}"
+                                        hover-group="{{headerHover.typeCollection}}">
                                         Type</th>
                                     <th scope="col"
-                                        class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wide text-gray-500">
+                                        class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wide text-gray-500"
+                                        hover-group-class="{{headerHover.class}}"
+                                        hover-group="{{headerHover.taskCollection}}">
                                         Task</th>
                                     <th scope="col"
-                                        class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wide text-gray-500">
+                                        class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wide text-gray-500"
+                                        hover-group-class="{{headerHover.class}}"
+                                        hover-group="{{headerHover.createdByCollection}}">
                                         Created by</th>
                                     <th scope="col"
-                                        class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wide text-gray-500">
+                                        class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wide text-gray-500"
+                                        hover-group-class="{{headerHover.class}}"
+                                        hover-group="{{headerHover.labelCollection}}">
                                         Label</th>
-                                    <th scope="col">
+                                    <th scope="col" hover-group-class="{{headerHover.class}}"
+                                        hover-group="{{headerHover.valueCollection}}">
                                     </th>
-                                    <th scope="col">
+                                    <th scope="col" hover-group-class="{{headerHover.class}}"
+                                        hover-group="{{headerHover.valueCollection}}">
                                     </th>
                                 </tr>
                             </thead>
@@ -86,6 +96,11 @@
                     </div>
                 </div>
             </div>
+            <div>
+                <p class="text-gray-500 text-sm font-normal">You can hover over the table entries to highlight
+                    everything <span class="underline cursor-pointer"
+                        (click)="lsm.modalManager.modals.overviewTableInfo.open=true">related</span> to the column</p>
+            </div>
         </div>
     </ng-template>
 
@@ -95,3 +110,72 @@
         </ng-template>
     </ng-template>
 </ng-template>
+
+
+<kern-modal [isOpen]="lsm.modalManager.modals.overviewTableInfo.open" closeButton="X"
+    [modalBoxStyle]="{'width':'43rem'}" (optionClicked)="lsm.modalManager.modals.overviewTableInfo.open = false;">
+    <ng-template [ngIf]="dataToDisplay">
+        <div *ngIf="dataToDisplay[0] as ovItem" class="flex flex-col items-center">
+            <div class="flex flex-row gap-x-2 items-center">
+                <h1 class="text-lg text-gray-900 text-center font-bold">Info</h1>
+            </div>
+            <div class="text-gray-500 my-2 text-center mb-2">
+                Every label stores a lot of data.<br><br>This can be the label type, the corresponding task, creation
+                user or heuristic as well as the label itself.
+                Now to get a better overview over every label placed on a record we group the labels by these different
+                criteria.<br><br>This means
+                there is a group for e.g. type <span class="underline"
+                    hover-group-class="{{lsm.settingManager.settings.main.hoverGroupBackgroundColorClass}}"
+                    hover-group="{{ovItem.hoverGroups.type}}">{{ovItem.sourceType}}</span>. If you hover the element
+                everything with the same
+                type will be highlighted.
+                <br>If you hover over a task (e.g. <span class="underline"
+                    hover-group-class="{{lsm.settingManager.settings.main.hoverGroupBackgroundColorClass}}"
+                    hover-group="{{ovItem.hoverGroups.task}}">{{ovItem.taskName}}</span>) everything with the same task
+                will be highlighted. The same goes for the other groups.<br>Note that the magnifying glass highlights
+                only the specific label entry.<br><br>
+                Feel free to try it out in the table below and focus on the background.
+            </div>
+            <table class="min-w-full border divide-y divide-gray-300">
+                <tbody class="divide-y divide-gray-200 bg-white">
+                    <tr class="bg-white">
+                        <td class="whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-500 sm:pl-6"
+                            hover-group-class="{{lsm.settingManager.settings.main.hoverGroupBackgroundColorClass}}"
+                            hover-group="{{ovItem.hoverGroups.type}}">
+                            {{ovItem.sourceType}}</td>
+                        <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500"
+                            hover-group-class="{{lsm.settingManager.settings.main.hoverGroupBackgroundColorClass}}"
+                            hover-group="{{ovItem.hoverGroups.task}}">
+                            {{ovItem.taskName}}</td>
+                        <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500"
+                            hover-group-class="{{lsm.settingManager.settings.main.hoverGroupBackgroundColorClass}}"
+                            hover-group="{{ovItem.hoverGroups.createdBy}}">
+                            {{ovItem.createdBy}}
+                        </td>
+                        <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500"
+                            hover-group-class="{{lsm.settingManager.settings.main.hoverGroupBackgroundColorClass}}"
+                            hover-group="{{ovItem.hoverGroups.label}}">
+
+                            <span
+                                class="inline-flex items-center px-2.5 py-0.5 rounded-md text-sm font-medium border border-0 cursor-default relative"
+                                [ngClass]="[ovItem.label.backgroundColor,ovItem.label.textColor,ovItem.label.borderColor]">{{ovItem.label.name}}
+                                <div class="label-overlay-base" hover-group-class="{{ovItem.hoverGroups.labelClass}}"
+                                    hover-group="{{ovItem.hoverGroups.label}}"></div>
+                            </span>
+                            <span class="ml-2" *ngIf="ovItem.label.value">{{ovItem.label.value}}</span>
+                        </td>
+                        <td class="w-icon"
+                            hover-group-class="{{lsm.settingManager.settings.main.hoverGroupBackgroundColorClass}}"
+                            hover-group="{{ovItem.hoverGroups.rlaId}}">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" class="w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                            </svg>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </ng-template>
+</kern-modal>

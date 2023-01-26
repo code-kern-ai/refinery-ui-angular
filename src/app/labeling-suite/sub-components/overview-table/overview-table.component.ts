@@ -10,7 +10,7 @@ import { jsonCopy } from 'src/app/util/helper-functions';
 import { LabelingSuiteManager, UpdateType } from '../../helper/manager/manager';
 import { LabelingSuiteRlaPreparator } from '../../helper/manager/recordRla';
 import { ComponentType, LabelingSuiteOverviewTableSettings } from '../../helper/manager/settings';
-import { TableDisplayData } from './helper';
+import { getEmptyHeaderHover, HeaderHover, TableDisplayData } from './helper';
 
 @Component({
   selector: 'kern-labeling-suite-overview-table',
@@ -26,6 +26,7 @@ export class LabelingSuiteOverviewTableComponent implements OnInit, OnDestroy, O
 
   dataHasHeuristics: boolean = false;
 
+  headerHover: HeaderHover = getEmptyHeaderHover();
 
   //shorthand not to be used in html
   get settings(): LabelingSuiteOverviewTableSettings {
@@ -45,7 +46,9 @@ export class LabelingSuiteOverviewTableComponent implements OnInit, OnDestroy, O
       this.lsm.registerUpdateListenerAndDo(UpdateType.RECORD, this, () => this.prepareDataForTableDisplay());
       this.lsm.registerUpdateListenerAndDo(UpdateType.DISPLAY_USER, this, () => this.settingsChanged());
       this.lsm.settingManager.registerSettingListener(ComponentType.OVERVIEW_TABLE, this, () => this.settingsChanged());
+      this.lsm.settingManager.registerSettingListener(ComponentType.MAIN, this, () => this.checkAndRebuildTableHover());
       this.lsm.settingManager.registerSettingListener(ComponentType.TASK_HEADER, this, () => this.settings.includeLabelDisplaySettings ? this.rebuildDataForDisplay() : null);
+
     }
   }
 
@@ -62,12 +65,32 @@ export class LabelingSuiteOverviewTableComponent implements OnInit, OnDestroy, O
   ngOnInit(): void {
   }
 
+  private checkAndRebuildTableHover(full: boolean = false) {
+
+    if (full) {
+      if (!this.fullData) return;
+      this.headerHover = getEmptyHeaderHover();
+      for (const data of this.fullData) {
+        this.headerHover.typeCollection += data.hoverGroups.type.split(',')[0] + ', ';
+        this.headerHover.taskCollection += data.hoverGroups.task.split(',')[0] + ', ';
+        this.headerHover.createdByCollection += data.hoverGroups.createdBy.split(',')[0] + ', ';
+        this.headerHover.labelCollection += data.hoverGroups.label.split(',')[0] + ', ';
+        this.headerHover.rlaCollection += data.hoverGroups.rlaId.split(',')[0] + ', ';
+      }
+    }
+    // const newClass = this.lsm.settingManager.settings.main.hoverGroupBackgroundColorClass + 'border-l border-r bg-gray-200 font-bold';
+    // if (this.headerHover.class !== newClass) {
+    //   this.headerHover.class = newClass;
+    // }
+  }
+
   private prepareDataForTableDisplay() {
     if (!this.rlaManager.rlasLoaded()) {
       this.dataToDisplay = null;
       return;
     }
     this.fullData = this.rlaManager.buildOverviewTableDisplayArray();
+    this.checkAndRebuildTableHover(true);
     this.settingsChanged();
     this.dataHasHeuristics = this.rlaManager.rlasHaveHeuristicData();
   }

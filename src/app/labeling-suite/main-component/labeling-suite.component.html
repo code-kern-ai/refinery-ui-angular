@@ -179,30 +179,7 @@
                         </label>
                     </div>
                 </div>
-                <div *ngIf="lsm.userManager.currentRole == userRoleEnum.ENGINEER"
-                    class="flex justify-center overflow-visible items-center cursor-pointer"
-                    (click)="toggleShowHeuristics()">
-                    <ng-template [ngIf]="!lsm.recordManager.recordData.deleted">
-                        <label
-                            class="flex-shrink-0 group relative inline-flex items-center justify-center cursor-pointer focus:outline-none"
-                            role="switch" aria-checked="false">
-
-                            <input class="h-5 w-5 cursor-pointer" type="checkbox"
-                                [checked]='!lsm.settingManager.settings.overviewTable.showHeuristics'>
-                        </label>
-                        <span class="flex-grow flex flex-col ml-3 flex-shrink-0">
-                            <span class="text-sm font-medium text-gray-900">Hide
-                                heuristic
-                                labels from overview table</span>
-                            <span class="text-sm text-gray-500">Apply this if you
-                                don't
-                                want to be biased</span>
-                        </span>
-                    </ng-template>
-                </div>
-
                 <div class="flex justify-center overflow-visible items-center cursor-pointer"
-                    [ngClass]="lsm.userManager.currentRole == userRoleEnum.ENGINEER?'ml-8':null"
                     (click)="toggleAutoNextRecord()">
                     <ng-template [ngIf]="!lsm.recordManager.recordData.deleted">
                         <label
@@ -478,7 +455,7 @@
                 class="opacity-100 cursor-pointer ml-2 bg-white text-gray-700 border border-gray-300 text-xs font-semibold px-4 py-2 rounded cursor-pointer hover:bg-gray-50 focus:outline-none">Close</button>
             <!--default all-->
             <button (click)="lsm.settingManager.setDefaultSettings()"
-                class="opacity-100 cursor-pointer ml-2 bg-white text-gray-700 border border-gray-300 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer hover:bg-yellow-200 focus:outline-none">Use
+                class="opacity-100 cursor-pointer ml-2 bg-white text-gray-700 border border-gray-300 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer focus:outline-none">Use
                 default settings</button>
         </div>
     </kern-modal>

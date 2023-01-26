@@ -1,12 +1,13 @@
 <div #baseDomElement *ngIf="displayData" class="relative bg-white p-4">
-  <div class="absolute top-2 right-2 p-2 cursor-pointer"
+  <div class="absolute top-4 right-4 p-2 cursor-pointer"
     [ngClass]="lsm.settingManager.settings.task.isCollapsed?'rotate_transform':null" (click)="toggleIsCollapsed()">
-    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevrons-up" width="24" height="24"
-      viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
+    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-layout-navbar-collapse" width="24"
+      height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
       stroke-linejoin="round">
       <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-      <polyline points="7 11 12 6 17 11"></polyline>
-      <polyline points="7 17 12 12 17 17"></polyline>
+      <path d="M4 18v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z"></path>
+      <path d="M4 9h16"></path>
+      <path d="M10 16l2 -2l2 2"></path>
     </svg>
   </div>
 
@@ -26,7 +27,7 @@
           <td class="px-3 py-2 text-sm text-gray-500 w-full">
             <div class="flex flex-row flex-wrap gap-x-2">
 
-              <div #labelDiv *ngFor="let labelId of task.labelOrder; let i = index"
+              <!-- <div #labelDiv *ngFor="let labelId of task.labelOrder; let i = index"
                 class="text-sm font-medium px-2 py-0.5 rounded-md border focus:outline-none cursor-pointer"
                 hover-group-class="{{task.labels[labelId].color.hoverColor}}"
                 hover-group="{{task.labels[labelId].hoverGroups}}"
@@ -35,6 +36,27 @@
                 <div class="truncate" style="max-width: 260px;">{{task.labels[labelId].name}}
                   <kbd *ngIf="task.labels[labelId].hotkey"
                     class="ml-1 uppercase inline-flex items-center border bg-white border-gray-200 rounded px-2 text-sm font-sans font-medium text-gray-400">{{task.labels[labelId].hotkey}}</kbd>
+                </div>
+              </div> -->
+              <div #labelDiv *ngFor="let labelId of task.labelOrder; let i = index"
+                hover-group="{{task.labels[labelId].hoverGroups}}"
+                class="text-sm font-medium px-2 py-0.5 rounded-md border focus:outline-none cursor-pointer flex flex-row flex-no-wrap gap-x-1 items-center"
+                (click)="setLabelSettingsLabel(task.labels[labelId]);labelSettingsBoxPosition(labelDiv,baseDomElement);">
+                <div class="grid grid-cols-2" style="gap:0.125rem">
+                  <div class="w-3 h-3 border rounded-full"
+                    [ngClass]="[htmlSettings[task.id][labelId].showManual?task.labels[labelId].color.backgroundColor:'bg-white', task.labels[labelId].color.borderColor]">
+                  </div>
+                  <div class="w-3 h-3 border rounded-full"
+                    [ngClass]="[htmlSettings[task.id][labelId].showWeakSupervision?task.labels[labelId].color.backgroundColor:'bg-white', task.labels[labelId].color.borderColor]">
+                  </div>
+                  <div class="w-3 h-3 border rounded-full"
+                    [ngClass]="[htmlSettings[task.id][labelId].showModel?task.labels[labelId].color.backgroundColor:'bg-white', task.labels[labelId].color.borderColor]">
+                  </div>
+                  <div class="w-3 h-3 border rounded-full"
+                    [ngClass]="[htmlSettings[task.id][labelId].showHeuristics?task.labels[labelId].color.backgroundColor:'bg-white', task.labels[labelId].color.borderColor]">
+                  </div>
+                </div>
+                <div class="truncate" style="max-width: 260px;">{{task.labels[labelId].name}}
                 </div>
               </div>
             </div>
@@ -166,19 +188,19 @@
 <ng-template #quickButtons>
   <div class="flex flex-row flex-wrap gap-2">
     <ng-container [ngTemplateOutlet]="quickButton"
-      [ngTemplateOutletContext]="{attributeName:'showManual',caption:'Manual',dataTipCaption:'manual'}">
+      [ngTemplateOutletContext]="{attributeName:'showManual',caption:'Manual',dataTipCaption:'manual', hoverClass:'label-overlay-manual'}">
     </ng-container>
 
     <ng-container [ngTemplateOutlet]="quickButton"
-      [ngTemplateOutletContext]="{attributeName:'showWeakSupervision',caption:'Weak Supervision',dataTipCaption:'weak supervision'}">
+      [ngTemplateOutletContext]="{attributeName:'showWeakSupervision',caption:'Weak Supervision',dataTipCaption:'weak supervision', hoverClass:'label-overlay-weak-supervision'}">
     </ng-container>
 
     <ng-container [ngTemplateOutlet]="quickButton"
-      [ngTemplateOutletContext]="{attributeName:'showModel',caption:'External Model',dataTipCaption:'external model'}">
+      [ngTemplateOutletContext]="{attributeName:'showModel',caption:'External Model',dataTipCaption:'external model', hoverClass:'label-overlay-heuristic'}">
     </ng-container>
 
     <ng-container [ngTemplateOutlet]="quickButton"
-      [ngTemplateOutletContext]="{attributeName:'showHeuristics',caption:'Heuristic',dataTipCaption:'heuristic'}">
+      [ngTemplateOutletContext]="{attributeName:'showHeuristics',caption:'Heuristic',dataTipCaption:'heuristic', hoverClass:'label-overlay-model'}">
     </ng-container>
     <div class="flex flex-row flex-nowrap gap-x-2">
 
@@ -224,40 +246,23 @@
 </ng-template>
 
 
-<ng-template #quickButton let-attributeName="attributeName" let-caption="caption" let-dataTipCaption="dataTipCaption">
+<ng-template #quickButton let-attributeName="attributeName" let-caption="caption" let-dataTipCaption="dataTipCaption"
+  let-hoverClass="hoverClass">
 
   <div class="tooltip"
     [ngClass]="lsm.settingManager.settings.task.isCollapsed && caption == 'Manual'?'tooltip-right':'tooltip-bottom'"
-    data-tip="Show labels in labeling view">
-    <button (click)="setAllLabelDisplaySetting(true,null,attributeName)"
+    attr.data-tip="{{'Show '+ dataTipCaption +' labels in labeling view'}}">
+    <button (click)="setAllLabelDisplaySetting(true,null,attributeName)" hover-group="{{attributeName}}"
       class="inline-flex items-center bg-white text-gray-700 text-xs font-semibold py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none"
       [ngClass]="lsm.settingManager.settings.task.isCollapsed?'px-2':'px-4'">
-      <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-square-check" width="24" height="24"
-        viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
+      <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 icon icon-tabler icon-tabler-square-check" width="24"
+        height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
         stroke-linejoin="round">
         <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
         <rect x="4" y="4" width="16" height="16" rx="2"></rect>
         <path d="M9 12l2 2l4 -4"></path>
       </svg>{{caption}}
-    </button>
-  </div>
-  <div class="tooltip tooltip-bottom" data-tip="Show labels in labeling view and deactivate others">
-    <button (click)="setAllLabelDisplaySetting(true,null,attributeName,true)"
-      class="inline-flex items-center bg-white text-gray-700 text-xs font-semibold py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none"
-      [ngClass]="lsm.settingManager.settings.task.isCollapsed?'px-2':'px-4'">
-      <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-square" width="24" height="24"
-        viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
-        stroke-linejoin="round">
-        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-        <rect x="4" y="4" width="16" height="16" rx="2"></rect>
-      </svg>
-      <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-square-check" width="24" height="24"
-        viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
-        stroke-linejoin="round">
-        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-        <rect x="4" y="4" width="16" height="16" rx="2"></rect>
-        <path d="M9 12l2 2l4 -4"></path>
-      </svg>{{caption}}
+      <div class="label-overlay-base" hover-group-class="{{hoverClass}}" hover-group="{{attributeName}}"></div>
     </button>
   </div>
 </ng-template>

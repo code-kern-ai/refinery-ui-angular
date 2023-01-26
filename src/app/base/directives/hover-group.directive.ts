@@ -25,6 +25,7 @@ export class HoverGroupDirective implements OnDestroy, OnInit {
     if (!this.finalGroups || this.finalGroups.length == 0) return;
     const highlightGroup = this.finalGroups[0];
     for (let e of HoverGroupElementRefs.getElements(highlightGroup)) {
+      if (!e.hoverClass) continue;
       for (let v of e.hoverClass.split(' ')) {
         if (v) e.elementRef.nativeElement.classList.add(v);
       }
@@ -36,6 +37,7 @@ export class HoverGroupDirective implements OnDestroy, OnInit {
     if (!this.finalGroups || this.finalGroups.length == 0) return;
     const highlightGroup = this.finalGroups[0];
     for (let e of HoverGroupElementRefs.getElements(highlightGroup)) {
+      if (!e.hoverClass) continue;
       for (let v of e.hoverClass.split(' ')) {
         if (v) e.elementRef.nativeElement.classList.remove(v);
       }
