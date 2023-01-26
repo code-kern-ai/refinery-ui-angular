@@ -45,6 +45,7 @@ export type BricksSearchData = {
         description: string,
         updatedAt: string,
         moduleType: string,
+        link?: string,
         [key: string]: unknown
     }
     id: number
