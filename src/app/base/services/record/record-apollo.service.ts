@@ -515,7 +515,7 @@ export class RecordApolloService {
         map((result) => {
           const data = result['data']['tokenizeRecord'];
           if (!data) return null;
-          return this.#addDiffToLast({
+          return this.#addDiffToNext({
             recordId: data.recordId,
             attributes: data.attributes.map((attribute) => {
               return {
@@ -542,16 +542,11 @@ export class RecordApolloService {
       type: token.type,
     };
   }
-  #addDiffToLast(tokenObj) {
-    let lastPos = 0;
-    let diff = -1;
+  #addDiffToNext(tokenObj) {
     for (let a of tokenObj.attributes) {
       if (a.token) {
-        for (let t of a.token) {
-          t.previousCloser = diff == 0;
-          diff = t.posStart - lastPos;
-          t.diffToLastPos = diff;
-          lastPos = t.posEnd;
+        for (let i = 0; i < a.token.length - 1; i++) {
+          a.token[i].nextCloser = a.token[i].posEnd == a.token[i + 1].posStart;
         }
       }
     }

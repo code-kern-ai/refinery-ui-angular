@@ -1,0 +1,8 @@
+.tooltip::before {
+  z-index: 50;
+  max-width: 230px;
+}
+
+.rotate_transform svg {
+  transform: rotate(180deg);
+}

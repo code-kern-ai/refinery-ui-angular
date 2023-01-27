@@ -1,0 +1,340 @@
+<div #baseDomElement class="bg-white relative bg-white p-4">
+    <div *ngIf="lVars.loading" class="">
+        <kern-loading size="btn-lg"></kern-loading>
+    </div>
+    <div *ngIf="!lVars.loading && lsm.recordManager.recordData.deleted"
+        class="flex items-center justify-center text-red-500">
+        This Record has been deleted
+    </div>
+    <!--settings box absolute positioned-->
+    <div #labelSelectionBox (mousedown)="preventDefaultEvent($event)" (mouseup)="preventDefaultEvent($event)"
+        class="flex flex-col rounded-lg bg-white shadow absolute z-20 top-0 left-0 border border-gray-300"
+        style="min-width: 270px;" [ngClass]="activeTasks ? null : 'hidden'">
+        <div *ngIf="activeTasks" class="max-h-80 overflow-y-auto">
+
+            <ng-template ngFor let-activeTask [ngForOf]="activeTasks" let-i="index">
+                <div class="flex flex-grow flex-row justify-center p-2" [ngClass]="i!=0?'border-t borders-gray':null">
+                    <label class="mr-1 text-sm">Task:</label>
+                    <label class="italic font-bold text-sm truncate pr-0.5"
+                        style="max-width: 12rem;">{{activeTask.task.name}}</label>
+                </div>
+                <div class="flex flex-row gap-x-1 flex-nowrap p-2.5 border borders-gray">
+                    <input #labelSearch type="text" class="flex-grow input input-bordered input-sm"
+                        style="outline:none; box-shadow:none;" placeholder="Search label name..." autocomplete="off"
+                        (click)="labelSearch.focus()"
+                        (keyup)="checkLabelVisibleInSearch(labelSearch.value,activeTask.task);">
+                    <div *ngIf="lsm.userManager.currentRole == userRoleEnum.ENGINEER" data-tip="Create label"
+                        class="tooltip tooltip-left flex items-center">
+                        <button class="" (mouseup)="addNewLabelToTask(labelSearch.value,activeTask.task.id)"
+                            [disabled]="labelAddButtonDisabled || labelSearch.value==''?true: null"
+                            [ngClass]="labelAddButtonDisabled ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
+                                fill="currentColor">
+                                <path fill-rule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex-grow flex flex-col justify-center"
+                    [ngClass]="i==activeTasks.length-1?'p-3':'px-3 pt-3'">
+                    <ng-template [ngIf]="activeTask">
+                        <button #labelButton *ngFor="let label of activeTask.task.labels; "
+                            (click)="addRla(activeTask.task,label.id)"
+                            class="text-sm font-medium px-2 py-0.5 rounded-md border mb-2 focus:outline-none"
+                            role="button" [ngStyle]="{'display':labelLookup[label.id].visibleInSearch?null:'none'}"
+                            [ngClass]="[labelLookup[label.id].color.backgroundColor,labelLookup[label.id].color.textColor, labelLookup[label.id].color.borderColor]">
+                            <div class="truncate" style="max-width: 260px;">{{label.name}}
+                                <kbd *ngIf="label.hotkey && canEditLabels"
+                                    class="ml-1 uppercase inline-flex items-center border bg-white border-gray-200 rounded px-2 text-sm font-sans font-medium text-gray-400">{{label.hotkey}}</kbd>
+                            </div>
+                        </button>
+                    </ng-template>
+                </div>
+            </ng-template>
+        </div>
+    </div>
+
+    <div *ngIf="!lVars.loading && !lsm.recordManager.recordData.deleted && lVars.loopAttributes"
+        class="grid w-full border items-center" style="grid-template-columns: max-content max-content 40px auto;">
+
+        <!---->
+        <ng-template ngFor let-attribute [ngForOf]="lVars.loopAttributes" let-i="index">
+            <ng-template ngFor let-task [ngForOf]="lVars.taskLookup[attribute.id].lookup" let-j="index">
+
+                <div [ngClass]="i%2 == 0 ? 'bg-white':'bg-gray-50'"
+                    class="font-dmMono text-sm font-bold text-gray-500 py-2 pl-4 pr-3 sm:pl-6 col-start-1 h-full">
+                    {{j==0?attribute.name:''}}
+                </div>
+                <!-- task-->
+                <div *ngIf="htmlSettings.labeling.showTaskNames && lsm.userManager.currentRole != 'ANNOTATOR'"
+                    [ngClass]="i%2 == 0 ? 'bg-white':'bg-gray-50'" class="col-start-2 pr-3 py-1.5 h-full flex">
+                    {{task.task.taskType !='NOT_USEABLE'?task.task.name:''}}
+                </div>
+                <div class="col-start-3 h-full py-1.5 flex" [ngClass]="i%2 == 0 ? 'bg-white':'bg-gray-50'">
+                    <!-- gold star-->
+                    <!-- Assign manual labels of this task as gold star-->
+                    <div *ngIf="task.goldInfo.can" class="tooltip tooltip-top"
+                        [attr.data-tip]="task.goldInfo.is?'Remove manual task labels from gold state':'Set manual task labels as gold labels'">
+                        <div class="cursor-pointer mt-0.5" (click)="toggleGoldStar(task.task.id,task.goldInfo.is)">
+                            <ng-template [ngIf]="task.goldInfo.is" [ngIfElse]="noFillGoldStar">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
+                                    fill="#6DD87F">
+                                    <path
+                                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                </svg>
+                            </ng-template>
+                            <ng-template #noFillGoldStar>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 noFillStar" fill="none"
+                                    viewBox="0 0 24 24" stroke="#6DD87F" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                                </svg>
+                            </ng-template>
+                        </div>
+                    </div>
+                </div>
+                <div *ngIf="task.showGridLabelPart" class="col-start-4 h-full py-1"
+                    [ngClass]="i%2 == 0 ? 'bg-white':'bg-gray-50'" [ngStyle]="{'grid-row':task.gridRowSpan}">
+                    <!-- text/labels-->
+                    <div class="flex flex-col gap-y-2">
+
+                        <ng-template [ngIf]="task.showText">
+                            <ng-template [ngIf]="task.task.taskType == 'INFORMATION_EXTRACTION'"
+                                [ngIfElse]="displayText">
+                                <!--extraction stuff-->
+                                <ng-container [ngTemplateOutlet]="extractionDisplay"
+                                    [ngTemplateOutletContext]="{attributeId:attribute.id}">
+                                </ng-container>
+                            </ng-template>
+                            <ng-template #displayText>
+                                <div
+                                    *ngVar="lsm.recordManager.recordData.baseRecord.data[lVars.taskLookup[attribute.id].attribute.name] as attributeTextData">
+                                    <p class="break-words text-sm leading-5 font-normal text-gray-500"
+                                        *ngIf="attributeTextData !== '';else notPresentInRecord">
+                                        {{attributeTextData}}
+                                    </p>
+                                </div>
+                            </ng-template>
+                        </ng-template>
+                        <!-- Classification labels -->
+                        <ng-template [ngIf]="task.task.taskType == 'MULTICLASS_CLASSIFICATION'">
+                            <!--show label buttons-->
+                            <ng-template [ngIf]="canEditLabels || lsm.userManager.currentRole == 'ANNOTATOR'">
+                                <div class="flex flex-row flex-wrap gap-2">
+                                    <div #labelDiv *ngFor="let label of task.task.displayLabels; let i = index"
+                                        class="text-sm font-medium px-2 py-0.5 rounded-md border focus:outline-none cursor-pointer"
+                                        [ngClass]="[labelLookup[label.id].color.backgroundColor,labelLookup[label.id].color.textColor, labelLookup[label.id].color.borderColor, labelLookup[label.id].color.hoverColor]"
+                                        (click)="addRla(task.task,label.id)">
+                                        <div class="truncate" style="max-width: 260px;">{{label.name}}
+                                            <kbd *ngIf="label.hotkey"
+                                                class="ml-1 uppercase inline-flex items-center border bg-white border-gray-200 rounded px-2 text-sm font-sans font-medium text-gray-400">{{label.hotkey}}</kbd>
+                                        </div>
+                                    </div>
+                                    <!-- other button -->
+                                    <button #otherDiv data-tip="Choose from your labels"
+                                        (mouseup)="setActiveTasks(task);labelBoxPosition(otherDiv)"
+                                        class="tooltip tooltip-top flex flex-row flex-nowrap bg-white text-gray-700 text-sm font-medium mr-3 px-2 py-0.5 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none">
+                                        <span>other</span>
+                                        <span class="max-w-xxs truncate mx-1">{{task.task.name}}</span>
+                                        <span>options</span>
+                                    </button>
+                                </div>
+                            </ng-template>
+                            <!-- Rla labels -->
+                            <div *ngIf="rlaDataToDisplay[task.task.id] as rlaLabels">
+                                <div class="flex gap-2"
+                                    [ngClass]="htmlSettings.labeling.compactClassificationLabelDisplay?'flex-row flex-wrap items-center':'flex-col'">
+                                    <div *ngFor="let rlaLabel of rlaLabels" class="tooltip w-max"
+                                        attr.data-tip="{{rlaLabel.dataTip}}">
+                                        <div class="text-sm font-medium px-2 py-0.5 rounded-md border focus:outline-none relative flex items-center"
+                                            (click)="rlaLabel.sourceTypeKey == 'WEAK_SUPERVISION'?addRla(task.task,rlaLabel.labelId):null"
+                                            hover-group-class="" hover-group="{{rlaLabel.hoverGroups.rlaId}}"
+                                            [ngClass]="[labelLookup[rlaLabel.labelId].color.backgroundColor,labelLookup[rlaLabel.labelId].color.textColor, labelLookup[rlaLabel.labelId].color.borderColor,rlaLabel.sourceTypeKey == 'WEAK_SUPERVISION'?'cursor-pointer':'cursor-default']">
+                                            <div class="label-overlay-base"
+                                                hover-group-class="{{rlaLabel.hoverGroups.labelClass}}"
+                                                hover-group="{{rlaLabel.hoverGroups.label}}"></div>
+
+                                            <ng-template [ngIf]="rlaLabel.icon">
+                                                <ng-container [ngTemplateOutlet]="icons"
+                                                    [ngTemplateOutletContext]="{iconName:rlaLabel.icon}">
+                                                </ng-container>
+                                            </ng-template>
+                                            <div class="truncate" style="max-width: 260px;">
+                                                {{rlaLabel.labelDisplay}}
+                                            </div>
+                                            <label *ngIf="rlaLabel.canBeDeleted" class="pl-1 cursor-pointer"
+                                                (click)="deleteRecordLabelAssociation(rlaLabel)">
+                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                    class="h-5 w-5 inline-block stroke-current relative"
+                                                    style="top:-1px" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fill-rule="evenodd"
+                                                        d="M6.707 4.879A3 3 0 018.828 4H15a3 3 0 013 3v6a3 3 0 01-3 3H8.828a3 3 0 01-2.12-.879l-4.415-4.414a1 1 0 010-1.414l4.414-4.414zm4 2.414a1 1 0 00-1.414 1.414L10.586 10l-1.293 1.293a1 1 0 101.414 1.414L12 11.414l1.293 1.293a1 1 0 001.414-1.414L13.414 10l1.293-1.293a1 1 0 00-1.414-1.414L12 8.586l-1.293-1.293z"
+                                                        clip-rule="evenodd" />
+                                                </svg>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </ng-template>
+                    </div>
+                </div>
+            </ng-template>
+        </ng-template>
+    </div>
+
+</div>
+
+
+
+<ng-template #notPresentInRecord>
+    <svg xmlns="http://www.w3.org/2000/svg"
+        class="icon icon-tabler icon-tabler-alert-circle text-yellow-700 inline-block" width="20" height="20"
+        viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
+        stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <circle cx="12" cy="12" r="9"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+    </svg>
+    <span class="text-gray-500 text-sm font-normal italic">Not present in the
+        record</span>
+</ng-template>
+
+
+
+<ng-template #icons let-iconName="iconName">
+    <div class="-ml-1">
+        <ng-container [ngSwitch]="iconName">
+            <ng-template ngSwitchDefault>
+            </ng-template>
+            <ng-template ngSwitchCase="LABELING_FUNCTION">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block" viewBox="0 0 20 20"
+                    fill="currentColor">
+                    <path fill-rule="evenodd"
+                        d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z"
+                        clip-rule="evenodd" />
+                </svg>
+            </ng-template>
+
+            <ng-template ngSwitchCase="ACTIVE_LEARNING">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block" viewBox="0 0 20 20"
+                    fill="currentColor">
+                    <path fill-rule="evenodd"
+                        d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"
+                        clip-rule="evenodd" />
+                </svg>
+            </ng-template>
+
+            <ng-template ngSwitchCase="ZERO_SHOT">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block" viewBox="0 0 20 20"
+                    fill="currentColor">
+                    <path fill-rule="evenodd"
+                        d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732l-3.354 1.935-1.18 4.455a1 1 0 01-1.933 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732l3.354-1.935 1.18-4.455A1 1 0 0112 2z"
+                        clip-rule="evenodd" />
+                </svg>
+            </ng-template>
+            <ng-template ngSwitchCase="CROWD_LABELER">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block" viewBox="0 0 24 24"
+                    stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    <path d="M21 21v-2a4 4 0 0 0 -3 -3.85"></path>
+                </svg>
+            </ng-template>
+            <ng-template ngSwitchCase="MODEL_CALLBACK">
+                <svg xmlns="http://www.w3.org/2000/svg" class="inline-block h-5 w-5 icon icon-tabler icon-tabler-bolt"
+                    width="24" height="24" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" fill="none"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                    <polyline points="13 3 13 10 19 10 11 21 11 14 5 14 13 3">
+                    </polyline>
+                </svg>
+            </ng-template>
+            <ng-template ngSwitchCase="WEAK_SUPERVISION">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                    class="inline-block h-5 w-5 icon icon-tabler icon-tabler-assembly" width="24" height="24"
+                    viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" fill="none" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                    <path
+                        d="M19 6.873a2 2 0 0 1 1 1.747v6.536a2 2 0 0 1 -1.029 1.748l-6 3.833a2 2 0 0 1 -1.942 0l-6 -3.833a2 2 0 0 1 -1.029 -1.747v-6.537a2 2 0 0 1 1.029 -1.748l6 -3.572a2.056 2.056 0 0 1 2 0l6 3.573h-.029z">
+                    </path>
+                    <path
+                        d="M15.5 9.422c.312 .18 .503 .515 .5 .876v3.277c0 .364 -.197 .7 -.515 .877l-3 1.922a0.997 .997 0 0 1 -.97 0l-3 -1.922a1.003 1.003 0 0 1 -.515 -.876v-3.278c0 -.364 .197 -.7 .514 -.877l3 -1.79c.311 -.174 .69 -.174 1 0l3 1.79h-.014z">
+                    </path>
+                </svg>
+            </ng-template>
+        </ng-container>
+    </div>
+</ng-template>
+
+
+<ng-template #extractionDisplay let-attributeId="attributeId">
+    <div *ngIf="tokenLookup" class="flex flex-row flex-wrap items-start" attr.tokenWrapper="{{attributeId}}">
+        <div *ngFor="let token of tokenLookup[attributeId].token" class="relative z-10" attr.tokenIdx="{{token.idx}}"
+            attr.attributeId="{{attributeId}}"
+            style.margin-bottom="{{tokenLookup[attributeId][token.idx]?.tokenMarginBottom}}"
+            [ngClass]="token.value == '\n' ? 'w-full' : null">
+            <ng-template [ngIf]="token.value != '\n'">
+
+                <ng-template [ngIf]="token.type" [ngIfElse]="tokenValue">
+                    <div [attr.data-tip]="'spaCy type: ' + token.type" class="tooltip">
+                        <ng-template *ngTemplateOutlet="tokenValue;">
+                        </ng-template>
+                    </div>
+                </ng-template>
+
+                <ng-template #tokenValue>
+                    <ng-template [ngIf]="token.value != '\n'">
+                        <label #tokenDiv
+                            class="rounded-lg hover:bg-gray-200 text-sm text-gray-500 leading-5 font-normal"
+                            attr.tokenIdx="{{token.idx}}" attr.attributeId="{{attributeId}}"
+                            style.background-color="{{token.selected?'#3399FF':null}}"
+                            style.border-radius="{{token.selected?'0':null}}"
+                            style.color="{{token.selected?'white':null}}"
+                            (click)="setSelected(attributeId,token.idx,token.idx,tokenDiv)"
+                            [ngClass]="{'pr-1':!token.nextCloser}">{{token.value}}</label>
+                    </ng-template>
+                </ng-template>
+                <ng-template [ngIf]="tokenLookup[attributeId][token.idx]">
+                    <div *ngFor="let rlaItem of tokenLookup[attributeId][token.idx].rlaArray"
+                        class=" absolute left-0 right-0 top-0 flex items-end z-n-2" style.bottom="{{rlaItem.bottomPos}}"
+                        hover-group-class="z-n-1" hover-group="{{rlaItem.hoverGroups.rlaId}}">
+                        <div class="h-px flex items-end w-full relative"
+                            [ngClass]="[labelLookup[rlaItem.labelId].color.backgroundColor,labelLookup[rlaItem.labelId].color.textColor, labelLookup[rlaItem.labelId].color.borderColor]"
+                            hover-group-class="full-overlay-height" hover-group="{{rlaItem.hoverGroups.rlaId}}"
+                            style="border-bottom-width:1px; border-top-width:1px; border-style:solid;left:-2px;"
+                            style.border-style="{{rlaItem.rla.sourceType == 'MANUAL'?'solid':'dashed'}}"
+                            style.border-left-width="{{rlaItem.isFirst?'1px':null}}"
+                            style.border-top-left-radius="{{rlaItem.isFirst?'0.375rem':null}}"
+                            style.border-bottom-left-radius="{{rlaItem.isFirst?'0.375rem':null}}"
+                            style.border-right-width="{{rlaItem.isLast?'1px':null}}"
+                            style.border-top-right-radius="{{rlaItem.isLast?'0.375rem':null}}"
+                            style.border-bottom-right-radius="{{rlaItem.isLast?'0.375rem':null}}">
+                            <div *ngIf="rlaItem.isFirst && rlaItem.canBeDeleted" class="pl-1 cursor-pointer absolute"
+                                style="bottom:-11px;left:-21px;" (click)="deleteRecordLabelAssociation(rlaItem)">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block stroke-current"
+                                    style="transform: rotate(180deg)" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd"
+                                        d="M6.707 4.879A3 3 0 018.828 4H15a3 3 0 013 3v6a3 3 0 01-3 3H8.828a3 3 0 01-2.12-.879l-4.415-4.414a1 1 0 010-1.414l4.414-4.414zm4 2.414a1 1 0 00-1.414 1.414L10.586 10l-1.293 1.293a1 1 0 101.414 1.414L12 11.414l1.293 1.293a1 1 0 001.414-1.414L13.414 10l1.293-1.293a1 1 0 00-1.414-1.414L12 8.586l-1.293-1.293z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div class="hidden label-overlay-base"
+                                hover-group-class="{{rlaItem.hoverGroups.labelClass}}"
+                                hover-group="{{rlaItem.hoverGroups.rlaId}}"> </div>
+
+                        </div>
+                    </div>
+                </ng-template>
+            </ng-template>
+        </div>
+    </div>
+</ng-template>

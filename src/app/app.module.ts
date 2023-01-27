@@ -17,7 +17,7 @@ import { WeakSupervisionModule } from './weak-supervision/weak-supervision.modul
 import { ZeroShotModule } from './zero-shot-details/zero-shot-details.module';
 import { CrowdLabelerModule } from './weak-supervision/components/crowd-labeler-details/crowd-labeler-details.module';
 import { MonacoEditorModule } from 'ngx-monaco-editor';
-import { LabelingModule } from './labeling/labeling.module';
+import { LabelingSuiteModule } from './labeling-suite/labeling-suite.module';
 import { KnowledgeBasesModule } from './knowledge-bases/knowledge-bases.module';
 import { ConfigModule } from './config/config.module'
 import { IntercomModule } from 'ng-intercom';
@@ -44,7 +44,7 @@ import { ProjectAdminModule } from './project-admin/project-admin.module';
     WeakSupervisionModule,
     CrowdLabelerModule,
     ZeroShotModule,
-    LabelingModule,
+    LabelingSuiteModule,
     RecordIDEModule,
     ModelCallbackModule,
     ModelDownloadModule,

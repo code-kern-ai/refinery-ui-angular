@@ -11,35 +11,52 @@ import {
   selector: '[hover-group], [hover-group-class]',
 })
 export class HoverGroupDirective implements OnDestroy, OnInit {
-  constructor(public elementRef: ElementRef) {}
-
+  constructor(public elementRef: ElementRef) { }
+  //caution! the first group is the main group and used to highlight corresponding elements
+  //the other provided groups are only meant as additional highlight conditions
   @Input('hover-group') hoverGroup: any;
   @Input('hover-group-class') hoverClass: any;
 
+  private finalGroups: string[];
+  public static disableHover = false;
+
   @HostListener('mouseenter') onMouseEnter() {
-    for (let e of HoverGroupElementRefs.getElements(this.hoverGroup)) {
+    if (HoverGroupDirective.disableHover) return;
+    if (!this.finalGroups || this.finalGroups.length == 0) return;
+    const highlightGroup = this.finalGroups[0];
+    for (let e of HoverGroupElementRefs.getElements(highlightGroup)) {
+      if (!e.hoverClass) continue;
       for (let v of e.hoverClass.split(' ')) {
-        e.elementRef.nativeElement.classList.add(v);
+        if (v) e.elementRef.nativeElement.classList.add(v);
       }
     }
   }
 
   @HostListener('mouseleave') onMouseLeave() {
-    for (let e of HoverGroupElementRefs.getElements(this.hoverGroup)) {
+    if (HoverGroupDirective.disableHover) return;
+    if (!this.finalGroups || this.finalGroups.length == 0) return;
+    const highlightGroup = this.finalGroups[0];
+    for (let e of HoverGroupElementRefs.getElements(highlightGroup)) {
+      if (!e.hoverClass) continue;
       for (let v of e.hoverClass.split(' ')) {
-        e.elementRef.nativeElement.classList.remove(v);
+        if (v) e.elementRef.nativeElement.classList.remove(v);
       }
     }
   }
 
   ngOnDestroy(): void {
-    HoverGroupElementRefs.removeElement(this.hoverGroup, this);
+    for (const g of this.finalGroups)
+      HoverGroupElementRefs.removeElement(g, this);
   }
 
   ngOnInit(): void {
-    if (!this.hoverGroup) this.hoverGroup = 'dummy-group';
-    HoverGroupElementRefs.push(this.hoverGroup, this);
+    if (!this.hoverGroup) this.finalGroups = ['dummy-group'];
+    if (!Array.isArray(this.hoverGroup))
+      this.finalGroups = this.hoverGroup.split(',').map((v) => v.trim());
+    else this.finalGroups = this.hoverGroup;
+    for (const g of this.finalGroups) HoverGroupElementRefs.push(g, this);
   }
+
 }
 
 class HoverGroupElementRefs {

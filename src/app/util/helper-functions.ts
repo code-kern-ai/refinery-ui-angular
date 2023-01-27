@@ -142,13 +142,14 @@ export function capitalizeFirst(str: string) {
 }
 
 
-export function findProjectIdFromRoute(route: ActivatedRoute) {
+export function findProjectIdFromRoute(route: ActivatedRoute): string {
     while (route.parent) {
         route = route.parent;
         if (route.snapshot.params.projectId) {
             return route.snapshot.params.projectId;
         }
     }
+    return null;
 }
 
 export function copyToClipboard(textToCopy: string) {
@@ -211,4 +212,43 @@ export function getPythonClassName(codeToCheck: string): string {
 
 export function getPythonClassRegExMatch(codeToCheck: string): any {
     return /class ([\w]+)\([^)]+\):/.exec(codeToCheck);
+}
+
+export function jsonCopy(src): any {
+    return JSON.parse(JSON.stringify(src));
+}
+
+
+export function loopNestedDict(dict: any, callback: (key: string, value: any) => void) {
+    for (let key in dict) {
+        if (typeof dict[key] === 'object') {
+            loopNestedDict(dict[key], callback);
+        } else {
+            callback(key, dict[key]);
+        }
+    }
+}
+
+
+/**
+ * transfer values from dictA to dictB, if the key is not present in dictB, it will be ignored or created.
+ * @param  {dictionary[]} dictA holds data that should be transferred.
+ * @param  {dictionary[]} dictB holds data that should be overwritten if existing in dictA.
+ * @param  {boolean} ignoreNoneExistingKeys - optional - decides weather none existent keys are created or ignored.
+ */
+export function transferNestedDict(dictA: any, dictB: any, ignoreNoneExistingKeys: boolean = true) {
+    if (dictA == null || dictB == null) return;
+    if (typeof dictA !== 'object' || typeof dictB !== 'object') return;
+
+    for (let key in dictA) {
+        if (dictB[key] == null && ignoreNoneExistingKeys) continue;
+        if (typeof dictA[key] === 'object') {
+            if (typeof dictB[key] !== 'object') {
+                dictB[key] = {};
+            }
+            transferNestedDict(dictA[key], dictB[key], ignoreNoneExistingKeys);
+        } else {
+            dictB[key] = dictA[key];
+        }
+    }
 }

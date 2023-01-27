@@ -1,0 +1,257 @@
+<div #baseDomElement *ngIf="displayData" class="relative bg-white p-4">
+  <div class="absolute top-4 right-4 p-2 cursor-pointer"
+    [ngClass]="lsm.settingManager.settings.task.isCollapsed?'rotate_transform':null" (click)="toggleIsCollapsed()">
+    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-layout-navbar-collapse" width="24"
+      height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
+      stroke-linejoin="round">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+      <path d="M4 18v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z"></path>
+      <path d="M4 9h16"></path>
+      <path d="M10 16l2 -2l2 2"></path>
+    </svg>
+  </div>
+
+  <div *ngIf="lsm.settingManager.settings.task.isCollapsed else headerDisplay" class="flex flex-row flex-wrap gap-x-2">
+    <ng-container [ngTemplateOutlet]="quickButtons">
+    </ng-container>
+  </div>
+  <ng-template #headerDisplay>
+    <table class="min-w-full border">
+      <tbody class="bg-white divide-y divide-gray-200">
+        <tr *ngFor="let task of displayData;let i = index" [ngClass]="i%2 == 0 ? 'bg-white':'bg-gray-50'">
+          <td class="font-bold py-2 pl-4 pr-3 text-sm text-gray-500 sm:pl-6 whitespace-nowrap"
+            hover-group-class="{{lsm.settingManager.settings.main.hoverGroupBackgroundColorClass}}"
+            hover-group="{{task.hoverGroups}}">
+            {{task.name}}
+          </td>
+          <td class="pl-3 py-2 text-sm text-gray-500 w-full" [ngClass]="i==0?'pr-8':'pr-3'">
+            <div class="flex flex-row flex-wrap gap-2">
+              <div #labelDiv *ngFor="let labelId of task.labelOrder; let i = index"
+                hover-group="{{task.labels[labelId].hoverGroups}}"
+                class="text-sm font-medium px-2 py-0.5 rounded-md border focus:outline-none cursor-pointer flex flex-row flex-no-wrap gap-x-1 items-center"
+                (click)="setLabelSettingsLabel(task.labels[labelId]);labelSettingsBoxPosition(labelDiv,baseDomElement);">
+                <div *ngIf="htmlSettings[task.id][labelId] as labelSetting" class="grid grid-cols-2"
+                  style="gap:0.125rem">
+                  <div class="w-2.5 h-2.5 border rounded-full"
+                    [ngClass]="[labelSetting.showManual?task.labels[labelId].color.backgroundColor:'bg-white', task.labels[labelId].color.borderColor]">
+                  </div>
+                  <div class="w-2.5 h-2.5 border rounded-full"
+                    [ngClass]="[labelSetting.showWeakSupervision?task.labels[labelId].color.backgroundColor:'bg-white', task.labels[labelId].color.borderColor]">
+                  </div>
+                  <div class="w-2.5 h-2.5 border rounded-full"
+                    [ngClass]="[labelSetting.showModel?task.labels[labelId].color.backgroundColor:'bg-white', task.labels[labelId].color.borderColor]">
+                  </div>
+                  <div class="w-2.5 h-2.5 border rounded-full"
+                    [ngClass]="[labelSetting.showHeuristics?task.labels[labelId].color.backgroundColor:'bg-white', task.labels[labelId].color.borderColor]">
+                  </div>
+                </div>
+                <div class="truncate" style="max-width: 260px;">{{task.labels[labelId].name}}
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr *ngIf="lsm.settingManager.settings.task.alwaysShowQuickButtons"
+          [ngClass]="displayData.length%2==0?'bg-white':'bg-gray-50'">
+          <td class="font-bold py-2 pl-4 pr-3 text-sm text-gray-500 sm:pl-6">Quick buttons</td>
+          <td class="px-3 py-2 text-sm text-gray-500 w-full"><ng-container [ngTemplateOutlet]="quickButtons">
+            </ng-container></td>
+        </tr>
+      </tbody>
+    </table>
+    <!--settings box absolute positioned-->
+    <div #labelSettingsBox (mouseup)="preventDefaultEvent($event)"
+      class="flex flex-col rounded-lg bg-white shadow absolute z-10 top-0 left-0 border border-gray-300"
+      [ngClass]="labelSettingsLabel ? null : 'hidden'">
+      <div *ngIf="labelSettingsLabel" class="pt-2">
+        <div class="flex flex-row justify-center pb-2">
+          <label class="mr-1 text-sm">Label:</label>
+          <label class="italic font-bold text-sm truncate pr-0.5"
+            style="max-width: 12rem;">{{labelSettingsLabel.name}}</label>
+        </div>
+        <div class="flex flex-row flex-no-wrap gap-x-2 p-2.5 borders-gray border-t">
+          <div class="cursor-pointer tooltip" data-tip="What can I do here?"
+            (click)="lsm.modalManager.modals.taskHeaderInfo.open=true">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-info-circle" width="24"
+              height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+              <circle cx="12" cy="12" r="9"></circle>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              <polyline points="11 12 12 12 12 16 13 16"></polyline>
+            </svg>
+          </div>
+          <div class="flex flex-row flex-nowrap items-center gap-x-1 cursor-pointer"
+            (click)="toggleLabelDisplaySetting('showManual')">
+            <span class="font-bold text-sm text-gray-500">M</span>
+            <input class="h-4 w-4 cursor-pointer" type="checkbox"
+              [checked]='htmlSettings[labelSettingsLabel.taskId][labelSettingsLabel.id].showManual'>
+          </div>
+          <div class="flex flex-row flex-nowrap items-center gap-x-1 cursor-pointer"
+            (click)="toggleLabelDisplaySetting('showWeakSupervision')">
+            <span class="font-bold text-sm text-gray-500">WS</span>
+            <input class="h-4 w-4 cursor-pointer" type="checkbox"
+              [checked]='htmlSettings[labelSettingsLabel.taskId][labelSettingsLabel.id].showWeakSupervision'>
+          </div>
+          <div class="flex flex-row flex-nowrap items-center gap-x-1 cursor-pointer"
+            (click)="toggleLabelDisplaySetting('showModel')">
+            <span class="font-bold text-sm text-gray-500">EM</span>
+            <input class="h-4 w-4 cursor-pointer" type="checkbox"
+              [checked]='htmlSettings[labelSettingsLabel.taskId][labelSettingsLabel.id].showModel'>
+          </div>
+          <div class="flex flex-row flex-nowrap items-center gap-x-1 cursor-pointer"
+            (click)="toggleLabelDisplaySetting('showHeuristics')">
+            <span class="font-bold text-sm text-gray-500">H</span>
+            <input class="h-4 w-4 cursor-pointer" type="checkbox"
+              [checked]='htmlSettings[labelSettingsLabel.taskId][labelSettingsLabel.id].showHeuristics'>
+          </div>
+          <div class="cursor-pointer tooltip ml-1 -mr-1" data-tip="Activate all"
+            (click)="setAllLabelDisplaySetting(true,labelSettingsLabel)">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-checks" width="24" height="24"
+              viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+              <path d="M7 12l5 5l10 -10"></path>
+              <path d="M2 12l5 5m5 -5l5 -5"></path>
+            </svg>
+          </div>
+          <div class="cursor-pointer tooltip" data-tip="Clear all"
+            (click)="setAllLabelDisplaySetting(false,labelSettingsLabel)">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-x" width="24" height="24"
+              viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+</div>
+
+<kern-modal [isOpen]="lsm.modalManager.modals.taskHeaderInfo.open" closeButton="X" [modalBoxStyle]="{'width':'30rem'}"
+  (optionClicked)="lsm.modalManager.modals.taskHeaderInfo.open = false;labelSettingsLabel=null;">
+  <div *ngIf="labelSettingsLabel" class="flex flex-col items-center">
+    <div class="flex flex-row gap-x-2 items-center">
+      <h1 class="text-lg text-gray-900 text-center font-bold">Info</h1>
+      <div class="text-sm font-medium px-2 py-0.5 rounded-md border focus:outline-none cursor-pointer"
+        hover-group-class="{{labelSettingsLabel.color.hoverColor}}" hover-group="{{labelSettingsLabel.hoverGroups}}"
+        [ngClass]="[labelSettingsLabel.color.backgroundColor, labelSettingsLabel.color.textColor, labelSettingsLabel.color.borderColor]">
+        <div class="truncate" style="max-width: 260px;">{{labelSettingsLabel.name}}</div>
+      </div>
+    </div>
+    <div class="text-sm text-gray-500 my-2 text-center">
+      You can decide here what sources you want to display in the labeling view for this specific label.
+    </div>
+    <div class="grid gap-2 grid-cols-3-max items-center">
+      <span class="font-bold text-sm text-gray-500">Shorthand</span>
+      <span class="font-bold text-sm text-gray-500">Source</span>
+      <span class="font-bold text-sm text-gray-500">Current value</span>
+      <span class="text-sm text-gray-500">M</span>
+      <span class="text-sm text-gray-500">Manually set labels</span>
+      <span class="cursor-pointer justify-self-center" (click)="toggleLabelDisplaySetting('showManual')"><input
+          class="h-5 w-5 cursor-pointer" type="checkbox"
+          [checked]='htmlSettings[labelSettingsLabel.taskId][labelSettingsLabel.id].showManual'></span>
+      <span class="text-sm text-gray-500">WS</span>
+      <span class="text-sm text-gray-500">Weakly supervised labels</span>
+      <span class="cursor-pointer justify-self-center" (click)="toggleLabelDisplaySetting('showWeakSupervision')"><input
+          class="h-5 w-5 cursor-pointer" type="checkbox"
+          [checked]='htmlSettings[labelSettingsLabel.taskId][labelSettingsLabel.id].showWeakSupervision'></span>
+      <span class="text-sm text-gray-500">EM</span>
+      <span class="text-sm text-gray-500">External model labels</span>
+      <span class="cursor-pointer justify-self-center" (click)="toggleLabelDisplaySetting('showModel')"><input
+          class="h-5 w-5 cursor-pointer" type="checkbox"
+          [checked]='htmlSettings[labelSettingsLabel.taskId][labelSettingsLabel.id].showModel'></span>
+      <span class="text-sm text-gray-500">H</span>
+      <span class="text-sm text-gray-500">Heuristic labels</span>
+      <span class="cursor-pointer justify-self-center" (click)="toggleLabelDisplaySetting('showHeuristics')"><input
+          class="h-5 w-5 cursor-pointer" type="checkbox"
+          [checked]='htmlSettings[labelSettingsLabel.taskId][labelSettingsLabel.id].showHeuristics'></span>
+    </div>
+  </div>
+</kern-modal>
+
+
+<ng-template #quickButtons>
+  <div class="flex flex-row flex-wrap gap-2">
+    <ng-container [ngTemplateOutlet]="quickButton"
+      [ngTemplateOutletContext]="{attributeName:'showManual',caption:'Manual',dataTipCaption:'manual', hoverClass:'label-overlay-manual'}">
+    </ng-container>
+
+    <ng-container [ngTemplateOutlet]="quickButton"
+      [ngTemplateOutletContext]="{attributeName:'showWeakSupervision',caption:'Weak Supervision',dataTipCaption:'weak supervision', hoverClass:'label-overlay-weak-supervision'}">
+    </ng-container>
+
+    <ng-container [ngTemplateOutlet]="quickButton"
+      [ngTemplateOutletContext]="{attributeName:'showModel',caption:'External Model',dataTipCaption:'external model', hoverClass:'label-overlay-heuristic'}">
+    </ng-container>
+
+    <ng-container [ngTemplateOutlet]="quickButton"
+      [ngTemplateOutletContext]="{attributeName:'showHeuristics',caption:'Heuristic',dataTipCaption:'heuristic', hoverClass:'label-overlay-model'}">
+    </ng-container>
+    <div class="flex flex-row flex-nowrap gap-x-2">
+
+      <button (click)="setAllLabelDisplaySetting(true)"
+        class="inline-flex items-center bg-white text-gray-700 text-xs font-semibold py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none"
+        [ngClass]="lsm.settingManager.settings.task.isCollapsed?'px-2':'px-4'">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-checks" width="24" height="24"
+          viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
+          stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M7 12l5 5l10 -10"></path>
+          <path d="M2 12l5 5m5 -5l5 -5"></path>
+        </svg>
+        All
+      </button>
+
+      <button (click)="setAllLabelDisplaySetting(false)"
+        class="inline-flex items-center bg-white text-gray-700 text-xs font-semibold py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none"
+        [ngClass]="lsm.settingManager.settings.task.isCollapsed?'px-2':'px-4'">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-x" width="24" height="24"
+          viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
+          stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+        Nothing
+      </button>
+      <button (click)="setAllLabelDisplaySettingDefault()"
+        class="inline-flex items-center bg-white text-gray-700 text-xs font-semibold py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none"
+        [ngClass]="lsm.settingManager.settings.task.isCollapsed?'px-2':'px-4'">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-arrow-back-up" width="24"
+          height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
+          stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M9 13l-4 -4l4 -4m-4 4h11a4 4 0 0 1 0 8h-1"></path>
+        </svg>
+        Default
+      </button>
+    </div>
+  </div>
+
+</ng-template>
+
+
+<ng-template #quickButton let-attributeName="attributeName" let-caption="caption" let-dataTipCaption="dataTipCaption"
+  let-hoverClass="hoverClass">
+
+  <div class="tooltip"
+    [ngClass]="lsm.settingManager.settings.task.isCollapsed && caption == 'Manual'?'tooltip-right':'tooltip-bottom'"
+    attr.data-tip="{{'Show '+ dataTipCaption +' labels in labeling view'}}">
+    <button (click)="setAllLabelDisplaySetting(true,null,attributeName)" hover-group="{{attributeName}}"
+      class="inline-flex items-center bg-white text-gray-700 text-xs font-semibold py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none"
+      [ngClass]="lsm.settingManager.settings.task.isCollapsed?'px-2':'px-4'">
+      <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 icon icon-tabler icon-tabler-square-check" width="24"
+        height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
+        stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+        <path d="M9 12l2 2l4 -4"></path>
+      </svg>{{caption}}
+      <div class="label-overlay-base" hover-group-class="{{hoverClass}}" hover-group="{{attributeName}}"></div>
+    </button>
+  </div>
+</ng-template>

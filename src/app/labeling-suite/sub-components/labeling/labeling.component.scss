@@ -1,0 +1,25 @@
+.tooltip::before {
+  z-index: 50;
+  max-width: 230px;
+}
+
+
+.full-overlay-height {
+  height: 100%;
+}
+
+.full-overlay-height>div {
+  display: block;
+}
+
+.z-n-1 {
+  z-index: -1 !important;
+}
+
+.z-n-2 {
+  z-index: -2;
+}
+
+svg.noFillStar:hover {
+  fill: #6DD87F;
+}
