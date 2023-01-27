@@ -40,7 +40,7 @@ export class LabelingSuiteTaskHeaderComponent implements OnInit, OnChanges, OnDe
     }
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     if (this.lsm) {
       this.lsm.unregisterUpdateListener(UpdateType.LABELING_TASKS, this);
       this.lsm.settingManager.unregisterSettingListener(ComponentType.TASK_HEADER, this);

@@ -214,7 +214,7 @@ export function getPythonClassRegExMatch(codeToCheck: string): any {
     return /class ([\w]+)\([^)]+\):/.exec(codeToCheck);
 }
 
-export function jsonCopy(src) {
+export function jsonCopy(src): any {
     return JSON.parse(JSON.stringify(src));
 }
 

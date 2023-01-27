@@ -52,7 +52,7 @@ export class LabelingSuiteOverviewTableComponent implements OnInit, OnDestroy, O
     }
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     if (this.lsm) {
       this.lsm.unregisterUpdateListener(UpdateType.RECORD, this);
       this.lsm.unregisterUpdateListener(UpdateType.DISPLAY_USER, this);
@@ -78,10 +78,6 @@ export class LabelingSuiteOverviewTableComponent implements OnInit, OnDestroy, O
         this.headerHover.rlaCollection += data.hoverGroups.rlaId.split(',')[0] + ', ';
       }
     }
-    // const newClass = this.lsm.settingManager.settings.main.hoverGroupBackgroundColorClass + 'border-l border-r bg-gray-200 font-bold';
-    // if (this.headerHover.class !== newClass) {
-    //   this.headerHover.class = newClass;
-    // }
   }
 
   private prepareDataForTableDisplay() {

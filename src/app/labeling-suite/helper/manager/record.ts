@@ -1,10 +1,8 @@
 import { combineLatest, Observable, Subscription } from "rxjs";
 import { first } from "rxjs/operators";
 import { CommentDataManager, CommentType } from "src/app/base/components/comment/comment-helper";
-import { InformationSourceReturnType } from "src/app/base/enum/graphql-enums";
 import { NotificationService } from "src/app/base/services/notification.service";
 import { RecordApolloService } from "src/app/base/services/record/record-apollo.service";
-import { jsonCopy } from "src/app/util/helper-functions";
 import { DoBeforeDestroy } from "src/app/util/interfaces";
 import { LabelingSuiteManager, UpdateType } from "./manager";
 import { LabelingSuiteRlaPreparator } from "./recordRla";

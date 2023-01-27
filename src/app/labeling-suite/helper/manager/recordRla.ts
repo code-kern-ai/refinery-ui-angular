@@ -53,7 +53,7 @@ export class LabelingSuiteRlaPreparator {
                 rla.sourceId = null;
             } else if (this.baseManager.userManager.roleAssumed && rla.createdBy == userId && rla.labelingTaskLabel.labelingTask.id == allowedTask
                 && rla.sourceType == LabelSource.MANUAL) {
-
+                // nothing to change (no deletion flag or modify of existing types)
             } else {
                 rla.id = "x";
             }
@@ -61,14 +61,14 @@ export class LabelingSuiteRlaPreparator {
         return rlaData.filter(rla => rla.id != "x");
     }
 
-    private getTokenizedAttribute(attributeId: string, tokenAttribute: any) {
+    private getTokenizedAttribute(attributeId: string, tokenAttribute: any): any {
         for (let att of tokenAttribute) {
             if (att.attributeId == attributeId) return att;
         }
         return null;
     }
 
-    private getToken(tokenizedAttribute, idx: number) {
+    private getToken(tokenizedAttribute, idx: number): any {
         for (let token of tokenizedAttribute.token) {
             if (token.idx == idx) return token;
         }
@@ -154,7 +154,7 @@ export class LabelingSuiteRlaPreparator {
         }
     }
 
-    private getLabelData(e: any) {
+    private getLabelData(e: any): any {
         let value = e.value;
         if (value) value = '(' + value + ')';
         const color = e.labelingTaskLabel.color
@@ -174,7 +174,7 @@ export class LabelingSuiteRlaPreparator {
         return null;
     }
 
-    private getLabelForDisplay(e: any) {
+    private getLabelForDisplay(e: any): string {
         let final = e.labelingTaskLabel.name;
         if (e.sourceType == LabelSource.WEAK_SUPERVISION && e.confidence != null) {
             final += " - " + Math.round((e.confidence + Number.EPSILON) * 10000) / 100 + '%';

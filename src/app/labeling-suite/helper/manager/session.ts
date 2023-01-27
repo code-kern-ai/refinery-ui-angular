@@ -1,5 +1,5 @@
 import { ActivatedRoute, Router } from "@angular/router";
-import { forkJoin, timer } from "rxjs";
+import { forkJoin, Observable, timer } from "rxjs";
 import { first } from "rxjs/operators";
 import { UserRole } from "src/app/base/enum/graphql-enums";
 import { NotificationService } from "src/app/base/services/notification.service";
@@ -123,7 +123,7 @@ export class LabelingSuiteSessionManager implements DoBeforeDestroy {
         }
     }
 
-    public getAllowedTaskId() {
+    public getAllowedTaskId(): string {
         return this.huddleData?.allowedTask;
     }
 
@@ -223,7 +223,7 @@ export class LabelingSuiteSessionManager implements DoBeforeDestroy {
     }
 
 
-    private parseCheckedAt(checkedAt: string) {
+    private parseCheckedAt(checkedAt: string): { local: Date, db: Date } {
         return {
             local: dateAsUTCDate(new Date(checkedAt)),
             db: new Date(checkedAt)
@@ -296,12 +296,12 @@ export class LabelingSuiteSessionManager implements DoBeforeDestroy {
             });
     }
 
-    private stillInLabeling() {
+    private stillInLabeling(): boolean {
         if (!RouteManager.currentUrl) return true;
         return RouteManager.currentUrl.includes("labeling");
     }
 
-    private checkLocalDataOutdated() {
+    private checkLocalDataOutdated(): Observable<any> {
         const dbTime = this.huddleData.checkedAt.db;
         const pipeFirst = this.projectApolloService.linkDataOutdated(this.labelingLinkData.projectId, this.router.url, dbTime)
             .pipe(first());
@@ -315,7 +315,7 @@ export class LabelingSuiteSessionManager implements DoBeforeDestroy {
         return pipeFirst;
     }
 
-    private checkLinkAccess() {
+    private checkLinkAccess(): Observable<any> {
         const pipeFirst = this.projectApolloService.linkLocked(this.labelingLinkData.projectId, this.router.url)
             .pipe(first());
 

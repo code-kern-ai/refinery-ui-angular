@@ -67,7 +67,7 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
       this.lsm.settingManager.registerSettingListener(ComponentType.LABELING, this, () => this.settingsChanged(ComponentType.LABELING));
     }
   }
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     if (this.lsm) {
       this.lsm.unregisterUpdateListener(UpdateType.LABELING_TASKS, this);
       this.lsm.unregisterUpdateListener(UpdateType.RECORD, this);
@@ -250,7 +250,7 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
           for (const t of extractionTasks) t.showGridLabelPart = false;
 
           this.lVars.taskLookup[key].lookup[0].showGridLabelPart = true;
-          this.lVars.taskLookup[key].lookup[0].girdRowSpan = "span " + extractionTasks.length;
+          this.lVars.taskLookup[key].lookup[0].gridRowSpan = "span " + extractionTasks.length;
         }
 
       }
@@ -329,7 +329,7 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
     return true;
   }
 
-  private getTokenData(attributeId: string) {
+  private getTokenData(attributeId: string): any {
     if (!this.lsm.recordManager.recordData.token) return null;
     if (attributeId == FULL_RECORD_ID) return null;
 

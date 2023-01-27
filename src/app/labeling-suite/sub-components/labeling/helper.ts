@@ -17,7 +17,7 @@ type TaskLookup = {
         can: boolean,
         is: boolean,
     };
-    girdRowSpan?: string;
+    gridRowSpan?: string;
     orderKey: number;
     task: any;
     tokenData?: any;
