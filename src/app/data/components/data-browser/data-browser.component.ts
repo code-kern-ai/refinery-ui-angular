@@ -62,6 +62,7 @@ import { CommentsFilter } from './helper-classes/comments-filter';
 import { AttributeVisibility } from 'src/app/projects/components/create-new-attribute/attributes-visibility-helper';
 import { HighlightSearch } from 'src/app/base/components/highlight/helper';
 import { Attributes } from 'src/app/base/components/record-display/record-display.helper';
+import { ConfigManager } from 'src/app/base/services/config-service';
 
 
 type DataSlice = {
@@ -197,6 +198,9 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   dataBrowserModals: DataBrowserModals = createDefaultDataBrowserModals();
   recordComments: any = {};
   commentsFilter: CommentsFilter;
+  isManaged: boolean = true;
+  saveAttributeType: string = "";
+  calledOnce: boolean = false;
 
   getSearchFormArray(groupKey: string): FormArray {
     return this.fullSearch.get(groupKey).get('groupElements') as FormArray;
@@ -247,10 +251,12 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       .subscribe((results) => {
         this.prepareSearchGroups();
         this.loading = true;
+        this.calledOnce = true;
         this.requestExtendedSearch();
         this.getOperatorDropdownValues();
       });
     this.prepareDataSlicesRequest();
+    this.checkIfManagedVersion();
 
     NotificationService.subscribeToNotification(this, {
       projectId: this.projectId,
@@ -487,8 +493,10 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     combineLatest(tasks$)
       .pipe(debounceTime(500))
       .subscribe((results) => {
-        if (!this.similarSearchHelper.recordsRequested) {
+        if (!this.calledOnce && !this.similarSearchHelper.recordsRequested) {
           this.requestExtendedSearch();
+        } else {
+          this.calledOnce = false;
         }
       });
 
@@ -875,7 +883,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
 
     let tmp = this._labelingTaskBuildSearchParamTextPart(
       values.manualLabels,
-      'ML-label'
+      'M-label'
     );
     if (tmp) text += '(' + tmp + ')';
 
@@ -1004,7 +1012,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   }
 
   searchValuesChanged(): boolean {
-    if (!this.lastSearchParams) return true;
+    if (!this.lastSearchParams || this.activeSearchParams?.length == 0) return true;
     if (JSON.stringify(this.activeSearchParams) != this.lastSearchParams) return true;
 
     const recordCategory = this.fullSearch.get("RECORD_CATEGORY").get("CATEGORY").value;
@@ -1023,7 +1031,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
 
   requestExtendedSearch(force: boolean = false) {
     if (!force) {
-      if (this.activeSlice && this.activeSlice.static) return;
+      if (this.activeSlice) return;
       if (!this.searchValuesChanged()) return;
     }
     this.similarSearchHelper.setRecordsHelper(false);
@@ -1784,6 +1792,10 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       if (element instanceof FormGroup && element.contains("seedString")) {
         element.get("seedString").setValue("", { emitEvent: false });
       }
+      element.get("active").setValue(false, { emitEvent: false });
+      if (element instanceof FormGroup && element.contains("direction")) {
+        element.get("direction").setValue(-1, { emitEvent: false });
+      }
     }
     //clear rest
     const dummy = orderGroup.get("updateDummy");
@@ -2035,6 +2047,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     if (field == 'name') {
       const attributeType = getAttributeType(this.attributesSortOrder, value);
       this.saveDropdownAttribute = value;
+      this.saveAttributeType = attributeType;
       if (attributeType == "BOOLEAN" && formControlsIdx.get("searchValue").value != "") {
         formControlsIdx.get("searchValue").setValue("");
         formControlsIdx.get("searchValueBetween").setValue("");
@@ -2069,7 +2082,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
           pattern = operatorValue == 'IN' ? /^[0-9.,]$/i : operatorValue == 'IN WC' ? /^[0-9.,_%*?]$/i : /^[0-9.]$/i;
         }
       }
-      if (!pattern.test(event.key) && event.key != 'Backspace') {
+      if (!pattern.test(event.key) && event.key != 'Backspace' && event.key != 'ArrowLeft' && event.key != 'ArrowRight') {
         event.preventDefault();
         return;
       }
@@ -2107,5 +2120,13 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     localStorage.setItem('huddleData', JSON.stringify(huddleData));
     this.router.navigate(['../labeling/' + this.extendedRecords.sessionId],
       { queryParams: { pos: index + 1, type: 'SESSION' }, relativeTo: this.route });
+  }
+
+  checkIfManagedVersion() {
+    if (!ConfigManager.isInit()) {
+      timer(250).subscribe(() => this.checkIfManagedVersion());
+      return;
+    }
+    this.isManaged = ConfigManager.getIsManaged();
   }
 }
