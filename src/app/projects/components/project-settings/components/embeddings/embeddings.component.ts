@@ -70,8 +70,9 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
     const suggestionList = this.embeddingHandles[attId];
     for (let element of suggestionList) {
       element.forceHidden = true;
-      if ((granularity == 'ON_ATTRIBUTE' && element.applicability?.attribute)
-        || (granularity == 'ON_TOKEN' && element.applicability?.token)) {
+      const parseEl = JSON.parse(element.applicability);
+      if ((granularity == 'ON_ATTRIBUTE' && parseEl.attribute)
+        || (granularity == 'ON_TOKEN' && parseEl.token)) {
         element.forceHidden = false;
       }
     }

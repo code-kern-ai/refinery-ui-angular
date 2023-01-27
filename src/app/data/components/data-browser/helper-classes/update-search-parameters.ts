@@ -50,12 +50,12 @@ export class UpdateSearchParameters {
                 }
             } else if (searchElement.values.operator == '') {
                 searchElement.searchText = searchElement.values.name;
-            } else if (searchElement.values.operator == SearchOperator.IN || searchElement.values.operator == "IN WC") {
+            } else if (searchElement.values.operator == SearchOperator.IN || searchElement.values.operator == "IN WC" || searchElement.values.operator == SearchOperator.IN_WC) {
                 if (attributeType == "INTEGER" || attributeType == "FLOAT") {
                     searchElement.searchText =
                         searchElement.values.name +
                         ' ' +
-                        searchElement.values.operator +
+                        searchElement.values.operator.split('_').join(' ') +
                         " (" +
                         searchElement.values.searchValue + ")";
                 } else {
