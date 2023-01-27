@@ -24,8 +24,8 @@
             hover-group="{{task.hoverGroups}}">
             {{task.name}}
           </td>
-          <td class="px-3 py-2 text-sm text-gray-500 w-full">
-            <div class="flex flex-row flex-wrap gap-x-2">
+          <td class="pl-3 py-2 text-sm text-gray-500 w-full" [ngClass]="i==0?'pr-8':'pr-3'">
+            <div class="flex flex-row flex-wrap gap-2">
               <div #labelDiv *ngFor="let labelId of task.labelOrder; let i = index"
                 hover-group="{{task.labels[labelId].hoverGroups}}"
                 class="text-sm font-medium px-2 py-0.5 rounded-md border focus:outline-none cursor-pointer flex flex-row flex-no-wrap gap-x-1 items-center"
