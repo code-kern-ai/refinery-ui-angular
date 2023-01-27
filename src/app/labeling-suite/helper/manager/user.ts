@@ -41,6 +41,7 @@ export class LabelingSuiteUserManager implements DoBeforeDestroy {
         this._displayUserId = userId;
         if (this.userIcons) this.userIcons.forEach(icon => icon.active = icon.id == userId);
         this.baseManager.runUpdateListeners(UpdateType.DISPLAY_USER);
+        this.checkGoldStarModal();
     }
     public get roleAssumed(): boolean {
         return this.currentRole != this.mainUser.data.role;
@@ -112,6 +113,9 @@ export class LabelingSuiteUserManager implements DoBeforeDestroy {
         if (!this.showUserIcons) return;
         if (idx >= this.userIcons.length) return;
         this.displayUserId = this.userIcons[idx].id;
+    }
+
+    private checkGoldStarModal() {
         if (this.displayUserId == GOLD_STAR_USER_ID && this.baseManager.modalManager.modals.goldStar.firstVisit) {
             this.baseManager.modalManager.modals.goldStar.open = true;
             this.baseManager.modalManager.modals.goldStar.firstVisit = false;

@@ -77,7 +77,7 @@
                     <!-- gold star-->
                     <!-- Assign manual labels of this task as gold star-->
                     <div *ngIf="task.goldInfo.can" class="tooltip tooltip-top"
-                        [attr.data-tip]="task.goldInfo.is?'Remove manual task labels as gold label':'Set manual task labels as gold label'">
+                        [attr.data-tip]="task.goldInfo.is?'Remove manual task labels from gold state':'Set manual task labels as gold labels'">
                         <div class="cursor-pointer mt-0.5" (click)="toggleGoldStar(task.task.id,task.goldInfo.is)">
                             <ng-template [ngIf]="task.goldInfo.is" [ngIfElse]="noFillGoldStar">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
@@ -280,53 +280,60 @@
     <div *ngIf="tokenLookup" class="flex flex-row flex-wrap items-start" attr.tokenWrapper="{{attributeId}}">
         <div *ngFor="let token of tokenLookup[attributeId].token" class="relative z-10" attr.tokenIdx="{{token.idx}}"
             attr.attributeId="{{attributeId}}"
-            style.margin-bottom="{{tokenLookup[attributeId][token.idx]?.tokenMarginBottom}}">
-            <ng-template [ngIf]="token.type" [ngIfElse]="tokenValue">
-                <div [attr.data-tip]="'spaCy type: ' + token.type" class="tooltip">
-                    <ng-template *ngTemplateOutlet="tokenValue;">
-                    </ng-template>
-                </div>
-            </ng-template>
+            style.margin-bottom="{{tokenLookup[attributeId][token.idx]?.tokenMarginBottom}}"
+            [ngClass]="token.value == '\n' ? 'w-full' : null">
+            <ng-template [ngIf]="token.value != '\n'">
 
-            <ng-template #tokenValue>
-                <ng-template [ngIf]="token.value != '\n'">
-                    <label #tokenDiv class="rounded-lg hover:bg-gray-200 text-sm text-gray-500 leading-5 font-normal"
-                        attr.tokenIdx="{{token.idx}}" attr.attributeId="{{attributeId}}"
-                        style.background-color="{{token.selected?'#3399FF':null}}"
-                        style.border-radius="{{token.selected?'0':null}}" style.color="{{token.selected?'white':null}}"
-                        (click)="setSelected(attributeId,token.idx,token.idx,tokenDiv)"
-                        [ngClass]="{'pr-1':!token.nextCloser}">{{token.value}}</label>
-                </ng-template>
-            </ng-template>
-            <ng-template [ngIf]="tokenLookup[attributeId][token.idx]">
-                <div *ngFor="let rlaItem of tokenLookup[attributeId][token.idx].rlaArray"
-                    class=" absolute left-0 right-0 top-0 flex items-end z-n-2" style.bottom="{{rlaItem.bottomPos}}"
-                    hover-group-class="z-n-1" hover-group="{{rlaItem.hoverGroups.rlaId}}">
-                    <div class="h-px flex items-end w-full relative"
-                        [ngClass]="[labelLookup[rlaItem.labelId].color.backgroundColor,labelLookup[rlaItem.labelId].color.textColor, labelLookup[rlaItem.labelId].color.borderColor]"
-                        hover-group-class="full-overlay-height" hover-group="{{rlaItem.hoverGroups.rlaId}}"
-                        style="border-bottom-width:1px; border-top-width:1px; border-style:solid;left:-2px;"
-                        style.border-style="{{rlaItem.rla.sourceType == 'MANUAL'?'solid':'dashed'}}"
-                        style.border-left-width="{{rlaItem.isFirst?'1px':null}}"
-                        style.border-top-left-radius="{{rlaItem.isFirst?'0.375rem':null}}"
-                        style.border-bottom-left-radius="{{rlaItem.isFirst?'0.375rem':null}}"
-                        style.border-right-width="{{rlaItem.isLast?'1px':null}}"
-                        style.border-top-right-radius="{{rlaItem.isLast?'0.375rem':null}}"
-                        style.border-bottom-right-radius="{{rlaItem.isLast?'0.375rem':null}}">
-                        <div *ngIf="rlaItem.isFirst && rlaItem.canBeDeleted" class="pl-1 cursor-pointer absolute"
-                            style="bottom:-11px;left:-21px;" (click)="deleteRecordLabelAssociation(rlaItem)">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block stroke-current"
-                                style="transform: rotate(180deg)" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd"
-                                    d="M6.707 4.879A3 3 0 018.828 4H15a3 3 0 013 3v6a3 3 0 01-3 3H8.828a3 3 0 01-2.12-.879l-4.415-4.414a1 1 0 010-1.414l4.414-4.414zm4 2.414a1 1 0 00-1.414 1.414L10.586 10l-1.293 1.293a1 1 0 101.414 1.414L12 11.414l1.293 1.293a1 1 0 001.414-1.414L13.414 10l1.293-1.293a1 1 0 00-1.414-1.414L12 8.586l-1.293-1.293z"
-                                    clip-rule="evenodd" />
-                            </svg>
-                        </div>
-                        <div class="hidden label-overlay-base" hover-group-class="{{rlaItem.hoverGroups.labelClass}}"
-                            hover-group="{{rlaItem.hoverGroups.rlaId}}"> </div>
-
+                <ng-template [ngIf]="token.type" [ngIfElse]="tokenValue">
+                    <div [attr.data-tip]="'spaCy type: ' + token.type" class="tooltip">
+                        <ng-template *ngTemplateOutlet="tokenValue;">
+                        </ng-template>
                     </div>
-                </div>
+                </ng-template>
+
+                <ng-template #tokenValue>
+                    <ng-template [ngIf]="token.value != '\n'">
+                        <label #tokenDiv
+                            class="rounded-lg hover:bg-gray-200 text-sm text-gray-500 leading-5 font-normal"
+                            attr.tokenIdx="{{token.idx}}" attr.attributeId="{{attributeId}}"
+                            style.background-color="{{token.selected?'#3399FF':null}}"
+                            style.border-radius="{{token.selected?'0':null}}"
+                            style.color="{{token.selected?'white':null}}"
+                            (click)="setSelected(attributeId,token.idx,token.idx,tokenDiv)"
+                            [ngClass]="{'pr-1':!token.nextCloser}">{{token.value}}</label>
+                    </ng-template>
+                </ng-template>
+                <ng-template [ngIf]="tokenLookup[attributeId][token.idx]">
+                    <div *ngFor="let rlaItem of tokenLookup[attributeId][token.idx].rlaArray"
+                        class=" absolute left-0 right-0 top-0 flex items-end z-n-2" style.bottom="{{rlaItem.bottomPos}}"
+                        hover-group-class="z-n-1" hover-group="{{rlaItem.hoverGroups.rlaId}}">
+                        <div class="h-px flex items-end w-full relative"
+                            [ngClass]="[labelLookup[rlaItem.labelId].color.backgroundColor,labelLookup[rlaItem.labelId].color.textColor, labelLookup[rlaItem.labelId].color.borderColor]"
+                            hover-group-class="full-overlay-height" hover-group="{{rlaItem.hoverGroups.rlaId}}"
+                            style="border-bottom-width:1px; border-top-width:1px; border-style:solid;left:-2px;"
+                            style.border-style="{{rlaItem.rla.sourceType == 'MANUAL'?'solid':'dashed'}}"
+                            style.border-left-width="{{rlaItem.isFirst?'1px':null}}"
+                            style.border-top-left-radius="{{rlaItem.isFirst?'0.375rem':null}}"
+                            style.border-bottom-left-radius="{{rlaItem.isFirst?'0.375rem':null}}"
+                            style.border-right-width="{{rlaItem.isLast?'1px':null}}"
+                            style.border-top-right-radius="{{rlaItem.isLast?'0.375rem':null}}"
+                            style.border-bottom-right-radius="{{rlaItem.isLast?'0.375rem':null}}">
+                            <div *ngIf="rlaItem.isFirst && rlaItem.canBeDeleted" class="pl-1 cursor-pointer absolute"
+                                style="bottom:-11px;left:-21px;" (click)="deleteRecordLabelAssociation(rlaItem)">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block stroke-current"
+                                    style="transform: rotate(180deg)" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd"
+                                        d="M6.707 4.879A3 3 0 018.828 4H15a3 3 0 013 3v6a3 3 0 01-3 3H8.828a3 3 0 01-2.12-.879l-4.415-4.414a1 1 0 010-1.414l4.414-4.414zm4 2.414a1 1 0 00-1.414 1.414L10.586 10l-1.293 1.293a1 1 0 101.414 1.414L12 11.414l1.293 1.293a1 1 0 001.414-1.414L13.414 10l1.293-1.293a1 1 0 00-1.414-1.414L12 8.586l-1.293-1.293z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div class="hidden label-overlay-base"
+                                hover-group-class="{{rlaItem.hoverGroups.labelClass}}"
+                                hover-group="{{rlaItem.hoverGroups.rlaId}}"> </div>
+
+                        </div>
+                    </div>
+                </ng-template>
             </ng-template>
         </div>
     </div>
