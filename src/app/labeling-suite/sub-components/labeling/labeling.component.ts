@@ -176,7 +176,10 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
   }
 
   private recordChanged() {
-    this.lVars.loading = !(this.lsm.recordManager.recordData.baseRecord && this.lsm.recordManager.recordData.token && this.lsm.recordManager.rlaPreparator.rlasLoaded());
+    if (this.lsm.recordManager.recordData.deleted) this.lVars.loading = false;
+    else {
+      this.lVars.loading = !(this.lsm.recordManager.recordData.baseRecord && this.lsm.recordManager.recordData.token && this.lsm.recordManager.rlaPreparator.rlasLoaded());
+    }
     this.rebuildTaskLookup();
     this.prepareRlaData();
     this.rebuildGoldInfo();

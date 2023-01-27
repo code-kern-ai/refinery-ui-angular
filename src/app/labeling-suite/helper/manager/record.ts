@@ -76,6 +76,7 @@ export class LabelingSuiteRecordManager implements DoBeforeDestroy {
         if (msgParts[1] == 'record_deleted') {
             if (msgParts[2] == this.activeRecordId) {
                 console.log("record deleted");
+                this.baseManager.sessionManager.setCurrentRecordDeleted();
                 this.setDeletedState();
             }
         } else if (['payload_finished', 'weak_supervision_finished', 'rla_created', 'rla_deleted'].includes(msgParts[1])) {
@@ -93,7 +94,7 @@ export class LabelingSuiteRecordManager implements DoBeforeDestroy {
             return;
         }
         if (recordId == "deleted") {
-            this.recordData.deleted = true;
+            this.setDeletedState();
             return;
         }
         if (this.activeRecordId) {
@@ -143,7 +144,8 @@ export class LabelingSuiteRecordManager implements DoBeforeDestroy {
         const firstPipe = this.recordApolloService.getRecordByRecordId(this.projectId, recordId).pipe(first());
         this.recordRequests.record = firstPipe.subscribe((recordData) => {
             if (!recordData) {
-                this.recordData.deleted = true;
+                this.baseManager.sessionManager.setCurrentRecordDeleted();
+                this.setDeletedState();
                 console.log("no record data found (collect record data)")
                 return;
             }
@@ -223,6 +225,7 @@ export class LabelingSuiteRecordManager implements DoBeforeDestroy {
         this.recordApolloService.deleteRecordByRecordId(this.projectId, recordId)
             .pipe(first()).subscribe((r) => {
                 if (r['data']['deleteRecord']?.ok) {
+                    this.baseManager.sessionManager.setCurrentRecordDeleted();
                     this.setDeletedState();
                 } else {
                     console.log("Something went wrong with deletion of record:" + recordId);
@@ -235,6 +238,8 @@ export class LabelingSuiteRecordManager implements DoBeforeDestroy {
         this.recordData.baseRecord = null;
         this.rlaPreparator.setRlas(null, null);
         this.recordData.token = null;
+        this.baseManager.somethingLoading = false;
+        this.baseManager.runUpdateListeners(UpdateType.RECORD);
     }
 
     public getTokenArrayForAttribute(attributeId: string): any[] {

@@ -199,7 +199,7 @@
                 <div class="flex justify-center items-center overflow-visible ml-8">
                     <ng-template [ngIf]="!lsm.recordManager.recordData.deleted">
                         <input #showNLabelsInput tabindex="0" type="number"
-                            class="bg-white text-gray-700 text-xs font-semibold mr-3 px-4 py-2 rounded-md border border-gray-300 w-11 input input-sm"
+                            class="bg-white text-gray-700 text-xs text-center font-semibold px-2 mr-3 py-2 rounded-md border border-gray-300 w-11 input input-sm"
                             [value]="lsm.settingManager.settings.labeling.showNLabelButton"
                             (focus)="$event.target.select()"
                             (keydown.enter)="setShowNLabelButton(showNLabelsInput.value)"
@@ -368,7 +368,7 @@
             <div class="grid grid-cols-3-max gap-y-2 gap-x-4 items-center">
                 <span class="">Label options</span>
                 <input #showNLabelsInput tabindex="0" type="number"
-                    class="bg-white text-gray-700 text-xs font-semibold px-4 py-2 rounded-md border border-gray-300 w-11 input input-sm"
+                    class="bg-white text-gray-700 text-xs text-center font-semibold px-2 py-2 rounded-md border border-gray-300 w-11 input input-sm"
                     [value]="lsm.settingManager.settings.labeling.showNLabelButton" (focus)="$event.target.select()"
                     (keydown.enter)="setShowNLabelButton(showNLabelsInput.value)"
                     (blur)="setShowNLabelButton(showNLabelsInput.value)" style="box-shadow:none;">

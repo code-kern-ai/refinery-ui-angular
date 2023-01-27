@@ -127,6 +127,11 @@ export class LabelingSuiteSessionManager implements DoBeforeDestroy {
         return this.huddleData?.allowedTask;
     }
 
+    public setCurrentRecordDeleted() {
+
+        this.huddleData.recordIds[this.huddleData.linkData.requestedPos - 1] = "deleted";
+        this.jumpToPosition(this.baseManager.projectId, this.huddleData.linkData.requestedPos);
+    }
 
     public prepareLabelingSession() {
         this.prepareLabelingSessionInternal(this.labelingLinkData.huddleId, this.labelingLinkData.requestedPos);

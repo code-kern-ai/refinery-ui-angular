@@ -53,7 +53,7 @@ export class LabelingSuiteTaskHeaderComponent implements OnInit, OnChanges, OnDe
 
 
   labelSettingsBoxPosition(labelDomElement: HTMLElement, baseDomElement: HTMLElement) {
-    const widthLabelSettingsBox = 285;
+    const widthLabelSettingsBox = 290;
     const labelBox: DOMRect = labelDomElement.getBoundingClientRect();
     const baseBox: DOMRect = baseDomElement.getBoundingClientRect();
 
