@@ -53,11 +53,16 @@ export class LabelingSuiteTaskHeaderComponent implements OnInit, OnChanges, OnDe
 
 
   labelSettingsBoxPosition(labelDomElement: HTMLElement, baseDomElement: HTMLElement) {
+    const widthLabelSettingsBox = 285;
     const labelBox: DOMRect = labelDomElement.getBoundingClientRect();
     const baseBox: DOMRect = baseDomElement.getBoundingClientRect();
 
-    this.labelSettingsBox.nativeElement.style.top = (labelBox.top + labelBox.height - baseBox.top + 10) + 'px';
-    this.labelSettingsBox.nativeElement.style.left = (labelBox.left - baseBox.left) + 'px';
+    const posTop = (labelBox.top + labelBox.height - baseBox.top + 10);
+    let posLeft = (labelBox.left - baseBox.left);
+    if (posLeft + widthLabelSettingsBox > baseBox.width) posLeft = baseBox.width - widthLabelSettingsBox - 10;
+
+    this.labelSettingsBox.nativeElement.style.top = posTop + 'px';
+    this.labelSettingsBox.nativeElement.style.left = posLeft + 'px';
   }
 
   setLabelSettingsLabel(label: any) {

@@ -78,7 +78,7 @@ export class LabelingSuiteRecordManager implements DoBeforeDestroy {
                 console.log("record deleted");
                 this.setDeletedState();
             }
-        } else if (msgParts[1] == 'rla_created' || msgParts[1] == 'rla_deleted') {
+        } else if (['payload_finished', 'weak_supervision_finished', 'rla_created', 'rla_deleted'].includes(msgParts[1])) {
             if (this.recordRequests.rlaQuery) this.recordRequests.rlaQuery.refetch();
         }
         else {
