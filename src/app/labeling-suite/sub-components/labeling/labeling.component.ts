@@ -341,7 +341,7 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
   }
 
   setActiveTasks(tasks: any | any[]) {
-    if (!this.canEditLabels && this.lsm.userManager.currentRole != 'ANNOTATOR') {
+    if (!this.canEditLabels && this.lsm.userManager.currentRole != UserRole.ANNOTATOR) {
       if (this.activeTasks) this.activeTasks = null;
       return;
     }
@@ -621,7 +621,7 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
         this.tokenLookup[attributeId][tokenIdx].rlaArray.sort((a, b) => b.orderPos - a.orderPos);
         const maxPos = Math.max(...this.tokenLookup[attributeId][tokenIdx].rlaArray.map(e => e.orderPos));
         if (maxPos) {
-          this.tokenLookup[attributeId][tokenIdx].tokenMarginBottom = (SWIM_LANE_SIZE_PX * maxPos) + 'px';
+          this.tokenLookup[attributeId][tokenIdx].tokenMarginBottom = (SWIM_LANE_SIZE_PX * maxPos) + 5 + 'px';
         }
       }
     }
