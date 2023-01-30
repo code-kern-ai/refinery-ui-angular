@@ -180,8 +180,8 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
       } else {
         if (!this.codeFormCtrl.value || this.codeFormCtrl.value.includes("def ac(record)") || this.nextUpdateReplace) {
           this.codeFormCtrl.setValue(this.currentAttribute.sourceCode.replace(
-            'def ac(record):',
-            'def ' + this.currentAttribute.name + '(record):'
+            'def ac(record)',
+            'def ' + this.currentAttribute.name + '(record)'
           ));
           if (this.nextUpdateReplace) this.nextUpdateReplace = false;
 
@@ -298,8 +298,8 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
     if (
       this.codeFormCtrl.value !=
       this.currentAttribute.sourceCode.replace(
-        'def ac(record):',
-        'def ' + this.currentAttribute.name + '(record):'
+        'def ac(record)',
+        'def ' + this.currentAttribute.name + '(record)'
       )) return true;
     return false;
   }
