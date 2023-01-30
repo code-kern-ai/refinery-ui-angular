@@ -159,7 +159,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
           el.scrollTop = 0;
         }
         this.intersectionTimeout = true;
-        timer(500).subscribe(() => this.intersectionTimeout = false);
+        timer(300).subscribe(() => this.intersectionTimeout = false);
       },
       { threshold: [1] },
 
