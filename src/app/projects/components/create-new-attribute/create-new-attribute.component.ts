@@ -67,6 +67,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
 
   attributeCalculationModals: AttributeCalculationModals = createDefaultAttributeCalculationModals();
   attributeDetails: Attributes;
+  isNameLoading: boolean = false;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -250,6 +251,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
       .pipe(first())
       .subscribe(() => {
         this.duplicateNameExists = false;
+        this.isNameLoading = false;
       });
   }
 
@@ -283,6 +285,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
               'def ' + regMatch[2] + '(record):',
               'def ' + this.currentAttribute.name + '(record):'
             ));
+            this.isNameLoading = false;
             return;
           }
           this.saveAttribute(projectId);

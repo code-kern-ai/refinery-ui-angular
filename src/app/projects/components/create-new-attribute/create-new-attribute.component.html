@@ -50,6 +50,7 @@
                             <div class="mr-4 text-sm leading-5 font-medium text-gray-500 inline-block">
                                 {{currentAttribute.name}}</div>
                         </ng-template>
+                        <kern-loading *ngIf="isNameLoading"></kern-loading>
                     </div>
                 </div>
             </div>
@@ -112,7 +113,8 @@
             <div class="flex flex-row items-center justify-between my-3">
                 <div class="text-sm leading-5 font-medium text-gray-700 inline-block mr-2">Editor</div>
                 <div class="flex flex-row flex-nowrap">
-                    <kern-bricks-integrator (preparedCode)="codeFormCtrl.setValue($event);isInitial=false"
+                    <kern-bricks-integrator
+                        (preparedCode)="codeFormCtrl.setValue($event);isInitial=false;isNameLoading =true;"
                         moduleTypeFilter="generator,classifier">
                     </kern-bricks-integrator>
                     <div class="tooltip tooltip-left" data-tip="See available libraries for this attribute calculation">
