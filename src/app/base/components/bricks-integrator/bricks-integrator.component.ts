@@ -349,7 +349,7 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
     this.checkCanAccept();
     if (this.config.preparedCode) {
       this.codeParser.functionName = name;
-      this.codeParser.baseCode = this.codeParser.baseCode.replace(getPythonFunctionName(this.config.preparedCode), name);
+      this.config.preparedCode = this.config.preparedCode.replace(getPythonFunctionName(this.config.preparedCode), name);
     }
   }
 }

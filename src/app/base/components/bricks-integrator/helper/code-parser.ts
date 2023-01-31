@@ -49,7 +49,7 @@ export class BricksCodeParser {
     }
 
     public replaceVariables() {
-        let replacedCode = this.baseCode;
+        let replacedCode = this.baseCode.replace(getPythonFunctionName(this.baseCode), this.functionName);
         for (let i = 0; i < this.variables.length; i++) {
             const variable = this.variables[i];
             this.prepareReplaceLine(variable);

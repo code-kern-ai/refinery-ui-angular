@@ -246,7 +246,6 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
   saveAttribute(projectId: string) {
     if (this.updatedThroughWebsocket) return;
     const getCodeToSave = this.getPythonFunctionToSave(this.codeFormCtrl.value);
-    console.log(getCodeToSave)
     this.nextUpdateReplace = true;
     this.projectApolloService
       .updateAttribute(projectId, this.currentAttribute.id, this.currentAttribute.dataType, this.currentAttribute.isPrimaryKey, this.attributeName, getCodeToSave, this.currentAttribute.visibility)
