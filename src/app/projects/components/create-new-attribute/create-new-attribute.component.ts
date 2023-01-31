@@ -68,6 +68,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
   attributeCalculationModals: AttributeCalculationModals = createDefaultAttributeCalculationModals();
   attributeDetails: Attributes;
   isNameLoading: boolean = false;
+  attributesNames: string[] = [];
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -245,6 +246,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
   saveAttribute(projectId: string) {
     if (this.updatedThroughWebsocket) return;
     const getCodeToSave = this.getPythonFunctionToSave(this.codeFormCtrl.value);
+    console.log(getCodeToSave)
     this.nextUpdateReplace = true;
     this.projectApolloService
       .updateAttribute(projectId, this.currentAttribute.id, this.currentAttribute.dataType, this.currentAttribute.isPrimaryKey, this.attributeName, getCodeToSave, this.currentAttribute.visibility)
@@ -411,6 +413,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
       attributes = attributes.filter((a) => a.visibility != AttributeVisibility.HIDE);
       attributes.sort((a, b) => a.relativePosition - b.relativePosition);
       this.attributes = attributes;
+      this.attributesNames = attributes.map((attribute) => attribute.name);
       this.attributesUsableUploaded = attributesAll.filter((attribute) => attribute.state == 'UPLOADED' || attribute.state == 'USABLE' || attribute.state == 'AUTOMATICALLY_CREATED');
       this.attributesUsableUploaded.forEach(attribute => {
         attribute.color = getColorForDataType(attribute.dataType);

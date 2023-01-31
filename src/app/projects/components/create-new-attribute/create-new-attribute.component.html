@@ -113,7 +113,7 @@
             <div class="flex flex-row items-center justify-between my-3">
                 <div class="text-sm leading-5 font-medium text-gray-700 inline-block mr-2">Editor</div>
                 <div class="flex flex-row flex-nowrap">
-                    <kern-bricks-integrator
+                    <kern-bricks-integrator [nameLookups]="attributesNames"
                         (preparedCode)="codeFormCtrl.setValue($event);isInitial=false;isNameLoading =true;"
                         moduleTypeFilter="generator,classifier">
                     </kern-bricks-integrator>

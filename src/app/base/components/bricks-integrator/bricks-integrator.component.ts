@@ -4,7 +4,7 @@ import { Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnIni
 import { ActivatedRoute } from '@angular/router';
 import { timer } from 'rxjs';
 import { first } from 'rxjs/operators';
-import { findProjectIdFromRoute, isStringTrue } from 'src/app/util/helper-functions';
+import { findProjectIdFromRoute, getPythonFunctionName, isStringTrue } from 'src/app/util/helper-functions';
 import { KnowledgeBasesApolloService } from '../../services/knowledge-bases/knowledge-bases-apollo.service';
 import { ProjectApolloService } from '../../services/project/project-apollo.service';
 import { BricksCodeParser } from './helper/code-parser';
@@ -34,16 +34,16 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
   @Input() executionTypeFilter: string; //activeLearner, pythonFunction or premium 
   //for values
   @Input() labelingTaskId: string;
+  @Input() nameLookups: string[];
   @Output() preparedCode = new EventEmitter<string | any>();
   @Output() newTaskId = new EventEmitter<string>();
 
   @ViewChild("searchInput") searchInput: ElementRef;
+  @ViewChild("functionNameInput") functionNameInput: ElementRef;
 
   config: BricksIntegratorConfig;
   codeParser: BricksCodeParser;
   dataRequestor: BricksDataRequestor;
-
-
 
   constructor(private http: HttpClient, private projectApolloService: ProjectApolloService, private knowledgeBaseApollo: KnowledgeBasesApolloService,
     private activatedRoute: ActivatedRoute,) {
@@ -178,6 +178,7 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
         case IntegratorPage.INPUT_EXAMPLE:
           // jump to integration
           this.config.page = IntegratorPage.INTEGRATION;
+          timer(100).subscribe(() => this.functionNameInput.nativeElement.focus());
           break;
         case IntegratorPage.INTEGRATION:
           //transfer code to editor
@@ -193,6 +194,9 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
     if (page == IntegratorPage.SEARCH || (this.config.api.requesting || this.config.api.data)) {
       this.config.page = page;
       this.checkCanAccept();
+    }
+    if (page == IntegratorPage.INTEGRATION) {
+      timer(100).subscribe(() => this.functionNameInput.nativeElement.focus());
     }
   }
 
@@ -254,7 +258,7 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
         this.config.canAccept = !!this.config.api.data;
         break;
       case IntegratorPage.INTEGRATION:
-        this.config.canAccept = this.config.codeFullyPrepared;
+        this.config.canAccept = this.config.codeFullyPrepared && !this.codeParser.nameTaken;
         break;
     }
   }
@@ -340,5 +344,12 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
     if (this.newTaskId.observers.length > 0) this.newTaskId.emit(taskId);
   }
 
-
+  checkIfFunctionNameIsUnique(name: string) {
+    this.codeParser.nameTaken = this.nameLookups?.find(x => x == name) != undefined;
+    this.checkCanAccept();
+    if (this.config.preparedCode) {
+      this.codeParser.functionName = name;
+      this.codeParser.baseCode = this.codeParser.baseCode.replace(getPythonFunctionName(this.config.preparedCode), name);
+    }
+  }
 }

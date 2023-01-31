@@ -15,6 +15,7 @@ export class BricksCodeParser {
 
     labelingTasks: any[];
     expected: BricksExpectedLabels = getEmptyBricksExpectedLabels();
+    nameTaken: boolean = false;
 
     constructor(private base: BricksIntegratorComponent) {
         this.filterTypes = enumToArray(BricksVariableType).filter(x => x != BricksVariableType.UNKNOWN && !x.startsWith("GENERIC"));
@@ -27,6 +28,7 @@ export class BricksCodeParser {
         this.baseCode = this.base.config.api.data.data.attributes.sourceCode;
         this.globalComments = this.collectGlobalComment();
         this.functionName = getPythonFunctionName(this.baseCode);
+        this.base.checkIfFunctionNameIsUnique(this.functionName);
         const variableLines = this.collectVariableLines();
         if (variableLines.length == 0) {
             this.base.config.preparedCode = this.baseCode;
@@ -57,7 +59,7 @@ export class BricksCodeParser {
         this.extendCodeForRecordIde();
         this.extendCodeForLabelMapping();
         this.base.config.codeFullyPrepared = this.variables.every(v => v.optional || (v.values.length > 0 && v.values.every(va => va != null)));
-        this.base.config.canAccept = this.base.config.codeFullyPrepared;
+        this.base.config.canAccept = this.base.config.codeFullyPrepared && !this.nameTaken;
 
     }
 
@@ -151,7 +153,7 @@ export class BricksCodeParser {
     }
 
 
-    private getCurrentFunctionLine(): string {
+    getCurrentFunctionLine(): string {
         const lines = this.baseCode.split("\n");
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i].trim();
