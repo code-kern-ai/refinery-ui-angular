@@ -4,7 +4,7 @@ import { Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnIni
 import { ActivatedRoute } from '@angular/router';
 import { timer } from 'rxjs';
 import { first } from 'rxjs/operators';
-import { findProjectIdFromRoute, getPythonFunctionName, isStringTrue } from 'src/app/util/helper-functions';
+import { findProjectIdFromRoute, getPythonFunctionName, isStringTrue, toPythonFunctionName } from 'src/app/util/helper-functions';
 import { KnowledgeBasesApolloService } from '../../services/knowledge-bases/knowledge-bases-apollo.service';
 import { ProjectApolloService } from '../../services/project/project-apollo.service';
 import { BricksCodeParser } from './helper/code-parser';
@@ -346,6 +346,7 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
 
   checkIfFunctionNameIsUnique(name: string) {
     this.codeParser.nameTaken = this.nameLookups?.find(x => x == name) != undefined;
+    name = toPythonFunctionName(name);
     this.checkCanAccept();
     if (this.config.preparedCode) {
       this.codeParser.functionName = name;
