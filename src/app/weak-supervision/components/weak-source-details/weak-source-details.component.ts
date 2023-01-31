@@ -310,8 +310,8 @@ export class WeakSourceDetailsComponent
 
       if (informationSource.informationSourceType == InformationSourceType.LABELING_FUNCTION) {
         this.codeFormCtrl.setValue(informationSource.sourceCode.replace(
-          'def lf(record):',
-          'def ' + informationSource.name + '(record):'
+          'def lf(record',
+          'def ' + informationSource.name + '(record'
         ));
       } else if (this.informationSource.informationSourceType == InformationSourceType.ACTIVE_LEARNING) {
         this.codeFormCtrl.setValue(informationSource.sourceCode.replace(this.getClassLine(), this.getClassLine(this.informationSource.name)));
@@ -378,8 +378,8 @@ export class WeakSourceDetailsComponent
       const templateCode = this.getInformationSourceTemplate(this.informationSource.informationSourceType).code;
       if (this.informationSource.informationSourceType == InformationSourceType.LABELING_FUNCTION) {
         this.codeFormCtrl.setValue(templateCode.replace(
-          'def lf(record):',
-          'def ' + this.informationSource.name + '(record):'
+          'def lf(record',
+          'def ' + this.informationSource.name + '(record'
         ));
       } else if (this.informationSource.informationSourceType == InformationSourceType.ACTIVE_LEARNING) {
         this.codeFormCtrl.setValue(templateCode.replace(this.getClassLine(), this.getClassLine(this.informationSource.name)));
@@ -554,8 +554,8 @@ export class WeakSourceDetailsComponent
       if (
         this.codeFormCtrl.value !=
         this.informationSource.sourceCode.replace(
-          'def lf(record):',
-          'def ' + this.informationSource.name + '(record):'
+          'def lf(record',
+          'def ' + this.informationSource.name + '(record'
         )
       )
         return true;

@@ -110,7 +110,11 @@ export class BricksCodeParser {
         if (this.functionName == null || this.functionName == "@@unknown@@") return;
         const isExtractor = this.base.config.api.data.data.attributes.moduleType == "extractor";
 
-        const currentFunctionLine = 'def ' + this.functionName + '(record):';
+        const currentFunctionLine = this.getCurrentFunctionLine();
+        if (!currentFunctionLine) {
+            console.log("couldn't find function line");
+            return;
+        }
 
         let functionWrapper = currentFunctionLine + "\n";
         functionWrapper += "    #this is a wrapper to map the labels according to your specifications\n";
@@ -146,6 +150,17 @@ export class BricksCodeParser {
         this.base.config.preparedCode = this.base.config.preparedCode.replace(currentFunctionLine, functionWrapper) + mappingDict;
     }
 
+
+    private getCurrentFunctionLine(): string {
+        const lines = this.baseCode.split("\n");
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i].trim();
+            if (line.startsWith('def ' + this.functionName + '(record')) {
+                return line;
+            }
+        }
+        return null;
+    }
 
     private extendCodeForRecordIde() {
         if (!this.base.forIde) return;

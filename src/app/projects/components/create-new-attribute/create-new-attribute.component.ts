@@ -179,10 +179,10 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
       if (this.currentAttribute?.sourceCode == null) {
         this.codeFormCtrl.setValue(AttributeCodeLookup.getAttributeCalculationTemplate(AttributeCalculationExamples.AC_EMPTY_TEMPLATE, this.currentAttribute.dataType).code);
       } else {
-        if (!this.codeFormCtrl.value || this.codeFormCtrl.value.includes("def ac(record)") || this.nextUpdateReplace) {
+        if (!this.codeFormCtrl.value || this.codeFormCtrl.value.includes("def ac(record") || this.nextUpdateReplace) {
           this.codeFormCtrl.setValue(this.currentAttribute.sourceCode.replace(
-            'def ac(record)',
-            'def ' + this.currentAttribute.name + '(record)'
+            'def ac(record',
+            'def ' + this.currentAttribute.name + '(record'
           ));
           if (this.nextUpdateReplace) this.nextUpdateReplace = false;
 
@@ -282,8 +282,8 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
 
           if (this.duplicateNameExists) {
             this.codeFormCtrl.setValue(this.codeFormCtrl.value.replace(
-              'def ' + regMatch[2] + '(record):',
-              'def ' + this.currentAttribute.name + '(record):'
+              'def ' + regMatch[2] + '(record',
+              'def ' + this.currentAttribute.name + '(record'
             ));
             this.isNameLoading = false;
             return;
@@ -301,8 +301,8 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
     if (
       this.codeFormCtrl.value !=
       this.currentAttribute.sourceCode.replace(
-        'def ac(record)',
-        'def ' + this.currentAttribute.name + '(record)'
+        'def ac(record',
+        'def ' + this.currentAttribute.name + '(record'
       )) return true;
     return false;
   }
