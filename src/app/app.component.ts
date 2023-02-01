@@ -52,7 +52,7 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
     this.initializeNotificationService();
     this.initWithConfigManager();
     this.checkBrowser();
-    UserManager.registerAfterInitActionOrRun(this, this.loggedInUser = UserManager.getUser(), true)
+    UserManager.registerAfterInitActionOrRun(this, () => this.loggedInUser = UserManager.getUser(), true)
   }
 
   ngAfterViewInit() {
