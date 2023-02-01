@@ -34,8 +34,7 @@
         <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
     </svg>
     <a *ngIf="dropdownOptions.buttonVersion== 'userIcon'" tabindex="0" class="w-full cursor-pointer">
-        <div data-intercom-target="User Avatar Button" (isMenuOpen)="toggleVisible($event, dropdownOptionsDiv)"
-            appDropdown>
+        <div (isMenuOpen)="toggleVisible($event, dropdownOptionsDiv)" appDropdown>
             <img class="h-8 w-8" [src]="dropdownOptions.avatarUri">
         </div>
     </a>
