@@ -1,7 +1,8 @@
-<div *ngIf="project" class="bg-white p-4" style="width:calc(100vw - 75px);min-width: 1175px;">
+<div *ngIf="project" class="bg-white p-4 overflow-y-auto max-h-full" style="width:calc(100vw - 75px);min-width: 1175px;"
+    (scroll)="checkScrollOnParent($event)">
     <div *ngIf="currentAttribute">
 
-        <div #stickyHeader class="pt-2 sticky -top-2 z-40 h-12">
+        <div class="sticky z-40 h-12" [ngClass]="isHeaderNormal ? 'top-1': '-top-5'">
             <div class="bg-white flex-grow " [ngClass]="isHeaderNormal?'':'shadow'">
                 <div class="flex-row justify-start items-center inline-block" style="transition: all .25s ease-in-out;"
                     [ngClass]="isHeaderNormal?'p-0':'flex py-2'">
