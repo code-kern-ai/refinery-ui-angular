@@ -1,7 +1,7 @@
 
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { timer } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { findProjectIdFromRoute, getPythonFunctionName, isStringTrue, toPythonFunctionName } from 'src/app/util/helper-functions';
@@ -44,9 +44,10 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
   config: BricksIntegratorConfig;
   codeParser: BricksCodeParser;
   dataRequestor: BricksDataRequestor;
+  functionType: string;
 
   constructor(private http: HttpClient, private projectApolloService: ProjectApolloService, private knowledgeBaseApollo: KnowledgeBasesApolloService,
-    private activatedRoute: ActivatedRoute,) {
+    private activatedRoute: ActivatedRoute, private router: Router) {
   }
 
   ngOnInit(): void {
@@ -55,6 +56,7 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
     this.codeParser = new BricksCodeParser(this);
     const projectId = findProjectIdFromRoute(this.activatedRoute)
     this.dataRequestor = new BricksDataRequestor(this.projectApolloService, this.knowledgeBaseApollo, projectId, this);
+    this.functionType = this.router.url.indexOf("attributes") > -1 ? "Attribute" : this.router.url.indexOf("heuristics") > -1 ? "Heuristic" : "Function";
   }
   ngOnDestroy(): void {
     this.dataRequestor.unsubscribeFromWebsocket();
@@ -345,12 +347,12 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
   }
 
   checkIfFunctionNameIsUnique(name: string) {
-    this.codeParser.nameTaken = this.nameLookups?.find(x => x == name) != undefined;
+    this.codeParser.nameTaken = !!(this.nameLookups?.find(x => x == name));
     name = toPythonFunctionName(name);
-    this.checkCanAccept();
     if (this.config.preparedCode) {
       this.codeParser.functionName = name;
-      this.config.preparedCode = this.config.preparedCode.replace(getPythonFunctionName(this.config.preparedCode), name);
+      this.config.preparedCode = this.config.preparedCode.replace(new RegExp(getPythonFunctionName(this.config.preparedCode), 'g'), name);
     }
+    this.checkCanAccept();
   }
 }

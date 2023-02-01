@@ -49,7 +49,12 @@ export class BricksCodeParser {
     }
 
     public replaceVariables() {
-        let replacedCode = this.baseCode.replace(getPythonFunctionName(this.baseCode), this.functionName);
+        let replacedCode = this.baseCode;
+        const idxReplace = this.getIndexFunctionLine();
+        const splitBase = this.baseCode.split("\n");
+        splitBase[idxReplace] = splitBase[idxReplace]?.replace(getPythonFunctionName(splitBase[idxReplace]), this.functionName);
+        replacedCode = splitBase.join("\n");
+
         for (let i = 0; i < this.variables.length; i++) {
             const variable = this.variables[i];
             this.prepareReplaceLine(variable);
@@ -162,6 +167,18 @@ export class BricksCodeParser {
             }
         }
         return null;
+    }
+
+    getIndexFunctionLine(): number {
+        const lines = this.baseCode.split("\n");
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i].trim();
+            const functionNameBase = getPythonFunctionName(line);
+            if (line.startsWith('def ' + functionNameBase + '(record')) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     private extendCodeForRecordIde() {
