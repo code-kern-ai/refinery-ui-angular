@@ -26,7 +26,6 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
   notificationList: any = [];
   deletionTimer: Subscription = null;
   loggedInUser: any;
-  userSubscription$: Subscription;
   notifications$: any;
   notificationsSub$: any;
   notificationsQuery$: any;
@@ -53,6 +52,7 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
     this.initializeNotificationService();
     this.initWithConfigManager();
     this.checkBrowser();
+    UserManager.registerAfterInitActionOrRun(this, this.loggedInUser = UserManager.getUser(), true)
   }
 
   ngAfterViewInit() {
@@ -124,7 +124,6 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
   }
 
   ngOnDestroy(): void {
-    this.userSubscription$.unsubscribe();
     if (!(this.deletionTimer == null)) {
       this.deletionTimer.unsubscribe();
     }
