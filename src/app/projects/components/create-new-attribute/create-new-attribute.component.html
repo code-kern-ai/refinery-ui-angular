@@ -1,5 +1,5 @@
 <div *ngIf="project" class="bg-white p-4 overflow-y-auto max-h-full" style="width:calc(100vw - 75px);min-width: 1175px;"
-    (scroll)="checkScrollOnParent($event)">
+    (scroll)="onScrollEvent($event)">
     <div *ngIf="currentAttribute">
 
         <div class="sticky z-40 h-12" [ngClass]="isHeaderNormal ? 'top-1': '-top-5'">

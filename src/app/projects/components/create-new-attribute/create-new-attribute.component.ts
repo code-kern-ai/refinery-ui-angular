@@ -423,7 +423,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
     this.saveAttribute(this.project.id);
   }
 
-  checkScrollOnParent(event: Event) {
+  onScrollEvent(event: Event) {
     if (!(event.target instanceof HTMLElement)) return;
     if ((event.target as HTMLElement).scrollTop > 0) {
       this.isHeaderNormal = false;
