@@ -2,10 +2,9 @@ import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, E
 import { Subscription, timer } from 'rxjs';
 import { NotificationApolloService } from './base/services/notification/notification-apollo.service';
 import { interval } from 'rxjs';
-import { Intercom } from 'ng-intercom';
 import { OrganizationApolloService } from './base/services/organization/organization-apollo.service';
 import { NotificationService } from './base/services/notification.service';
-import { Router, RoutesRecognized, ActivatedRouteSnapshot } from '@angular/router';
+import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { ConfigManager } from './base/services/config-service';
 import { first } from 'rxjs/operators';
@@ -38,7 +37,6 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
 
   constructor(
     private notificationApolloService: NotificationApolloService,
-    public intercom: Intercom,
     private organizationService: OrganizationApolloService,
     private configService: ConfigApolloService,
     private router: Router,
@@ -81,34 +79,10 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
       timer(250).subscribe(() => this.initWithConfigManager());
       return;
     }
-    this.initializeIntercom();
     //caution! the first user request needs to run after the db creation since otherwise the backend will try to create an unasigned user
     this.organizationService.getUserInfo().pipe(first()).subscribe((v) => UserManager.initUserManager(this.router, this.organizationService, v));
   }
 
-  initializeIntercom() {
-
-    const token = ConfigManager.getConfigValue("tokens", "INTERCOM")
-
-    this.userSubscription$ = this.organizationService
-      .getUserInfo()
-      .subscribe((user) => {
-        this.loggedInUser = user;
-
-        if (token != "") {
-          this.intercom.boot({
-            app_id: token,
-            name: user.firstName + ' ' + user.lastName,
-            email: user.mail,
-            user_id: user.id,
-            widget: {
-              activator: '#intercom',
-            },
-          });
-        }
-
-      });
-  }
 
   initializeNotificationService() {
     [this.notificationsQuery$, this.notifications$] = this.notificationApolloService.getNotificationsByUser();
