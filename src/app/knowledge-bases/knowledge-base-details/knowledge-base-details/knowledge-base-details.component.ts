@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { first, switchMap } from 'rxjs/operators';
+import { first } from 'rxjs/operators';
 import { KnowledgeBasesApolloService } from 'src/app/base/services/knowledge-bases/knowledge-bases-apollo.service';
 import { NotificationService } from 'src/app/base/services/notification.service';
 import { RouteService } from 'src/app/base/services/route.service';
@@ -33,7 +33,6 @@ import { ProjectApolloService } from 'src/app/base/services/project/project-apol
 export class KnowledgeBaseDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChildren('descriptionArea') descriptionArea: QueryList<ElementRef>;
   @ViewChildren('nameArea') nameArea: QueryList<ElementRef>;
-  @ViewChildren('stickyHeader', { read: ElementRef }) stickyHeader: QueryList<ElementRef>;
   @ViewChild(UploadComponent) uploadComponent;
   file: File;
 
@@ -53,7 +52,6 @@ export class KnowledgeBaseDetailsComponent implements OnInit, AfterViewInit, OnD
   termToAdd = '';
   commentToAdd = '';
   subscriptions$: Subscription[] = [];
-  stickyObserver: IntersectionObserver;
   isHeaderNormal: boolean = true;
   downloadMessage: DownloadState = DownloadState.NONE;
   listSize: number = -1;
@@ -76,9 +74,6 @@ export class KnowledgeBaseDetailsComponent implements OnInit, AfterViewInit, OnD
   ) { }
   ngOnDestroy(): void {
     this.subscriptions$.forEach(element => element.unsubscribe());
-    for (const e of this.stickyHeader) {
-      this.stickyObserver.unobserve(e.nativeElement);
-    }
     NotificationService.unsubscribeFromNotification(this, this.projectId);
     CommentDataManager.unregisterAllCommentRequests(this);
   }
@@ -130,13 +125,6 @@ export class KnowledgeBaseDetailsComponent implements OnInit, AfterViewInit, OnD
     });
     this.nameArea.changes.subscribe(() => {
       this.setFocus(this.nameArea);
-    });
-    this.stickyHeader.changes.subscribe(() => {
-      if (this.stickyHeader.length) {
-        this.prepareStickyObserver(this.stickyHeader.first.nativeElement);
-      } else {
-        this.stickyObserver = null;
-      }
     });
   }
 
@@ -277,18 +265,6 @@ export class KnowledgeBaseDetailsComponent implements OnInit, AfterViewInit, OnD
     this.router.navigate(["../"], { relativeTo: this.activatedRoute });
   }
 
-  prepareStickyObserver(element: HTMLElement) {
-    if (this.stickyObserver) return;
-    const toObserve = element; //this.stickyHeader.nativeElement;
-    this.stickyObserver = new IntersectionObserver(
-      ([e]) => {
-        this.isHeaderNormal = e.isIntersecting;
-      },
-      { threshold: [1] }
-    );
-    this.stickyObserver.observe(toObserve)
-  }
-
   requestFileExport(projectId: string): void {
     this.downloadMessage = DownloadState.PREPARATION;
 
@@ -371,5 +347,14 @@ export class KnowledgeBaseDetailsComponent implements OnInit, AfterViewInit, OnD
     this.lookupListDetailsModals.uploadLookupList.open = false;
     this.knowledgeBaseQuery$.refetch();
     this.termsQuery$.refetch();
+  }
+
+  onScrollEvent(event: Event) {
+    if (!(event.target instanceof HTMLElement)) return;
+    if ((event.target as HTMLElement).scrollTop > 0) {
+      this.isHeaderNormal = false;
+    } else {
+      this.isHeaderNormal = true;
+    }
   }
 }
