@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl } from '@angular/forms';
-import { first, mergeMap } from 'rxjs/operators';
+import { first } from 'rxjs/operators';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { RouteService } from 'src/app/base/services/route.service';
 import { WeakSourceApolloService } from 'src/app/base/services/weak-source/weak-source-apollo.service';
@@ -19,15 +19,14 @@ import {
   startWith,
   distinctUntilChanged,
 } from 'rxjs/operators';
-import { combineLatest, forkJoin, Subscription, timer } from 'rxjs';
+import { forkJoin, Subscription, timer } from 'rxjs';
 import { InformationSourceType, informationSourceTypeToString, LabelingTask, LabelSource } from 'src/app/base/enum/graphql-enums';
 import { InformationSourceCodeLookup, InformationSourceExamples } from '../information-sources-code-lookup';
-import { asPythonVariable, dateAsUTCDate, getColorForDataType, getPythonClassName, getPythonClassRegExMatch, getPythonFunctionName, getPythonFunctionRegExMatch, toPythonFunctionName } from 'src/app/util/helper-functions';
+import { dateAsUTCDate, getColorForDataType, getPythonClassName, getPythonClassRegExMatch, getPythonFunctionName, getPythonFunctionRegExMatch, toPythonFunctionName } from 'src/app/util/helper-functions';
 import { NotificationService } from 'src/app/base/services/notification.service';
 import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
 import { schemeCategory24 } from 'src/app/util/colors';
 import { UserManager } from 'src/app/util/user-manager';
-import { RecordApolloService } from 'src/app/base/services/record/record-apollo.service';
 import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
 import { dataTypes } from 'src/app/util/data-types';
 import { KnowledgeBasesApolloService } from 'src/app/base/services/knowledge-bases/knowledge-bases-apollo.service';
@@ -46,8 +45,6 @@ export class WeakSourceDetailsComponent
   @ViewChildren('descriptionArea') descriptionArea: QueryList<ElementRef>;
   @ViewChildren('nameArea') nameArea: QueryList<ElementRef>;
   @ViewChild(BricksIntegratorComponent) bricksIntegrator: BricksIntegratorComponent;
-
-  @ViewChildren('stickyHeader', { read: ElementRef }) stickyHeader: QueryList<ElementRef>;
   get LabelSourceType(): typeof LabelSource {
     return LabelSource;
   }
@@ -94,7 +91,6 @@ export class WeakSourceDetailsComponent
   attributesQuery$: any;
   attributes: any;
   attributesView: any[] = [];
-  stickyObserver: IntersectionObserver;
   isHeaderNormal: boolean = true;
   sampleRecords: any;
   selectedAttribute: string = '';
@@ -168,9 +164,6 @@ export class WeakSourceDetailsComponent
 
   ngOnDestroy() {
     this.subscriptions$.forEach((subscription) => subscription.unsubscribe());
-    for (const e of this.stickyHeader) {
-      this.stickyObserver.unobserve(e.nativeElement);
-    }
     const projectId = this.project?.id ? this.project.id : this.activatedRoute.parent.snapshot.paramMap.get('projectId');
     NotificationService.unsubscribeFromNotification(this, projectId);
     CommentDataManager.unregisterAllCommentRequests(this);
@@ -183,13 +176,6 @@ export class WeakSourceDetailsComponent
     });
     this.nameArea.changes.subscribe(() => {
       this.setFocus(this.nameArea);
-    });
-    this.stickyHeader.changes.subscribe(() => {
-      if (this.stickyHeader.length) {
-        this.prepareStickyObserver(this.stickyHeader.first.nativeElement);
-      } else {
-        this.stickyObserver = null;
-      }
     });
   }
 
@@ -224,20 +210,6 @@ export class WeakSourceDetailsComponent
         if (this.lastTaskQuery$) this.lastTaskQuery$.refetch();
       }
     }
-  }
-
-
-
-  prepareStickyObserver(element: HTMLElement) {
-    if (this.stickyObserver) return;
-    const toObserve = element; //this.stickyHeader.nativeElement;
-    this.stickyObserver = new IntersectionObserver(
-      ([e]) => {
-        this.isHeaderNormal = e.isIntersecting;
-      },
-      { threshold: [1] }
-    );
-    this.stickyObserver.observe(toObserve)
   }
 
   prepareInformationSource(projectId: string) {
@@ -721,5 +693,14 @@ export class WeakSourceDetailsComponent
   copyImportToClipboard(pythonVariable: string) {
     const statement = "from knowledge import " + pythonVariable;
     navigator.clipboard.writeText(statement);
+  }
+
+  onScrollEvent(event: Event) {
+    if (!(event.target instanceof HTMLElement)) return;
+    if ((event.target as HTMLElement).scrollTop > 0) {
+      this.isHeaderNormal = false;
+    } else {
+      this.isHeaderNormal = true;
+    }
   }
 }
