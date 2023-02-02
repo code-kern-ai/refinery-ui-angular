@@ -124,7 +124,7 @@ export class ProjectNewComponent implements OnInit, AfterViewChecked {
     if (insertPos != -1) {
       tokenizer.splice(insertPos, 0, { disabled: true, name: "------------------------------------------" });
       if (ConfigManager.getIsManaged()) {
-        tokenizer.splice(insertPos, 0, { disabled: true, name: "if you need the options below feel free to contact us", configString: "intercom/email" });
+        tokenizer.splice(insertPos, 0, { disabled: true, name: "if you need the options below feel free to contact us", configString: "email" });
       } else {
         tokenizer.splice(insertPos, 0, { disabled: true, name: "add further options on config page" });
       }

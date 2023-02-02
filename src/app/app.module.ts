@@ -20,7 +20,6 @@ import { MonacoEditorModule } from 'ngx-monaco-editor';
 import { LabelingSuiteModule } from './labeling-suite/labeling-suite.module';
 import { KnowledgeBasesModule } from './knowledge-bases/knowledge-bases.module';
 import { ConfigModule } from './config/config.module'
-import { IntercomModule } from 'ng-intercom';
 import { RecordIDEModule } from './record-ide/record-ide.module';
 import { ModelDownloadModule } from './model-download/model-download.module';
 import { ModelCallbackModule } from './model-callbacks/model-callbacks.module';
@@ -52,10 +51,6 @@ import { ProjectAdminModule } from './project-admin/project-admin.module';
     MonacoEditorModule.forRoot(),
     KnowledgeBasesModule,
     ConfigModule,
-    IntercomModule.forRoot({
-      appId: 'jwhvb3yv', // from your Intercom config
-      updateOnRouterChange: true, // will automatically run `update` on router event changes. Default: `false`
-    }),
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: ExceptionInterceptor, multi: true },
