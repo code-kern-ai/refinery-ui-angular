@@ -11,8 +11,7 @@
                 <ng-container *ngTemplateOutlet="buttonsProject"></ng-container>
             </div>
 
-            <div *ngIf="!organizationInactive && projects.length > 0" class="h-screen overflow-y-scroll mt-3"
-                data-intercom-target="Project Overview">
+            <div *ngIf="!organizationInactive && projects.length > 0" class="h-screen overflow-y-scroll mt-3">
                 <div class="scrollable-size">
                     <div *ngFor="let project of projects" class="relative card shadow bg-white m-4">
                         <div *ngIf="project.status != ProjectStatusType.IN_DELETION" class="card-body p-6">

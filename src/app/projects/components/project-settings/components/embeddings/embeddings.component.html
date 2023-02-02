@@ -186,8 +186,7 @@
                         style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Target
                         Attribute</span></span>
             </div>
-            <select formControlName="targetAttribute" class="select select-bordered select-sm max-w-xs"
-                data-intercom-target="Settings Page Embedding Mask Target Attribute Selector">
+            <select formControlName="targetAttribute" class="select select-bordered select-sm max-w-xs">
                 <option *ngFor="let attribute of useableTextAttributes" [value]="attribute.id">
                     {{attribute.name}}
                 </option>
@@ -196,7 +195,6 @@
                 <span class="card-title mb-0 label-text flex"><span class="cursor-help underline"
                         style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Granularity</span></span>
             </div><select formControlName="granularity" class="select select-bordered select-sm max-w-xs"
-                data-intercom-target="Settings Page Embedding Mask Granularity Selector"
                 (change)="checkForceHiddenHandles()">
                 <option *ngFor="let granularity of dataHandlerHelper.granularityTypesArray" [value]="granularity.value">
                     {{granularity.name}}
@@ -206,7 +204,7 @@
                 <span class="card-title mb-0 label-text flex"><span class="cursor-help underline"
                         style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Configuration</span></span>
             </div>
-            <div class="dropdown" data-intercom-target="Settings Page Embedding Mask Handle Selector With Suggestions"
+            <div class="dropdown"
                 *ngIf="embeddingHandles && embeddingHandles[settingModals.embedding.create.embeddingCreationFormGroup.get('targetAttribute').value] as suggestions;else noSuggestions">
                 <div tabindex="0" class="flex flex-row select select-bordered select-sm pl-0 pr-8">
                     <input #inputEmbeddingHandle type="text" placeholder="Type to search..."
@@ -232,8 +230,7 @@
                 </ul>
             </div>
             <ng-template #noSuggestions>
-                <div class="flex flex-row select select-bordered select-sm pl-0 pr-8"
-                    data-intercom-target="Settings Page Embedding Mask Handle Selector Without Suggestions">
+                <div class="flex flex-row select select-bordered select-sm pl-0 pr-8">
                     <input #inputEmbeddingHandle type="text" placeholder="Enter config string..."
                         class="w-full font-bold input input-sm" style="outline:none; box-shadow:none;height:1.9rem;"
                         [value]="settingModals.embedding.create.embeddingCreationFormGroup.get('embeddingHandle').value"
