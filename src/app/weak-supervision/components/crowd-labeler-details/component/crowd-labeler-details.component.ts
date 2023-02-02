@@ -9,16 +9,11 @@ import {
   QueryList,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { first, refCount } from 'rxjs/operators';
+import { first } from 'rxjs/operators';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { RouteService } from 'src/app/base/services/route.service';
 import { WeakSourceApolloService } from 'src/app/base/services/weak-source/weak-source-apollo.service';
-import {
-  debounceTime,
-  startWith,
-  distinctUntilChanged,
-} from 'rxjs/operators';
-import { combineLatest, forkJoin, Subscription, timer } from 'rxjs';
+import { forkJoin, Subscription, timer } from 'rxjs';
 import { InformationSourceType, informationSourceTypeToString, LabelingTask, LabelSource } from 'src/app/base/enum/graphql-enums';
 import { dateAsUTCDate, parseLinkFromText } from 'src/app/util/helper-functions';
 import { NotificationService } from 'src/app/base/services/notification.service';
@@ -40,7 +35,6 @@ export class CrowdLabelerDetailsComponent
   @ViewChildren('descriptionArea') descriptionArea: QueryList<ElementRef>;
   @ViewChildren('nameArea') nameArea: QueryList<ElementRef>;
 
-  @ViewChildren('stickyHeader', { read: ElementRef }) stickyHeader: QueryList<ElementRef>;
   @ViewChild('customLabels', { read: ElementRef }) customLabels: ElementRef;
 
   get LabelSourceType(): typeof LabelSource {
@@ -72,9 +66,6 @@ export class CrowdLabelerDetailsComponent
   isDescriptionOpen: boolean = false;
   informationSourceName: string = '';
   isNameOpen: boolean = false;
-
-
-  stickyObserver: IntersectionObserver;
   isHeaderNormal: boolean = true;
   testerOpen: boolean = true;
 
@@ -159,9 +150,6 @@ export class CrowdLabelerDetailsComponent
 
   ngOnDestroy() {
     this.subscriptions$.forEach((subscription) => subscription.unsubscribe());
-    for (const e of this.stickyHeader) {
-      this.stickyObserver.unobserve(e.nativeElement);
-    }
     const projectId = this.project?.id ? this.project.id : this.activatedRoute.parent.snapshot.paramMap.get('projectId');
     NotificationService.unsubscribeFromNotification(this, projectId);
     CommentDataManager.unregisterAllCommentRequests(this);
@@ -174,25 +162,6 @@ export class CrowdLabelerDetailsComponent
     this.nameArea.changes.subscribe(() => {
       this.setFocus(this.nameArea);
     });
-    this.stickyHeader.changes.subscribe(() => {
-      if (this.stickyHeader.length) {
-        this.prepareStickyObserver(this.stickyHeader.first.nativeElement);
-      } else {
-        this.stickyObserver = null;
-      }
-    });
-  }
-
-  prepareStickyObserver(element: HTMLElement) {
-    if (this.stickyObserver) return;
-    const toObserve = element;
-    this.stickyObserver = new IntersectionObserver(
-      ([e]) => {
-        this.isHeaderNormal = e.isIntersecting;
-      },
-      { threshold: [1] }
-    );
-    this.stickyObserver.observe(toObserve)
   }
 
   generateAccessLink() {
@@ -416,6 +385,15 @@ export class CrowdLabelerDetailsComponent
 
   copyToClipboard(textToCopy) {
     navigator.clipboard.writeText(textToCopy);
+  }
+
+  onScrollEvent(event: Event) {
+    if (!(event.target instanceof HTMLElement)) return;
+    if ((event.target as HTMLElement).scrollTop > 0) {
+      this.isHeaderNormal = false;
+    } else {
+      this.isHeaderNormal = true;
+    }
   }
 
 }
