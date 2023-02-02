@@ -54,6 +54,7 @@ export class LabelingSuiteAttributeManager implements DoBeforeDestroy {
             this.attributes = att.filter((a) => a.visibility == AttributeVisibility.DO_NOT_HIDE || a.visibility == AttributeVisibility.HIDE_ON_DATA_BROWSER);
             this.attributes.sort((a, b) => a.relativePosition - b.relativePosition);
             this.baseManager.runUpdateListeners(UpdateType.ATTRIBUTES);
+            this.baseManager.taskManager.filterTasksForAttributeVisibility();
         });
     }
 
