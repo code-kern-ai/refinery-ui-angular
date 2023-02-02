@@ -1,64 +1,17 @@
 <div #baseDomElement *ngIf="displayData" class="relative bg-white p-4">
-  <div class="absolute top-4 right-4 p-2 cursor-pointer"
-    [ngClass]="lsm.settingManager.settings.task.isCollapsed?'rotate_transform':null" (click)="toggleIsCollapsed()">
-    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-layout-navbar-collapse" width="24"
-      height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
-      stroke-linejoin="round">
-      <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-      <path d="M4 18v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z"></path>
-      <path d="M4 9h16"></path>
-      <path d="M10 16l2 -2l2 2"></path>
-    </svg>
-  </div>
+  <ng-template [ngIf]="displayData.length>0" [ngIfElse]="noTasks">
 
-  <div *ngIf="lsm.settingManager.settings.task.isCollapsed else headerDisplay" class="flex flex-row flex-wrap gap-x-2">
-    <ng-container [ngTemplateOutlet]="quickButtons">
-    </ng-container>
-  </div>
-  <ng-template #headerDisplay>
-    <table class="min-w-full border">
-      <tbody class="bg-white divide-y divide-gray-200">
-        <tr *ngFor="let task of displayData;let i = index" [ngClass]="i%2 == 0 ? 'bg-white':'bg-gray-50'">
-          <td class="font-bold py-2 pl-4 pr-3 text-sm text-gray-500 sm:pl-6 whitespace-nowrap"
-            hover-group-class="{{lsm.settingManager.settings.main.hoverGroupBackgroundColorClass}}"
-            hover-group="{{task.hoverGroups}}">
-            {{task.name}}
-          </td>
-          <td class="pl-3 py-2 text-sm text-gray-500 w-full" [ngClass]="i==0?'pr-8':'pr-3'">
-            <div class="flex flex-row flex-wrap gap-2">
-              <div #labelDiv *ngFor="let labelId of task.labelOrder; let i = index"
-                hover-group="{{task.labels[labelId].hoverGroups}}"
-                class="text-sm font-medium px-2 py-0.5 rounded-md border focus:outline-none cursor-pointer flex flex-row flex-no-wrap gap-x-1 items-center"
-                (click)="setLabelSettingsLabel(task.labels[labelId]);labelSettingsBoxPosition(labelDiv,baseDomElement);">
-                <div *ngIf="htmlSettings[task.id][labelId] as labelSetting" class="grid grid-cols-2"
-                  style="gap:0.125rem">
-                  <div class="w-2.5 h-2.5 border rounded-full"
-                    [ngClass]="[labelSetting.showManual?task.labels[labelId].color.backgroundColor:'bg-white', task.labels[labelId].color.borderColor]">
-                  </div>
-                  <div class="w-2.5 h-2.5 border rounded-full"
-                    [ngClass]="[labelSetting.showWeakSupervision?task.labels[labelId].color.backgroundColor:'bg-white', task.labels[labelId].color.borderColor]">
-                  </div>
-                  <div class="w-2.5 h-2.5 border rounded-full"
-                    [ngClass]="[labelSetting.showModel?task.labels[labelId].color.backgroundColor:'bg-white', task.labels[labelId].color.borderColor]">
-                  </div>
-                  <div class="w-2.5 h-2.5 border rounded-full"
-                    [ngClass]="[labelSetting.showHeuristics?task.labels[labelId].color.backgroundColor:'bg-white', task.labels[labelId].color.borderColor]">
-                  </div>
-                </div>
-                <div class="truncate" style="max-width: 260px;">{{task.labels[labelId].name}}
-                </div>
-              </div>
-            </div>
-          </td>
-        </tr>
-        <tr *ngIf="lsm.settingManager.settings.task.alwaysShowQuickButtons"
-          [ngClass]="displayData.length%2==0?'bg-white':'bg-gray-50'">
-          <td class="font-bold py-2 pl-4 pr-3 text-sm text-gray-500 sm:pl-6">Quick buttons</td>
-          <td class="px-3 py-2 text-sm text-gray-500 w-full"><ng-container [ngTemplateOutlet]="quickButtons">
-            </ng-container></td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="absolute top-4 right-4 p-2 cursor-pointer"
+      [ngClass]="lsm.settingManager.settings.task.isCollapsed?'rotate_transform':null" (click)="toggleIsCollapsed()">
+      <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-layout-navbar-collapse" width="24"
+        height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
+        stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M4 18v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z"></path>
+        <path d="M4 9h16"></path>
+        <path d="M10 16l2 -2l2 2"></path>
+      </svg>
+    </div>
     <!--settings box absolute positioned-->
     <div #labelSettingsBox (mouseup)="preventDefaultEvent($event)"
       class="flex flex-col rounded-lg bg-white shadow absolute z-10 top-0 left-0 border border-gray-300"
@@ -128,6 +81,62 @@
         </div>
       </div>
     </div>
+    <!-- actual display-->
+    <div *ngIf="lsm.settingManager.settings.task.isCollapsed else headerDisplay"
+      class="flex flex-row flex-wrap gap-x-2">
+      <ng-container [ngTemplateOutlet]="quickButtons">
+      </ng-container>
+    </div>
+    <ng-template #headerDisplay>
+      <table class="min-w-full border">
+        <tbody class="bg-white divide-y divide-gray-200">
+          <tr *ngFor="let task of displayData;let i = index" [ngClass]="i%2 == 0 ? 'bg-white':'bg-gray-50'">
+            <td class="font-bold py-2 pl-4 pr-3 text-sm text-gray-500 sm:pl-6 whitespace-nowrap"
+              hover-group-class="{{lsm.settingManager.settings.main.hoverGroupBackgroundColorClass}}"
+              hover-group="{{task.hoverGroups}}">
+              {{task.name}}
+            </td>
+            <td class="pl-3 py-2 text-sm text-gray-500 w-full" [ngClass]="i==0?'pr-8':'pr-3'">
+              <div class="flex flex-row flex-wrap gap-2">
+                <div #labelDiv *ngFor="let labelId of task.labelOrder; let i = index"
+                  hover-group-class="{{task.labels[labelId].color.backgroundColor}}"
+                  hover-group="{{task.labels[labelId].hoverGroups}}"
+                  class="text-sm font-medium px-2 py-0.5 rounded-md border focus:outline-none cursor-pointer flex flex-row flex-no-wrap gap-x-1 items-center"
+                  (click)="setLabelSettingsLabel(task.labels[labelId]);labelSettingsBoxPosition(labelDiv,baseDomElement);">
+                  <div *ngIf="htmlSettings[task.id][labelId] as labelSetting" class="grid grid-cols-2"
+                    style="gap:0.125rem">
+                    <div class="w-2.5 h-2.5 border rounded-full"
+                      [ngClass]="[labelSetting.showManual?task.labels[labelId].color.backgroundColor:'bg-white', task.labels[labelId].color.borderColor]">
+                    </div>
+                    <div class="w-2.5 h-2.5 border rounded-full"
+                      [ngClass]="[labelSetting.showWeakSupervision?task.labels[labelId].color.backgroundColor:'bg-white', task.labels[labelId].color.borderColor]">
+                    </div>
+                    <div class="w-2.5 h-2.5 border rounded-full"
+                      [ngClass]="[labelSetting.showModel?task.labels[labelId].color.backgroundColor:'bg-white', task.labels[labelId].color.borderColor]">
+                    </div>
+                    <div class="w-2.5 h-2.5 border rounded-full"
+                      [ngClass]="[labelSetting.showHeuristics?task.labels[labelId].color.backgroundColor:'bg-white', task.labels[labelId].color.borderColor]">
+                    </div>
+                  </div>
+                  <div class="truncate" style="max-width: 260px;">{{task.labels[labelId].name}}
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="lsm.settingManager.settings.task.alwaysShowQuickButtons"
+            [ngClass]="displayData.length%2==0?'bg-white':'bg-gray-50'">
+            <td class="font-bold py-2 pl-4 pr-3 text-sm text-gray-500 sm:pl-6">Quick buttons</td>
+            <td class="px-3 py-2 text-sm text-gray-500 w-full"><ng-container [ngTemplateOutlet]="quickButtons">
+              </ng-container></td>
+          </tr>
+        </tbody>
+      </table>
+
+    </ng-template>
+  </ng-template>
+  <ng-template #noTasks>
+    <p class="text-gray-500">No labeling tasks in project</p>
   </ng-template>
 </div>
 

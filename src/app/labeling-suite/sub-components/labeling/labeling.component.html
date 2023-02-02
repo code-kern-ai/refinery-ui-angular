@@ -151,11 +151,12 @@
                                         attr.data-tip="{{rlaLabel.dataTip}}">
                                         <div class="text-sm font-medium px-2 py-0.5 rounded-md border focus:outline-none relative flex items-center"
                                             (click)="rlaLabel.sourceTypeKey == 'WEAK_SUPERVISION'?addRla(task.task,rlaLabel.labelId):null"
-                                            hover-group-class="" hover-group="{{rlaLabel.hoverGroups.rlaId}}"
+                                            hover-group="{{rlaLabel.hoverGroups.rlaId}}" hover-group-main-count="2"
                                             [ngClass]="[labelLookup[rlaLabel.labelId].color.backgroundColor,labelLookup[rlaLabel.labelId].color.textColor, labelLookup[rlaLabel.labelId].color.borderColor,rlaLabel.sourceTypeKey == 'WEAK_SUPERVISION'?'cursor-pointer':'cursor-default']">
                                             <div class="label-overlay-base"
                                                 hover-group-class="{{rlaLabel.hoverGroups.labelClass}}"
-                                                hover-group="{{rlaLabel.hoverGroups.label}}"></div>
+                                                hover-group="{{rlaLabel.hoverGroups.label}}">
+                                            </div>
 
                                             <ng-template [ngIf]="rlaLabel.icon">
                                                 <ng-container [ngTemplateOutlet]="icons"

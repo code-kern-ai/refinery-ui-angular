@@ -18,6 +18,13 @@ export function getHoverGroupsOverviewTable(data: any): any {
     }
 }
 
+export function getHoverGroupsForLabeling(data: any): any {
+    const g = getHoverGroupsOverviewTable(data);
+    // LAX_ = helper for additional group for highlighting in label view
+    g.rlaId = "LAX_" + data.labelingTaskLabel.id + "," + g.rlaId;
+    return g;
+}
+
 export function getHoverClassLabel(type: LabelSource): string {
     switch (type) {
         case LabelSource.MANUAL:
@@ -39,6 +46,7 @@ export function getHoverGroupsTaskOverview(taskName: string, labelId?: string): 
     }
     if (labelId) {
         all.label = "LA_" + labelId;
+        all.label += ",LAX_" + labelId; // helper for additional group for highlighting in label view
         return getHoverGroupFor(HoverGroupTarget.LABEL, all);
     }
     return getHoverGroupFor(HoverGroupTarget.TASK, all);
@@ -47,6 +55,7 @@ export function getHoverGroupsTaskOverview(taskName: string, labelId?: string): 
 
 
 export function getHoverGroupFor(first: HoverGroupTarget, all: any): string {
+
     let finalString = all[first];
     for (let key in all) {
         if (key == first) continue;

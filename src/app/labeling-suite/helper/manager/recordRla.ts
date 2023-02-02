@@ -1,7 +1,7 @@
 import { getLabelSourceOrder, InformationSourceReturnType, informationSourceTypeToString, LabelSource, labelSourceToString, UserRole } from "src/app/base/enum/graphql-enums";
 import { jsonCopy } from "src/app/util/helper-functions";
 import { TableDisplayData } from "../../sub-components/overview-table/helper";
-import { getHoverGroupsOverviewTable } from "../util-functions";
+import { getHoverGroupsForLabeling, getHoverGroupsOverviewTable } from "../util-functions";
 import { LabelingSuiteManager } from "./manager";
 import { GOLD_STAR_USER_ID } from "./user";
 
@@ -89,7 +89,7 @@ export class LabelingSuiteRlaPreparator {
         let i = 0;
         for (let e of this.rlas) {
             result[i++] = {
-                hoverGroups: getHoverGroupsOverviewTable(e),
+                hoverGroups: getHoverGroupsForLabeling(e),
                 sourceTypeKey: e.sourceType,
                 orderPos: getLabelSourceOrder(e.sourceType, e.informationSource?.type),
                 labelId: e.labelingTaskLabelId,
