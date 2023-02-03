@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { RouteService } from 'src/app/base/services/route.service';
@@ -32,9 +32,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
   attribute$: any;
   isHeaderNormal: boolean = true;
   intersectionTimeout: boolean = false;
-  stickyObserver: IntersectionObserver;
   currentAttributeQuery$: any;
-  @ViewChildren('stickyHeader', { read: ElementRef }) stickyHeader: QueryList<ElementRef>;
   @ViewChildren('nameArea') nameArea: QueryList<ElementRef>;
   subscriptions$: Subscription[] = [];
   currentAttribute: any;
@@ -116,20 +114,10 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
     this.nameArea.changes.subscribe(() => {
       this.setFocus(this.nameArea);
     });
-    this.stickyHeader.changes.subscribe(() => {
-      if (this.stickyHeader.length) {
-        this.prepareStickyObserver(this.stickyHeader.first.nativeElement);
-      } else {
-        this.stickyObserver = null;
-      }
-    });
   }
 
   ngOnDestroy() {
     this.subscriptions$.forEach((subscription) => subscription.unsubscribe());
-    for (const e of this.stickyHeader) {
-      this.stickyObserver.unobserve(e.nativeElement);
-    }
     NotificationService.unsubscribeFromNotification(this, this.project.id);
     CommentDataManager.unregisterAllCommentRequests(this);
   }
@@ -147,27 +135,6 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
     if (focusArea.length > 0) {
       focusArea.first.nativeElement.focus();
     }
-  }
-
-  prepareStickyObserver(element: HTMLElement) {
-    if (this.stickyObserver) return;
-    const toObserve = element;
-    this.stickyObserver = new IntersectionObserver(
-      ([e]) => {
-        if (this.intersectionTimeout) return;
-        this.isHeaderNormal = e.isIntersecting;
-        if (this.isHeaderNormal) {
-          var el = document.getElementById("pageOutlet");
-          el.scrollTop = 0;
-        }
-        this.intersectionTimeout = true;
-        timer(500).subscribe(() => this.intersectionTimeout = false);
-      },
-      { threshold: [1] },
-
-    );
-    this.stickyObserver.observe(toObserve)
-
   }
 
   prepareCurrentAttribute(projectId: string, attributeId: string) {
@@ -459,5 +426,14 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
   updateVisibilityAttributes(value: string) {
     this.currentAttribute.visibility = value;
     this.saveAttribute(this.project.id);
+  }
+
+  onScrollEvent(event: Event) {
+    if (!(event.target instanceof HTMLElement)) return;
+    if ((event.target as HTMLElement).scrollTop > 0) {
+      this.isHeaderNormal = false;
+    } else {
+      this.isHeaderNormal = true;
+    }
   }
 }

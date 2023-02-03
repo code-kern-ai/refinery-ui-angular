@@ -14,7 +14,7 @@ import { ProjectApolloService } from 'src/app/base/services/project/project-apol
 import { RouteService } from 'src/app/base/services/route.service';
 import { WeakSourceApolloService } from 'src/app/base/services/weak-source/weak-source-apollo.service';
 
-import { combineLatest, forkJoin, Subscription, timer } from 'rxjs';
+import { forkJoin, Subscription, timer } from 'rxjs';
 import { InformationSourceType, informationSourceTypeToString, LabelingTask, LabelSource } from 'src/app/base/enum/graphql-enums';
 import { dateAsUTCDate } from 'src/app/util/helper-functions';
 import { NotificationService } from 'src/app/base/services/notification.service';
@@ -35,7 +35,6 @@ export class ZeroShotDetailsComponent
   @ViewChildren('descriptionArea') descriptionArea: QueryList<ElementRef>;
   @ViewChildren('nameArea') nameArea: QueryList<ElementRef>;
 
-  @ViewChildren('stickyHeader', { read: ElementRef }) stickyHeader: QueryList<ElementRef>;
   @ViewChild('customLabels', { read: ElementRef }) customLabels: ElementRef;
 
   get LabelSourceType(): typeof LabelSource {
@@ -71,7 +70,6 @@ export class ZeroShotDetailsComponent
 
   zeroShotSettings: ZeroShotSettings;
 
-  stickyObserver: IntersectionObserver;
   isHeaderNormal: boolean = true;
   testerOpen: boolean = true;
 
@@ -161,9 +159,6 @@ export class ZeroShotDetailsComponent
 
   ngOnDestroy() {
     this.subscriptions$.forEach((subscription) => subscription.unsubscribe());
-    for (const e of this.stickyHeader) {
-      this.stickyObserver.unobserve(e.nativeElement);
-    }
     const projectId = this.project?.id ? this.project.id : this.activatedRoute.parent.snapshot.paramMap.get('projectId');
     NotificationService.unsubscribeFromNotification(this, projectId);
     CommentDataManager.unregisterAllCommentRequests(this);
@@ -175,13 +170,6 @@ export class ZeroShotDetailsComponent
     });
     this.nameArea.changes.subscribe(() => {
       this.setFocus(this.nameArea);
-    });
-    this.stickyHeader.changes.subscribe(() => {
-      if (this.stickyHeader.length) {
-        this.prepareStickyObserver(this.stickyHeader.first.nativeElement);
-      } else {
-        this.stickyObserver = null;
-      }
     });
   }
   prepareZeroShotRecommendations(projectId: string) {
@@ -204,19 +192,6 @@ export class ZeroShotDetailsComponent
       this.textAttributes = attributes.filter(a => a.dataType == 'TEXT');
     }));
     return attributes$.pipe(first());
-  }
-
-
-  prepareStickyObserver(element: HTMLElement) {
-    if (this.stickyObserver) return;
-    const toObserve = element;
-    this.stickyObserver = new IntersectionObserver(
-      ([e]) => {
-        this.isHeaderNormal = e.isIntersecting;
-      },
-      { threshold: [1] }
-    );
-    this.stickyObserver.observe(toObserve)
   }
 
   prepareInformationSource(projectId: string) {
@@ -493,6 +468,15 @@ export class ZeroShotDetailsComponent
         const isDownloaded = this.downloadedModels.find(el => el.name === rec.configString);
         this.modelsDownloadedState.push(isDownloaded != undefined ? true : false);
       })
+    }
+  }
+
+  onScrollEvent(event: Event) {
+    if (!(event.target instanceof HTMLElement)) return;
+    if ((event.target as HTMLElement).scrollTop > 0) {
+      this.isHeaderNormal = false;
+    } else {
+      this.isHeaderNormal = true;
     }
   }
 }
