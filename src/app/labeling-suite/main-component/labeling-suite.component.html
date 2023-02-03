@@ -315,11 +315,13 @@
                 <span class="">Hover background</span>
                 <kern-dropdown [dropdownOptions]="{
                 optionArray:lsm.settingManager.hoverColorOptions,                
-                backgroundColors:lsm.settingManager.hoverColorOptions,
+                backgroundColors:lsm.settingManager.hoverColorClassArray,
                 buttonCaption:lsm.settingManager.settings.main.hoverGroupBackgroundColor,
                 buttonBgColor:lsm.settingManager.settings.main.hoverGroupBackgroundColorClass,
                 width:'100px',
-                emitIndex:true
+                emitIndex:true,
+                maxHeight:'calc(50vh - 75px)',
+                buttonWhitespace:'nowrap'
             }" (optionClicked)="changeSetting(componentTypeEnum.MAIN,'hoverGroupBackgroundColor',lsm.settingManager.hoverColorOptions[$event])">
                 </kern-dropdown>
                 <ng-container [ngTemplateOutlet]="settingInfo"
