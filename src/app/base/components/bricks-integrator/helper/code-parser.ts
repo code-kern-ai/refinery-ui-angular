@@ -154,7 +154,7 @@ export class BricksCodeParser {
 
 
     getCurrentFunctionLine(): string {
-        const lines = this.baseCode.split("\n");
+        const lines = this.base.config.preparedCode.split("\n");
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i].trim();
             if (line.startsWith('def ' + this.functionName + '(record')) {
@@ -358,13 +358,11 @@ export class BricksCodeParser {
     }
 
     checkFunctionNameAndSet(name: string) {
-        if (!name) return;
         this.nameTaken = !!(this.base.nameLookups?.find(x => x == name));
         name = toPythonFunctionName(name);
         if (this.base.config.preparedCode) {
             this.functionName = name;
-            this.base.config.preparedCode = this.replaceFunctionLine(this.base.config.preparedCode);
-            this.baseCode = this.base.config.preparedCode;
+            this.replaceVariables();
         }
         this.base.checkCanAccept();
     }
