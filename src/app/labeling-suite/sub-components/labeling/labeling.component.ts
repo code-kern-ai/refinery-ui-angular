@@ -1,6 +1,6 @@
 import { Component, ElementRef, HostListener, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { getLabelSourceOrder, getTaskTypeOrder, InformationSourceReturnType, LabelingTask, LabelSource, UserRole } from 'src/app/base/enum/graphql-enums';
-import { enumToArray, jsonCopy } from 'src/app/util/helper-functions';
+import { copyToClipboard, enumToArray, jsonCopy } from 'src/app/util/helper-functions';
 import { LabelingSuiteManager, UpdateType } from '../../helper/manager/manager';
 import { LabelingSuiteRlaPreparator } from '../../helper/manager/recordRla';
 import { ComponentType, LabelingSuiteLabelingSettings, LabelingSuiteSettings, LabelingSuiteTaskHeaderProjectSettings } from '../../helper/manager/settings';
@@ -414,6 +414,31 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
         return;
       }
     }
+  }
+
+  @HostListener('window:keydown', ['$event'])
+  onKeyPress($event: KeyboardEvent) {
+    if (($event.ctrlKey || $event.metaKey) && $event.key.toLowerCase() == 'c') {
+      const text = this.collectFakeSelectedText();
+      if (text.length > 0) copyToClipboard(text);
+    }
+  }
+
+  private collectFakeSelectedText(): string {
+    let selectionFound = false;
+    let finalText = '';
+    for (const attributeId in this.tokenLookup) {
+      for (const token of this.tokenLookup[attributeId].token) {
+        if (token.selected) {
+          if (!selectionFound) selectionFound = true;
+          finalText += token.value;
+          if (!token.nextCloser) finalText += ' ';
+        }
+        if (selectionFound && !token.selected) return finalText;
+      }
+    }
+
+    return finalText;
   }
 
   private parseSelectionData(): boolean {
