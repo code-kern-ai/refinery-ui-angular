@@ -363,7 +363,8 @@ export class BricksCodeParser {
         name = toPythonFunctionName(name);
         if (this.base.config.preparedCode) {
             this.functionName = name;
-            this.base.config.preparedCode = this.replaceFunctionLine(this.base.config.preparedCode);;
+            this.base.config.preparedCode = this.replaceFunctionLine(this.base.config.preparedCode);
+            this.baseCode = this.base.config.preparedCode;
         }
         this.base.checkCanAccept();
     }
