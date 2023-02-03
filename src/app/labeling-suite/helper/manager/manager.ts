@@ -54,11 +54,13 @@ export class LabelingSuiteManager implements DoBeforeDestroy {
     public nextRecord() {
         if (this.sessionManager.nextDisabled) return;
         this.recordManager.initRecordData();
+        this.userManager.recordChange();
         this.sessionManager.nextRecord();
     }
     public previousRecord() {
         if (this.sessionManager.prevDisabled) return;
         this.recordManager.initRecordData();
+        this.userManager.recordChange();
         this.sessionManager.previousRecord();
     }
 
