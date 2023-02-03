@@ -39,7 +39,6 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
   @Output() newTaskId = new EventEmitter<string>();
 
   @ViewChild("searchInput") searchInput: ElementRef;
-  @ViewChild("functionNameInput") functionNameInput: ElementRef;
 
   config: BricksIntegratorConfig;
   codeParser: BricksCodeParser;
@@ -180,7 +179,6 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
         case IntegratorPage.INPUT_EXAMPLE:
           // jump to integration
           this.config.page = IntegratorPage.INTEGRATION;
-          timer(100).subscribe(() => this.functionNameInput.nativeElement.focus());
           break;
         case IntegratorPage.INTEGRATION:
           //transfer code to editor
@@ -196,9 +194,6 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
     if (page == IntegratorPage.SEARCH || (this.config.api.requesting || this.config.api.data)) {
       this.config.page = page;
       this.checkCanAccept();
-    }
-    if (page == IntegratorPage.INTEGRATION) {
-      timer(100).subscribe(() => this.functionNameInput.nativeElement.focus());
     }
   }
 

@@ -51,6 +51,7 @@ export class BricksCodeParser {
     public replaceVariables() {
         let replacedCode = this.baseCode;
         const idxReplace = this.getIndexFunctionLine();
+        if (idxReplace == -1) return;
         const splitBase = this.baseCode.split("\n");
         splitBase[idxReplace] = splitBase[idxReplace]?.replace(getPythonFunctionName(splitBase[idxReplace]), this.functionName);
         replacedCode = splitBase.join("\n");
