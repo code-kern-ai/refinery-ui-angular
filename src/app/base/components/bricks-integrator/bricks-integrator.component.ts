@@ -1,10 +1,10 @@
 
 import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { timer } from 'rxjs';
 import { first } from 'rxjs/operators';
-import { findProjectIdFromRoute, getPythonFunctionName, isStringTrue, toPythonFunctionName } from 'src/app/util/helper-functions';
+import { findProjectIdFromRoute, isStringTrue } from 'src/app/util/helper-functions';
 import { KnowledgeBasesApolloService } from '../../services/knowledge-bases/knowledge-bases-apollo.service';
 import { ProjectApolloService } from '../../services/project/project-apollo.service';
 import { BricksCodeParser } from './helper/code-parser';
@@ -245,7 +245,7 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
     }
   }
 
-  private checkCanAccept() {
+  checkCanAccept() {
     switch (this.config.page) {
       case IntegratorPage.SEARCH:
         this.config.canAccept = this.config.api.moduleId != null;
@@ -339,15 +339,5 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
 
 
     if (this.newTaskId.observers.length > 0) this.newTaskId.emit(taskId);
-  }
-
-  checkIfFunctionNameIsUnique(name: string) {
-    this.codeParser.nameTaken = !!(this.nameLookups?.find(x => x == name));
-    name = toPythonFunctionName(name);
-    if (this.config.preparedCode) {
-      this.codeParser.functionName = name;
-      this.config.preparedCode = this.config.preparedCode.replace(new RegExp(getPythonFunctionName(this.config.preparedCode), 'g'), name);
-    }
-    this.checkCanAccept();
   }
 }

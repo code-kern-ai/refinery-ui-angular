@@ -1,4 +1,4 @@
-import { capitalizeFirst, enumToArray, getPythonFunctionName, isStringTrue } from "src/app/util/helper-functions"
+import { capitalizeFirst, enumToArray, getPythonFunctionName, isStringTrue, toPythonFunctionName } from "src/app/util/helper-functions"
 import { BricksIntegratorComponent } from "../bricks-integrator.component"
 import { BricksVariableComment, isCommentTrue } from "./comment-lookup";
 import { BricksExpectedLabels, BricksVariable, bricksVariableNeedsTaskId, BricksVariableType, ExpectedLabel, getEmptyBricksExpectedLabels, getEmptyBricksVariable } from "./type-helper";
@@ -28,7 +28,7 @@ export class BricksCodeParser {
         this.baseCode = this.base.config.api.data.data.attributes.sourceCode;
         this.globalComments = this.collectGlobalComment();
         this.functionName = getPythonFunctionName(this.baseCode);
-        this.base.checkIfFunctionNameIsUnique(this.functionName);
+        this.checkFunctionNameAndSet(this.functionName);
         const variableLines = this.collectVariableLines();
         if (variableLines.length == 0) {
             this.base.config.preparedCode = this.baseCode;
@@ -49,13 +49,7 @@ export class BricksCodeParser {
     }
 
     public replaceVariables() {
-        let replacedCode = this.baseCode;
-        const idxReplace = this.getIndexFunctionLine();
-        if (idxReplace == -1) return;
-        const splitBase = this.baseCode.split("\n");
-        splitBase[idxReplace] = splitBase[idxReplace]?.replace(getPythonFunctionName(splitBase[idxReplace]), this.functionName);
-        replacedCode = splitBase.join("\n");
-
+        let replacedCode = this.replaceFunctionLine(this.baseCode);
         for (let i = 0; i < this.variables.length; i++) {
             const variable = this.variables[i];
             this.prepareReplaceLine(variable);
@@ -170,8 +164,8 @@ export class BricksCodeParser {
         return null;
     }
 
-    getIndexFunctionLine(): number {
-        const lines = this.baseCode.split("\n");
+    getIndexFunctionLine(code: string): number {
+        const lines = code.split("\n");
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i].trim();
             const functionNameBase = getPythonFunctionName(line);
@@ -361,5 +355,25 @@ export class BricksCodeParser {
             default:
                 return null;
         }
+    }
+
+    checkFunctionNameAndSet(name: string) {
+        if (!name) return;
+        this.nameTaken = !!(this.base.nameLookups?.find(x => x == name));
+        name = toPythonFunctionName(name);
+        if (this.base.config.preparedCode) {
+            this.functionName = name;
+            this.base.config.preparedCode = this.replaceFunctionLine(this.base.config.preparedCode);;
+        }
+        this.base.checkCanAccept();
+    }
+
+    replaceFunctionLine(code: string): string {
+        let replacedCode = code;
+        const idxReplace = this.getIndexFunctionLine(code);
+        if (idxReplace == -1) return replacedCode;
+        const splitBase = code.split("\n");
+        splitBase[idxReplace] = splitBase[idxReplace]?.replace(getPythonFunctionName(splitBase[idxReplace]), this.functionName);
+        return splitBase.join("\n");
     }
 }

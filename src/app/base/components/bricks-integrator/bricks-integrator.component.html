@@ -368,7 +368,7 @@
                 <label class="font-bold col-start-1">{{functionType}} name</label>
                 <div class="contents">
                     <input #functionNameInput class="input input-bordered col-span-1 input-sm" type="text"
-                        (keyup)="checkIfFunctionNameIsUnique(functionNameInput.value)"
+                        (keyup)="codeParser.checkFunctionNameAndSet(functionNameInput.value)"
                         [value]="codeParser.functionName" />
                 </div>
                 <div class="col-span-1 inline-flex">
