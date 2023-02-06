@@ -197,9 +197,6 @@ export class KnowledgeBaseDetailsComponent implements OnInit, AfterViewInit, OnD
     if (this.knowledgeBaseName != event.target.value) {
       event.target.value = this.knowledgeBaseName;
     }
-    if (/^\d/.test(this.knowledgeBaseName)) {
-      this.knowledgeBaseName = 'list_' + this.knowledgeBaseName;
-    }
     this.isHeaderNormal = true;
   }
 

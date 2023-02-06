@@ -541,7 +541,6 @@ export class WeakSourceDetailsComponent
   }
 
   changeInformationSourceName(event) {
-    // if (this.informationSource.informationSourceType != InformationSourceType.LABELING_FUNCTION) return;
     this.informationSourceName = toPythonFunctionName(event.target.value);
     if (this.informationSourceName != event.target.value) {
       event.target.value = this.informationSourceName;
