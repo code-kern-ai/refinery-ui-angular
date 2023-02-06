@@ -506,7 +506,7 @@
         <select class="select select-bordered select-sm"
             [disabled]="!embeddingsFiltered || embeddingsFiltered.length == 0"
             [ngClass]="!embeddingsFiltered || embeddingsFiltered.length == 0 ? 'border-disabled' : 'opacity-100 cursor-pointer' "
-            (change)="this.embedding = $event.target.value">
+            (change)="heuristicsModals.createActiveLearning.embedding = $event.target.value;">
             <option *ngFor="let embedding of embeddingsFiltered;" [value]="embedding.name">
                 {{embedding.name }}
             </option>
