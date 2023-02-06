@@ -88,51 +88,52 @@
       </ng-container>
     </div>
     <ng-template #headerDisplay>
-      <table class="min-w-full border">
-        <tbody class="bg-white divide-y divide-gray-200">
-          <tr *ngFor="let task of displayData;let i = index" [ngClass]="i%2 == 0 ? 'bg-white':'bg-gray-50'">
-            <td class="font-bold py-2 pl-4 pr-3 text-sm text-gray-500 sm:pl-6 whitespace-nowrap"
-              hover-group-class="{{lsm.settingManager.settings.main.hoverGroupBackgroundColorClass}}"
-              hover-group="{{task.hoverGroups}}">
-              {{task.name}}
-            </td>
-            <td class="pl-3 py-2 text-sm text-gray-500 w-full" [ngClass]="i==0?'pr-8':'pr-3'">
-              <div class="flex flex-row flex-wrap gap-2">
-                <div #labelDiv *ngFor="let labelId of task.labelOrder; let i = index"
-                  hover-group-class="{{task.labels[labelId].color.backgroundColor}}"
-                  hover-group="{{task.labels[labelId].hoverGroups}}"
-                  class="text-sm font-medium px-2 py-0.5 rounded-md border focus:outline-none cursor-pointer flex flex-row flex-no-wrap gap-x-1 items-center"
-                  (click)="setLabelSettingsLabel(task.labels[labelId]);labelSettingsBoxPosition(labelDiv,baseDomElement);">
-                  <div *ngIf="htmlSettings[task.id][labelId] as labelSetting" class="grid grid-cols-2"
-                    style="gap:0.125rem">
-                    <div class="w-2.5 h-2.5 border rounded-full"
-                      [ngClass]="[labelSetting.showManual?task.labels[labelId].color.backgroundColor:'bg-white', task.labels[labelId].color.borderColor]">
+      <div class="overflow-hidden border md:rounded-lg">
+        <table class="min-w-full">
+          <tbody class="bg-white divide-y divide-gray-200">
+            <tr *ngFor="let task of displayData;let i = index" [ngClass]="i%2 == 0 ? 'bg-white':'bg-gray-50'">
+              <td class="font-bold py-2 pl-4 pr-3 text-sm text-gray-500 sm:pl-6 whitespace-nowrap"
+                hover-group-class="{{lsm.settingManager.settings.main.hoverGroupBackgroundColorClass}}"
+                hover-group="{{task.hoverGroups}}">
+                {{task.name}}
+              </td>
+              <td class="pl-3 py-2 text-sm text-gray-500 w-full" [ngClass]="i==0?'pr-8':'pr-3'">
+                <div class="flex flex-row flex-wrap gap-2">
+                  <div #labelDiv *ngFor="let labelId of task.labelOrder; let i = index"
+                    hover-group-class="{{task.labels[labelId].color.backgroundColor}}"
+                    hover-group="{{task.labels[labelId].hoverGroups}}"
+                    class="text-sm font-medium px-2 py-0.5 rounded-md border focus:outline-none cursor-pointer flex flex-row flex-no-wrap gap-x-1 items-center"
+                    (click)="setLabelSettingsLabel(task.labels[labelId]);labelSettingsBoxPosition(labelDiv,baseDomElement);">
+                    <div *ngIf="htmlSettings[task.id][labelId] as labelSetting" class="grid grid-cols-2"
+                      style="gap:0.125rem">
+                      <div class="w-2.5 h-2.5 border rounded-full"
+                        [ngClass]="[labelSetting.showManual?task.labels[labelId].color.backgroundColor:'bg-white', task.labels[labelId].color.borderColor]">
+                      </div>
+                      <div class="w-2.5 h-2.5 border rounded-full"
+                        [ngClass]="[labelSetting.showWeakSupervision?task.labels[labelId].color.backgroundColor:'bg-white', task.labels[labelId].color.borderColor]">
+                      </div>
+                      <div class="w-2.5 h-2.5 border rounded-full"
+                        [ngClass]="[labelSetting.showModel?task.labels[labelId].color.backgroundColor:'bg-white', task.labels[labelId].color.borderColor]">
+                      </div>
+                      <div class="w-2.5 h-2.5 border rounded-full"
+                        [ngClass]="[labelSetting.showHeuristics?task.labels[labelId].color.backgroundColor:'bg-white', task.labels[labelId].color.borderColor]">
+                      </div>
                     </div>
-                    <div class="w-2.5 h-2.5 border rounded-full"
-                      [ngClass]="[labelSetting.showWeakSupervision?task.labels[labelId].color.backgroundColor:'bg-white', task.labels[labelId].color.borderColor]">
+                    <div class="truncate" style="max-width: 260px;">{{task.labels[labelId].name}}
                     </div>
-                    <div class="w-2.5 h-2.5 border rounded-full"
-                      [ngClass]="[labelSetting.showModel?task.labels[labelId].color.backgroundColor:'bg-white', task.labels[labelId].color.borderColor]">
-                    </div>
-                    <div class="w-2.5 h-2.5 border rounded-full"
-                      [ngClass]="[labelSetting.showHeuristics?task.labels[labelId].color.backgroundColor:'bg-white', task.labels[labelId].color.borderColor]">
-                    </div>
-                  </div>
-                  <div class="truncate" style="max-width: 260px;">{{task.labels[labelId].name}}
                   </div>
                 </div>
-              </div>
-            </td>
-          </tr>
-          <tr *ngIf="lsm.settingManager.settings.task.alwaysShowQuickButtons"
-            [ngClass]="displayData.length%2==0?'bg-white':'bg-gray-50'">
-            <td class="font-bold py-2 pl-4 pr-3 text-sm text-gray-500 sm:pl-6">Quick buttons</td>
-            <td class="px-3 py-2 text-sm text-gray-500 w-full"><ng-container [ngTemplateOutlet]="quickButtons">
-              </ng-container></td>
-          </tr>
-        </tbody>
-      </table>
-
+              </td>
+            </tr>
+            <tr *ngIf="lsm.settingManager.settings.task.alwaysShowQuickButtons"
+              [ngClass]="displayData.length%2==0?'bg-white':'bg-gray-50'">
+              <td class="font-bold py-2 pl-4 pr-3 text-sm text-gray-500 sm:pl-6">Quick buttons</td>
+              <td class="px-3 py-2 text-sm text-gray-500 w-full"><ng-container [ngTemplateOutlet]="quickButtons">
+                </ng-container></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </ng-template>
   </ng-template>
   <ng-template #noTasks>
