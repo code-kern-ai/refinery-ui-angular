@@ -156,7 +156,7 @@ export function copyToClipboard(textToCopy: string) {
     navigator.clipboard.writeText(textToCopy);
 }
 export function toPythonFunctionName(str: string) {
-    return str.replace(/\s+/g, '_').replace(/[^\w]/gi, '').trim();
+    return str.toLowerCase().replace(/\s+/g, '_').replace(/[^\w]/gi, '').trim();
 }
 
 export function getUserAvatarUri(user) {
@@ -181,7 +181,7 @@ export function getColorForDataType(dataType): string {
 
 
 export function asPythonVariable(baseName: string) {
-    return baseName.toLowerCase().replace(/ /g, "_")
+    return baseName.toLowerCase().replace(/ /g, "_").replace(/[^\w]/gi, '').trim();
 }
 
 export function tryParseJSON(str: string): any {

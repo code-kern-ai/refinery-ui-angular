@@ -23,6 +23,7 @@ import { createDefaultLookupListDetailsModals, LookupListsDetailsModals } from '
 import { UploadFileType } from 'src/app/import/components/helpers/upload-types';
 import { Project } from 'src/app/base/entities/project';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
+import { toPythonFunctionName } from 'src/app/util/helper-functions';
 
 
 @Component({
@@ -192,7 +193,13 @@ export class KnowledgeBaseDetailsComponent implements OnInit, AfterViewInit, OnD
   }
 
   changeKnowledgeBaseName(event) {
-    this.knowledgeBaseName = event.target.value;
+    this.knowledgeBaseName = toPythonFunctionName(event.target.value);
+    if (this.knowledgeBaseName != event.target.value) {
+      event.target.value = this.knowledgeBaseName;
+    }
+    if (/^\d/.test(this.knowledgeBaseName)) {
+      this.knowledgeBaseName = 'list_' + this.knowledgeBaseName;
+    }
     this.isHeaderNormal = true;
   }
 
