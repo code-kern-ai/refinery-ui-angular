@@ -46,6 +46,7 @@ export type DropdownOptions = {
     keepDropdownOpen?: boolean;
     buttonTooltip?: string;
     buttonTooltipPosition?: string;
+    buttonWhitespace?: string;
     isDisabled?: boolean;
     isOptionDisabled?: boolean[];
     optionTooltips?: string[];
