@@ -1,4 +1,4 @@
-import { capitalizeFirst, enumToArray, getPythonFunctionName, isStringTrue, toPythonFunctionName } from "src/app/util/helper-functions"
+import { capitalizeFirst, capitalizeFirstForClassName, enumToArray, getPythonClassName, getPythonFunctionName, isStringTrue, toPythonFunctionName } from "src/app/util/helper-functions"
 import { BricksIntegratorComponent } from "../bricks-integrator.component"
 import { BricksVariableComment, isCommentTrue } from "./comment-lookup";
 import { BricksExpectedLabels, BricksVariable, bricksVariableNeedsTaskId, BricksVariableType, ExpectedLabel, getEmptyBricksExpectedLabels, getEmptyBricksVariable } from "./type-helper";
@@ -27,7 +27,7 @@ export class BricksCodeParser {
 
         this.baseCode = this.base.config.api.data.data.attributes.sourceCode;
         this.globalComments = this.collectGlobalComment();
-        this.functionName = getPythonFunctionName(this.baseCode);
+        this.functionName = this.base.executionTypeFilter == "activeLearner" ? getPythonClassName(this.baseCode) : getPythonFunctionName(this.baseCode);
         this.checkFunctionNameAndSet(this.functionName);
         const variableLines = this.collectVariableLines();
         if (variableLines.length == 0) {
@@ -168,9 +168,17 @@ export class BricksCodeParser {
         const lines = code.split("\n");
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i].trim();
-            const functionNameBase = getPythonFunctionName(line);
-            if (line.startsWith('def ' + functionNameBase + '(record')) {
-                return i;
+            let functionNameBase = null;
+            if (this.base.executionTypeFilter == "activeLearner") {
+                functionNameBase = getPythonClassName(line);
+                if (line.startsWith('class ' + functionNameBase)) {
+                    return i;
+                }
+            } else {
+                functionNameBase = getPythonFunctionName(line);
+                if (line.startsWith('def ' + functionNameBase + '(record')) {
+                    return i;
+                }
             }
         }
         return -1;
@@ -359,7 +367,11 @@ export class BricksCodeParser {
 
     checkFunctionNameAndSet(name: string) {
         this.nameTaken = !!(this.base.nameLookups?.find(x => x == name));
-        name = toPythonFunctionName(name);
+        if (this.base.executionTypeFilter == "activeLearner") {
+            name = capitalizeFirstForClassName(name);
+        } else {
+            name = toPythonFunctionName(name);
+        }
         if (this.base.config.preparedCode) {
             this.functionName = name;
             this.replaceVariables();
@@ -372,7 +384,11 @@ export class BricksCodeParser {
         const idxReplace = this.getIndexFunctionLine(code);
         if (idxReplace == -1) return replacedCode;
         const splitBase = code.split("\n");
-        splitBase[idxReplace] = splitBase[idxReplace]?.replace(getPythonFunctionName(splitBase[idxReplace]), this.functionName);
+        if (this.base.executionTypeFilter == "activeLearner") {
+            splitBase[idxReplace] = splitBase[idxReplace]?.replace(getPythonClassName(splitBase[idxReplace]), this.functionName);
+        } else {
+            splitBase[idxReplace] = splitBase[idxReplace]?.replace(getPythonFunctionName(splitBase[idxReplace]), this.functionName);
+        }
         return splitBase.join("\n");
     }
 }
