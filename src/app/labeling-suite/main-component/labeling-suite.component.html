@@ -288,7 +288,7 @@
                         <button (click)="lsm.settingManager.switchToPage(componentTypeEnum.TASK_HEADER)"
                             [ngClass]="[lsm.settingManager.page == componentTypeEnum.TASK_HEADER ? 'border-indigo-500 text-indigo-600':'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300']"
                             class="cursor-pointer whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">Task
-                            Overview</button>
+                            Legend</button>
                         <button (click)="lsm.settingManager.switchToPage(componentTypeEnum.LABELING)"
                             [ngClass]="[lsm.settingManager.page == componentTypeEnum.LABELING ? 'border-indigo-500 text-indigo-600':'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300']"
                             class="cursor-pointer whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">Labeling</button>
@@ -339,7 +339,7 @@
                 at the
                 top</p>
             <div class="grid grid-cols-3-max gap-y-2 gap-x-4 items-center">
-                <span class="">Show task overview</span>
+                <span class="">Show task legend</span>
                 <span class="cursor-pointer flex items-center"
                     (click)="changeSetting(componentTypeEnum.TASK_HEADER,'show')"><input class="h-5 w-5 cursor-pointer"
                         type="checkbox" [checked]='lsm.settingManager.settings.task.show'></span>
@@ -424,7 +424,7 @@
         <div [ngClass]="lsm.settingManager.page != componentTypeEnum.OVERVIEW_TABLE ? 'hidden':''"
             class="flex flex-col gap-y-2 items-center my-4">
             <div class="grid grid-cols-3-max gap-y-2 gap-x-4 items-center">
-                <span class="">show overview table</span>
+                <span class="">Show overview table</span>
                 <span class="cursor-pointer flex items-center"
                     (click)="changeSetting(componentTypeEnum.OVERVIEW_TABLE,'show')"><input
                         class="h-5 w-5 cursor-pointer" type="checkbox"
@@ -440,13 +440,13 @@
                 <ng-container [ngTemplateOutlet]="settingInfo"
                     [ngTemplateOutletContext]="{dataTip:'Hide/Show heuristics in overview table to reduce bias'}">
                 </ng-container>
-                <span class="">Include task overview settings</span>
+                <span class="">Include task legend settings</span>
                 <span class="cursor-pointer flex items-center"
                     (click)="changeSetting(componentTypeEnum.OVERVIEW_TABLE,'includeLabelDisplaySettings')"><input
                         class="h-5 w-5 cursor-pointer" type="checkbox"
                         [checked]='lsm.settingManager.settings.overviewTable.includeLabelDisplaySettings'></span>
                 <ng-container [ngTemplateOutlet]="settingInfo"
-                    [ngTemplateOutletContext]="{dataTip:'If active the table will filter entries depending on task overview settings'}">
+                    [ngTemplateOutletContext]="{dataTip:'If active the table will filter entries depending on task legend settings.&#10;&#10;Note that \'show heuristic\' disabled will overrule this'}">
                 </ng-container>
             </div>
         </div>

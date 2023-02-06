@@ -153,11 +153,13 @@
                                         attr.data-tip="{{rlaLabel.dataTip}}">
                                         <div class="text-sm font-medium px-2 py-0.5 rounded-md border focus:outline-none relative flex items-center"
                                             (click)="rlaLabel.sourceTypeKey == 'WEAK_SUPERVISION'?addRla(task.task,rlaLabel.labelId):null"
-                                            hover-group="{{rlaLabel.hoverGroups.rlaId}}" hover-group-main-count="2"
+                                            hover-group="{{rlaLabel.hoverGroups.rlaId}}"
+                                            hover-add-group="{{rlaLabel.hoverGroups.addGroup}}"
                                             [ngClass]="[labelLookup[rlaLabel.labelId].color.backgroundColor,labelLookup[rlaLabel.labelId].color.textColor, labelLookup[rlaLabel.labelId].color.borderColor,rlaLabel.sourceTypeKey == 'WEAK_SUPERVISION'?'cursor-pointer':'cursor-default']">
                                             <div class="label-overlay-base"
                                                 hover-group-class="{{rlaLabel.hoverGroups.labelClass}}"
-                                                hover-group="{{rlaLabel.hoverGroups.label}}">
+                                                hover-group="{{rlaLabel.hoverGroups.label}}"
+                                                hover-add-group="{{rlaLabel.hoverGroups.addGroup}}">
                                             </div>
 
                                             <ng-template [ngIf]="rlaLabel.icon">
@@ -313,6 +315,7 @@
                         <div class="h-px flex items-end w-full relative"
                             [ngClass]="[labelLookup[rlaItem.labelId].color.backgroundColor,labelLookup[rlaItem.labelId].color.textColor, labelLookup[rlaItem.labelId].color.borderColor]"
                             hover-group-class="full-overlay-height" hover-group="{{rlaItem.hoverGroups.rlaId}}"
+                            hover-add-group="{{rlaItem.hoverGroups.addGroup}}"
                             style="border-bottom-width:1px; border-top-width:1px; border-style:solid;left:-2px;"
                             style.border-style="{{rlaItem.rla.sourceType == 'MANUAL'?'solid':'dashed'}}"
                             style.border-left-width="{{rlaItem.isFirst?'1px':null}}"

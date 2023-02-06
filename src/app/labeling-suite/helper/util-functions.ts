@@ -21,7 +21,7 @@ export function getHoverGroupsOverviewTable(data: any): any {
 export function getHoverGroupsForLabeling(data: any): any {
     const g = getHoverGroupsOverviewTable(data);
     // LAX_ = helper for additional group for highlighting in label view
-    g.rlaId = "LAX_" + data.labelingTaskLabel.id + "," + g.rlaId;
+    g.addGroup = "LAX_" + data.labelingTaskLabel.id;
     return g;
 }
 

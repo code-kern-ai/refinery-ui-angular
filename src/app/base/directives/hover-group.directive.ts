@@ -8,49 +8,51 @@ import {
 } from '@angular/core';
 
 @Directive({
-  selector: '[hover-group], [hover-group-class]',
+  selector: '[hover-group], [hover-group-class], [hover-add-group]'
 })
 export class HoverGroupDirective implements OnDestroy, OnInit {
   constructor(public elementRef: ElementRef) { }
-  //caution! the first N groups are the main groups and used to highlight corresponding elements
+  //caution! the first group is the main groups and used to highlight corresponding elements
   //the other provided groups are only meant as additional highlight conditions
-  // N = groupCount
+  //however if there are more groups needed for conditions but not containment use add-group
+
+
   @Input('hover-group') hoverGroup: any;
   @Input('hover-group-class') hoverClass: any;
-  @Input('hover-group-main-count') groupCount: any = 1;
+  @Input('hover-add-group') addGroup: any;
 
   private finalGroups: string[];
+  private finalAddGroups: string[];
+  private finalClasses: string[];
   public static disableHover = false;
 
   @HostListener('mouseenter') onMouseEnter() {
     if (HoverGroupDirective.disableHover) return;
-    if (!this.finalGroups || this.finalGroups.length == 0) return;
-    for (let i = 0; i < this.groupCount; i++) {
-      if (i >= this.finalGroups.length) break;
-      const highlightGroup = this.finalGroups[i];
-      for (let e of HoverGroupElementRefs.getElements(highlightGroup)) {
-        if (!e.hoverClass) continue;
-        for (let v of e.hoverClass.split(' ')) {
-          if (v) e.elementRef.nativeElement.classList.add(v);
-        }
-      }
-
-    }
+    this.loopGroups(this.finalGroups, true);
+    this.loopGroups(this.finalAddGroups, true);
   }
 
   @HostListener('mouseleave') onMouseLeave() {
     if (HoverGroupDirective.disableHover) return;
-    if (!this.finalGroups || this.finalGroups.length == 0) return;
-    for (let i = 0; i < this.groupCount; i++) {
-      if (i >= this.finalGroups.length) break;
-      const highlightGroup = this.finalGroups[i];
-      for (let e of HoverGroupElementRefs.getElements(highlightGroup)) {
-        if (!e.hoverClass) continue;
-        for (let v of e.hoverClass.split(' ')) {
-          if (v) e.elementRef.nativeElement.classList.remove(v);
+    this.loopGroups(this.finalGroups, false);
+    this.loopGroups(this.finalAddGroups, false);
+  }
+
+  private enterExitLogic(group: string, add: boolean) {
+    for (let e of HoverGroupElementRefs.getElements(group)) {
+      if (!e.finalClasses) continue;
+      for (let v of e.finalClasses) {
+        if (v) {
+          if (add) e.elementRef.nativeElement.classList.add(v);
+          else e.elementRef.nativeElement.classList.remove(v);
         }
       }
     }
+  }
+
+  private loopGroups(groupList: string[], add: boolean) {
+    if (!groupList || groupList.length == 0) return;
+    this.enterExitLogic(groupList[0], add);
   }
 
   ngOnDestroy(): void {
@@ -60,14 +62,26 @@ export class HoverGroupDirective implements OnDestroy, OnInit {
 
   ngOnInit(): void {
     if (!this.hoverGroup) this.finalGroups = ['dummy-group'];
-    if (typeof this.groupCount == 'string') this.groupCount = parseInt(this.groupCount);
-    if (this.groupCount < 1) this.groupCount = 1;
 
     if (!Array.isArray(this.hoverGroup))
       this.finalGroups = this.hoverGroup.split(',').map((v) => v.trim());
     else this.finalGroups = this.hoverGroup;
     for (const g of this.finalGroups) HoverGroupElementRefs.push(g, this);
 
+    if (this.hoverClass) {
+      if (!Array.isArray(this.hoverClass))
+        this.finalClasses = this.hoverClass.split(' ').map((v) => v.trim());
+      else this.finalClasses = this.hoverClass;
+
+    }
+
+    if (this.addGroup) {
+      if (!Array.isArray(this.addGroup))
+        this.finalAddGroups = this.addGroup.split(',').map((v) => v.trim());
+      else this.finalAddGroups = this.addGroup;
+      //no need to push since they are not meant to be used like that
+
+    }
   }
 
 }
