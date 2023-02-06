@@ -88,7 +88,7 @@
       </ng-container>
     </div>
     <ng-template #headerDisplay>
-      <div class="overflow-hidden border md:rounded-lg">
+      <div class="border md:rounded-lg">
         <table class="min-w-full">
           <tbody class="bg-white divide-y divide-gray-200">
             <tr *ngFor="let task of displayData;let i = index" [ngClass]="i%2 == 0 ? 'bg-white':'bg-gray-50'">
@@ -185,7 +185,7 @@
 
 
 <ng-template #quickButtons>
-  <div class="flex flex-row flex-wrap gap-2">
+  <div class="flex flex-row flex-wrap gap-2 items-center">
     <ng-container [ngTemplateOutlet]="quickButton"
       [ngTemplateOutletContext]="{attributeName:'showManual',caption:'Manual',dataTipCaption:'manual', hoverClass:'label-overlay-manual'}">
     </ng-container>
@@ -204,39 +204,46 @@
     <div class="flex flex-row flex-nowrap gap-x-2">
 
       <button (click)="setAllLabelDisplaySetting(true)"
-        class="inline-flex items-center bg-white text-gray-700 text-xs font-semibold py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none"
-        [ngClass]="lsm.settingManager.settings.task.isCollapsed?'px-2':'px-4'">
-        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-checks" width="24" height="24"
-          viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
-          stroke-linejoin="round">
-          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-          <path d="M7 12l5 5l10 -10"></path>
-          <path d="M2 12l5 5m5 -5l5 -5"></path>
-        </svg>
+        class="text-sm font-medium px-2 py-0.5 rounded-md border focus:outline-none cursor-pointer flex flex-row flex-no-wrap gap-x-1 items-center">
+        <div *ngIf="quickButtonConfig.all as labelSetting" class="grid grid-cols-2" style="gap:0.125rem">
+          <div class="w-2.5 h-2.5 border rounded-full" [ngClass]="labelSetting[0]">
+          </div>
+          <div class="w-2.5 h-2.5 border rounded-full" [ngClass]="labelSetting[1]">
+          </div>
+          <div class="w-2.5 h-2.5 border rounded-full" [ngClass]="labelSetting[2]">
+          </div>
+          <div class="w-2.5 h-2.5 border rounded-full" [ngClass]="labelSetting[3]">
+          </div>
+        </div>
         All
       </button>
-
       <button (click)="setAllLabelDisplaySetting(false)"
-        class="inline-flex items-center bg-white text-gray-700 text-xs font-semibold py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none"
-        [ngClass]="lsm.settingManager.settings.task.isCollapsed?'px-2':'px-4'">
-        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-x" width="24" height="24"
-          viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
-          stroke-linejoin="round">
-          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-          <line x1="18" y1="6" x2="6" y2="18"></line>
-          <line x1="6" y1="6" x2="18" y2="18"></line>
-        </svg>
+        class="text-sm font-medium px-2 py-0.5 rounded-md border focus:outline-none cursor-pointer flex flex-row flex-no-wrap gap-x-1 items-center">
+        <div *ngIf="quickButtonConfig.nothing as labelSetting" class="grid grid-cols-2" style="gap:0.125rem">
+          <div class="w-2.5 h-2.5 border rounded-full" [ngClass]="labelSetting[0]">
+          </div>
+          <div class="w-2.5 h-2.5 border rounded-full" [ngClass]="labelSetting[1]">
+          </div>
+          <div class="w-2.5 h-2.5 border rounded-full" [ngClass]="labelSetting[2]">
+          </div>
+          <div class="w-2.5 h-2.5 border rounded-full" [ngClass]="labelSetting[3]">
+          </div>
+        </div>
         Nothing
       </button>
+
       <button (click)="setAllLabelDisplaySettingDefault()"
-        class="inline-flex items-center bg-white text-gray-700 text-xs font-semibold py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none"
-        [ngClass]="lsm.settingManager.settings.task.isCollapsed?'px-2':'px-4'">
-        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-arrow-back-up" width="24"
-          height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
-          stroke-linejoin="round">
-          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-          <path d="M9 13l-4 -4l4 -4m-4 4h11a4 4 0 0 1 0 8h-1"></path>
-        </svg>
+        class="text-sm font-medium px-2 py-0.5 rounded-md border focus:outline-none cursor-pointer flex flex-row flex-no-wrap gap-x-1 items-center">
+        <div *ngIf="quickButtonConfig.default as labelSetting" class="grid grid-cols-2" style="gap:0.125rem">
+          <div class="w-2.5 h-2.5 border rounded-full" [ngClass]="labelSetting[0]">
+          </div>
+          <div class="w-2.5 h-2.5 border rounded-full" [ngClass]="labelSetting[1]">
+          </div>
+          <div class="w-2.5 h-2.5 border rounded-full" [ngClass]="labelSetting[2]">
+          </div>
+          <div class="w-2.5 h-2.5 border rounded-full" [ngClass]="labelSetting[3]">
+          </div>
+        </div>
         Default
       </button>
     </div>
@@ -250,17 +257,19 @@
 
   <div class="tooltip"
     [ngClass]="lsm.settingManager.settings.task.isCollapsed && caption == 'Manual'?'tooltip-right':'tooltip-bottom'"
-    attr.data-tip="{{'Show '+ dataTipCaption +' labels in labeling view'}}">
+    attr.data-tip="{{'Activate '+ dataTipCaption +' labels in labeling view'}}">
     <button (click)="setAllLabelDisplaySetting(true,null,attributeName)" hover-group="{{attributeName}}"
-      class="inline-flex items-center bg-white text-gray-700 text-xs font-semibold py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none"
-      [ngClass]="lsm.settingManager.settings.task.isCollapsed?'px-2':'px-4'">
-      <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 icon icon-tabler icon-tabler-square-check" width="24"
-        height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
-        stroke-linejoin="round">
-        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-        <rect x="4" y="4" width="16" height="16" rx="2"></rect>
-        <path d="M9 12l2 2l4 -4"></path>
-      </svg>{{caption}}
+      class="text-sm font-medium px-2 py-0.5 rounded-md border focus:outline-none cursor-pointer flex flex-row flex-no-wrap gap-x-1 items-center">
+      <div *ngIf="quickButtonConfig[attributeName] as labelSetting" class="grid grid-cols-2 " style="gap:0.125rem">
+        <div class="w-2.5 h-2.5 border rounded-full" [ngClass]="labelSetting[0]">
+        </div>
+        <div class="w-2.5 h-2.5 border rounded-full" [ngClass]="labelSetting[1]">
+        </div>
+        <div class="w-2.5 h-2.5 border rounded-full" [ngClass]="labelSetting[2]">
+        </div>
+        <div class="w-2.5 h-2.5 border rounded-full" [ngClass]="labelSetting[3]">
+        </div>
+      </div>{{caption}}
       <div class="label-overlay-base" hover-group-class="{{hoverClass}}" hover-group="{{attributeName}}"></div>
     </button>
   </div>
