@@ -367,11 +367,7 @@ export class BricksCodeParser {
 
     checkFunctionNameAndSet(name: string) {
         this.nameTaken = !!(this.base.nameLookups?.find(x => x == name));
-        if (this.base.executionTypeFilter == "activeLearner") {
-            name = capitalizeFirstForClassName(name);
-        } else {
-            name = toPythonFunctionName(name);
-        }
+        name = this.base.executionTypeFilter == "activeLearner" ? capitalizeFirstForClassName(name) : toPythonFunctionName(name);
         if (this.base.config.preparedCode) {
             this.functionName = name;
             this.replaceVariables();
@@ -384,11 +380,8 @@ export class BricksCodeParser {
         const idxReplace = this.getIndexFunctionLine(code);
         if (idxReplace == -1) return replacedCode;
         const splitBase = code.split("\n");
-        if (this.base.executionTypeFilter == "activeLearner") {
-            splitBase[idxReplace] = splitBase[idxReplace]?.replace(getPythonClassName(splitBase[idxReplace]), this.functionName);
-        } else {
-            splitBase[idxReplace] = splitBase[idxReplace]?.replace(getPythonFunctionName(splitBase[idxReplace]), this.functionName);
-        }
+        const getPythonName = this.base.executionTypeFilter == "activeLearner" ? getPythonClassName(splitBase[idxReplace]) : getPythonFunctionName(splitBase[idxReplace]);
+        splitBase[idxReplace] = splitBase[idxReplace]?.replace(getPythonName, this.functionName);
         return splitBase.join("\n");
     }
 }
