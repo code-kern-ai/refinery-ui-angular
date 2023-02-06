@@ -671,7 +671,7 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
     const bOrder = getLabelSourceOrder(b.sourceType, b.isType);
     if (aOrder != bOrder) return aOrder - bOrder;
 
-    const order = ["createdBy", "taskName", "labelName"];
+    const order = ["taskName", "createdBy", "labelName"];
     for (const key of order) {
       if (a[key] < b[key]) return -1;
       if (a[key] > b[key]) return 1;

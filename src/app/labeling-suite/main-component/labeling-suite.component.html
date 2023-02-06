@@ -125,7 +125,7 @@
                         <button #previousButton tabindex="0" [disabled]="lsm.sessionManager.prevDisabled?true:null"
                             [ngClass]="previousButton.disabled ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
                             (click)="previousRecord()"
-                            class="bg-white text-gray-700 text-xs font-semibold mr-3 px-4 py-1.5 rounded-md border border-gray-300 whitespace-nowrap inline-flex items-center hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Back
+                            class="bg-white text-gray-700 text-xs font-semibold mr-3 px-4 py-1.5 rounded-md border border-gray-300 whitespace-nowrap inline-flex items-center hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Prev
                             <kbd
                                 class="relative ml-1 inline-flex items-center border bg-white border-gray-200 rounded px-0.5 py-0.5 text-sm font-sans font-medium text-gray-400"><svg
                                     xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block" viewBox="0 0 20 20"
@@ -339,7 +339,7 @@
                 at the
                 top</p>
             <div class="grid grid-cols-3-max gap-y-2 gap-x-4 items-center">
-                <span class="">Show feature</span>
+                <span class="">Show task overview</span>
                 <span class="cursor-pointer flex items-center"
                     (click)="changeSetting(componentTypeEnum.TASK_HEADER,'show')"><input class="h-5 w-5 cursor-pointer"
                         type="checkbox" [checked]='lsm.settingManager.settings.task.show'></span>
@@ -399,7 +399,7 @@
                         class="h-5 w-5 cursor-pointer" type="checkbox"
                         [checked]='lsm.settingManager.settings.labeling.showHeuristicConfidence'></span>
                 <ng-container [ngTemplateOutlet]="settingInfo"
-                    [ngTemplateOutletContext]="{dataTip:'Display the heuristic label confidence.&#10;&#10;Note that this confidence is multiplied with the heuristic accuracy during weak supervision'}">
+                    [ngTemplateOutletContext]="{dataTip:'Display the heuristic label confidence.&#10;&#10;Please see in our docs for more information on confidence calculation.'}">
                 </ng-container>
 
                 <span class="">Compact classification label display</span>
@@ -416,7 +416,7 @@
                         class="h-5 w-5 cursor-pointer" type="checkbox"
                         [checked]='lsm.settingManager.settings.labeling.swimLaneExtractionDisplay'></span>
                 <ng-container [ngTemplateOutlet]="settingInfo"
-                    [ngTemplateOutletContext]="{dataTip:'Use swim lanes to display extraction labels.&#10;&#10;Might use a lot of space'}">
+                    [ngTemplateOutletContext]="{dataTip:'Groups display of labels in type, task, creator & label. Same group gets the same distance to the text.&#10;&#10;Might use a lot of space'}">
                 </ng-container>
             </div>
         </div>
@@ -424,7 +424,7 @@
         <div [ngClass]="lsm.settingManager.page != componentTypeEnum.OVERVIEW_TABLE ? 'hidden':''"
             class="flex flex-col gap-y-2 items-center my-4">
             <div class="grid grid-cols-3-max gap-y-2 gap-x-4 items-center">
-                <span class="">Show feature</span>
+                <span class="">show overview table</span>
                 <span class="cursor-pointer flex items-center"
                     (click)="changeSetting(componentTypeEnum.OVERVIEW_TABLE,'show')"><input
                         class="h-5 w-5 cursor-pointer" type="checkbox"
@@ -440,13 +440,13 @@
                 <ng-container [ngTemplateOutlet]="settingInfo"
                     [ngTemplateOutletContext]="{dataTip:'Hide/Show heuristics in overview table to reduce bias'}">
                 </ng-container>
-                <span class="">Include label display settings</span>
+                <span class="">Include task overview settings</span>
                 <span class="cursor-pointer flex items-center"
                     (click)="changeSetting(componentTypeEnum.OVERVIEW_TABLE,'includeLabelDisplaySettings')"><input
                         class="h-5 w-5 cursor-pointer" type="checkbox"
                         [checked]='lsm.settingManager.settings.overviewTable.includeLabelDisplaySettings'></span>
                 <ng-container [ngTemplateOutlet]="settingInfo"
-                    [ngTemplateOutletContext]="{dataTip:'If active the table will filter entries depending on the settings provided in the task overview'}">
+                    [ngTemplateOutletContext]="{dataTip:'If active the table will filter entries depending on task overview settings'}">
                 </ng-container>
             </div>
         </div>
