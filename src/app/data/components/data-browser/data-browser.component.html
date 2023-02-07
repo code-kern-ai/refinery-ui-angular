@@ -943,7 +943,7 @@
 </kern-modal>
 
 <kern-modal [isOpen]="dataBrowserModals.filter.open" closeButton="X" [modalBoxStyle]="{'width':'35rem'}" [acceptButton]="{
-    buttonCaption: dataBrowserModals.filter.sliceNameExists? 'Update filter':'Save data slice',
+    buttonCaption: dataBrowserModals.filter.sliceNameExists? 'Update data slice':'Save data slice',
     disabled: inputSliceName.value == ''
 }"
     (optionClicked)="dataBrowserModals.filter.open = false; dataBrowserModals.filter.sliceNameExists? updateSliceByName(inputSliceName.value) :createSlice(inputSliceName.value);inputSliceName.value=''">
