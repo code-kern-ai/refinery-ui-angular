@@ -338,6 +338,7 @@
             </ng-template>
 
         </ng-template>
+
         <ng-template [ngIf]="codeParser?.globalComments && codeParser.globalComments.length>0">
             <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded relative flex flex-col"
                 role="alert">
@@ -364,6 +365,27 @@
         <ng-template #displaySelectionHelper>
 
             <div class="grid grid-cols-3-max gap-x-2 gap-y-2 items-center pb-4 px-4">
+                <label class="font-bold col-start-1">{{functionType}} name</label>
+                <div class="contents">
+                    <input class="input input-bordered col-span-1 input-sm" type="text"
+                        style="outline:none; box-shadow:none;" (input)="onInputFunctionName($event)"
+                        [value]="codeParser.functionName" />
+                </div>
+                <div class="col-span-1 inline-flex">
+                    <div class="tooltip" *ngIf=" codeParser.nameTaken"
+                        attr.data-tip="{{functionType + ' name exists'}}">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                            class="icon icon-tabler icon-tabler-alert-triangle text-red-700" width="24" height="24"
+                            viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M12 9v2m0 4v.01" />
+                            <path
+                                d="M5 19h14a2 2 0 0 0 1.84 -2.75l-7.1 -12.25a2 2 0 0 0 -3.5 0l-7.1 12.25a2 2 0 0 0 1.75 2.75" />
+                        </svg>
+                    </div>
+                </div>
+
                 <ng-template [ngIf]="codeParser.labelingTaskName">
 
                     <label class="font-bold col-start-1">Labeling Task</label>

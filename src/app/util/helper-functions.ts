@@ -229,6 +229,15 @@ export function loopNestedDict(dict: any, callback: (key: string, value: any) =>
     }
 }
 
+export function capitalizeFirstForClassName(str: string) {
+    if (str.indexOf(" ") == -1) return str.charAt(0).toUpperCase() + str.slice(1);
+    const parts = str.split(" ");
+    for (let i = 0; i < parts.length; i++) {
+        if (i == parts.length - 1) parts[i] = parts[i].charAt(0).toUpperCase() + parts[i].slice(1).toLowerCase(); // if space, replace the last part it with a capital letter
+        else parts[i] = parts[i];
+    }
+    return parts.join("");
+}
 
 /**
  * transfer values from dictA to dictB, if the key is not present in dictB, it will be ignored or created.
