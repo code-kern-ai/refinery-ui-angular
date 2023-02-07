@@ -58,10 +58,11 @@
                         fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                         <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" />
                     </svg>
-                    <div data-tip="Choose the filter. Only static ones can be used"
+                    <div data-tip="Choose a static data slice. Only static ones can be used"
                         class="tooltip tooltip-bottom relative z-10">
                         <span class="cursor-help mr-2 underline text-black-800"
-                            style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Filter</span>
+                            style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Data
+                            slice</span>
                     </div>
                     <select class="select select-sm select-bordered pr-8 truncate w-56" [formControl]="dataSliceForm">
                         <option value="@@NO_SLICE@@">All Records</option>

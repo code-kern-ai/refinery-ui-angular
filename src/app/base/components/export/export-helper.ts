@@ -24,7 +24,7 @@ export enum ExportPreset {
 
 export enum ExportRowType {
     ALL = "ALL",
-    SLICE = "SLICE",
+    SLICE = "DATA_SLICE",
     SESSION = "SESSION"
 }
 
