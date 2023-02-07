@@ -1,35 +1,74 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { Project } from 'src/app/base/entities/project';
 import { first } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
+import { NotificationService } from 'src/app/base/services/notification.service';
 
 @Component({
   selector: 'kern-gates-integrator',
   templateUrl: './gates-integrator.component.html',
   styleUrls: ['./gates-integrator.component.scss']
 })
-export class GatesIntegratorComponent implements OnInit {
+export class GatesIntegratorComponent implements OnInit, OnDestroy {
 
   @Input() project: Project;
-
+  
+  gatesIntegrationData: any;
+  gatesIntegrationDataQuery$: any;
+  subscriptions$: Subscription[] = [];
   constructor(private projectApolloService: ProjectApolloService) { }
 
-  isGatesReady: boolean = false;
-
   ngOnInit(): void {
-    this.setGatesReady();
+    this.prepareGatesIntegrationData(this.project.id);
+    NotificationService.subscribeToNotification(this, {
+      projectId: this.project.id,
+      whitelist: this.getWhiteListNotificationService(),
+      func: this.handleWebsocketNotification
+    });
   }
 
-  setGatesReady() {
-    this.projectApolloService.isGatesReady(this.project.id).pipe(first())
-    .subscribe((isGatesReady) => {
-      this.isGatesReady = isGatesReady;});
+  ngOnDestroy() {
+    this.subscriptions$.forEach(subscription => subscription.unsubscribe());
+    NotificationService.unsubscribeFromNotification(this);
+  }
+
+  prepareGatesIntegrationData(projectId: string) {
+    let vc$;
+    [this.gatesIntegrationDataQuery$, vc$] = this.projectApolloService.getGatesIntegrationData(projectId);
+    this.subscriptions$.push(
+      vc$.subscribe((gatesIntegrationData) => {
+        console.log(gatesIntegrationData)
+        this.gatesIntegrationData = gatesIntegrationData;
+      }));
   }
 
   updateProjectForGates() {
-    this.projectApolloService.updateProjectForGates(this.project.id).pipe(first())
-    .subscribe(() => {
-      this.setGatesReady();
-    });
+    this.projectApolloService.updateProjectForGates(this.project.id).pipe(first()).subscribe();
+    // this.gatesIntegrationDataQuery$.refetch();
+  }
+
+  getWhiteListNotificationService(): string[] {
+    let toReturn = ['tokenization', 'embedding', 'embedding_deleted'];
+    toReturn.push(...['information_source_deleted', 'information_source_updated']);
+    return toReturn;
+  }
+
+  handleWebsocketNotification(msgParts) {
+    if(['information_source_deleted', 'information_source_updated'].includes(msgParts[1])){
+      if (this.gatesIntegrationData?.missingInformationSources.includes(msgParts[2])) {
+        this.gatesIntegrationDataQuery$.refetch();
+      }
+    } else if (msgParts[1] == 'tokenization' && msgParts[2] == 'docbin' && msgParts[3] == 'state' && msgParts[4] == 'FINISHED') {
+      this.gatesIntegrationDataQuery$.refetch();
+    } else if (msgParts[1] == 'embedding' && msgParts[3] == 'state' && msgParts[4] == 'FINISHED') {
+      if (this.gatesIntegrationData?.missingEmbeddings.includes(msgParts[2])) {
+        this.gatesIntegrationDataQuery$.refetch();
+      }
+    } else if (msgParts[1] == 'embedding_deleted') {
+      if (this.gatesIntegrationData?.missingEmbeddings.includes(msgParts[2])) {
+        this.gatesIntegrationDataQuery$.refetch();
+      }
+    }
   }
 }

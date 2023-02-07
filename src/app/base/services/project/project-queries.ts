@@ -549,10 +549,14 @@ query ($projectId: ID!, $exportOptions: JSONString) {
   `,
 
   
-  IS_GATES_READY: gql`
+  GET_GATES_INTEGRATION_DATA: gql`
   query ($projectId: ID!) {
-    isGatesReady(projectId: $projectId)
-  }
-  `,
+    getGatesIntegrationData(projectId: $projectId) {
+      status
+      missingTokenizer
+      missingEmbeddings
+      missingInformationSources
+    }
+  }`,
   
 };

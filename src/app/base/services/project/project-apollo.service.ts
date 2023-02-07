@@ -1421,16 +1421,19 @@ export class ProjectApolloService {
     });
   }
 
-  isGatesReady(projectId: string) {
-    return this.apollo
-      .query({
-        query: queries.IS_GATES_READY,
+  getGatesIntegrationData(projectId: string) {
+    const query = this.apollo
+      .watchQuery({
+        query: queries.GET_GATES_INTEGRATION_DATA,
         variables: {
           projectId: projectId,
         },
         fetchPolicy: 'no-cache'
-      }).pipe(
-        map((result) => result['data']['isGatesReady']));
+      });
+      const vc = query.valueChanges.pipe(
+        map((result) => result['data']['getGatesIntegrationData'])
+      );
+      return [query, vc];
   }
 
   updateProjectForGates(projectId: string) {
@@ -1439,7 +1442,15 @@ export class ProjectApolloService {
         mutation: mutations.UPDATE_PROJECT_FOR_GATES,
         variables: {
           projectId: projectId,
-        }
+        },
+        refetchQueries: [
+          {
+            query: queries.GET_GATES_INTEGRATION_DATA,
+            variables: {
+              projectId: projectId,
+            },
+          },
+        ],
       });
   }
 
