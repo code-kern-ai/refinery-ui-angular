@@ -5,13 +5,22 @@ import {
   Input,
   OnDestroy,
   OnInit,
+  OnChanges,
+  SimpleChanges,
 } from '@angular/core';
+
+enum InputParameter {
+  HOVER_GROUP,
+  HOVER_CLASS,
+  HOVER_ADD_GROUP,
+}
 
 @Directive({
   selector: '[hover-group], [hover-group-class], [hover-add-group]'
 })
-export class HoverGroupDirective implements OnDestroy, OnInit {
+export class HoverGroupDirective implements OnDestroy, OnChanges {
   constructor(public elementRef: ElementRef) { }
+
   //caution! the first group is the main groups and used to highlight corresponding elements
   //the other provided groups are only meant as additional highlight conditions
   //however if there are more groups needed for conditions but not containment use add-group
@@ -39,7 +48,9 @@ export class HoverGroupDirective implements OnDestroy, OnInit {
   }
 
   private enterExitLogic(group: string, add: boolean) {
-    for (let e of HoverGroupElementRefs.getElements(group)) {
+    const elements = HoverGroupElementRefs.getElements(group);
+    if (!elements) return;
+    for (let e of elements) {
       if (!e.finalClasses) continue;
       for (let v of e.finalClasses) {
         if (v) {
@@ -56,33 +67,47 @@ export class HoverGroupDirective implements OnDestroy, OnInit {
   }
 
   ngOnDestroy(): void {
-    for (const g of this.finalGroups)
-      HoverGroupElementRefs.removeElement(g, this);
+    this.loopGroups(this.finalGroups, false);
+    this.removeExistingGroups();
   }
 
-  ngOnInit(): void {
-    if (!this.hoverGroup) this.finalGroups = ['dummy-group'];
-
-    if (!Array.isArray(this.hoverGroup))
-      this.finalGroups = this.hoverGroup.split(',').map((v) => v.trim());
-    else this.finalGroups = this.hoverGroup;
-    for (const g of this.finalGroups) HoverGroupElementRefs.push(g, this);
-
-    if (this.hoverClass) {
-      if (!Array.isArray(this.hoverClass))
-        this.finalClasses = this.hoverClass.split(' ').map((v) => v.trim());
-      else this.finalClasses = this.hoverClass;
-
-    }
-
-    if (this.addGroup) {
-      if (!Array.isArray(this.addGroup))
-        this.finalAddGroups = this.addGroup.split(',').map((v) => v.trim());
-      else this.finalAddGroups = this.addGroup;
-      //no need to push since they are not meant to be used like that
-
+  private removeExistingGroups() {
+    if (this.finalGroups) {
+      for (const g of this.finalGroups)
+        HoverGroupElementRefs.removeElement(g, this);
     }
   }
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.hoverGroup) this.initDataFor(InputParameter.HOVER_GROUP);
+    if (changes.hoverClass) this.initDataFor(InputParameter.HOVER_CLASS);
+    if (changes.addGroup) this.initDataFor(InputParameter.HOVER_ADD_GROUP);
+  }
+  private initDataFor(param: InputParameter) {
+    if (param == InputParameter.HOVER_GROUP) {
+
+      this.removeExistingGroups();
+      if (!this.hoverGroup) this.finalGroups = ['dummy-group'];
+      if (!Array.isArray(this.hoverGroup))
+        this.finalGroups = this.hoverGroup.split(',').map((v) => v.trim());
+      else this.finalGroups = this.hoverGroup;
+      for (const g of this.finalGroups) HoverGroupElementRefs.push(g, this);
+    }
+    else if (param == InputParameter.HOVER_CLASS) {
+      if (this.hoverClass) {
+        if (!Array.isArray(this.hoverClass))
+          this.finalClasses = this.hoverClass.split(' ').map((v) => v.trim());
+        else this.finalClasses = this.hoverClass;
+      }
+    } else if (param == InputParameter.HOVER_ADD_GROUP) {
+      if (this.addGroup) {
+        if (!Array.isArray(this.addGroup))
+          this.finalAddGroups = this.addGroup.split(',').map((v) => v.trim());
+        else this.finalAddGroups = this.addGroup;
+        //no need to push since they are not meant to be used like that
+      }
+    }
+  }
+
 
 }
 

@@ -189,8 +189,7 @@ export class LabelingSuiteTaskHeaderComponent implements OnInit, OnChanges, OnDe
           name: label.color,
           backgroundColor: 'bg-' + label.color + '-200',
           textColor: 'text-' + label.color + '-700',
-          borderColor: 'border-' + label.color + '-400',
-          hoverColor: 'bg-' + label.color + '-200', //here without "hover:" since the css hover effect isn't used
+          borderColor: 'border-' + label.color + '-400'
         }
       }
       labels[label.id] = data;

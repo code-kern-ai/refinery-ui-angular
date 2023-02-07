@@ -23,7 +23,6 @@ export type LabelingSuiteTaskHeaderLabelDisplayData = {
         backgroundColor: string;
         textColor: string;
         borderColor: string;
-        hoverColor: string;
     }
 }
 

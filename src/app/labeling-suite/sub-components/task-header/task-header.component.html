@@ -48,7 +48,7 @@
           </div>
           <div class="flex flex-row flex-nowrap items-center gap-x-1 cursor-pointer"
             (click)="toggleLabelDisplaySetting('showModel')">
-            <span class="font-bold text-sm text-gray-500">EM</span>
+            <span class="font-bold text-sm text-gray-500">MC</span>
             <input class="h-4 w-4 cursor-pointer" type="checkbox"
               [checked]='htmlSettings[labelSettingsLabel.taskId][labelSettingsLabel.id].showModel'>
           </div>
@@ -146,8 +146,7 @@
   <div *ngIf="labelSettingsLabel" class="flex flex-col items-center">
     <div class="flex flex-row gap-x-2 items-center">
       <h1 class="text-lg text-gray-900 text-center font-bold">Info</h1>
-      <div class="text-sm font-medium px-2 py-0.5 rounded-md border focus:outline-none cursor-pointer"
-        hover-group-class="{{labelSettingsLabel.color.hoverColor}}" hover-group="{{labelSettingsLabel.hoverGroups}}"
+      <div class="text-sm font-medium px-2 py-0.5 rounded-md border focus:outline-none"
         [ngClass]="[labelSettingsLabel.color.backgroundColor, labelSettingsLabel.color.textColor, labelSettingsLabel.color.borderColor]">
         <div class="truncate" style="max-width: 260px;">{{labelSettingsLabel.name}}</div>
       </div>
@@ -169,8 +168,8 @@
       <span class="cursor-pointer justify-self-center" (click)="toggleLabelDisplaySetting('showWeakSupervision')"><input
           class="h-5 w-5 cursor-pointer" type="checkbox"
           [checked]='htmlSettings[labelSettingsLabel.taskId][labelSettingsLabel.id].showWeakSupervision'></span>
-      <span class="text-sm text-gray-500">EM</span>
-      <span class="text-sm text-gray-500">External model labels</span>
+      <span class="text-sm text-gray-500">MC</span>
+      <span class="text-sm text-gray-500">Model callback labels</span>
       <span class="cursor-pointer justify-self-center" (click)="toggleLabelDisplaySetting('showModel')"><input
           class="h-5 w-5 cursor-pointer" type="checkbox"
           [checked]='htmlSettings[labelSettingsLabel.taskId][labelSettingsLabel.id].showModel'></span>
@@ -195,7 +194,7 @@
     </ng-container>
 
     <ng-container [ngTemplateOutlet]="quickButton"
-      [ngTemplateOutletContext]="{attributeName:'showModel',caption:'External Model',dataTipCaption:'external model', hoverClass:'label-overlay-heuristic'}">
+      [ngTemplateOutletContext]="{attributeName:'showModel',caption:'Model Callback',dataTipCaption:'model callback', hoverClass:'label-overlay-heuristic'}">
     </ng-container>
 
     <ng-container [ngTemplateOutlet]="quickButton"
