@@ -100,6 +100,9 @@ export class DropdownComponent implements OnChanges {
     if (this.dropdownOptions.optionTooltips && this.dropdownOptions.optionTooltips.length != this.dropdownOptions.optionArray.length) this.hasInputErrors = "array options != optionTooltip length\n";
     if (!this.dropdownOptions.buttonVersion) this.dropdownOptions.buttonVersion = "default";
 
+    if (this.dropdownOptions.backgroundColors && this.dropdownOptions.backgroundColors.length > 0) {
+      this.dropdownOptions.backgroundColors = this.dropdownOptions.backgroundColors.map((x) => "bg-" + this.reduceColorProperty(x, '100'))
+    }
     this.buttonClassList = "";
     if (!this.dropdownOptions.buttonBgColor) this.dropdownOptions.buttonBgColor = "bg-white ";
     else this.dropdownOptions.buttonBgColor = "bg-" + this.reduceColorProperty(this.dropdownOptions.buttonBgColor, '700');
@@ -118,6 +121,7 @@ export class DropdownComponent implements OnChanges {
   }
 
   private reduceColorProperty(property: string, defaultShade: string): string {
+    if (!property) return "";
     let splitted = property.split(":");
     if (splitted.length > 1) property = splitted[splitted.length - 1];
 

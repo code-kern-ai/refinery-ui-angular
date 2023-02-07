@@ -54,6 +54,7 @@
                                     <select formControlName="taskType"
                                         class="select select-sm select-bordered pr-8 max-w-xs">
                                         <option *ngFor="let dropdown of labelingTasksDropdownArray"
+                                            [disabled]="dropdown.value == 'INFORMATION_EXTRACTION' && labelingTaskContainer.get('targetName').value == 'Full Record'"
                                             [value]="dropdown.value">{{
                                             dropdown.name }}
                                         </option>

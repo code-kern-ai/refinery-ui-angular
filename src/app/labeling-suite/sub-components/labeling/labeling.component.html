@@ -22,14 +22,15 @@
                     <input #labelSearch type="text" class="flex-grow input input-bordered input-sm"
                         style="outline:none; box-shadow:none;" placeholder="Search label name..." autocomplete="off"
                         (click)="labelSearch.focus()"
+                        (keydown.enter)="addNewLabelToTask(labelSearch.value,activeTask.task.id)"
                         (keyup)="checkLabelVisibleInSearch(labelSearch.value,activeTask.task);">
                     <div *ngIf="lsm.userManager.currentRole == userRoleEnum.ENGINEER" data-tip="Create label"
                         class="tooltip tooltip-left flex items-center">
                         <button class="" (mouseup)="addNewLabelToTask(labelSearch.value,activeTask.task.id)"
                             [disabled]="labelAddButtonDisabled || labelSearch.value==''?true: null"
-                            [ngClass]="labelAddButtonDisabled ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'">
+                            [ngClass]="labelAddButtonDisabled || labelSearch.value==''? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
-                                fill="currentColor">
+                                [style.fill]="labelAddButtonDisabled || labelSearch.value==''?'currentColor':'#40e134'">
                                 <path fill-rule="evenodd"
                                     d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
                                     clip-rule="evenodd" />
@@ -58,7 +59,8 @@
     </div>
 
     <div *ngIf="!lVars.loading && !lsm.recordManager.recordData.deleted && lVars.loopAttributes"
-        class="grid w-full border items-center" style="grid-template-columns: max-content max-content 40px auto;">
+        class="grid w-full border md:rounded-lg items-center"
+        style="grid-template-columns: max-content max-content 40px auto;">
 
         <!---->
         <ng-template ngFor let-attribute [ngForOf]="lVars.loopAttributes" let-i="index">
@@ -113,7 +115,7 @@
                                 <div
                                     *ngVar="lsm.recordManager.recordData.baseRecord.data[lVars.taskLookup[attribute.id].attribute.name] as attributeTextData">
                                     <p class="break-words text-sm leading-5 font-normal text-gray-500"
-                                        *ngIf="attributeTextData !== '';else notPresentInRecord">
+                                        *ngIf="attributeTextData != null && attributeTextData !== '';else notPresentInRecord">
                                         {{attributeTextData}}
                                     </p>
                                 </div>
@@ -151,11 +153,14 @@
                                         attr.data-tip="{{rlaLabel.dataTip}}">
                                         <div class="text-sm font-medium px-2 py-0.5 rounded-md border focus:outline-none relative flex items-center"
                                             (click)="rlaLabel.sourceTypeKey == 'WEAK_SUPERVISION'?addRla(task.task,rlaLabel.labelId):null"
-                                            hover-group-class="" hover-group="{{rlaLabel.hoverGroups.rlaId}}"
+                                            hover-group="{{rlaLabel.hoverGroups.rlaId}}"
+                                            hover-add-group="{{rlaLabel.hoverGroups.addGroup}}"
                                             [ngClass]="[labelLookup[rlaLabel.labelId].color.backgroundColor,labelLookup[rlaLabel.labelId].color.textColor, labelLookup[rlaLabel.labelId].color.borderColor,rlaLabel.sourceTypeKey == 'WEAK_SUPERVISION'?'cursor-pointer':'cursor-default']">
                                             <div class="label-overlay-base"
                                                 hover-group-class="{{rlaLabel.hoverGroups.labelClass}}"
-                                                hover-group="{{rlaLabel.hoverGroups.label}}"></div>
+                                                hover-group="{{rlaLabel.hoverGroups.label}}"
+                                                hover-add-group="{{rlaLabel.hoverGroups.addGroup}}">
+                                            </div>
 
                                             <ng-template [ngIf]="rlaLabel.icon">
                                                 <ng-container [ngTemplateOutlet]="icons"
@@ -208,7 +213,7 @@
 
 
 <ng-template #icons let-iconName="iconName">
-    <div class="-ml-1">
+    <div class="mr-1">
         <ng-container [ngSwitch]="iconName">
             <ng-template ngSwitchDefault>
             </ng-template>
@@ -310,6 +315,7 @@
                         <div class="h-px flex items-end w-full relative"
                             [ngClass]="[labelLookup[rlaItem.labelId].color.backgroundColor,labelLookup[rlaItem.labelId].color.textColor, labelLookup[rlaItem.labelId].color.borderColor]"
                             hover-group-class="full-overlay-height" hover-group="{{rlaItem.hoverGroups.rlaId}}"
+                            hover-add-group="{{rlaItem.hoverGroups.addGroup}}"
                             style="border-bottom-width:1px; border-top-width:1px; border-style:solid;left:-2px;"
                             style.border-style="{{rlaItem.rla.sourceType == 'MANUAL'?'solid':'dashed'}}"
                             style.border-left-width="{{rlaItem.isFirst?'1px':null}}"

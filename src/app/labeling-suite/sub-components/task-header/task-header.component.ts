@@ -4,7 +4,7 @@ import { jsonCopy } from 'src/app/util/helper-functions';
 import { LabelingSuiteManager, UpdateType } from '../../helper/manager/manager';
 import { ComponentType, LabelingSuiteTaskHeaderProjectSettings } from '../../helper/manager/settings';
 import { getHoverGroupsTaskOverview } from '../../helper/util-functions';
-import { LabelingSuiteTaskHeaderDisplayData, LabelingSuiteTaskHeaderLabelDisplayData } from './helper';
+import { getQuickButtonConfig, LabelingSuiteTaskHeaderDisplayData, LabelingSuiteTaskHeaderLabelDisplayData, QuickButtonConfig } from './helper';
 
 @Component({
   selector: 'kern-labeling-suite-task-header',
@@ -21,7 +21,7 @@ export class LabelingSuiteTaskHeaderComponent implements OnInit, OnChanges, OnDe
   }
   //copy of settings for html so get methods doesn't need to be run on update but change management takes effect
   htmlSettings: LabelingSuiteTaskHeaderProjectSettings;
-
+  quickButtonConfig: QuickButtonConfig = getQuickButtonConfig();
 
   displayData: LabelingSuiteTaskHeaderDisplayData[];
 
@@ -189,8 +189,7 @@ export class LabelingSuiteTaskHeaderComponent implements OnInit, OnChanges, OnDe
           name: label.color,
           backgroundColor: 'bg-' + label.color + '-200',
           textColor: 'text-' + label.color + '-700',
-          borderColor: 'border-' + label.color + '-400',
-          hoverColor: 'bg-' + label.color + '-200', //here without "hover:" since the css hover effect isn't used
+          borderColor: 'border-' + label.color + '-400'
         }
       }
       labels[label.id] = data;
