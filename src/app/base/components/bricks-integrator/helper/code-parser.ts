@@ -1,4 +1,4 @@
-import { capitalizeFirst, enumToArray, getPythonFunctionName, isStringTrue } from "src/app/util/helper-functions"
+import { capitalizeFirst, capitalizeFirstForClassName, enumToArray, getPythonClassName, getPythonFunctionName, isStringTrue, toPythonFunctionName } from "src/app/util/helper-functions"
 import { BricksIntegratorComponent } from "../bricks-integrator.component"
 import { BricksVariableComment, isCommentTrue } from "./comment-lookup";
 import { BricksExpectedLabels, BricksVariable, bricksVariableNeedsTaskId, BricksVariableType, ExpectedLabel, getEmptyBricksExpectedLabels, getEmptyBricksVariable } from "./type-helper";
@@ -15,6 +15,7 @@ export class BricksCodeParser {
 
     labelingTasks: any[];
     expected: BricksExpectedLabels = getEmptyBricksExpectedLabels();
+    nameTaken: boolean = false;
 
     constructor(private base: BricksIntegratorComponent) {
         this.filterTypes = enumToArray(BricksVariableType).filter(x => x != BricksVariableType.UNKNOWN && !x.startsWith("GENERIC"));
@@ -26,7 +27,8 @@ export class BricksCodeParser {
 
         this.baseCode = this.base.config.api.data.data.attributes.sourceCode;
         this.globalComments = this.collectGlobalComment();
-        this.functionName = getPythonFunctionName(this.baseCode);
+        this.functionName = this.base.executionTypeFilter == "activeLearner" ? getPythonClassName(this.baseCode) : getPythonFunctionName(this.baseCode);
+        this.checkFunctionNameAndSet(this.functionName);
         const variableLines = this.collectVariableLines();
         if (variableLines.length == 0) {
             this.base.config.preparedCode = this.baseCode;
@@ -47,7 +49,7 @@ export class BricksCodeParser {
     }
 
     public replaceVariables() {
-        let replacedCode = this.baseCode;
+        let replacedCode = this.replaceFunctionLine(this.baseCode);
         for (let i = 0; i < this.variables.length; i++) {
             const variable = this.variables[i];
             this.prepareReplaceLine(variable);
@@ -57,7 +59,7 @@ export class BricksCodeParser {
         this.extendCodeForRecordIde();
         this.extendCodeForLabelMapping();
         this.base.config.codeFullyPrepared = this.variables.every(v => v.optional || (v.values.length > 0 && v.values.every(va => va != null)));
-        this.base.config.canAccept = this.base.config.codeFullyPrepared;
+        this.base.config.canAccept = this.base.config.codeFullyPrepared && !this.nameTaken && this.functionName != "";
 
     }
 
@@ -110,7 +112,11 @@ export class BricksCodeParser {
         if (this.functionName == null || this.functionName == "@@unknown@@") return;
         const isExtractor = this.base.config.api.data.data.attributes.moduleType == "extractor";
 
-        const currentFunctionLine = 'def ' + this.functionName + '(record):';
+        const currentFunctionLine = this.getCurrentFunctionLine();
+        if (!currentFunctionLine) {
+            console.log("couldn't find function line");
+            return;
+        }
 
         let functionWrapper = currentFunctionLine + "\n";
         functionWrapper += "    #this is a wrapper to map the labels according to your specifications\n";
@@ -146,6 +152,43 @@ export class BricksCodeParser {
         this.base.config.preparedCode = this.base.config.preparedCode.replace(currentFunctionLine, functionWrapper) + mappingDict;
     }
 
+
+    getCurrentFunctionLine(): string {
+        const lines = this.base.config.preparedCode.split("\n");
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i].trim();
+            if (this.base.executionTypeFilter == "activeLearner") {
+                if (line.startsWith('class ' + this.functionName)) {
+                    return line;
+                }
+            } else {
+                if (line.startsWith('def ' + this.functionName + '(record')) {
+                    return line;
+                }
+            }
+        }
+        return null;
+    }
+
+    getIndexFunctionLine(code: string): number {
+        const lines = code.split("\n");
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i].trim();
+            let functionNameBase = null;
+            if (this.base.executionTypeFilter == "activeLearner") {
+                functionNameBase = getPythonClassName(line);
+                if (line.startsWith('class ' + functionNameBase)) {
+                    return i;
+                }
+            } else {
+                functionNameBase = getPythonFunctionName(line);
+                if (line.startsWith('def ' + functionNameBase + '(record')) {
+                    return i;
+                }
+            }
+        }
+        return -1;
+    }
 
     private extendCodeForRecordIde() {
         if (!this.base.forIde) return;
@@ -326,5 +369,25 @@ export class BricksCodeParser {
             default:
                 return null;
         }
+    }
+
+    checkFunctionNameAndSet(name: string) {
+        this.nameTaken = !!(this.base.nameLookups?.find(x => x == name));
+        name = this.base.executionTypeFilter == "activeLearner" ? capitalizeFirstForClassName(name) : toPythonFunctionName(name);
+        if (this.base.config.preparedCode) {
+            this.functionName = name;
+            this.replaceVariables();
+        }
+        this.base.checkCanAccept();
+    }
+
+    replaceFunctionLine(code: string): string {
+        let replacedCode = code;
+        const idxReplace = this.getIndexFunctionLine(code);
+        if (idxReplace == -1) return replacedCode;
+        const splitBase = code.split("\n");
+        const getPythonName = this.base.executionTypeFilter == "activeLearner" ? getPythonClassName(splitBase[idxReplace]) : getPythonFunctionName(splitBase[idxReplace]);
+        splitBase[idxReplace] = splitBase[idxReplace]?.replace(getPythonName, this.functionName);
+        return splitBase.join("\n");
     }
 }

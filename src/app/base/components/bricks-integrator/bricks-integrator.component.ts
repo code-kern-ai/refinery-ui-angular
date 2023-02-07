@@ -1,7 +1,7 @@
 
 import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { timer } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { findProjectIdFromRoute, isStringTrue } from 'src/app/util/helper-functions';
@@ -34,6 +34,8 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
   @Input() executionTypeFilter: string; //activeLearner, pythonFunction or premium 
   //for values
   @Input() labelingTaskId: string;
+  @Input() nameLookups: string[];
+  @Input() functionType: string;
   @Output() preparedCode = new EventEmitter<string | any>();
   @Output() newTaskId = new EventEmitter<string>();
 
@@ -43,10 +45,8 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
   codeParser: BricksCodeParser;
   dataRequestor: BricksDataRequestor;
 
-
-
   constructor(private http: HttpClient, private projectApolloService: ProjectApolloService, private knowledgeBaseApollo: KnowledgeBasesApolloService,
-    private activatedRoute: ActivatedRoute,) {
+    private activatedRoute: ActivatedRoute, private router: Router) {
   }
 
   ngOnInit(): void {
@@ -244,7 +244,7 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
     }
   }
 
-  private checkCanAccept() {
+  checkCanAccept() {
     switch (this.config.page) {
       case IntegratorPage.SEARCH:
         this.config.canAccept = this.config.api.moduleId != null;
@@ -254,7 +254,7 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
         this.config.canAccept = !!this.config.api.data;
         break;
       case IntegratorPage.INTEGRATION:
-        this.config.canAccept = this.config.codeFullyPrepared;
+        this.config.canAccept = this.config.codeFullyPrepared && !this.codeParser.nameTaken && this.codeParser.functionName != "";
         break;
     }
   }
@@ -340,5 +340,13 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
     if (this.newTaskId.observers.length > 0) this.newTaskId.emit(taskId);
   }
 
-
+  onInputFunctionName(event: Event) {
+    if (!(event.target instanceof HTMLInputElement)) return;
+    const start = event.target.selectionStart;
+    let value = event.target.value;
+    this.codeParser.checkFunctionNameAndSet(value)
+    event.target.value = this.codeParser.functionName;
+    event.target.selectionStart = start;
+    event.target.selectionEnd = start;
+  }
 }
