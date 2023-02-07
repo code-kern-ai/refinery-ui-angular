@@ -1421,5 +1421,27 @@ export class ProjectApolloService {
     });
   }
 
+  isGatesReady(projectId: string) {
+    return this.apollo
+      .query({
+        query: queries.IS_GATES_READY,
+        variables: {
+          projectId: projectId,
+        },
+        fetchPolicy: 'no-cache'
+      }).pipe(
+        map((result) => result['data']['isGatesReady']));
+  }
+
+  updateProjectForGates(projectId: string) {
+    return this.apollo
+      .mutate({
+        mutation: mutations.UPDATE_PROJECT_FOR_GATES,
+        variables: {
+          projectId: projectId,
+        }
+      });
+  }
+
 
 }

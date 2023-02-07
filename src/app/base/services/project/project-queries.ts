@@ -548,4 +548,11 @@ query ($projectId: ID!, $exportOptions: JSONString) {
   }
   `,
 
+  
+  IS_GATES_READY: gql`
+  query ($projectId: ID!) {
+    isGatesReady(projectId: $projectId)
+  }
+  `,
+  
 };
