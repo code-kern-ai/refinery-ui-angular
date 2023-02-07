@@ -367,8 +367,8 @@
             <div class="grid grid-cols-3-max gap-x-2 gap-y-2 items-center pb-4 px-4">
                 <label class="font-bold col-start-1">{{functionType}} name</label>
                 <div class="contents">
-                    <input #functionNameInput class="input input-bordered col-span-1 input-sm" type="text"
-                        (keyup)="codeParser.checkFunctionNameAndSet(functionNameInput.value)"
+                    <input class="input input-bordered col-span-1 input-sm" type="text"
+                        style="outline:none; box-shadow:none;" (input)="onInputFunctionName($event)"
                         [value]="codeParser.functionName" />
                 </div>
                 <div class="col-span-1 inline-flex">

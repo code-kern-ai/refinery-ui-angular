@@ -339,4 +339,14 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
 
     if (this.newTaskId.observers.length > 0) this.newTaskId.emit(taskId);
   }
+
+  onInputFunctionName(event: Event) {
+    if (!(event.target instanceof HTMLInputElement)) return;
+    const start = event.target.selectionStart;
+    let value = event.target.value;
+    this.codeParser.checkFunctionNameAndSet(value)
+    event.target.value = this.codeParser.functionName;
+    event.target.selectionStart = start;
+    event.target.selectionEnd = start;
+  }
 }
