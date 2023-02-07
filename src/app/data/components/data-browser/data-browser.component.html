@@ -343,18 +343,41 @@
                                                                         <div class="flex flex-row items-center"
                                                                             [formGroup]="groupItem.get('weakSupervisionConfidence')">
                                                                             <span
-                                                                                class="label-text mr-1 font-dmMono">CONFIDENCE
+                                                                                class="label-text mr-0.5 font-dmMono">CONFIDENCE
                                                                                 BETWEEN</span><input
                                                                                 formControlName="lower" type="number"
-                                                                                class="w-12 px-2 input input-sm input-bordered"
-                                                                                (blur)="ensureValidConfidence(groupItem.get('weakSupervisionConfidence'))">
-                                                                            <span class="label-text mx-1 font-dmMono">%
-                                                                                AND</span>
-                                                                            <input formControlName="upper" type="number"
-                                                                                class="w-12 input input-sm input-bordered px-2"
+                                                                                class="w-11 px-2 input input-sm input-bordered"
                                                                                 (blur)="ensureValidConfidence(groupItem.get('weakSupervisionConfidence'))">
                                                                             <span
-                                                                                class="label-text mx-1 font-dmMono">%</span>
+                                                                                class="label-text mx-0.5 font-dmMono">%
+                                                                                AND</span>
+                                                                            <input formControlName="upper" type="number"
+                                                                                class="w-11 input input-sm input-bordered px-2"
+                                                                                (blur)="ensureValidConfidence(groupItem.get('weakSupervisionConfidence'))">
+                                                                            <span
+                                                                                class="label-text mx-0.5 font-dmMono">%</span>
+                                                                            <span
+                                                                                *ngIf="groupItem.get('weakSupervisionConfidence').get('active').value"
+                                                                                (click)="clearConfidence(groupItem.get('weakSupervisionConfidence'))"
+                                                                                class="tooltip tooltip-bottom tooltip-max-width"
+                                                                                data-tip="Clear filter for weakly supervised confidence">
+                                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                                    class="icon icon-tabler icon-tabler-filter-off text-red-700 cursor-pointer"
+                                                                                    width="20" height="20"
+                                                                                    viewBox="0 0 24 24" stroke-width="2"
+                                                                                    stroke="currentColor" fill="none"
+                                                                                    stroke-linecap="round"
+                                                                                    stroke-linejoin="round">
+                                                                                    <path stroke="none"
+                                                                                        d="M0 0h24v24H0z" fill="none">
+                                                                                    </path>
+                                                                                    <line x1="3" y1="3" x2="21" y2="21">
+                                                                                    </line>
+                                                                                    <path
+                                                                                        d="M9 5h9.5a1 1 0 0 1 .5 1.5l-4.049 4.454m-.951 3.046v5l-4 -3v-4l-5 -5.5a1 1 0 0 1 .18 -1.316">
+                                                                                    </path>
+                                                                                </svg>
+                                                                            </span>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -384,18 +407,41 @@
                                                                         <div class="flex flex-row items-center"
                                                                             [formGroup]="groupItem.get('modelCallbackConfidence')">
                                                                             <span
-                                                                                class="label-text mr-1 font-dmMono">CONFIDENCE
+                                                                                class="label-text mr-0.5 font-dmMono">CONFIDENCE
                                                                                 BETWEEN</span><input
                                                                                 formControlName="lower" type="number"
-                                                                                class="w-12 px-2 input input-sm input-bordered"
-                                                                                (blur)="ensureValidConfidence(groupItem.get('modelCallbackConfidence'))">
-                                                                            <span class="label-text mx-1 font-dmMono">%
-                                                                                AND</span>
-                                                                            <input formControlName="upper" type="number"
-                                                                                class="w-12 input input-sm input-bordered px-2"
+                                                                                class="w-11 px-2 input input-sm input-bordered"
                                                                                 (blur)="ensureValidConfidence(groupItem.get('modelCallbackConfidence'))">
                                                                             <span
-                                                                                class="label-text mx-1 font-dmMono">%</span>
+                                                                                class="label-text mx-0.5 font-dmMono">%
+                                                                                AND</span>
+                                                                            <input formControlName="upper" type="number"
+                                                                                class="w-11 input input-sm input-bordered px-2"
+                                                                                (blur)="ensureValidConfidence(groupItem.get('modelCallbackConfidence'))">
+                                                                            <span
+                                                                                class="label-text mx-0.5 font-dmMono">%</span>
+                                                                            <span
+                                                                                *ngIf="groupItem.get('modelCallbackConfidence').get('active').value"
+                                                                                (click)="clearConfidence(groupItem.get('modelCallbackConfidence'))"
+                                                                                class="tooltip tooltip-bottom tooltip-max-width"
+                                                                                data-tip="Clear filter for model callback confidence">
+                                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                                    class="icon icon-tabler icon-tabler-filter-off text-red-700 cursor-pointer"
+                                                                                    width="20" height="20"
+                                                                                    viewBox="0 0 24 24" stroke-width="2"
+                                                                                    stroke="currentColor" fill="none"
+                                                                                    stroke-linecap="round"
+                                                                                    stroke-linejoin="round">
+                                                                                    <path stroke="none"
+                                                                                        d="M0 0h24v24H0z" fill="none">
+                                                                                    </path>
+                                                                                    <line x1="3" y1="3" x2="21" y2="21">
+                                                                                    </line>
+                                                                                    <path
+                                                                                        d="M9 5h9.5a1 1 0 0 1 .5 1.5l-4.049 4.454m-.951 3.046v5l-4 -3v-4l-5 -5.5a1 1 0 0 1 .18 -1.316">
+                                                                                    </path>
+                                                                                </svg>
+                                                                            </span>
                                                                         </div>
                                                                     </div>
                                                                 </div>
