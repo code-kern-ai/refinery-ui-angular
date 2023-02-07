@@ -193,10 +193,7 @@ export class KnowledgeBaseDetailsComponent implements OnInit, AfterViewInit, OnD
   }
 
   changeKnowledgeBaseName(event) {
-    this.knowledgeBaseName = toPythonFunctionName(event.target.value);
-    if (this.knowledgeBaseName != event.target.value) {
-      event.target.value = this.knowledgeBaseName;
-    }
+    this.knowledgeBaseName = event.target.value;
     this.isHeaderNormal = true;
   }
 
