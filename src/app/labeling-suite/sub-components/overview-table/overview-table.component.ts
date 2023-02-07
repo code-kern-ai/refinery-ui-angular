@@ -65,29 +65,28 @@ export class LabelingSuiteOverviewTableComponent implements OnInit, OnDestroy, O
   ngOnInit(): void {
   }
 
-  private checkAndRebuildTableHover(full: boolean = false) {
+  private checkAndRebuildTableHover() {
 
-    if (full) {
-      if (!this.fullData) return;
-      this.headerHover = getEmptyHeaderHover();
-      for (const data of this.fullData) {
-        this.headerHover.typeCollection += data.hoverGroups.type.split(',')[0] + ', ';
-        this.headerHover.taskCollection += data.hoverGroups.task.split(',')[0] + ', ';
-        this.headerHover.createdByCollection += data.hoverGroups.createdBy.split(',')[0] + ', ';
-        this.headerHover.labelCollection += data.hoverGroups.label.split(',')[0] + ', ';
-        this.headerHover.rlaCollection += data.hoverGroups.rlaId.split(',')[0] + ', ';
-      }
+    if (!this.fullData) return;
+    this.headerHover = getEmptyHeaderHover();
+    for (const data of this.fullData) {
+      this.headerHover.typeCollection += data.hoverGroups.type.split(',')[0] + ', ';
+      this.headerHover.taskCollection += data.hoverGroups.task.split(',')[0] + ', ';
+      this.headerHover.createdByCollection += data.hoverGroups.createdBy.split(',')[0] + ', ';
+      this.headerHover.labelCollection += data.hoverGroups.label.split(',')[0] + ', ';
+      this.headerHover.rlaCollection += data.hoverGroups.rlaId.split(',')[0] + ', ';
     }
+    this.settingsChanged();
   }
 
   private prepareDataForTableDisplay() {
     if (!this.rlaManager.rlasLoaded()) {
+      this.fullData = null;
       this.dataToDisplay = null;
       return;
     }
     this.fullData = this.rlaManager.buildOverviewTableDisplayArray();
-    this.checkAndRebuildTableHover(true);
-    this.settingsChanged();
+    this.checkAndRebuildTableHover();
     this.dataHasHeuristics = this.rlaManager.rlasHaveHeuristicData();
   }
 

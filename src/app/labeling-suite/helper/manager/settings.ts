@@ -62,7 +62,7 @@ export enum ComponentType {
 }
 
 export const colorOptions = [
-    "red", "orange", "amber",
+    "gray", "red", "orange", "amber",
     "yellow", "lime", "green",
     "emerald", "teal", "cyan",
     "sky", "blue", "indigo",
@@ -78,6 +78,7 @@ export class LabelingSuiteSettingManager implements DoBeforeDestroy {
     private projectId: string;
 
     public hoverColorOptions;
+    public hoverColorClassArray;
 
     constructor(projectId: string) {
         this.projectId = projectId;
@@ -93,7 +94,8 @@ export class LabelingSuiteSettingManager implements DoBeforeDestroy {
     }
 
     private prepareColorOptions() {
-        this.hoverColorOptions = ['None', ...colorOptions];
+        this.hoverColorOptions = ['None', 'light gray', ...colorOptions];
+        this.hoverColorClassArray = [null, 'bg-gray-100', ...colorOptions.map(c => `bg-${c}-200`)];
     }
 
     public loadSettings() {
@@ -222,7 +224,11 @@ export class LabelingSuiteSettingManager implements DoBeforeDestroy {
         if (!this.registeredSettingsListeners.has(type)) throw Error("Component type not available");
 
         if (type == ComponentType.MAIN) {
-            this.settings.main.hoverGroupBackgroundColorClass = "bg-" + this.settings.main.hoverGroupBackgroundColor + "-200";
+            const color = this.settings.main.hoverGroupBackgroundColor;
+            if (color == "None") this.settings.main.hoverGroupBackgroundColorClass = "";
+            else if (color == "light gray") this.settings.main.hoverGroupBackgroundColorClass = "bg-gray-100";
+            else if (color == "gray") this.settings.main.hoverGroupBackgroundColorClass = "bg-gray-200";
+            else this.settings.main.hoverGroupBackgroundColorClass = "bg-" + color + "-200";
         }
 
         if (this.registeredSettingsListeners.get(type).size != 0) {

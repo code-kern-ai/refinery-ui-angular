@@ -64,7 +64,9 @@ export class LabelingSuiteUserManager implements DoBeforeDestroy {
     doBeforeDestroy(): void {
         UserManager.unregisterRoleChangeListener(this);
     }
-
+    public recordChange() {
+        this.displayUserId = this.mainUser.data.id;
+    }
 
     private prepareUserData() {
         const user = UserManager.getUser();
