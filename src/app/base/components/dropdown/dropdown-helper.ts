@@ -9,6 +9,7 @@ import { FormArray } from "@angular/forms";
  * @keepDropdownOpen {boolean, optional} - stops the event propagation of the click event and therfore keeps the menu open
  * @buttonTooltip {string, optional} - adds a tooltip if defined
  * @buttonTooltipPosition {string, optional} - if empty defaults to right otherwise tooltip + position (e.g. tooltip-left)
+ * @buttonWhitespace {string, optional} - holds style parameter for whitespace handling (e.g. nowrap)
  * @isDisabled {boolean, optional} - disables the dropdown
  * @isOptionDisabled {boolean[], optional} - disables the dropdown option (needs to be the exact same length as the optionArray)
  * @optionTooltips {string[], optional} - adds a tooltip to the dropdown option (needs to be the exact same length as the optionArray - can hold null values)
@@ -45,6 +46,7 @@ export type DropdownOptions = {
     keepDropdownOpen?: boolean;
     buttonTooltip?: string;
     buttonTooltipPosition?: string;
+    buttonWhitespace?: string;
     isDisabled?: boolean;
     isOptionDisabled?: boolean[];
     optionTooltips?: string[];

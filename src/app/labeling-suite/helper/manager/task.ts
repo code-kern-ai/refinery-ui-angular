@@ -54,10 +54,30 @@ export class LabelingSuiteTaskManager implements DoBeforeDestroy {
         [q, vc] = this.projectApolloService.getLabelingTasksByProjectId(this.projectId);
         vc.pipe(first()).subscribe(lt => {
             this.labelingTasks = this.prepareTasksForRole(jsonCopy(lt));
+            this.filterTasksForAttributeVisibility(false);
             this.rebuildLabelButtonAmount();
             this.baseManager.runUpdateListeners(UpdateType.LABELING_TASKS);
         });
     }
+
+    public filterTasksForAttributeVisibility(runListener: boolean = true) {
+        if (!this.baseManager.attributeManager.attributes || !this.labelingTasks) return;
+        let somethingDone = false;
+        const attributes = this.baseManager.attributeManager.attributes;
+        for (const e of this.labelingTasks) {
+            const attributeId = e.attribute?.id;
+            if (attributeId) {
+                if (!attributes.find(a => a.id == attributeId)) {
+                    this.labelingTasks = this.labelingTasks.filter(t => t.id != e.id);
+                    somethingDone = true;
+                }
+            }
+        }
+        if (somethingDone && runListener) {
+            this.baseManager.runUpdateListeners(UpdateType.LABELING_TASKS);
+        }
+    }
+
 
     private prepareTasksForRole(taskData: any[]): any[] {
 
