@@ -59,7 +59,7 @@ export class BricksCodeParser {
         this.extendCodeForRecordIde();
         this.extendCodeForLabelMapping();
         this.base.config.codeFullyPrepared = this.variables.every(v => v.optional || (v.values.length > 0 && v.values.every(va => va != null)));
-        this.base.config.canAccept = this.base.config.codeFullyPrepared && !this.nameTaken;
+        this.base.config.canAccept = this.base.config.codeFullyPrepared && !this.nameTaken && this.functionName != "";
 
     }
 
@@ -157,8 +157,14 @@ export class BricksCodeParser {
         const lines = this.base.config.preparedCode.split("\n");
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i].trim();
-            if (line.startsWith('def ' + this.functionName + '(record')) {
-                return line;
+            if (this.base.executionTypeFilter == "activeLearner") {
+                if (line.startsWith('class ' + this.functionName)) {
+                    return line;
+                }
+            } else {
+                if (line.startsWith('def ' + this.functionName + '(record')) {
+                    return line;
+                }
             }
         }
         return null;

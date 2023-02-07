@@ -35,6 +35,7 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
   //for values
   @Input() labelingTaskId: string;
   @Input() nameLookups: string[];
+  @Input() functionType: string;
   @Output() preparedCode = new EventEmitter<string | any>();
   @Output() newTaskId = new EventEmitter<string>();
 
@@ -43,7 +44,6 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
   config: BricksIntegratorConfig;
   codeParser: BricksCodeParser;
   dataRequestor: BricksDataRequestor;
-  functionType: string;
 
   constructor(private http: HttpClient, private projectApolloService: ProjectApolloService, private knowledgeBaseApollo: KnowledgeBasesApolloService,
     private activatedRoute: ActivatedRoute, private router: Router) {
@@ -55,7 +55,6 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
     this.codeParser = new BricksCodeParser(this);
     const projectId = findProjectIdFromRoute(this.activatedRoute)
     this.dataRequestor = new BricksDataRequestor(this.projectApolloService, this.knowledgeBaseApollo, projectId, this);
-    this.functionType = this.router.url.indexOf("attributes") > -1 ? "Attribute" : this.router.url.indexOf("heuristics") > -1 ? "Heuristic" : "Function";
   }
   ngOnDestroy(): void {
     this.dataRequestor.unsubscribeFromWebsocket();
@@ -255,7 +254,7 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
         this.config.canAccept = !!this.config.api.data;
         break;
       case IntegratorPage.INTEGRATION:
-        this.config.canAccept = this.config.codeFullyPrepared && !this.codeParser.nameTaken;
+        this.config.canAccept = this.config.codeFullyPrepared && !this.codeParser.nameTaken && this.codeParser.functionName != "";
         break;
     }
   }
