@@ -38,7 +38,7 @@ export class LabelingSuiteAttributeManager implements DoBeforeDestroy {
     }
 
     private handleWebsocketNotification(msgParts: string[]) {
-        if (msgParts[1] == 'attributes_updated' || (msgParts[1] == 'calculate_attribute' && msgParts[2] == 'created')) {
+        if (msgParts[1] == 'attributes_updated' || (msgParts[1] == 'calculate_attribute' && ['created', 'updated'].includes(msgParts[2]))) {
             this.fetchAttributes();
         }
         else {
