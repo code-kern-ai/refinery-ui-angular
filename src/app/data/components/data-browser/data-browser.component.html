@@ -22,16 +22,6 @@
             <div *ngIf="isSearchMenuOpen || isSearchMenuVisible" class="transition_all opacity-0"
                 [ngClass]="isSearchMenuVisible&&isSearchMenuOpen?'opacity-100':null">
                 <!-- Also, you can choose a preset below -->
-                <div class="flex justify-center items-center w-full relative text-gray-400" style="top:6px"
-                    data-tip="Outdated slice&#10;save to update"
-                    [ngClass]="activeSlice?.sliceType == SliceTypes.STATIC_OUTLIER || !(displayOutdatedWarning  || (activeSlice?.static && staticDataSliceCurrentCount!=null && activeSlice.count!=staticDataSliceCurrentCount)) ? 'hidden':'tooltip'">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                    </svg>
-                </div>
-
                 <div class="mt-2" [ngClass]="this.sliceNames.size > 6 ? null : 'hidden'">
                     <input type="text" placeholder="enter name to filter" [(ngModel)]="dataSliceFilter"
                         (ngModelChange)="filterAvailableSlices()" class="w-full input input-sm input-bordered p-2">
@@ -84,10 +74,21 @@
 
                 <div class="relative">
                     <div class="absolute inset-0 flex items-center">
-                        <div class="w-full border-t border-gray-300"></div>
+                        <div class="w-full border-t border-gray-300"
+                            [ngClass]="activeSlice?.sliceType == SliceTypes.STATIC_OUTLIER || !(displayOutdatedWarning  || (activeSlice?.static && staticDataSliceCurrentCount!=null && activeSlice.count!=staticDataSliceCurrentCount)) ? '' : 'ml-20'">
+                        </div>
                     </div>
                     <div class="relative flex justify-start">
-                        <span class="pr-3 bg-white text-lg font-medium text-gray-900">Filter</span>
+                        <span class="pr-2 bg-white text-lg font-medium text-gray-900">Filter</span>
+                        <div class="flex items-center tooltip-right text-gray-400"
+                            data-tip="Outdated slice&#10;save to update"
+                            [ngClass]="activeSlice?.sliceType == SliceTypes.STATIC_OUTLIER || !(displayOutdatedWarning  || (activeSlice?.static && staticDataSliceCurrentCount!=null && activeSlice.count!=staticDataSliceCurrentCount)) ? 'hidden':'tooltip'">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                        </div>
                     </div>
                 </div>
                 <span class="text-sm text-gray-400">You can filter and order all your data in the browser
