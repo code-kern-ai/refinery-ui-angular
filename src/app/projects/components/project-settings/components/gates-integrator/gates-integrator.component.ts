@@ -30,7 +30,7 @@ export class GatesIntegratorComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subscriptions$.forEach(subscription => subscription.unsubscribe());
-    NotificationService.unsubscribeFromNotification(this);
+    NotificationService.unsubscribeFromNotification(this, this.project.id);
   }
 
   prepareGatesIntegrationData(projectId: string) {
