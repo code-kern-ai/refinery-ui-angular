@@ -944,9 +944,10 @@
 
 <kern-modal [isOpen]="dataBrowserModals.filter.open" closeButton="X" [modalBoxStyle]="{'width':'35rem'}" [acceptButton]="{
     buttonCaption: dataBrowserModals.filter.sliceNameExists? 'Update data slice':'Save data slice',
-    disabled: inputSliceName.value == ''
-}"
-    (optionClicked)="dataBrowserModals.filter.open = false; dataBrowserModals.filter.sliceNameExists? updateSliceByName(inputSliceName.value) :createSlice(inputSliceName.value);inputSliceName.value=''">
+    disabled: inputSliceName.value == '',
+    emitObject: this,
+    emitFunction: dataBrowserModals.filter.sliceNameExists? updateSliceByName :createSlice
+}" (optionClicked)="dataBrowserModals.filter.open = false;">
     <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
         Data slice creation</div>
     <div class="mb-2 flex flex-grow justify-center text-sm">
@@ -996,8 +997,9 @@
         <div class="flex w-full justify-between mt-2">
             <input #inputSliceName type="text" class="w-full input input-bordered input-sm" placeholder="Enter name"
                 name="dataSliceName" [value]="dataBrowserModals.filter.name"
-                (keyup)="checkNameExists(inputSliceName.value)" (keydown.enter)="dataBrowserModals.filter.open = false; dataBrowserModals.filter.sliceNameExists ?
-            updateSliceByName(inputSliceName.value):createSlice(inputSliceName.value)">
+                (input)="setSliceName(inputSliceName.value)" (keyup)="checkNameExists(inputSliceName.value)"
+                (keydown.enter)="dataBrowserModals.filter.open = false; dataBrowserModals.filter.sliceNameExists ?
+            updateSliceByName():createSlice()">
         </div>
     </div>
 
