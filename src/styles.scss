@@ -46,3 +46,7 @@ body {
 .modal {
   align-items: center;
 }
+
+.tooltip::before {
+  z-index: 50;
+}

@@ -19,6 +19,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
 
   @Input() project: Project;
   @Input() useableTextAttributes: Attribute[];
+  @Input() useableAttributes: Attribute[];
   @Input() settingModals: SettingModals;
   @Input() isManaged: boolean;
   @Input() embeddings: Embedding[];
@@ -158,7 +159,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   private checkStillLoading() {
-    this.somethingLoading = this.useableTextAttributes == undefined || this.useableTextAttributes?.length == 0 || this.embeddingHandles == undefined || this.downloadedModels?.length == 0;
+    this.somethingLoading = this.useableAttributes == undefined || this.useableAttributes?.length == 0 || this.embeddingHandles == undefined || this.downloadedModels?.length == 0;
   }
 
   handleWebsocketNotification(msgParts) {

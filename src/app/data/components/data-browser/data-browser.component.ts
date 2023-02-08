@@ -1380,11 +1380,11 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     }
   }
 
-  createSlice(name: string) {
-    if (!name) return;
+  createSlice() {
+    if (!this.dataBrowserModals.filter.name) return;
 
     this.projectApolloService.createDataSlice(this.projectId,
-      name,
+      this.dataBrowserModals.filter.name,
       this.isStaticDataSlice,
       this.getRawFilterForSave(),
       this.filterParser.parseFilterToExtended())
@@ -1406,8 +1406,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   }
 
 
-  updateSliceByName(name: string) {
-    this.dataBrowserModals.filter.name = name;
+  updateSliceByName() {
     for (let value of this.slicesById.values()) {
       if (value.name == this.dataBrowserModals.filter.name) {
         this.activeSlice = value;
@@ -2134,5 +2133,9 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     groupItem.get('lower').setValue(0);
     groupItem.get('upper').setValue(100);
     groupItem.get('active').setValue(false);
+  }
+
+  setSliceName(sliceName: string) {
+    this.dataBrowserModals.filter.name = sliceName;
   }
 }
