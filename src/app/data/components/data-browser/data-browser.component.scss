@@ -86,9 +86,6 @@ input[type="number"] {
   overflow-wrap: anywhere;
 }
 
-.tooltip::before {
-  z-index: 50;
-}
 
 .tooltip_slice_max_width::before {
   max-width: 200px;
