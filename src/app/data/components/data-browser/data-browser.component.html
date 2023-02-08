@@ -6,7 +6,8 @@
             [ngClass]="isSearchMenuVisible? 'search_menu_width':null">
             <div class="flex flex-row items-center">
                 <ng-template [ngIf]="isSearchMenuOpen">
-                    <div class="pr-3 bg-white text-lg font-medium text-gray-900">Existing data slices</div>
+                    <div class="bg-white text-lg font-medium text-gray-900" style="padding-right: 14px;">Existing data
+                        slices</div>
                 </ng-template>
                 <div #menuOpener class="cursor-pointer" (click)="openSearchMenu(menuOpener)">
                     <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-layout-sidebar"
@@ -21,7 +22,7 @@
             <div *ngIf="isSearchMenuOpen || isSearchMenuVisible" class="transition_all opacity-0"
                 [ngClass]="isSearchMenuVisible&&isSearchMenuOpen?'opacity-100':null">
                 <!-- Also, you can choose a preset below -->
-                <div class="flex justify-center items-center w-full h-full relative -mt-2 ml-2" style="top:6px"
+                <div class="flex justify-center items-center w-full relative text-gray-400" style="top:6px"
                     data-tip="Outdated slice&#10;save to update"
                     [ngClass]="activeSlice?.sliceType == SliceTypes.STATIC_OUTLIER || !(displayOutdatedWarning  || (activeSlice?.static && staticDataSliceCurrentCount!=null && activeSlice.count!=staticDataSliceCurrentCount)) ? 'hidden':'tooltip'">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
