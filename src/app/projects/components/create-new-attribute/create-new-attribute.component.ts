@@ -65,6 +65,8 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
 
   attributeCalculationModals: AttributeCalculationModals = createDefaultAttributeCalculationModals();
   attributeDetails: Attributes;
+  isNameLoading: boolean = false;
+  attributesNames: string[] = [];
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -145,10 +147,10 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
       if (this.currentAttribute?.sourceCode == null) {
         this.codeFormCtrl.setValue(AttributeCodeLookup.getAttributeCalculationTemplate(AttributeCalculationExamples.AC_EMPTY_TEMPLATE, this.currentAttribute.dataType).code);
       } else {
-        if (!this.codeFormCtrl.value || this.codeFormCtrl.value.includes("def ac(record)") || this.nextUpdateReplace) {
+        if (!this.codeFormCtrl.value || this.codeFormCtrl.value.includes("def ac(record") || this.nextUpdateReplace) {
           this.codeFormCtrl.setValue(this.currentAttribute.sourceCode.replace(
-            'def ac(record):',
-            'def ' + this.currentAttribute.name + '(record):'
+            'def ac(record',
+            'def ' + this.currentAttribute.name + '(record'
           ));
           if (this.nextUpdateReplace) this.nextUpdateReplace = false;
 
@@ -217,6 +219,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
       .pipe(first())
       .subscribe(() => {
         this.duplicateNameExists = false;
+        this.isNameLoading = false;
       });
   }
 
@@ -247,9 +250,10 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
 
           if (this.duplicateNameExists) {
             this.codeFormCtrl.setValue(this.codeFormCtrl.value.replace(
-              'def ' + regMatch[2] + '(record):',
-              'def ' + this.currentAttribute.name + '(record):'
+              'def ' + regMatch[2] + '(record',
+              'def ' + this.currentAttribute.name + '(record'
             ));
+            this.isNameLoading = false;
             return;
           }
           this.saveAttribute(projectId);
@@ -265,8 +269,8 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
     if (
       this.codeFormCtrl.value !=
       this.currentAttribute.sourceCode.replace(
-        'def ac(record):',
-        'def ' + this.currentAttribute.name + '(record):'
+        'def ac(record',
+        'def ' + this.currentAttribute.name + '(record'
       )) return true;
     return false;
   }
@@ -375,6 +379,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
       attributes = attributes.filter((a) => a.visibility != AttributeVisibility.HIDE);
       attributes.sort((a, b) => a.relativePosition - b.relativePosition);
       this.attributes = attributes;
+      this.attributesNames = attributes.map((attribute) => attribute.name);
       this.attributesUsableUploaded = attributesAll.filter((attribute) => attribute.state == 'UPLOADED' || attribute.state == 'USABLE' || attribute.state == 'AUTOMATICALLY_CREATED');
       this.attributesUsableUploaded.forEach(attribute => {
         attribute.color = getColorForDataType(attribute.dataType);

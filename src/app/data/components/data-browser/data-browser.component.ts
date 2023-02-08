@@ -2129,4 +2129,10 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     }
     this.isManaged = ConfigManager.getIsManaged();
   }
+
+  clearConfidence(groupItem: FormGroup) {
+    groupItem.get('lower').setValue(0);
+    groupItem.get('upper').setValue(100);
+    groupItem.get('active').setValue(false);
+  }
 }

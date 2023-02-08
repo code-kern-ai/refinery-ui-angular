@@ -10,7 +10,7 @@ import { NotificationService } from 'src/app/base/services/notification.service'
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { RouteService } from 'src/app/base/services/route.service';
 import { WeakSourceApolloService } from 'src/app/base/services/weak-source/weak-source-apollo.service';
-import { dateAsUTCDate, toPythonFunctionName } from 'src/app/util/helper-functions';
+import { capitalizeFirstForClassName, dateAsUTCDate, toPythonFunctionName } from 'src/app/util/helper-functions';
 import { UserManager } from 'src/app/util/user-manager';
 import { InformationSourceCodeLookup, InformationSourceExamples } from '../information-sources-code-lookup';
 import { createDefaultHeuristicsModals, HeuristicsModals } from './weak-supervision-helper';
@@ -524,7 +524,11 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
   }
 
   changeInformationSourceName(event) {
-    this.heuristicsModals.functionName = toPythonFunctionName(event.target.value);
+    if (this.heuristicsModals.type == InformationSourceType.LABELING_FUNCTION) {
+      this.heuristicsModals.functionName = toPythonFunctionName(event.target.value);
+    } else {
+      this.heuristicsModals.functionName = capitalizeFirstForClassName(event.target.value);
+    }
     if (this.heuristicsModals.functionName != event.target.value) {
       event.target.value = this.heuristicsModals.functionName;
     }
@@ -550,18 +554,22 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
     switch (value) {
       case 'Labeling function':
         this.heuristicsModals.createLabelingFunction.open = true;
+        this.heuristicsModals.type = InformationSourceType.LABELING_FUNCTION;
         this.modalChangeForCreation(true, InformationSourceType.LABELING_FUNCTION);
         break;
       case 'Active learning':
         this.heuristicsModals.createActiveLearning.open = true;
+        this.heuristicsModals.type = InformationSourceType.ACTIVE_LEARNING;
         this.modalChangeForCreation(true, InformationSourceType.ACTIVE_LEARNING);
         break;
       case 'Zero-shot':
         this.heuristicsModals.createZeroShot.open = true;
-        this.modalChangeForCreation(true, InformationSourceType.ZERO_SHOT)
+        this.heuristicsModals.type = InformationSourceType.ZERO_SHOT;
+        this.modalChangeForCreation(true, InformationSourceType.ZERO_SHOT);
         break;
       case 'Crowd labeling':
         this.heuristicsModals.createCrowdLabeling.open = true;
+        this.heuristicsModals.type = InformationSourceType.CROWD_LABELER;
         this.modalChangeForCreation(true, InformationSourceType.CROWD_LABELER)
         break;
 

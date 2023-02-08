@@ -155,8 +155,9 @@ export function findProjectIdFromRoute(route: ActivatedRoute): string {
 export function copyToClipboard(textToCopy: string) {
     navigator.clipboard.writeText(textToCopy);
 }
-export function toPythonFunctionName(str: string) {
-    return str.replace(/\s+/g, '_').replace(/[^\w]/gi, '').trim();
+export function toPythonFunctionName(str: string, prefix: string = '_') {
+    str = str.toLowerCase().replace(/\s+/g, '_').replace(/[^\w]/gi, '').trim();
+    return /^\d/.test(str) ? (prefix + str) : str;
 }
 
 export function getUserAvatarUri(user) {
@@ -180,8 +181,9 @@ export function getColorForDataType(dataType): string {
 
 
 
-export function asPythonVariable(baseName: string) {
-    return baseName.toLowerCase().replace(/ /g, "_")
+export function asPythonVariable(baseName: string, prefix: string = '_') {
+    baseName = baseName.toLowerCase().replace(/ /g, "_").replace(/[^\w]/gi, '').trim();
+    return /^\d/.test(baseName) ? (prefix + baseName) : baseName;
 }
 
 export function tryParseJSON(str: string): any {
@@ -229,6 +231,15 @@ export function loopNestedDict(dict: any, callback: (key: string, value: any) =>
     }
 }
 
+export function capitalizeFirstForClassName(str: string) {
+    if (str.indexOf(" ") == -1) return str.charAt(0).toUpperCase() + str.slice(1);
+    const parts = str.split(" ");
+    for (let i = 0; i < parts.length; i++) {
+        if (i == parts.length - 1) parts[i] = parts[i].charAt(0).toUpperCase() + parts[i].slice(1).toLowerCase(); // if space, replace the last part it with a capital letter
+        else parts[i] = parts[i];
+    }
+    return parts.join("");
+}
 
 /**
  * transfer values from dictA to dictB, if the key is not present in dictB, it will be ignored or created.

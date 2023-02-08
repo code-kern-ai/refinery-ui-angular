@@ -107,7 +107,7 @@ export class LabelingSuiteUserManager implements DoBeforeDestroy {
 
     public canDeleteRla(rla): boolean {
         if (rla.sourceType != LabelSource.MANUAL) return false;
-        if (this.currentRole != UserRole.ENGINEER) return false;
+        if (this.roleAssumed && this.currentRole != UserRole.ENGINEER) return false;
         if (rla.isGoldStar) return true;
         return rla.createdBy == this.mainUser.data.id;
     }

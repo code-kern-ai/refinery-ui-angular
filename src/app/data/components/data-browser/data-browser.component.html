@@ -6,7 +6,7 @@
             [ngClass]="isSearchMenuVisible? 'search_menu_width':null">
             <div class="flex flex-row items-center">
                 <ng-template [ngIf]="isSearchMenuOpen">
-                    <div class="pr-3 bg-white text-lg font-medium text-gray-900">Existing filters</div>
+                    <div class="pr-3 bg-white text-lg font-medium text-gray-900">Existing data slices</div>
                 </ng-template>
                 <div #menuOpener class="cursor-pointer" (click)="openSearchMenu(menuOpener)">
                     <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-layout-sidebar"
@@ -20,20 +20,15 @@
             </div>
             <div *ngIf="isSearchMenuOpen || isSearchMenuVisible" class="transition_all opacity-0"
                 [ngClass]="isSearchMenuVisible&&isSearchMenuOpen?'opacity-100':null">
-                <div class="text-sm text-gray-400">You can filter and order all your data in the browser according
-                    to your needs. Selected filter criteria can be saved and used later on.
-                    <!-- Also, you can choose
-                        a preset below -->
-                    <div data-tip="Outdated slice&#10;save to update" class="tooltip ml-2">
-                        <div class="flex justify-center items-center w-full h-full relative -mt-2" style="top:6px"
-                            [ngClass]="{hidden:activeSlice?.sliceType == SliceTypes.STATIC_OUTLIER || !(displayOutdatedWarning  || (activeSlice?.static && staticDataSliceCurrentCount!=null && activeSlice.count!=staticDataSliceCurrentCount))}">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                            </svg>
-                        </div>
-                    </div>
+                <!-- Also, you can choose a preset below -->
+                <div class="flex justify-center items-center w-full h-full relative -mt-2 ml-2" style="top:6px"
+                    data-tip="Outdated slice&#10;save to update"
+                    [ngClass]="activeSlice?.sliceType == SliceTypes.STATIC_OUTLIER || !(displayOutdatedWarning  || (activeSlice?.static && staticDataSliceCurrentCount!=null && activeSlice.count!=staticDataSliceCurrentCount)) ? 'hidden':'tooltip'">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
                 </div>
 
                 <div class="mt-2" [ngClass]="this.sliceNames.size > 6 ? null : 'hidden'">
@@ -94,6 +89,9 @@
                         <span class="pr-3 bg-white text-lg font-medium text-gray-900">Filter</span>
                     </div>
                 </div>
+                <span class="text-sm text-gray-400">You can filter and order all your data in the browser
+                    according
+                    to your needs. Selected filter criteria can be saved and used later on.</span>
 
                 <!--Dynamic Search Groups-->
                 <ng-template [ngIf]="searchGroups">
@@ -343,18 +341,41 @@
                                                                         <div class="flex flex-row items-center"
                                                                             [formGroup]="groupItem.get('weakSupervisionConfidence')">
                                                                             <span
-                                                                                class="label-text mr-1 font-dmMono">CONFIDENCE
+                                                                                class="label-text mr-0.5 font-dmMono">CONFIDENCE
                                                                                 BETWEEN</span><input
                                                                                 formControlName="lower" type="number"
-                                                                                class="w-12 px-2 input input-sm input-bordered"
-                                                                                (blur)="ensureValidConfidence(groupItem.get('weakSupervisionConfidence'))">
-                                                                            <span class="label-text mx-1 font-dmMono">%
-                                                                                AND</span>
-                                                                            <input formControlName="upper" type="number"
-                                                                                class="w-12 input input-sm input-bordered px-2"
+                                                                                class="w-11 px-2 input input-sm input-bordered"
                                                                                 (blur)="ensureValidConfidence(groupItem.get('weakSupervisionConfidence'))">
                                                                             <span
-                                                                                class="label-text mx-1 font-dmMono">%</span>
+                                                                                class="label-text mx-0.5 font-dmMono">%
+                                                                                AND</span>
+                                                                            <input formControlName="upper" type="number"
+                                                                                class="w-11 input input-sm input-bordered px-2"
+                                                                                (blur)="ensureValidConfidence(groupItem.get('weakSupervisionConfidence'))">
+                                                                            <span
+                                                                                class="label-text mx-0.5 font-dmMono">%</span>
+                                                                            <span
+                                                                                *ngIf="groupItem.get('weakSupervisionConfidence').get('active').value"
+                                                                                (click)="clearConfidence(groupItem.get('weakSupervisionConfidence'))"
+                                                                                class="tooltip tooltip-bottom tooltip-max-width"
+                                                                                data-tip="Clear filter for weakly supervised confidence">
+                                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                                    class="icon icon-tabler icon-tabler-filter-off text-red-700 cursor-pointer"
+                                                                                    width="20" height="20"
+                                                                                    viewBox="0 0 24 24" stroke-width="2"
+                                                                                    stroke="currentColor" fill="none"
+                                                                                    stroke-linecap="round"
+                                                                                    stroke-linejoin="round">
+                                                                                    <path stroke="none"
+                                                                                        d="M0 0h24v24H0z" fill="none">
+                                                                                    </path>
+                                                                                    <line x1="3" y1="3" x2="21" y2="21">
+                                                                                    </line>
+                                                                                    <path
+                                                                                        d="M9 5h9.5a1 1 0 0 1 .5 1.5l-4.049 4.454m-.951 3.046v5l-4 -3v-4l-5 -5.5a1 1 0 0 1 .18 -1.316">
+                                                                                    </path>
+                                                                                </svg>
+                                                                            </span>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -384,18 +405,41 @@
                                                                         <div class="flex flex-row items-center"
                                                                             [formGroup]="groupItem.get('modelCallbackConfidence')">
                                                                             <span
-                                                                                class="label-text mr-1 font-dmMono">CONFIDENCE
+                                                                                class="label-text mr-0.5 font-dmMono">CONFIDENCE
                                                                                 BETWEEN</span><input
                                                                                 formControlName="lower" type="number"
-                                                                                class="w-12 px-2 input input-sm input-bordered"
-                                                                                (blur)="ensureValidConfidence(groupItem.get('modelCallbackConfidence'))">
-                                                                            <span class="label-text mx-1 font-dmMono">%
-                                                                                AND</span>
-                                                                            <input formControlName="upper" type="number"
-                                                                                class="w-12 input input-sm input-bordered px-2"
+                                                                                class="w-11 px-2 input input-sm input-bordered"
                                                                                 (blur)="ensureValidConfidence(groupItem.get('modelCallbackConfidence'))">
                                                                             <span
-                                                                                class="label-text mx-1 font-dmMono">%</span>
+                                                                                class="label-text mx-0.5 font-dmMono">%
+                                                                                AND</span>
+                                                                            <input formControlName="upper" type="number"
+                                                                                class="w-11 input input-sm input-bordered px-2"
+                                                                                (blur)="ensureValidConfidence(groupItem.get('modelCallbackConfidence'))">
+                                                                            <span
+                                                                                class="label-text mx-0.5 font-dmMono">%</span>
+                                                                            <span
+                                                                                *ngIf="groupItem.get('modelCallbackConfidence').get('active').value"
+                                                                                (click)="clearConfidence(groupItem.get('modelCallbackConfidence'))"
+                                                                                class="tooltip tooltip-bottom tooltip-max-width"
+                                                                                data-tip="Clear filter for model callback confidence">
+                                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                                    class="icon icon-tabler icon-tabler-filter-off text-red-700 cursor-pointer"
+                                                                                    width="20" height="20"
+                                                                                    viewBox="0 0 24 24" stroke-width="2"
+                                                                                    stroke="currentColor" fill="none"
+                                                                                    stroke-linecap="round"
+                                                                                    stroke-linejoin="round">
+                                                                                    <path stroke="none"
+                                                                                        d="M0 0h24v24H0z" fill="none">
+                                                                                    </path>
+                                                                                    <line x1="3" y1="3" x2="21" y2="21">
+                                                                                    </line>
+                                                                                    <path
+                                                                                        d="M9 5h9.5a1 1 0 0 1 .5 1.5l-4.049 4.454m-.951 3.046v5l-4 -3v-4l-5 -5.5a1 1 0 0 1 .18 -1.316">
+                                                                                    </path>
+                                                                                </svg>
+                                                                            </span>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -610,7 +654,7 @@
                         [ngClass]="similarSearchHelper.recordsInDisplay || activeSlide ? 'cursor-not-allowed':'' ">
                         <label
                             (click)="dataBrowserModals.filter.open = true; focusModalInputBox($event,'dataSliceName')"
-                            class="mr-1 inline-flex items-center w-32 px-2.5 py-1.5 border border-gray-200 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer"
+                            class="mr-1 inline-flex items-center w-36 px-2.5 py-1.5 border border-gray-200 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer"
                             [ngClass]="similarSearchHelper.recordsInDisplay || activeSlide ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer'"
                             [ngStyle]="similarSearchHelper.recordsInDisplay || activeSlide ? {'background-color': '#f9fafb','cursor': 'not-allowed'} : null">
                             <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 icon icon-tabler icon-tabler-filter"
@@ -620,13 +664,13 @@
                                 <path d="M5.5 5h13a1 1 0 0 1 .5 1.5l-5 5.5l0 7l-4 -3l0 -4l-5 -5.5a1 1 0 0 1 .5 -1.5">
                                 </path>
                             </svg>
-                            Save filter
+                            Save data slice
                         </label>
                     </div>
                     <div>
-                        <div data-tip="Update your current filter" class="tooltip tooltip-top relative">
+                        <div data-tip="Update your current data slice" class="tooltip tooltip-top relative">
                             <button #updateButton
-                                class="mr-1 inline-flex items-center w-32 px-2.5 py-1.5 border border-gray-200 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer"
+                                class="mr-1 inline-flex items-center w-38 px-2.5 py-1.5 border border-gray-200 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer"
                                 (click)="updateSlice()"
                                 [disabled]="!activeSlice || activeSlice?.sliceType == SliceTypes.STATIC_OUTLIER || (activeSlice?.static && activeSlice.count==staticDataSliceCurrentCount && !displayOutdatedWarning)"
                                 [ngClass]="!activeSlice || activeSlice?.sliceType == SliceTypes.STATIC_OUTLIER || (activeSlice?.static && activeSlice.count==staticDataSliceCurrentCount && !displayOutdatedWarning) ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer'">
@@ -642,20 +686,20 @@
                                     <line x1="19.37" y1="15.1" x2="19.37" y2="15.11"></line>
                                     <line x1="19.94" y1="11" x2="19.94" y2="11.01"></line>
                                 </svg>
-                                Update filter
+                                Update data slice
                             </button>
                         </div>
                     </div>
                 </div>
                 <div class="mt-1">
-                    <div data-tip="Creates a static slices" class="tooltip tooltip-bottom relative"
+                    <div data-tip="Creates a static data slice" class="tooltip tooltip-bottom relative"
                         [ngClass]="!(similarSearchHelper.embeddings?.length && anyRecordManuallyLabeled) ? 'cursor-not-allowed' : ''">
                         <label
                             (click)="similarSearchHelper.embeddings?.length==1? requestOutlierSlice(): similarSearchHelper.embeddings?.length>1?dataBrowserModals.findOutliers.open=true: null"
                             [ngClass]="!(similarSearchHelper.embeddings?.length && anyRecordManuallyLabeled) ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer' "
                             class="text-green-800 text-sm font-medium">
                             <span
-                                class="mr-1 inline-flex items-center w-32 px-2.5 py-1.5 border border-gray-200 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                class="mr-1 inline-flex items-center w-36 px-2.5 py-1.5 border border-gray-200 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                                 <svg xmlns="http://www.w3.org/2000/svg"
                                     style="stroke: rgba(77,124,15); fill: rgba(236,252,203);"
                                     class="mr-2 icon icon-tabler icon-tabler-chart-bubble" width="24" height="24"
@@ -728,7 +772,7 @@
                                         </svg>
                                     </div>
                                     <div class="ml-3">
-                                        <p class="text-sm font-medium text-yellow-800">Static filter active. Filter
+                                        <p class="text-sm font-medium text-yellow-800">Static data slice active. Filter
                                             changes won't take effect{{activeSlice?.sliceType !=
                                             SliceTypes.STATIC_OUTLIER ? ' until you update the slice':''}}.</p>
                                         <div *ngIf="staticSliceOrderActive && activeSlice?.sliceType != SliceTypes.STATIC_OUTLIER"
@@ -899,17 +943,17 @@
 </kern-modal>
 
 <kern-modal [isOpen]="dataBrowserModals.filter.open" closeButton="X" [modalBoxStyle]="{'width':'35rem'}" [acceptButton]="{
-    buttonCaption: dataBrowserModals.filter.sliceNameExists? 'Update filter':'Save filter',
+    buttonCaption: dataBrowserModals.filter.sliceNameExists? 'Update data slice':'Save data slice',
     disabled: inputSliceName.value == ''
 }"
     (optionClicked)="dataBrowserModals.filter.open = false; dataBrowserModals.filter.sliceNameExists? updateSliceByName(inputSliceName.value) :createSlice(inputSliceName.value);inputSliceName.value=''">
     <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
-        Filter creation</div>
+        Data slice creation</div>
     <div class="mb-2 flex flex-grow justify-center text-sm">
-        Save or update a filter for the data browser.</div>
+        Save or update the current filter settings as a data slice</div>
     <p class="pt-4">You have two choices.
         <label class="block font-bold mt-2">Dynamic:</label>
-        Stores the current filter critera and is reapplied whenever the slice is
+        Stores the current filter critera and is reapplied whenever the data slice is
         selected.<br><br>
         <label class="block font-bold mt-2 ">Static:</label>
         Used for visualization filters and scope of
