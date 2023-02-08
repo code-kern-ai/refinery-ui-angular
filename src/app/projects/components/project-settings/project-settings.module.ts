@@ -8,9 +8,10 @@ import { DataSchemaComponent } from './components/data-schema/data-schema.compon
 import { EmbeddingsComponent } from './components/embeddings/embeddings.component';
 import { LabelingTasksComponent } from './components/labeling-tasks/labeling-tasks.component';
 import { ProjectMetadataComponent } from './components/project-metadata/project-metadata.component';
+import { GatesIntegratorComponent } from './components/gates-integrator/gates-integrator.component';
 
 @NgModule({
-    declarations: [ProjectSettingsComponent, DataSchemaComponent, EmbeddingsComponent, LabelingTasksComponent, ProjectMetadataComponent],
+    declarations: [ProjectSettingsComponent, DataSchemaComponent, EmbeddingsComponent, LabelingTasksComponent, ProjectMetadataComponent, GatesIntegratorComponent],
     imports: [
         CommonModule,
         BaseModule,

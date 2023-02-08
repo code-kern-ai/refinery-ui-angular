@@ -302,4 +302,12 @@ modelProviderDownloadModel(modelName: $modelName) {
 }
 `,
 
+  UPDATE_PROJECT_FOR_GATES: gql`
+mutation($projectId: ID!) {
+  updateProjectForGates(projectId: $projectId){
+    ok
+  } 
+}
+`,
+
 };

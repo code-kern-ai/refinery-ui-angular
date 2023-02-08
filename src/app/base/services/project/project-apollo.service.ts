@@ -1421,5 +1421,30 @@ export class ProjectApolloService {
     });
   }
 
+  getGatesIntegrationData(projectId: string) {
+    const query = this.apollo
+      .watchQuery({
+        query: queries.GET_GATES_INTEGRATION_DATA,
+        variables: {
+          projectId: projectId,
+        },
+        fetchPolicy: 'no-cache'
+      });
+      const vc = query.valueChanges.pipe(
+        map((result) => result['data']['getGatesIntegrationData'])
+      );
+      return [query, vc];
+  }
+
+  updateProjectForGates(projectId: string) {
+    return this.apollo
+      .mutate({
+        mutation: mutations.UPDATE_PROJECT_FOR_GATES,
+        variables: {
+          projectId: projectId,
+        },
+      });
+  }
+
 
 }

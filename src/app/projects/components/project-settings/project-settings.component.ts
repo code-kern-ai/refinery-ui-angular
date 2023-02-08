@@ -45,7 +45,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
   tokenizationProgress: Number;
   downloadMessage: DownloadState = DownloadState.NONE;
   embeddingHandles: { [embeddingId: string]: any } = {};
-  isManaged: boolean = true;
+  isManaged: boolean = false;
   attributeVisibilityStates = attributeVisibilityStates;
   settingModals: SettingModals = createDefaultSettingModals();
   dataHandlerHelper: DataHandlerHelper;

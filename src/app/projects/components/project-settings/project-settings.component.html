@@ -90,6 +90,9 @@
         [useableAttributes]="useableAttributes" [attributes]="attributes" [lh]="lh">
     </kern-labeling-tasks>
 
+    <kern-gates-integrator *ngIf="isManaged" [project]="project">
+    </kern-gates-integrator>
+
     <kern-project-metadata [project]="project"></kern-project-metadata>
 </div>
 
