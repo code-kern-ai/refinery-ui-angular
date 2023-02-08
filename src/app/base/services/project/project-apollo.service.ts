@@ -1443,14 +1443,6 @@ export class ProjectApolloService {
         variables: {
           projectId: projectId,
         },
-        refetchQueries: [
-          {
-            query: queries.GET_GATES_INTEGRATION_DATA,
-            variables: {
-              projectId: projectId,
-            },
-          },
-        ],
       });
   }
 

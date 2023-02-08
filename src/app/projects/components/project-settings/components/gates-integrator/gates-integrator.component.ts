@@ -38,35 +38,35 @@ export class GatesIntegratorComponent implements OnInit, OnDestroy {
     [this.gatesIntegrationDataQuery$, vc$] = this.projectApolloService.getGatesIntegrationData(projectId);
     this.subscriptions$.push(
       vc$.subscribe((gatesIntegrationData) => {
-        console.log(gatesIntegrationData)
         this.gatesIntegrationData = gatesIntegrationData;
       }));
   }
 
   updateProjectForGates() {
     this.projectApolloService.updateProjectForGates(this.project.id).pipe(first()).subscribe();
-    // this.gatesIntegrationDataQuery$.refetch();
   }
 
   getWhiteListNotificationService(): string[] {
-    let toReturn = ['tokenization', 'embedding', 'embedding_deleted'];
+    let toReturn = ['gates_integration', 'tokenization', 'embedding', 'embedding_deleted'];
     toReturn.push(...['information_source_deleted', 'information_source_updated']);
     return toReturn;
   }
 
   handleWebsocketNotification(msgParts) {
-    if(['information_source_deleted', 'information_source_updated'].includes(msgParts[1])){
-      if (this.gatesIntegrationData?.missingInformationSources.includes(msgParts[2])) {
+    if(msgParts[1] == 'gates_integration'){
+      this.gatesIntegrationDataQuery$.refetch();
+    } else if (['information_source_deleted', 'information_source_updated'].includes(msgParts[1])){
+      if (this.gatesIntegrationData?.missingInformationSources?.includes(msgParts[2])) {
         this.gatesIntegrationDataQuery$.refetch();
       }
     } else if (msgParts[1] == 'tokenization' && msgParts[2] == 'docbin' && msgParts[3] == 'state' && msgParts[4] == 'FINISHED') {
       this.gatesIntegrationDataQuery$.refetch();
     } else if (msgParts[1] == 'embedding' && msgParts[3] == 'state' && msgParts[4] == 'FINISHED') {
-      if (this.gatesIntegrationData?.missingEmbeddings.includes(msgParts[2])) {
+      if (this.gatesIntegrationData?.missingEmbeddings?.includes(msgParts[2])) {
         this.gatesIntegrationDataQuery$.refetch();
       }
     } else if (msgParts[1] == 'embedding_deleted') {
-      if (this.gatesIntegrationData?.missingEmbeddings.includes(msgParts[2])) {
+      if (this.gatesIntegrationData?.missingEmbeddings?.includes(msgParts[2])) {
         this.gatesIntegrationDataQuery$.refetch();
       }
     }
