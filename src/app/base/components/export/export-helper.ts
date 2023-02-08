@@ -24,7 +24,7 @@ export enum ExportPreset {
 
 export enum ExportRowType {
     ALL = "ALL",
-    SLICE = "SLICE",
+    DATA_SLICE = "DATA_SLICE",
     SESSION = "SESSION"
 }
 
@@ -110,7 +110,7 @@ export class ExportHelper {
         let type = this.firstActiveInGroup(ExportEnums.ExportRowType, 'value');
         let id;
         if (type == ExportRowType.ALL) id = null;
-        else if (type == ExportRowType.SLICE) {
+        else if (type == ExportRowType.DATA_SLICE) {
             id = this.firstActiveInGroup(ExportEnums.DataSlices, "id");
         } else if (type == ExportRowType.SESSION) id = this.baseComponent.sessionId;
         return { type: type, id: id };

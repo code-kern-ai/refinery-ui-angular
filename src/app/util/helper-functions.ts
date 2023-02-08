@@ -155,8 +155,9 @@ export function findProjectIdFromRoute(route: ActivatedRoute): string {
 export function copyToClipboard(textToCopy: string) {
     navigator.clipboard.writeText(textToCopy);
 }
-export function toPythonFunctionName(str: string) {
-    return str.replace(/\s+/g, '_').replace(/[^\w]/gi, '').trim();
+export function toPythonFunctionName(str: string, prefix: string = '_') {
+    str = str.toLowerCase().replace(/\s+/g, '_').replace(/[^\w]/gi, '').trim();
+    return /^\d/.test(str) ? (prefix + str) : str;
 }
 
 export function getUserAvatarUri(user) {
@@ -180,8 +181,9 @@ export function getColorForDataType(dataType): string {
 
 
 
-export function asPythonVariable(baseName: string) {
-    return baseName.toLowerCase().replace(/ /g, "_")
+export function asPythonVariable(baseName: string, prefix: string = '_') {
+    baseName = baseName.toLowerCase().replace(/ /g, "_").replace(/[^\w]/gi, '').trim();
+    return /^\d/.test(baseName) ? (prefix + baseName) : baseName;
 }
 
 export function tryParseJSON(str: string): any {

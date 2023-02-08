@@ -22,7 +22,7 @@ import {
 import { forkJoin, Subscription, timer } from 'rxjs';
 import { InformationSourceType, informationSourceTypeToString, LabelingTask, LabelSource } from 'src/app/base/enum/graphql-enums';
 import { InformationSourceCodeLookup, InformationSourceExamples } from '../information-sources-code-lookup';
-import { dateAsUTCDate, getColorForDataType, getPythonClassName, getPythonClassRegExMatch, getPythonFunctionName, getPythonFunctionRegExMatch, toPythonFunctionName } from 'src/app/util/helper-functions';
+import { capitalizeFirstForClassName, dateAsUTCDate, getColorForDataType, getPythonClassName, getPythonClassRegExMatch, getPythonFunctionName, getPythonFunctionRegExMatch, toPythonFunctionName } from 'src/app/util/helper-functions';
 import { NotificationService } from 'src/app/base/services/notification.service';
 import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
 import { schemeCategory24 } from 'src/app/util/colors';
@@ -541,8 +541,11 @@ export class WeakSourceDetailsComponent
   }
 
   changeInformationSourceName(event) {
-    // if (this.informationSource.informationSourceType != InformationSourceType.LABELING_FUNCTION) return;
-    this.informationSourceName = toPythonFunctionName(event.target.value);
+    if (this.informationSource.informationSourceType == InformationSourceType.LABELING_FUNCTION) {
+      this.informationSourceName = toPythonFunctionName(event.target.value);
+    } else {
+      this.informationSourceName = capitalizeFirstForClassName(event.target.value);
+    }
     if (this.informationSourceName != event.target.value) {
       event.target.value = this.informationSourceName;
     }

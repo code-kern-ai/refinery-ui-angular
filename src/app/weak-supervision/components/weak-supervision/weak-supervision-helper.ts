@@ -1,3 +1,5 @@
+import { InformationSourceType } from "src/app/base/enum/graphql-enums";
+
 export type HeuristicsModals = {
     deleteSelected: DeleteSelectedModals;
     selectedInformationSources: any[];
@@ -9,6 +11,7 @@ export type HeuristicsModals = {
     createCrowdLabeling: CreateCrowdLabelingModal;
     functionName: string;
     description: string;
+    type: InformationSourceType;
 };
 
 export type DeleteSelectedModals = {
@@ -70,6 +73,7 @@ export function createDefaultHeuristicsModals(): HeuristicsModals {
             open: false
         },
         functionName: '',
-        description: ''
+        description: '',
+        type: InformationSourceType.LABELING_FUNCTION
     };
 }
