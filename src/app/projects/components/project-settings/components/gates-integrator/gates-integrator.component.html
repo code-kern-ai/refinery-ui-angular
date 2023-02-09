@@ -6,36 +6,14 @@
         <kern-statuses page="gates-integrator" [status]="gatesIntegrationData?.status">
 
         </kern-statuses>
-        <!-- <ng-container [ngSwitch]="gatesIntegrationData?.status">
-            <span *ngSwitchCase="'READY'"
-                class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-300 text-green-800">
-                <svg class="mr-1.5 h-2 w-2" [ngClass]="'text-green-400'" fill="currentColor" viewBox="0 0 8 8">
-                    <circle cx="4" cy="4" r="3" />
-                </svg>
-                Ready to Use
-            </span>
-            <span *ngSwitchCase="'UPDATING'"
-                class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-300 text-yellow-800">
-                <svg class="mr-1.5 h-2 w-2" [ngClass]="'text-yellow-400'" fill="currentColor" viewBox="0 0 8 8">
-                    <circle cx="4" cy="4" r="3" />
-                </svg>
-                Updating
-            </span>
-            <span *ngSwitchCase="'NOT_READY'"
-                class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-300 text-red-800">
-                <svg class="mr-1.5 h-2 w-2" [ngClass]="'text-red-400'" fill="currentColor" viewBox="0 0 8 8">
-                    <circle cx="4" cy="4" r="3" />
-                </svg>
-                Not Ready
-            </span>
-        </ng-container> -->
     </div>
     <div class="mt-1">
         <div class="text-sm leading-5 font-medium text-gray-700 inline-block">
             Gates is the inference API for refinery.
             <ng-container [ngSwitch]="gatesIntegrationData?.status">
                 <ng-container *ngSwitchCase="'READY'">
-                    This project is ready to be used with Gates. You can switch to the Gates App to configure and run
+                    This project is ready to be used with Gates. You can switch to the <a href="{{gatesLink}}"
+                        target="_blank"><span class="underline cursor-pointer">Gates App</span></a> to configure and run
                     it.
                 </ng-container>
                 <ng-container *ngSwitchCase="'UPDATING'">
