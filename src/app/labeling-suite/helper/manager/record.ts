@@ -62,6 +62,7 @@ export class LabelingSuiteRecordManager implements DoBeforeDestroy {
             if (this.recordRequests[key]) this.recordRequests[key].unsubscribe();
         }
         NotificationService.unsubscribeFromNotification(this, this.projectId);
+        CommentDataManager.unregisterAllCommentRequests(this);
     }
 
     private getWebsocketWhitelist(): string[] {
