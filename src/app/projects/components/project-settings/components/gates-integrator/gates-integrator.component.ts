@@ -13,7 +13,9 @@ import { NotificationService } from 'src/app/base/services/notification.service'
 export class GatesIntegratorComponent implements OnInit, OnDestroy {
 
   @Input() project: Project;
-  
+
+
+  gatesLink: string;
   gatesIntegrationData: any;
   gatesIntegrationDataQuery$: any;
   subscriptions$: Subscription[] = [];
@@ -26,6 +28,7 @@ export class GatesIntegratorComponent implements OnInit, OnDestroy {
       whitelist: this.getWhiteListNotificationService(),
       func: this.handleWebsocketNotification
     });
+    this.gatesLink = window.location.origin + '/gates/project/' + this.project.id + "/prediction";
   }
 
   ngOnDestroy() {
@@ -53,9 +56,9 @@ export class GatesIntegratorComponent implements OnInit, OnDestroy {
   }
 
   handleWebsocketNotification(msgParts) {
-    if(msgParts[1] == 'gates_integration'){
+    if (msgParts[1] == 'gates_integration') {
       this.gatesIntegrationDataQuery$.refetch();
-    } else if (['information_source_deleted', 'information_source_updated'].includes(msgParts[1])){
+    } else if (['information_source_deleted', 'information_source_updated'].includes(msgParts[1])) {
       if (this.gatesIntegrationData?.missingInformationSources?.includes(msgParts[2])) {
         this.gatesIntegrationDataQuery$.refetch();
       }

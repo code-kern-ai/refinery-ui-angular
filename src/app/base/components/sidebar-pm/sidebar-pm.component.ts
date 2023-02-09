@@ -68,6 +68,7 @@ export class SidebarPmComponent implements OnInit, OnDestroy {
   private static initialConfigRequest: boolean = false;
   routeColor: any;
   sideBarPmModals: SideBarPmModals = createDefaultSideBarPmModals();
+  navHidden: boolean = true;
 
   constructor(
     private organizationService: OrganizationApolloService,
@@ -186,6 +187,24 @@ export class SidebarPmComponent implements OnInit, OnDestroy {
       this.toggleClass = 'ft-minimize';
       this.isFullscreen = true;
 
+    }
+  }
+
+  @HostListener('window:mousedown', ['$event'])
+  onMousedown(event: MouseEvent) {
+    if (!this.navHidden) {
+      if (!(event.target instanceof HTMLElement)) this.navHidden = true;
+      else {
+        if (!this.isOnKernNav(event.target)) this.navHidden = true;
+      }
+    }
+  }
+
+  private isOnKernNav(element: HTMLElement, loops = 5): boolean {
+    if (loops == 0) return element.id == 'KernNav';
+    else {
+      if (element.id == 'KernNav') return true;
+      else return this.isOnKernNav(element.parentElement, loops - 1);
     }
   }
 

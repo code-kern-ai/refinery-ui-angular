@@ -8,6 +8,7 @@
 
 ol {
   list-style: decimal;
+
   li {
     margin-top: 8px;
   }
@@ -38,4 +39,12 @@ ol.list-letters {
   .modal-sizes {
     min-width: 400px;
   }
+}
+
+.kern-platform-button {
+  border-color: rgb(64 64 64)
+}
+
+.kern-platform-button:hover {
+  background-color: rgb(64 64 64)
 }

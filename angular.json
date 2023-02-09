@@ -20,8 +20,8 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "baseHref": "/app/",
-            "deployUrl": "/app/",
+            "baseHref": "/refinery/",
+            "deployUrl": "/refinery/",
             "outputPath": "dist/kern-frontspine",
             "index": "src/index.html",
             "main": "src/main.ts",
@@ -29,7 +29,7 @@
             "tsConfig": "tsconfig.app.json",
             "aot": true,
             "assets": [
-              "src/favicon.ico",
+              "src/refinery-favicon.ico",
               "src/assets",
               {
                 "glob": "**/*",
@@ -130,7 +130,7 @@
             "tsConfig": "tsconfig.spec.json",
             "karmaConfig": "karma.conf.js",
             "assets": [
-              "src/favicon.ico",
+              "src/refinery-favicon.ico",
               "src/assets",
               {
                 "glob": "**/*",

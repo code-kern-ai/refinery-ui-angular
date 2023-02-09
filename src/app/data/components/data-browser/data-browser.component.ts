@@ -1974,7 +1974,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   }
 
   buildFullLink(route: string) {
-    return window.location.protocol + '//' + window.location.host + "/app" + route;
+    return window.location.protocol + '//' + window.location.host + "/refinery" + route;
   }
 
   testLink(link) {
