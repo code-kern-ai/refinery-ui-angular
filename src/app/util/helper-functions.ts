@@ -34,7 +34,7 @@ export function parseLinkFromText(link: string) {
     if (link.startsWith(linkData.protocol)) link = link.substring(linkData.protocol.length);
     if (link.startsWith("//")) link = link.substring(2);
     if (link.startsWith(linkData.host)) link = link.substring(linkData.host.length);
-    if (link.startsWith("/app")) link = link.substring(4);
+    if (link.startsWith("/refinery")) link = link.substring(4);
     if (link.indexOf("?") > -1) {
         let params = link.split("?");
         linkData.route = params[0];
@@ -47,7 +47,7 @@ export function parseLinkFromText(link: string) {
         linkData.route = link;
     }
 
-    linkData.fullUrl = linkData.protocol + '//' + linkData.host + "/app" + linkData.route;
+    linkData.fullUrl = linkData.protocol + '//' + linkData.host + "/refinery" + linkData.route;
     if (linkData.queryParams) linkData.fullUrl += "?" + Object.keys(linkData.queryParams).map(key => key + "=" + linkData.queryParams[key]).join("&");
 
 
