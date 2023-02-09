@@ -23,7 +23,7 @@ import { DropdownComponent } from './components/dropdown/dropdown.component';
 import { CommentComponent } from './components/comment/comment.component';
 import { BricksIntegratorComponent } from './components/bricks-integrator/bricks-integrator.component';
 
-import { HeuristicStatusesComponent } from './components/heuristic-statuses/heuristic-statuses.component';
+import { StatusesComponent } from './components/statuses/statuses.component';
 import { LogsComponent } from './components/logs/logs.component';
 import { DefaultOrderKeyvaluePipe } from './pipes/default-order-key-value.pipe';
 import { NotificationCenterComponent } from './components/notification-center/notification-center.component';
@@ -47,7 +47,7 @@ import { RecordTableComponent } from './components/record-table/record-table.com
     DropdownComponent,
     CommentComponent,
     BricksIntegratorComponent,
-    HeuristicStatusesComponent,
+    StatusesComponent,
     LogsComponent,
     DefaultOrderKeyvaluePipe,
     NotificationCenterComponent,
@@ -80,7 +80,7 @@ import { RecordTableComponent } from './components/record-table/record-table.com
     DropdownComponent,
     CommentComponent,
     BricksIntegratorComponent,
-    HeuristicStatusesComponent,
+    StatusesComponent,
     LogsComponent,
     DefaultOrderKeyvaluePipe,
     NotificationCenterComponent,

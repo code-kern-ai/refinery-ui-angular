@@ -18,9 +18,8 @@
                     <div *ngIf="!isHeaderNormal" class="mx-4 text-sm leading-5 font-medium text-gray-500 inline-block">
                         {{currentAttribute.name}}</div>
 
-                    <kern-heuristic-statuses [status]="currentAttribute.state" page="attributes"
-                        initialCaption="Registered">
-                    </kern-heuristic-statuses>
+                    <kern-statuses [status]="currentAttribute.state" page="attributes" initialCaption="Registered">
+                    </kern-statuses>
                 </div>
             </div>
         </div>

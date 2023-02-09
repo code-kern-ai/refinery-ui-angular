@@ -321,8 +321,8 @@
                                             {{source.description}}
                                         </div>
                                         <div class="float-right">
-                                            <kern-heuristic-statuses [status]="source?.state"
-                                                tooltipPosition="tooltip-left"></kern-heuristic-statuses>
+                                            <kern-statuses [status]="source?.state"
+                                                tooltipPosition="tooltip-left"></kern-statuses>
                                         </div>
                                     </div>
                                     <ng-template [ngIf]="!(source.stats.length == 1 && source.stats[0].label == '-' )">
@@ -388,9 +388,9 @@
         <div class="grid items-center" style="grid-template-columns: 215px auto">
             <div class="text-sm font-bold">State</div>
             <div class="text text-sm">
-                <kern-heuristic-statuses class="-ml-2"
+                <kern-statuses class="-ml-2"
                     [status]="heuristicsModals.lastWeakSupervision.currentWeakSupervisionRun?.state">
-                </kern-heuristic-statuses>
+                </kern-statuses>
             </div>
             <div class="text-sm font-bold">Selected Heuristics
             </div>

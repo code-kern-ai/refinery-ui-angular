@@ -3,7 +3,10 @@
         <span class="mr-2">
             Gates integration
         </span>
-        <ng-container [ngSwitch]="gatesIntegrationData?.status">
+        <kern-statuses page="gates-integrator" [status]="gatesIntegrationData?.status">
+
+        </kern-statuses>
+        <!-- <ng-container [ngSwitch]="gatesIntegrationData?.status">
             <span *ngSwitchCase="'READY'"
                 class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-300 text-green-800">
                 <svg class="mr-1.5 h-2 w-2" [ngClass]="'text-green-400'" fill="currentColor" viewBox="0 0 8 8">
@@ -25,14 +28,15 @@
                 </svg>
                 Not Ready
             </span>
-        </ng-container>
+        </ng-container> -->
     </div>
     <div class="mt-1">
         <div class="text-sm leading-5 font-medium text-gray-700 inline-block">
             Gates is the inference API for refinery.
             <ng-container [ngSwitch]="gatesIntegrationData?.status">
                 <ng-container *ngSwitchCase="'READY'">
-                    This project is ready to be used with Gates. You can switch to the Gates App to configure and run it.
+                    This project is ready to be used with Gates. You can switch to the Gates App to configure and run
+                    it.
                 </ng-container>
                 <ng-container *ngSwitchCase="'UPDATING'">
                     This project is currently updated to be used with Gates.
@@ -42,10 +46,13 @@
                     This will rerun the project's embeddings and heuristics to create the necessary data for Gates.
                     <div>
                         <label (click)="updateProjectForGates()"
-                        class="mr-1 mt-2 inline-flex items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none cursor-pointer">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-reload" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            class="mr-1 mt-2 inline-flex items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none cursor-pointer">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-reload"
+                                width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+                                fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                <path d="M19.933 13.041a8 8 0 1 1 -9.925 -8.788c3.899 -1 7.935 1.007 9.425 4.747"></path>
+                                <path d="M19.933 13.041a8 8 0 1 1 -9.925 -8.788c3.899 -1 7.935 1.007 9.425 4.747">
+                                </path>
                                 <path d="M20 4v5h-5"></path>
                             </svg>
                             <span class="leading-5 ml-1">

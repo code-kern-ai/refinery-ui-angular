@@ -18,7 +18,7 @@
                     <div *ngIf="!isHeaderNormal" class="mx-4 text-sm leading-5 font-medium text-gray-500 inline-block">
                         {{informationSource.name}}</div>
 
-                    <kern-heuristic-statuses [status]="status"></kern-heuristic-statuses>
+                    <kern-statuses [status]="status"></kern-statuses>
 
                     <div *ngIf="informationSource.lastTask as task" data-tip="Execution time"
                         class="text-sm leading-5 font-normal text-gray-500 ml-3 mt-1 inline-block tooltip tooltip-right">
