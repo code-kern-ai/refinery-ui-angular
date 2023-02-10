@@ -40,6 +40,7 @@ export enum SearchOperator {
     LESS_EQUAL = 'LESS_EQUAL',
 }
 
+const DUMMY_NONE_PARSE_VALUE = 'null';
 export function getAttributeType(attributes: any[], attributeName: string) {
     return attributes.find(att => att.name == attributeName)?.type;
 }
@@ -60,16 +61,19 @@ export function prepareFilterElements(searchElement: any, name: string, separato
     values = parseFilterElements(searchElement, values, attributeType);
     return values;
 }
-
 export function parseFilterElements(searchElement: any, values: any, attributeType: string): any[] {
     if (attributeType == "INTEGER" && searchElement.values.operator != SearchOperator.IN_WC) {
-        values.slice(1, values.length).forEach((value, index) => {
-            values[index + 1] = parseInt(value);
-        });
+        for (let i = 1; i < values.length; i++) {
+            const isNum = /^\d+$/.test(values[i].trim());
+            if (!isNum) values[i] = DUMMY_NONE_PARSE_VALUE;
+            else values[i] = parseInt(values[i].trim());
+        }
     } else if (attributeType == "FLOAT" && searchElement.values.operator != SearchOperator.IN_WC) {
-        values.slice(1, values.length).forEach((value, index) => {
-            values[index + 1] = parseFloat(value);
-        });
+        for (let i = 1; i < values.length; i++) {
+            const isNum = /^(\d+|(\d+\.\d*))$/.test(values[i].trim())
+            if (!isNum) values[i] = DUMMY_NONE_PARSE_VALUE;
+            else values[i] = parseInt(values[i].trim());
+        }
     } else {
         values.slice(1, values.length).forEach((value, index) => {
             values[index + 1] = value;
