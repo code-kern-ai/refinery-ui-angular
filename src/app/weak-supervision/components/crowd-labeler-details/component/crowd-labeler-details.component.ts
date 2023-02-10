@@ -228,6 +228,9 @@ export class CrowdLabelerDetailsComponent
       this.description = informationSource.description;
       this.informationSourceName = informationSource.name;
       this.fromCreation = false;
+      if (this.informationSource.lastTask) {
+        this.status = informationSource.lastTask.state;
+      }
     }));
 
   }
@@ -357,7 +360,6 @@ export class CrowdLabelerDetailsComponent
       }
     } else if ('information_source_updated' == msgParts[1]) {
       if (this.informationSource.id == msgParts[2]) this.informationSourceQuery$.refetch();
-
     }
   }
 

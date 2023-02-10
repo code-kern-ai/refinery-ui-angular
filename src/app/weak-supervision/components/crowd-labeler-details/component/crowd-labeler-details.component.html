@@ -187,7 +187,7 @@
                                 valuePropertyPath:'id',
                                 isDisabled:annotators.length == 0,
                                 isDisabled:informationSource?.lastTask ? informationSource?.lastTask.progress !=0:false
-                            }" (optionClicked)="changeSettings('annotatorId',$event)">
+                            }" (optionClicked)="changeSettings('annotatorId',$event, false)">
                             </kern-dropdown>
                             <p class="px-2"> is going to work on slice </p>
                             <kern-dropdown [dropdownOptions]="{
@@ -197,7 +197,7 @@
                                 valuePropertyPath:'id',
                                 isDisabled:dataSlices.length == 0,
                                 isDisabled:informationSource?.lastTask ? informationSource?.lastTask.progress !=0:false
-                            }" (optionClicked)="changeSettings('dataSliceId',$event)">
+                            }" (optionClicked)="changeSettings('dataSliceId',$event, false)">
                             </kern-dropdown>
 
                         </div>
