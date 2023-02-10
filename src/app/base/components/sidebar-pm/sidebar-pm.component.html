@@ -137,7 +137,8 @@
                                 </div>
                             </div>
 
-                            <div class="flex items-center justify-center overflow-visible mt-10 2xl:mt-12">
+                            <div class="flex items-center justify-center overflow-visible"
+                                [ngClass]="isManaged?(project?.id !== null ? 'mt-6' : ''):'mt-10 2xl:mt-12'">
                                 <div data-tip="API" class="tooltip tooltip-right relative z-50">
                                     <a href="https://github.com/code-kern-ai/kern-python" target="_blank"
                                         rel="noopener noreferrer" class="circle text-white">
