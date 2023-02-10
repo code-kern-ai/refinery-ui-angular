@@ -336,7 +336,6 @@ export class DataBrowserFilterParser {
                 searchElement.values.operator = searchElement.values.operator.split(" ").join("_");
                 if (this.dataBrowser.attributesSortOrder[i].type != 'BOOLEAN') {
                     const filterValues = prepareFilterElements(searchElement, this.dataBrowser.attributes[this.dataBrowser.attributesSortOrder[i].key].name, this.dataBrowser.dataBrowserModals.configuration.separator, this.dataBrowser.attributesSortOrder[i].type);
-                    console.log(filterValues)
                     if (!filterValues) continue;
                     filterElement.FILTER.push({
                         RELATION: i == 1 ? 'NONE' : 'OR',
