@@ -142,7 +142,7 @@ export class WeakSourceDetailsComponent
   }
 
   getWhiteListNotificationService(): string[] {
-    let toReturn = ['payload_finished', 'payload_failed', 'payload_created', 'payload_update_statistics'];
+    let toReturn = ['payload_finished', 'payload_failed', 'payload_created', 'payload_update_statistics', 'model_callback_update_statistics'];
     toReturn.push(...['labeling_task_deleted', 'labeling_task_updated', 'labeling_task_created']);
     toReturn.push(...['information_source_deleted', 'information_source_updated']);
     toReturn.push(...['label_created', 'label_deleted']);
@@ -192,7 +192,7 @@ export class WeakSourceDetailsComponent
         alert('Information source was deleted!');
         this.router.navigate(["../"], { relativeTo: this.activatedRoute });
       }
-    } else if ('information_source_updated' == msgParts[1]) {
+    } else if (['information_source_updated', 'model_callback_update_statistics'].includes(msgParts[1])) {
       if (this.informationSource.id == msgParts[2]) {
         this.updatedThroughWebsocket = true;
         this.informationSourceQuery$.refetch();
