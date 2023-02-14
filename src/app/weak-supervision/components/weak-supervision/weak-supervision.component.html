@@ -191,7 +191,7 @@
                             some label-related output (e.g. the label name for classification tasks).</div>
                         <div
                             class="text-green-800 hover:text-green-500 text-base leading-6 font-semibold mt-3 cursor-pointer">
-                            <a href="https://docs.kern.ai/docs/building-labeling-functions" target="_blank">Read
+                            <a href="https://docs.kern.ai/refinery/heuristics#labeling-functions" target="_blank">Read
                                 about labeling functions</a>
                         </div>
                     </div>
@@ -215,7 +215,7 @@
                             can dive deeper into their mechanics in our docs.</div>
                         <div
                             class="text-green-800 hover:text-green-500 text-base leading-6 font-semibold mt-3 cursor-pointer">
-                            <a href="https://docs.kern.ai/docs/building-active-learners" target="_blank">Read
+                            <a href="https://docs.kern.ai/refinery/heuristics#active-learners" target="_blank">Read
                                 about active learning</a>
                         </div>
                     </div>
@@ -227,7 +227,8 @@
                             time, since they contain enormous amounts of parameters.</div>
                         <div
                             class="text-green-800 hover:text-green-500 text-base leading-6 font-semibold mt-3 cursor-pointer">
-                            <a href="https://docs.kern.ai/docs/building-zero-shot-classifiers" target="_blank">Read
+                            <a href="https://docs.kern.ai/refinery/heuristics#zero-shot-classifiers"
+                                target="_blank">Read
                                 about zero-shot</a>
                         </div>
                     </div>
@@ -321,8 +322,8 @@
                                             {{source.description}}
                                         </div>
                                         <div class="float-right">
-                                            <kern-statuses [status]="source?.state"
-                                                tooltipPosition="tooltip-left"></kern-statuses>
+                                            <kern-statuses [status]="source?.state" tooltipPosition="tooltip-left">
+                                            </kern-statuses>
                                         </div>
                                     </div>
                                     <ng-template [ngIf]="!(source.stats.length == 1 && source.stats[0].label == '-' )">
