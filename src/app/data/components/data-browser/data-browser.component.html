@@ -694,7 +694,8 @@
                     </div>
                 </div>
                 <div class="mt-1">
-                    <div data-tip="Creates a static data slice" class="tooltip tooltip-bottom relative"
+                    <div [attr.data-tip]="!(similarSearchHelper.embeddings?.length && anyRecordManuallyLabeled) ? 'Create embedding to find outliers' : 'Creates a static data slice'"
+                        class="tooltip tooltip-right tooltip_slice_max_width relative"
                         [ngClass]="!(similarSearchHelper.embeddings?.length && anyRecordManuallyLabeled) ? 'cursor-not-allowed' : ''">
                         <label
                             (click)="similarSearchHelper.embeddings?.length==1? requestOutlierSlice(): similarSearchHelper.embeddings?.length>1?dataBrowserModals.findOutliers.open=true: null"
