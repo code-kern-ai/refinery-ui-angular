@@ -29,7 +29,7 @@
                             optionIcons:['select-all','deselect-all', 'delete-selected'],
                             buttonTooltip:'Multi-callback action',
                             buttonCaption: 'Actions',
-                            isOptionDisabled: [false, false, this.selectedInformationSources.length == 0]
+                            isOptionDisabled: [false, false, this.modelCallbackModals.deleteSelected.selectedInformationSources.length == 0]
                         }" (optionClicked)="executeOption($event)">
                         </kern-dropdown>
                     </ng-template>
