@@ -332,19 +332,21 @@ export class DataBrowserFilterParser {
                 NEGATION: searchElement.values.negate,
                 FILTER: [],
             };
+            let added = false;
             for (let i = 1; i < this.dataBrowser.attributesSortOrder.length; i++) {
                 searchElement.values.operator = searchElement.values.operator.split(" ").join("_");
                 if (this.dataBrowser.attributesSortOrder[i].type != 'BOOLEAN') {
                     const filterValues = prepareFilterElements(searchElement, this.dataBrowser.attributes[this.dataBrowser.attributesSortOrder[i].key].name, this.dataBrowser.dataBrowserModals.configuration.separator, this.dataBrowser.attributesSortOrder[i].type);
                     if (!filterValues) continue;
                     filterElement.FILTER.push({
-                        RELATION: i == 1 ? 'NONE' : 'OR',
+                        RELATION: !added ? 'NONE' : 'OR',
                         NEGATION: false,
                         TARGET_TABLE: 'RECORD',
                         TARGET_COLUMN: 'DATA',
                         OPERATOR: prepareOperator(searchElement, this.dataBrowser.attributesSortOrder[i].type),
                         VALUES: filterValues,
                     });
+                    added = true;
                 }
             }
             let parseArray = [];

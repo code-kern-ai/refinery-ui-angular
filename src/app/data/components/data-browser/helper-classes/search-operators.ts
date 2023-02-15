@@ -40,7 +40,6 @@ export enum SearchOperator {
     LESS_EQUAL = 'LESS_EQUAL',
 }
 
-const DUMMY_NONE_PARSE_VALUE = 'null';
 export function getAttributeType(attributes: any[], attributeName: string) {
     return attributes.find(att => att.name == attributeName)?.type;
 }
@@ -65,13 +64,13 @@ export function parseFilterElements(searchElement: any, values: any, attributeTy
     if (attributeType == "INTEGER" && searchElement.values.operator != SearchOperator.IN_WC) {
         for (let i = 1; i < values.length; i++) {
             const isNum = /^\d+$/.test(values[i].trim());
-            if (!isNum) values[i] = DUMMY_NONE_PARSE_VALUE;
+            if (!isNum) return null;
             else values[i] = parseInt(values[i].trim());
         }
     } else if (attributeType == "FLOAT" && searchElement.values.operator != SearchOperator.IN_WC) {
         for (let i = 1; i < values.length; i++) {
             const isNum = /^(\d+|(\d+\.\d*))$/.test(values[i].trim())
-            if (!isNum) values[i] = DUMMY_NONE_PARSE_VALUE;
+            if (!isNum) return null;
             else values[i] = parseInt(values[i].trim());
         }
     } else {
