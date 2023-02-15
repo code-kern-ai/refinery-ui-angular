@@ -134,6 +134,7 @@ export class ExportHelper {
         const values = this.baseComponent.formGroups.get(group).getRawValue();
         let result = [];
         for (let key in values) {
+            if (group == ExportEnums.LabelingTasks && values[key].id == ExportComponent.NONE_IN_PROJECT) continue;
             if (values[key].active) returnAttribute ? result.push(values[key][returnAttribute]) : result.push(values[key]);
         }
         return result;

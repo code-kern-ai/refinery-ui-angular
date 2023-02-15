@@ -1031,7 +1031,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
 
   requestExtendedSearch(force: boolean = false) {
     if (!force) {
-      if (this.activeSlice) return;
+      if (this.activeSlice && this.activeSlice.static) return;
       if (!this.searchValuesChanged()) return;
     }
     this.similarSearchHelper.setRecordsHelper(false);
@@ -2080,6 +2080,12 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
         } else {
           pattern = operatorValue == 'IN' ? /^[0-9.,]$/i : operatorValue == 'IN WC' ? /^[0-9.,_%*?]$/i : /^[0-9.]$/i;
         }
+      }
+      if ((event.key == 'Tab' && operatorValue == SearchOperator.BETWEEN)) {
+        return;
+      }
+      if ((event.ctrlKey || event.metaKey) && ['c', 'x', 'v'].includes(event.key.toLowerCase())) {
+        return;
       }
       if (!pattern.test(event.key) && event.key != 'Backspace' && event.key != 'ArrowLeft' && event.key != 'ArrowRight') {
         event.preventDefault();

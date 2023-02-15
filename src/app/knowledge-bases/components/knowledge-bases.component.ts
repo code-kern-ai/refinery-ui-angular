@@ -98,7 +98,7 @@ export class KnowledgeBasesComponent implements OnInit, OnDestroy {
   }
 
   toggleCheckbox(base) {
-    if (this.lookuplistsModals.deleteSelected.selectedLookupLists.includes(base)) {
+    if (this.lookuplistsModals.deleteSelected.selectedLookupLists.find((x) => x.id == base.id) != undefined) {
       this.lookuplistsModals.deleteSelected.selectedLookupLists = this.lookuplistsModals.deleteSelected.selectedLookupLists.filter((x) => x.id != base.id);
     } else {
       this.lookuplistsModals.deleteSelected.selectedLookupLists.push(base);

@@ -29,7 +29,7 @@ export class DataBrowserFilterParser {
         for (let searchElement of this.dataBrowser.activeSearchParams) {
             if (searchElement.values.group == SearchGroup.ATTRIBUTES) {
                 attributeFilter = this.buildFilterElementAttribute(first, searchElement);
-                toReturn.push(JSON.stringify(attributeFilter));
+                if (attributeFilter) toReturn.push(JSON.stringify(attributeFilter));
             } else if (searchElement.values.group == SearchGroup.LABELING_TASKS) {
                 this.appendBlackAndWhiteListLabelingTask(toReturn, searchElement);
             } else if (searchElement.values.group == SearchGroup.USER_FILTER) {
@@ -332,19 +332,21 @@ export class DataBrowserFilterParser {
                 NEGATION: searchElement.values.negate,
                 FILTER: [],
             };
+            let added = false;
             for (let i = 1; i < this.dataBrowser.attributesSortOrder.length; i++) {
                 searchElement.values.operator = searchElement.values.operator.split(" ").join("_");
                 if (this.dataBrowser.attributesSortOrder[i].type != 'BOOLEAN') {
                     const filterValues = prepareFilterElements(searchElement, this.dataBrowser.attributes[this.dataBrowser.attributesSortOrder[i].key].name, this.dataBrowser.dataBrowserModals.configuration.separator, this.dataBrowser.attributesSortOrder[i].type);
                     if (!filterValues) continue;
                     filterElement.FILTER.push({
-                        RELATION: i == 1 ? 'NONE' : 'OR',
+                        RELATION: !added ? 'NONE' : 'OR',
                         NEGATION: false,
                         TARGET_TABLE: 'RECORD',
                         TARGET_COLUMN: 'DATA',
                         OPERATOR: prepareOperator(searchElement, this.dataBrowser.attributesSortOrder[i].type),
                         VALUES: filterValues,
                     });
+                    added = true;
                 }
             }
             let parseArray = [];
@@ -361,6 +363,8 @@ export class DataBrowserFilterParser {
                 });
                 filterElement.FILTER = parseArray;
             }
+            if (filterElement.FILTER.length == 0) return null;
+            else return filterElement;
         } else {
             const attributeType = getAttributeType(this.dataBrowser.attributesSortOrder, searchElement.values.name);
             searchElement.values.operator = searchElement.values.operator.split(" ").join("_");
@@ -373,7 +377,8 @@ export class DataBrowserFilterParser {
                 VALUES: prepareFilterElements(searchElement, searchElement.values.name, this.dataBrowser.dataBrowserModals.configuration.separator, attributeType),
             };
         }
-        return filterElement;
+        if (filterElement.VALUES) return filterElement
+        else return null;
     }
 
 }

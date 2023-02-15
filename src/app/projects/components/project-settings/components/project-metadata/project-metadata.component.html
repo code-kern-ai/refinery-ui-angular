@@ -17,7 +17,7 @@
                 <textarea #newProjectDescription rows="2" [placeholder]="project.description" class="
                     form-control block w-full px-3 py-1.5 text-sm text-gray-700
                     bg-white bg-clip-padding focus:outline-none m-0"
-                    (keydown.enter)="updateProjectNameAndDescription(newProjectName.value,newProjectDescription.value);newProjectDescription.value = '';newProjectName.value=''"></textarea>
+                    (keydown.up)="updateProjectNameAndDescription(newProjectName.value,newProjectDescription.value);newProjectDescription.value = '';newProjectName.value=''"></textarea>
                 <div
                     class="border-t bg-gray-50 border-gray-200 px-2 py-2 flex justify-between items-center space-x-3 sm:px-3">
                     <div class="flex-shrink-0">

@@ -159,7 +159,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   private checkStillLoading() {
-    this.somethingLoading = this.useableAttributes == undefined || this.useableAttributes?.length == 0 || this.embeddingHandles == undefined || this.downloadedModels?.length == 0;
+    this.somethingLoading = this.useableAttributes == undefined || this.useableAttributes?.length == 0 || this.embeddingHandles == undefined || (this.isManaged && this.downloadedModels?.length == 0);
   }
 
   handleWebsocketNotification(msgParts) {
