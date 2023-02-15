@@ -201,7 +201,6 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   isManaged: boolean = true;
   saveAttributeType: string = "";
   calledOnce: boolean = false;
-  storeKeys = [];
 
   getSearchFormArray(groupKey: string): FormArray {
     return this.fullSearch.get(groupKey).get('groupElements') as FormArray;
@@ -2082,10 +2081,10 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
           pattern = operatorValue == 'IN' ? /^[0-9.,]$/i : operatorValue == 'IN WC' ? /^[0-9.,_%*?]$/i : /^[0-9.]$/i;
         }
       }
-      this.storeKeys.push(event.key);
-      const lastKey = this.storeKeys[this.storeKeys.length - 1];
-      const secondLastKey = this.storeKeys[this.storeKeys.length - 2];
-      if ((event.key == 'Tab' && operatorValue == SearchOperator.BETWEEN) || ((secondLastKey == 'Meta' || secondLastKey?.ctrl) && (lastKey == 'c' || lastKey == 'x' || lastKey == 'v'))) {
+      if ((event.key == 'Tab' && operatorValue == SearchOperator.BETWEEN)) {
+        return;
+      }
+      if ((event.ctrlKey || event.metaKey) && ['c', 'x', 'v'].includes(event.key.toLowerCase())) {
         return;
       }
       if (!pattern.test(event.key) && event.key != 'Backspace' && event.key != 'ArrowLeft' && event.key != 'ArrowRight') {

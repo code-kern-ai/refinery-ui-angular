@@ -147,7 +147,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
       if (this.currentAttribute?.sourceCode == null) {
         this.codeFormCtrl.setValue(AttributeCodeLookup.getAttributeCalculationTemplate(AttributeCalculationExamples.AC_EMPTY_TEMPLATE, this.currentAttribute.dataType).code);
       } else {
-        if (!this.codeFormCtrl.value || this.nextUpdateReplace) {
+        if (!this.codeFormCtrl.value || this.codeFormCtrl.value.includes("def ac(record") || this.nextUpdateReplace) {
           this.codeFormCtrl.setValue(this.currentAttribute.sourceCode.replace(
             'def ac(record',
             'def ' + this.currentAttribute.name + '(record'
