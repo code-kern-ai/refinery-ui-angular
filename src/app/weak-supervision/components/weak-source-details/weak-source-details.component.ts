@@ -491,6 +491,10 @@ export class WeakSourceDetailsComponent
     const sourceType = this.informationSource.informationSourceType;
     this.nameOpen = open;
     if (!open && this.informationSourceName != this.informationSource.name) {
+      if (this.informationSourceName.trim().length == 0) {
+        this.informationSourceName = this.informationSource.name;
+        return;
+      }
       if (sourceType == InformationSourceType.LABELING_FUNCTION) {
         //change name in code:
         var regMatch: any = getPythonFunctionRegExMatch(this.codeFormCtrl.value);
@@ -499,7 +503,7 @@ export class WeakSourceDetailsComponent
           regMatch[0],
           'def ' + this.informationSourceName + '(record)'
         ));
-      } else if (this.informationSource.informationSourceType == InformationSourceType.ACTIVE_LEARNING) {
+      } else if (sourceType == InformationSourceType.ACTIVE_LEARNING) {
         var regMatch: any = getPythonClassRegExMatch(this.codeFormCtrl.value);
         if (!regMatch) return;
 
