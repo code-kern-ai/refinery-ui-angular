@@ -90,6 +90,7 @@ export class KnowledgeBasesComponent implements OnInit, OnDestroy {
   prepareSelectionList() {
     this.lookuplistsModals.deleteSelected.open = true;
     this.lookuplistsModals.deleteSelected.selectionList = "";
+    console.log(this.lookuplistsModals.deleteSelected.selectedLookupLists)
     this.lookuplistsModals.deleteSelected.selectedLookupLists.forEach(el => {
       if (this.lookuplistsModals.deleteSelected.selectionList) this.lookuplistsModals.deleteSelected.selectionList += "\n";
       this.lookuplistsModals.deleteSelected.selectionList += el.name;
@@ -98,7 +99,7 @@ export class KnowledgeBasesComponent implements OnInit, OnDestroy {
   }
 
   toggleCheckbox(base) {
-    if (this.lookuplistsModals.deleteSelected.selectedLookupLists.includes(base)) {
+    if (this.lookuplistsModals.deleteSelected.selectedLookupLists.find((x) => x.id == base.id) != undefined) {
       this.lookuplistsModals.deleteSelected.selectedLookupLists = this.lookuplistsModals.deleteSelected.selectedLookupLists.filter((x) => x.id != base.id);
     } else {
       this.lookuplistsModals.deleteSelected.selectedLookupLists.push(base);
