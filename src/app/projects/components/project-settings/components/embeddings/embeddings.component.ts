@@ -49,9 +49,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes.useableTextAttributes || changes.useableAttributes) {
-      this.checkStillLoading();
-    }
+    this.checkStillLoading();
     if (changes.embeddingHandles) {
       this.checkModelDownloaded();
     }

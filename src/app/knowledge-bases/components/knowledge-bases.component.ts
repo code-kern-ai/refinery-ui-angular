@@ -90,7 +90,6 @@ export class KnowledgeBasesComponent implements OnInit, OnDestroy {
   prepareSelectionList() {
     this.lookuplistsModals.deleteSelected.open = true;
     this.lookuplistsModals.deleteSelected.selectionList = "";
-    console.log(this.lookuplistsModals.deleteSelected.selectedLookupLists)
     this.lookuplistsModals.deleteSelected.selectedLookupLists.forEach(el => {
       if (this.lookuplistsModals.deleteSelected.selectionList) this.lookuplistsModals.deleteSelected.selectionList += "\n";
       this.lookuplistsModals.deleteSelected.selectionList += el.name;
