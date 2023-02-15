@@ -377,7 +377,7 @@ export class DataBrowserFilterParser {
                 VALUES: prepareFilterElements(searchElement, searchElement.values.name, this.dataBrowser.dataBrowserModals.configuration.separator, attributeType),
             };
         }
-        if (filterElement.values) return filterElement
+        if (filterElement.VALUES) return filterElement
         else return null;
     }
 
