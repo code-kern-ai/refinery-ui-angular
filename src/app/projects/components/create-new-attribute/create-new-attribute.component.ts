@@ -147,7 +147,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
       if (this.currentAttribute?.sourceCode == null) {
         this.codeFormCtrl.setValue(AttributeCodeLookup.getAttributeCalculationTemplate(AttributeCalculationExamples.AC_EMPTY_TEMPLATE, this.currentAttribute.dataType).code);
       } else {
-        if (!this.codeFormCtrl.value || this.codeFormCtrl.value.includes("def ac(record") || this.nextUpdateReplace) {
+        if (!this.codeFormCtrl.value || this.nextUpdateReplace) {
           this.codeFormCtrl.setValue(this.currentAttribute.sourceCode.replace(
             'def ac(record',
             'def ' + this.currentAttribute.name + '(record'
@@ -210,10 +210,10 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
     }
   }
 
-  saveAttribute(projectId: string) {
+  saveAttribute(projectId: string, updateCode: boolean = true) {
     if (this.updatedThroughWebsocket) return;
     const getCodeToSave = this.getPythonFunctionToSave(this.codeFormCtrl.value);
-    this.nextUpdateReplace = true;
+    this.nextUpdateReplace = updateCode;
     this.projectApolloService
       .updateAttribute(projectId, this.currentAttribute.id, this.currentAttribute.dataType, this.currentAttribute.isPrimaryKey, this.attributeName, getCodeToSave, this.currentAttribute.visibility)
       .pipe(first())
@@ -256,7 +256,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
             this.isNameLoading = false;
             return;
           }
-          this.saveAttribute(projectId);
+          this.saveAttribute(projectId, false);
         }
       });
   }
@@ -409,7 +409,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
 
   updateDataType(dataType: string) {
     this.currentAttribute.dataType = dataType;
-    this.saveAttribute(this.project.id);
+    this.saveAttribute(this.project.id, false);
   }
 
   prepareKnowledgeRequest(projectId: string) {
@@ -425,7 +425,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
 
   updateVisibilityAttributes(value: string) {
     this.currentAttribute.visibility = value;
-    this.saveAttribute(this.project.id);
+    this.saveAttribute(this.project.id, false);
   }
 
   onScrollEvent(event: Event) {
