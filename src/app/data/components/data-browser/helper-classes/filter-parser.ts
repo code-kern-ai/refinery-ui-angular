@@ -29,7 +29,7 @@ export class DataBrowserFilterParser {
         for (let searchElement of this.dataBrowser.activeSearchParams) {
             if (searchElement.values.group == SearchGroup.ATTRIBUTES) {
                 attributeFilter = this.buildFilterElementAttribute(first, searchElement);
-                toReturn.push(JSON.stringify(attributeFilter));
+                if (attributeFilter) toReturn.push(JSON.stringify(attributeFilter));
             } else if (searchElement.values.group == SearchGroup.LABELING_TASKS) {
                 this.appendBlackAndWhiteListLabelingTask(toReturn, searchElement);
             } else if (searchElement.values.group == SearchGroup.USER_FILTER) {
@@ -363,6 +363,8 @@ export class DataBrowserFilterParser {
                 });
                 filterElement.FILTER = parseArray;
             }
+            if (filterElement.FILTER.length == 0) return null;
+            else return filterElement;
         } else {
             const attributeType = getAttributeType(this.dataBrowser.attributesSortOrder, searchElement.values.name);
             searchElement.values.operator = searchElement.values.operator.split(" ").join("_");
@@ -375,7 +377,8 @@ export class DataBrowserFilterParser {
                 VALUES: prepareFilterElements(searchElement, searchElement.values.name, this.dataBrowser.dataBrowserModals.configuration.separator, attributeType),
             };
         }
-        return filterElement;
+        if (filterElement.values) return filterElement
+        else return null;
     }
 
 }

@@ -1031,7 +1031,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
 
   requestExtendedSearch(force: boolean = false) {
     if (!force) {
-      if (this.activeSlice) return;
+      if (this.activeSlice && this.activeSlice.static) return;
       if (!this.searchValuesChanged()) return;
     }
     this.similarSearchHelper.setRecordsHelper(false);
