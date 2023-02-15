@@ -9,3 +9,7 @@ hr {
 .height-dropdown {
     max-height: 45vh;
 }
+
+.tooltip-failed::before {
+    margin-left: -30px;
+}
