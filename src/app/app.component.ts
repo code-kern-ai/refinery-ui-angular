@@ -40,7 +40,6 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
   activeAdminMessages: AdminMessage[];
   adminMessageLevels = adminMessageLevels;
   subscriptions$: Subscription[] = [];
-  messagesVisibility: { [key: string]: boolean } = {};
   get AdminMessageLevel(): typeof AdminMessageLevel {
     return AdminMessageLevel;
   }
@@ -68,7 +67,6 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
     [this.activeAdminMessagesQuery$, this.activeAdminMessages$] = this.projectApolloService.getAllActiveAdminMessages();
     this.subscriptions$.push(this.activeAdminMessages$.subscribe((activeMessages: AdminMessage[]) => {
       this.activeAdminMessages = activeMessages;
-      this.messagesVisibility = Object.assign({}, ...activeMessages.map((m) => ({ [m.id]: true })));
     }));
   }
 
@@ -212,9 +210,5 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
   getBorder(level) {
     const color = this.adminMessageLevels.find((l) => l.value == level).color;
     return `border-${color}-400`
-  }
-
-  closeMessage(id) {
-    this.messagesVisibility[id] = false;
   }
 }
