@@ -1430,10 +1430,10 @@ export class ProjectApolloService {
         },
         fetchPolicy: 'no-cache'
       });
-      const vc = query.valueChanges.pipe(
-        map((result) => result['data']['getGatesIntegrationData'])
-      );
-      return [query, vc];
+    const vc = query.valueChanges.pipe(
+      map((result) => result['data']['getGatesIntegrationData'])
+    );
+    return [query, vc];
   }
 
   updateProjectForGates(projectId: string) {
@@ -1446,5 +1446,16 @@ export class ProjectApolloService {
       });
   }
 
+  getAllActiveAdminMessages() {
+    const query = this.apollo
+      .watchQuery({
+        query: queries.GET_ALL_ACTIVE_ADMIN_MESSAGES,
+        fetchPolicy: 'network-only',
+      });
+    const vc = query.valueChanges.pipe(
+      map((result) => result['data']['allActiveAdminMessages'])
+    );
+    return [query, vc]
+  }
 
 }

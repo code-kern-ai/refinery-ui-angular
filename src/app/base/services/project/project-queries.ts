@@ -548,7 +548,7 @@ query ($projectId: ID!, $exportOptions: JSONString) {
   }
   `,
 
-  
+
   GET_GATES_INTEGRATION_DATA: gql`
   query ($projectId: ID!) {
     getGatesIntegrationData(projectId: $projectId) {
@@ -558,5 +558,14 @@ query ($projectId: ID!, $exportOptions: JSONString) {
       missingInformationSources
     }
   }`,
-  
+
+  GET_ALL_ACTIVE_ADMIN_MESSAGES: gql`
+  query {
+    allActiveAdminMessages {
+      id
+      text
+      level
+      archiveDate
+    }
+  }`,
 };
