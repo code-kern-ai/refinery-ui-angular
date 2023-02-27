@@ -1,6 +1,7 @@
 
 import { HttpClient } from '@angular/common/http';
 import { first } from 'rxjs/operators';
+import { jsonCopy } from 'src/app/util/helper-functions';
 import { ConfigApolloService } from './config/config-apollo.service';
 
 export class ConfigManager {
@@ -12,7 +13,7 @@ export class ConfigManager {
     private static isAdmin: boolean = false;
     private static isDemo: boolean = false;
     private static blackWhiteListDemo: any;
-    private static registedUpdateListeners: Map<Object, () => void> = new Map<Object, () => void>();
+    private static registeredUpdateListeners: Map<Object, () => void> = new Map<Object, () => void>();
     private static justUpdated = false;
 
     //needs to be called once from app (because of the http injection)
@@ -25,17 +26,16 @@ export class ConfigManager {
 
     public static refreshConfig() {
         ConfigManager.http.get('/config/base_config').pipe(first()).subscribe((c: string) => {
-
-            ConfigManager.config = JSON.parse(c);
+            ConfigManager.config = jsonCopy(c);
             ConfigManager.checkAndUpdateLocalStorage(c);
-            ConfigManager.registedUpdateListeners.forEach((func, key) => func.call(key));
+            ConfigManager.registeredUpdateListeners.forEach((func, key) => func.call(key));
         });
     }
 
     private static checkAndUpdateLocalStorage(currentConfig: string) {
         //only open source / local can update these values
         if (ConfigManager.isManaged) return;
-        let parsed = JSON.parse(currentConfig);
+        let parsed = currentConfig;
         delete parsed["KERN_S3_ENDPOINT"]
         currentConfig = JSON.stringify(parsed)
         let localStorageConfig = localStorage.getItem("base_config");
@@ -78,10 +78,10 @@ export class ConfigManager {
     }
 
     public static registerUpdateAction(caller: Object, func: () => void) {
-        ConfigManager.registedUpdateListeners.set(caller, func);
+        ConfigManager.registeredUpdateListeners.set(caller, func);
     }
     public static unregisterUpdateAction(caller: Object) {
-        ConfigManager.registedUpdateListeners.delete(caller);
+        ConfigManager.registeredUpdateListeners.delete(caller);
     }
 
     public static setIsAdmin(value: boolean) {
