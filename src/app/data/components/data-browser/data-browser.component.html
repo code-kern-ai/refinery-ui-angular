@@ -54,8 +54,7 @@
                                 </label>
                                 <label #sliceName class="text-gray-700 truncate label-max-width cursor-pointer"
                                     [ngClass]="dataSlice.sliceType == SliceTypes.STATIC_OUTLIER?'text-xs whitespace-pre':'text-sm'">{{
-                                    dataSlice.sliceType != SliceTypes.STATIC_OUTLIER ?
-                                    dataSlice.name : parseUTC(dataSlice.createdAt,true) }}</label>
+                                    dataSlice.displayName }}</label>
 
 
                                 <div

@@ -120,13 +120,6 @@ export class ModelCallbackComponent implements OnInit, OnDestroy {
       .subscribe();
   }
 
-
-  parseUTC(utc: string) {
-    const utcDate = dateAsUTCDate(new Date(utc));
-    return utcDate.toLocaleString();
-  }
-
-
   aggregateStats(stat: any) {
     const positives = stat['True Positives'] + stat['False Positives'];
     return positives > 0 ? Math.round(stat['True Positives'] / positives * 10000) / 10000 : 0;

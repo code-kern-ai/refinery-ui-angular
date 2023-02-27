@@ -303,6 +303,9 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
         this.lastActiveSliceId = "";
       }
       this.dataSlices = items;
+      this.dataSlices.forEach(slice => {
+        slice.displayName = slice.sliceType != this.SliceTypes.STATIC_OUTLIER ? slice.name : this.parseUTC(slice.createdAt, true);
+      });
     })
     );
   }

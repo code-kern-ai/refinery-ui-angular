@@ -483,10 +483,6 @@ export class WeakSourceDetailsComponent
     return this.descriptionOpen;
   }
 
-  parseUTC(utc: string) {
-    const utcDate = dateAsUTCDate(new Date(utc));
-    return utcDate.toLocaleString();
-  }
   openName(open: boolean, projectId) {
     const sourceType = this.informationSource.informationSourceType;
     this.nameOpen = open;
