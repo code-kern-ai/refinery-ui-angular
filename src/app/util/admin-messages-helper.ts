@@ -3,6 +3,7 @@ export type AdminMessage = {
     text: string;
     archiveDate: string;
     level: AdminMessageLevel;
+    displayDate: string;
 };
 
 export enum AdminMessageLevel {

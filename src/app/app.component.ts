@@ -15,6 +15,7 @@ import { RouteManager } from './util/route-manager';
 import { NotificationCenterComponent } from './base/components/notification-center/notification-center.component';
 import { ProjectApolloService } from './base/services/project/project-apollo.service';
 import { AdminMessage, AdminMessageLevel, adminMessageLevels } from './util/admin-messages-helper';
+import { parseUTC } from './util/helper-functions';
 
 @Component({
   selector: 'app-root',
@@ -66,7 +67,13 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
     UserManager.registerAfterInitActionOrRun(this, () => this.loggedInUser = UserManager.getUser(), true);
     [this.activeAdminMessagesQuery$, this.activeAdminMessages$] = this.projectApolloService.getAllActiveAdminMessages();
     this.subscriptions$.push(this.activeAdminMessages$.subscribe((activeMessages: AdminMessage[]) => {
-      this.activeAdminMessages = activeMessages;
+      const saveActiveMessages = [];
+      activeMessages.forEach((message) => {
+        const saveMessage = { ...message };
+        saveMessage.displayDate = parseUTC(message.archiveDate);
+        saveActiveMessages.push(saveMessage);
+      });
+      this.activeAdminMessages = saveActiveMessages;
     }));
   }
 
