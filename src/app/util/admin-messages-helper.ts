@@ -4,6 +4,11 @@ export type AdminMessage = {
     archiveDate: string;
     level: AdminMessageLevel;
     displayDate: string;
+    textColor: string;
+    backgroundColor: string;
+    borderColor: string;
+    createdAt: string;
+    createdAtDisplay: string;
 };
 
 export enum AdminMessageLevel {
@@ -11,7 +16,7 @@ export enum AdminMessageLevel {
     WARNING = 'warning'
 };
 
-export const adminMessageLevels = [
-    { value: AdminMessageLevel.INFO, label: 'Info', color: 'blue' },
-    { value: AdminMessageLevel.WARNING, label: 'Warning', color: 'yellow' }
-];
+export const adminMessageLevels = {
+    [AdminMessageLevel.INFO]: { label: 'Info', color: 'blue' },
+    [AdminMessageLevel.WARNING]: { label: 'Warning', color: 'yellow' }
+};

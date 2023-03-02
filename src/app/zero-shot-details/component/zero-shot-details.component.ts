@@ -199,17 +199,17 @@ export class ZeroShotDetailsComponent
     const informationSourceId = this.activatedRoute.snapshot.paramMap.get('informationSourceId');
     [this.informationSourceQuery$, this.informationSource$] = this.informationSourceApolloService.getInformationSourceBySourceId(projectId, informationSourceId);
     this.subscriptions$.push(this.informationSource$.subscribe((informationSource) => {
+      this.informationSource = informationSource;
       if (informationSource.lastTask) {
-        const task = informationSource.lastTask
+        const task = informationSource.lastTask;
         this.status = task.state;
         if (task.createdAt && task.finishedAt) {
           task.durationText = this.timeDiffCalc(dateAsUTCDate(new Date(task.createdAt)), dateAsUTCDate(new Date(task.finishedAt)));
+          this.informationSource.lastTask.createdAtDisplay = parseUTC(task.createdAt);
         }
       }
-      this.informationSource = informationSource;
       this.description = informationSource.description;
       this.informationSourceName = informationSource.name;
-      this.lastTaskDisplay = parseUTC(this.informationSource.lastTask.createdAt);
       this.fillZeroShotSettings(informationSource.sourceCode);
       this.canRunProject = !informationSource.lastTask || informationSource.lastTask.state != "CREATED";
       this.zeroShotModals.deleteZeroShot.zeroShotId = this.informationSource.id;

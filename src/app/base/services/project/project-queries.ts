@@ -566,6 +566,7 @@ query ($projectId: ID!, $exportOptions: JSONString) {
       text
       level
       archiveDate
+      createdAt
     }
   }`,
 };

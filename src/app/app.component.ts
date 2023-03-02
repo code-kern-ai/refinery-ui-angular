@@ -67,13 +67,15 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
     UserManager.registerAfterInitActionOrRun(this, () => this.loggedInUser = UserManager.getUser(), true);
     [this.activeAdminMessagesQuery$, this.activeAdminMessages$] = this.projectApolloService.getAllActiveAdminMessages();
     this.subscriptions$.push(this.activeAdminMessages$.subscribe((activeMessages: AdminMessage[]) => {
-      const saveActiveMessages = [];
-      activeMessages.forEach((message) => {
-        const saveMessage = jsonCopy(message)
-        saveMessage.displayDate = parseUTC(message.archiveDate);
-        saveActiveMessages.push(saveMessage);
+      this.activeAdminMessages = activeMessages.map((message) => {
+        message = jsonCopy(message);
+        message.createdAtDisplay = parseUTC(message.createdAt);
+        const color = adminMessageLevels[message.level].color;
+        message.textColor = 'text-' + color + '-700';
+        message.backgroundColor = 'bg-' + color + '-100';
+        message.borderColor = 'border-' + color + '-400';
+        return message;
       });
-      this.activeAdminMessages = saveActiveMessages;
     }));
   }
 
@@ -201,21 +203,5 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
 
   onNotificationClick(notification) {
     NotificationCenterComponent.outlineSelectedNotification(notification.id);
-  }
-
-
-  getBackground(level) {
-    const color = this.adminMessageLevels.find((l) => l.value == level).color;
-    return `bg-${color}-100`
-  }
-
-  getText(level) {
-    const color = this.adminMessageLevels.find((l) => l.value == level).color;
-    return `text-${color}-700`
-  }
-
-  getBorder(level) {
-    const color = this.adminMessageLevels.find((l) => l.value == level).color;
-    return `border-${color}-400`
   }
 }
