@@ -8,7 +8,6 @@ export type AdminMessage = {
     backgroundColor: string;
     borderColor: string;
     createdAt: string;
-    createdAtDisplay: string;
 };
 
 export enum AdminMessageLevel {

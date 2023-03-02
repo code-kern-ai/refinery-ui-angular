@@ -69,7 +69,7 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
     this.subscriptions$.push(this.activeAdminMessages$.subscribe((activeMessages: AdminMessage[]) => {
       this.activeAdminMessages = activeMessages.map((message) => {
         message = jsonCopy(message);
-        message.createdAtDisplay = parseUTC(message.createdAt);
+        message.displayDate = parseUTC(message.archiveDate);
         const color = adminMessageLevels[message.level].color;
         message.textColor = 'text-' + color + '-700';
         message.backgroundColor = 'bg-' + color + '-100';
