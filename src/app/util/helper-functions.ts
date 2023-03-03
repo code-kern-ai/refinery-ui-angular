@@ -1,6 +1,10 @@
 import { ActivatedRoute } from "@angular/router";
 import { InformationSourceType, informationSourceTypeToString } from "../base/enum/graphql-enums";
 
+export function parseUTC(utc: string) {
+    const utcDate = dateAsUTCDate(new Date(utc));
+    return utcDate.toLocaleString();
+}
 
 export function dateAsUTCDate(date: Date) {
     let d = new Date();

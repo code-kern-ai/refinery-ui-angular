@@ -16,7 +16,7 @@ import { WeakSourceApolloService } from 'src/app/base/services/weak-source/weak-
 
 import { forkJoin, Subscription, timer } from 'rxjs';
 import { InformationSourceType, informationSourceTypeToString, LabelingTask, LabelSource } from 'src/app/base/enum/graphql-enums';
-import { dateAsUTCDate } from 'src/app/util/helper-functions';
+import { dateAsUTCDate, parseUTC } from 'src/app/util/helper-functions';
 import { NotificationService } from 'src/app/base/services/notification.service';
 import { schemeCategory24 } from 'src/app/util/colors';
 import { parseToSettingsJson, parseZeroShotSettings, ZeroShotSettings } from './zero-shot-settings';
@@ -90,6 +90,7 @@ export class ZeroShotDetailsComponent
   modelsDownloadedState: boolean[] = [];
   isManaged: boolean = true;
   zeroShotModals: ZeroShotModals = createDefaultZeroShotModals();
+  lastTaskDisplay: string;
 
   constructor(
     private router: Router,
@@ -198,14 +199,15 @@ export class ZeroShotDetailsComponent
     const informationSourceId = this.activatedRoute.snapshot.paramMap.get('informationSourceId');
     [this.informationSourceQuery$, this.informationSource$] = this.informationSourceApolloService.getInformationSourceBySourceId(projectId, informationSourceId);
     this.subscriptions$.push(this.informationSource$.subscribe((informationSource) => {
+      this.informationSource = informationSource;
       if (informationSource.lastTask) {
-        const task = informationSource.lastTask
+        const task = informationSource.lastTask;
         this.status = task.state;
         if (task.createdAt && task.finishedAt) {
           task.durationText = this.timeDiffCalc(dateAsUTCDate(new Date(task.createdAt)), dateAsUTCDate(new Date(task.finishedAt)));
+          this.informationSource.lastTask.createdAtDisplay = parseUTC(task.createdAt);
         }
       }
-      this.informationSource = informationSource;
       this.description = informationSource.description;
       this.informationSourceName = informationSource.name;
       this.fillZeroShotSettings(informationSource.sourceCode);
@@ -291,10 +293,6 @@ export class ZeroShotDetailsComponent
     if (!open && this.informationSourceName != this.informationSource.name) {
       this.saveInformationSource();
     }
-  }
-  parseUTC(utc: string) {
-    const utcDate = dateAsUTCDate(new Date(utc));
-    return utcDate.toLocaleString();
   }
 
   changeInformationSourceName(event) {

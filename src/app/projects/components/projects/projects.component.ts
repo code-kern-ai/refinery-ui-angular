@@ -16,7 +16,7 @@ import { NotificationService } from 'src/app/base/services/notification.service'
 import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { ProjectStatus } from 'src/app/projects/enums/project-status.enum';
-import { dateAsUTCDate, getUserAvatarUri, isStringTrue } from 'src/app/util/helper-functions';
+import { getUserAvatarUri, isStringTrue, parseUTC } from 'src/app/util/helper-functions';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { createDefaultProjectsModals, ProjectsModals } from './projects-helper';
 import { UploadFileType } from 'src/app/import/components/helpers/upload-types';
@@ -164,7 +164,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
       projectList.sort((a, b) => a.name.localeCompare(b.name));
       projectList.forEach(projectItem => {
         if (projectItem.createdAt) {
-          projectItem.timeStamp = this.parseUTC(projectItem.createdAt);
+          projectItem.timeStamp = parseUTC(projectItem.createdAt);
           const splitDateTime = projectItem.timeStamp.split(',');
           projectItem.date = splitDateTime[0].trim();
           projectItem.time = splitDateTime[1];
@@ -208,11 +208,6 @@ export class ProjectsComponent implements OnInit, OnDestroy {
 
   setFirstName(userName) {
     this.user$ = userName;
-  }
-
-  parseUTC(utc: string) {
-    const utcDate = dateAsUTCDate(new Date(utc));
-    return utcDate.toLocaleString();
   }
 
   startPlayback() {

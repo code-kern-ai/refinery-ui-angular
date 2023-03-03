@@ -26,6 +26,8 @@ export class RouteManager {
         admin: { active: false, checkFor: ['admin'] },
     }
 
+    public static currentPage: string;
+
     //needs to be called once from app (because of the http injection)
     public static initRouteManager(router: Router, organizationService: OrganizationApolloService) {
         RouteManager.router = router;
@@ -77,8 +79,17 @@ export class RouteManager {
 
     private static checkRouteHighlight(url: string) {
         url = url.split('?')[0];
-        for (const key in this.routeColor) {
-            this.routeColor[key].active = this.routeColor[key].checkFor.some(s => url.includes(s));
+        RouteManager.currentPage = '';
+        for (const key in RouteManager.routeColor) {
+            RouteManager.routeColor[key].active = RouteManager.routeColor[key].checkFor.some(s => url.includes(s));
+            if (!RouteManager.currentPage && RouteManager.routeColor[key].active) {
+                for (const checkFor of RouteManager.routeColor[key].checkFor) {
+                    if (url.includes(checkFor)) {
+                        RouteManager.currentPage = checkFor;
+                        break;
+                    }
+                }
+            }
         }
     }
 

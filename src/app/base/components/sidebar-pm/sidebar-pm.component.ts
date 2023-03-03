@@ -14,7 +14,7 @@ import { OrganizationApolloService } from '../../services/organization/organizat
 import { DOCUMENT } from '@angular/common';
 import { ProjectApolloService } from '../../services/project/project-apollo.service';
 import { ConfigApolloService } from '../../services/config/config-apollo.service';
-import { dateAsUTCDate } from 'src/app/util/helper-functions';
+import { parseUTC } from 'src/app/util/helper-functions';
 import { ConfigManager } from '../../services/config-service';
 import { RouteManager } from 'src/app/util/route-manager';
 import { createDefaultSideBarPmModals, SideBarPmModals } from './sidebar-pm-helper';
@@ -126,7 +126,7 @@ export class SidebarPmComponent implements OnInit, OnDestroy {
       .subscribe((versionOverview) => {
         this.sideBarPmModals.versionOverview.data = versionOverview;
         this.sideBarPmModals.versionOverview.data.forEach((version) => {
-          version.parseDate = this.parseUTC(version.lastChecked);
+          version.parseDate = parseUTC(version.lastChecked);
         });
         this.sideBarPmModals.versionOverview.data.sort((a, b) => a.service.localeCompare(b.service));
         this.configService
@@ -206,11 +206,6 @@ export class SidebarPmComponent implements OnInit, OnDestroy {
       if (element.id == 'KernNav') return true;
       else return this.isOnKernNav(element.parentElement, loops - 1);
     }
-  }
-
-  parseUTC(utc: string) {
-    const utcDate = dateAsUTCDate(new Date(utc));
-    return utcDate.toLocaleString();
   }
 
   howToUpdate() {

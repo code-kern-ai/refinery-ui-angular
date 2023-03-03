@@ -8,7 +8,7 @@ import { NotificationService } from 'src/app/base/services/notification.service'
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { RouteService } from 'src/app/base/services/route.service';
 import { WeakSourceApolloService } from 'src/app/base/services/weak-source/weak-source-apollo.service';
-import { dateAsUTCDate, formatBytes, getUserAvatarUri } from 'src/app/util/helper-functions';
+import { dateAsUTCDate, formatBytes, getUserAvatarUri, parseUTC } from 'src/app/util/helper-functions';
 import { RouteManager } from 'src/app/util/route-manager';
 import { UserManager } from 'src/app/util/user-manager';
 import { createDefaultModelDownloadModals, ModelDownloadModals } from './model-download-helper';
@@ -50,7 +50,7 @@ export class ModelDownloadComponentComponent implements OnInit {
         this.downloadedModels = downloadedModels;
         let saveDownloadedModels = [];
         this.downloadedModels.forEach(model => {
-          model = { ...model, sizeFormatted: formatBytes(model.size), parseDate: this.parseUTC(model.date) };
+          model = { ...model, sizeFormatted: formatBytes(model.size), parseDate: parseUTC(model.date) };
           saveDownloadedModels.push(model);
         })
         this.downloadedModels = saveDownloadedModels;
@@ -93,11 +93,6 @@ export class ModelDownloadComponentComponent implements OnInit {
       .pipe(first()).subscribe(() => {
         this.downloadedModelsModals.addNewModel.form.reset();
       });
-  }
-
-  parseUTC(utc: string) {
-    const utcDate = dateAsUTCDate(new Date(utc));
-    return utcDate.toLocaleString();
   }
 
   prepareModels() {

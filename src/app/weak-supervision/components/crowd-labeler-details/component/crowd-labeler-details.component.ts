@@ -319,10 +319,6 @@ export class CrowdLabelerDetailsComponent
       this.saveInformationSource();
     }
   }
-  parseUTC(utc: string) {
-    const utcDate = dateAsUTCDate(new Date(utc));
-    return utcDate.toLocaleString();
-  }
 
   changeInformationSourceName(event) {
     this.informationSourceName = event.target.value;

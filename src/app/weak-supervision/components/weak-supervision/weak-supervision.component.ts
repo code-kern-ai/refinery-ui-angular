@@ -10,7 +10,7 @@ import { NotificationService } from 'src/app/base/services/notification.service'
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { RouteService } from 'src/app/base/services/route.service';
 import { WeakSourceApolloService } from 'src/app/base/services/weak-source/weak-source-apollo.service';
-import { capitalizeFirstForClassName, dateAsUTCDate, toPythonFunctionName } from 'src/app/util/helper-functions';
+import { capitalizeFirstForClassName, dateAsUTCDate, parseUTC, toPythonFunctionName } from 'src/app/util/helper-functions';
 import { UserManager } from 'src/app/util/user-manager';
 import { InformationSourceCodeLookup, InformationSourceExamples } from '../information-sources-code-lookup';
 import { createDefaultHeuristicsModals, HeuristicsModals } from './weak-supervision-helper';
@@ -150,9 +150,9 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
 
         if (run.user.firstName) currentWeakSupervisionRun.displayName = run.user.firstName[0] + '. ' + run.user.lastName;
         else currentWeakSupervisionRun.displayName = "Unknown";
-        currentWeakSupervisionRun.createdAtDisplay = this.parseUTC(currentWeakSupervisionRun.createdAt);
+        currentWeakSupervisionRun.createdAtDisplay = parseUTC(currentWeakSupervisionRun.createdAt);
         if (currentWeakSupervisionRun.finishedAt) {
-          currentWeakSupervisionRun.finishedAtDisplay = this.parseUTC(currentWeakSupervisionRun.finishedAt);
+          currentWeakSupervisionRun.finishedAtDisplay = parseUTC(currentWeakSupervisionRun.finishedAt);
         } else {
           currentWeakSupervisionRun.finishedAtDisplay = "Not finished";
         }
@@ -387,11 +387,6 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
     for (let recommendation of this.heuristicsModals.createZeroShot.zeroShotRecommendations) {
       recommendation.hidden = !recommendation.configString.toLowerCase().includes(lowerEventValue)
     }
-  }
-
-  parseUTC(utc: string) {
-    const utcDate = dateAsUTCDate(new Date(utc));
-    return utcDate.toLocaleString();
   }
 
   areInformationSourcesSelected(informationSources: any[], onlyValid: boolean) {

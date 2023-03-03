@@ -13,6 +13,9 @@ import { UserManager } from './util/user-manager';
 import { CommentDataManager } from './base/components/comment/comment-helper';
 import { RouteManager } from './util/route-manager';
 import { NotificationCenterComponent } from './base/components/notification-center/notification-center.component';
+import { ProjectApolloService } from './base/services/project/project-apollo.service';
+import { AdminMessage, AdminMessageLevel, adminMessageLevels } from './util/admin-messages-helper';
+import { jsonCopy, parseUTC } from './util/helper-functions';
 
 @Component({
   selector: 'app-root',
@@ -33,6 +36,17 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
   windowWidth: number;
   sizeWarningOpen: boolean = false;
   minWidth: number = 1250;
+  activeAdminMessages$: any;
+  activeAdminMessagesQuery$: any;
+  activeAdminMessages: AdminMessage[];
+  adminMessageLevels = adminMessageLevels;
+  subscriptions$: Subscription[] = [];
+  get AdminMessageLevel(): typeof AdminMessageLevel {
+    return AdminMessageLevel;
+  }
+  get isOnLabelingPage(): boolean {
+    return RouteManager.currentPage == 'labeling';
+  }
 
   constructor(
     private notificationApolloService: NotificationApolloService,
@@ -40,19 +54,32 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
     private configService: ConfigApolloService,
     private router: Router,
     private http: HttpClient,
-    private cfRef: ChangeDetectorRef
+    private cfRef: ChangeDetectorRef,
+    private projectApolloService: ProjectApolloService,
   ) { }
 
   ngOnInit(): void {
     this.initialRequests();
     NotificationService.subscribeToNotification(this, {
-      whitelist: ['notification_created', 'project_deleted', 'config_updated'],
+      whitelist: ['notification_created', 'project_deleted', 'config_updated', 'admin_message'],
       func: this.handleWebsocketNotification
     });
     this.initializeNotificationService();
     this.initWithConfigManager();
     this.checkBrowser();
-    UserManager.registerAfterInitActionOrRun(this, () => this.loggedInUser = UserManager.getUser(), true)
+    UserManager.registerAfterInitActionOrRun(this, () => this.loggedInUser = UserManager.getUser(), true);
+    [this.activeAdminMessagesQuery$, this.activeAdminMessages$] = this.projectApolloService.getAllActiveAdminMessages();
+    this.subscriptions$.push(this.activeAdminMessages$.subscribe((activeMessages: AdminMessage[]) => {
+      this.activeAdminMessages = activeMessages.map((message) => {
+        message = jsonCopy(message);
+        message.displayDate = parseUTC(message.archiveDate);
+        const color = adminMessageLevels[message.level].color;
+        message.textColor = 'text-' + color + '-700';
+        message.backgroundColor = 'bg-' + color + '-100';
+        message.borderColor = 'border-' + color + '-400';
+        return message;
+      });
+    }));
   }
 
   ngAfterViewInit() {
@@ -129,6 +156,7 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
     }
     if (this.notificationsSub$) this.notificationsSub$.unsubscribe();
     NotificationService.unsubscribeFromNotification(this);
+    this.subscriptions$.forEach((sub) => sub.unsubscribe());
   }
 
   handleWebsocketNotification(msgParts) {
@@ -149,6 +177,8 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
       }
     } else if (msgParts[1] == 'config_updated') {
       ConfigManager.refreshConfig();
+    } else if (msgParts[1] == 'admin_message') {
+      this.activeAdminMessagesQuery$.refetch();
     }
   }
 
@@ -177,5 +207,4 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
   onNotificationClick(notification) {
     NotificationCenterComponent.outlineSelectedNotification(notification.id);
   }
-
 }
