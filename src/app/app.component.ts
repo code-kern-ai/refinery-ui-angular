@@ -44,6 +44,9 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
   get AdminMessageLevel(): typeof AdminMessageLevel {
     return AdminMessageLevel;
   }
+  get isOnLabelingPage(): boolean {
+    return RouteManager.currentPage == 'labeling';
+  }
 
   constructor(
     private notificationApolloService: NotificationApolloService,
