@@ -5,6 +5,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { timer } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { findProjectIdFromRoute, isStringTrue } from 'src/app/util/helper-functions';
+import { UserManager } from 'src/app/util/user-manager';
+import { ConfigManager } from '../../services/config-service';
 import { KnowledgeBasesApolloService } from '../../services/knowledge-bases/knowledge-bases-apollo.service';
 import { ProjectApolloService } from '../../services/project/project-apollo.service';
 import { BricksCodeParser } from './helper/code-parser';
@@ -44,12 +46,14 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
   config: BricksIntegratorConfig;
   codeParser: BricksCodeParser;
   dataRequestor: BricksDataRequestor;
+  isAdmin: boolean = false;
 
   constructor(private http: HttpClient, private projectApolloService: ProjectApolloService, private knowledgeBaseApollo: KnowledgeBasesApolloService,
     private activatedRoute: ActivatedRoute, private router: Router) {
   }
 
   ngOnInit(): void {
+    this.checkUserIsAdmin();
     if (typeof this.forIde == 'string') this.forIde = isStringTrue(this.forIde);
     this.initConfig();
     this.codeParser = new BricksCodeParser(this);
@@ -59,6 +63,15 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.dataRequestor.unsubscribeFromWebsocket();
   }
+
+  private checkUserIsAdmin() {
+    if (!ConfigManager.isInit()) {
+      timer(250).subscribe(() => this.checkUserIsAdmin());
+      return;
+    }
+    this.isAdmin = ConfigManager.getIsAdmin();
+  }
+
 
   openBricksIntegrator() {
     this.config.modalOpen = true;
@@ -122,7 +135,7 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
           finalData = finalData.filter(e => e.attributes.executionType == this.executionTypeFilter);
         }
         finalData = this.filterMinVersion(finalData);
-
+        this.extendCodeTesterElement(finalData);
         this.config.search.results = finalData;
         this.config.search.results.forEach(e => e.visible = true);
         this.config.search.nothingMatches = this.config.search.results.length == 0;
@@ -134,6 +147,46 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
         this.config.search.currentRequest = null;
       }
     });
+  }
+
+  private extendCodeTesterElement(finalData: any[]) {
+    if (!this.isAdmin) return;
+    const element = {
+      id: -1,
+      attributes: {
+        name: "Code tester",
+        description: "Lets you test random code for the integrator (only available for kern admins)",
+        moduleType: "any",
+        dataType: "text",
+        sourceCode: null,
+      },
+      visible: true
+    }
+    if (UserManager.getUser().firstName.toLowerCase() == "jens") finalData.unshift(element);
+    else finalData.push(element);
+  }
+
+  private getCodeTesterDummyData(): BricksAPIData {
+    return {
+      data: {
+        attributes: {
+          name: "Code tester",
+          description: "Lets you test random code for the integrator (only available for kern admins)",
+          updatedAt: null,
+          sourceCode: null,
+          issueId: null,
+          inputExample: null,
+          endpoint: null,
+          moduleType: null
+        },
+        id: -1
+      },
+      meta: {}
+    };
+  }
+  setCodeTesterCode(code: string) {
+    this.config.api.data.data.attributes.sourceCode = code;
+    this.checkCanAccept();
   }
 
   private filterMinVersion(data: any[]): any[] {
@@ -178,6 +231,7 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
         case IntegratorPage.INPUT_EXAMPLE:
           // jump to integration
           this.config.page = IntegratorPage.INTEGRATION;
+          if (this.config.api.moduleId == -1) this.codeParser.prepareCode();
           break;
         case IntegratorPage.INTEGRATION:
           //transfer code to editor
@@ -201,11 +255,14 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
       console.log("no module id -> shouldn't happen");
       return;
     }
+    if (this.config.api.moduleId == -1) {
+      this.config.api.data = this.getCodeTesterDummyData();
+      return;
+    }
     this.config.api.requestUrl = BricksIntegratorComponent.httpBaseLink + this.config.api.moduleId;
     this.config.api.requesting = true;
     this.http.get(this.config.api.requestUrl).pipe(first()).subscribe((c: BricksAPIData) => {
       this.config.api.data = c;
-
       this.config.api.data.data.attributes.link = "https://bricks.kern.ai/" + c.data.attributes.moduleType + "s/" + c.data.id;
       this.config.api.requesting = false;
       this.config.example.requestData = this.config.api.data.data.attributes.inputExample;
@@ -251,7 +308,8 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
         break;
       case IntegratorPage.OVERVIEW:
       case IntegratorPage.INPUT_EXAMPLE:
-        this.config.canAccept = !!this.config.api.data;
+        if (this.config.api.moduleId == -1) this.config.canAccept = !!this.config.api.data.data.attributes.sourceCode;
+        else this.config.canAccept = !!this.config.api.data;
         break;
       case IntegratorPage.INTEGRATION:
         this.config.canAccept = this.config.codeFullyPrepared && !this.codeParser.nameTaken && this.codeParser.functionName != "";

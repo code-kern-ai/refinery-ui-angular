@@ -249,6 +249,7 @@ export class BricksCodeParser {
         if (bricksType == BricksVariableType.LOOKUP_LIST) return "knowledge." + value;
         if (bricksType == BricksVariableType.REGEX) return "r\"" + value + "\"";
         if (pythonType.includes("str")) return "\"" + value + "\"";
+
         return value;
     }
 
@@ -309,16 +310,16 @@ export class BricksCodeParser {
     }
     private parseValue(value: string, pythonType: string): any {
         if (value.startsWith("r\"")) value = value.substring(1); //remove r for regex
-        value = value.replace(/"/g, "").trim();
+        value = value.replace(/"/g, "");
         if (pythonType.includes("int")) return parseInt(value);
         if (pythonType.includes("float")) return parseFloat(value);
-        if (pythonType.includes("bool")) return isStringTrue(value);
         return value;
     }
 
     private setAddOptions(variable: BricksVariable) {
         if (variable.type == BricksVariableType.GENERIC_BOOLEAN) {
-            variable.options.colors = [null];
+            variable.options.colors = [];
+            variable.values.forEach(e => variable.options.colors.push(e == "True" ? "#2563eb" : (e == "False" ? "#ef4444" : null)));
         }
     }
 
@@ -346,7 +347,8 @@ export class BricksCodeParser {
                 const allLanguages = isCommentTrue(comment, BricksVariableComment.LANGUAGE_ALL);
                 return this.base.dataRequestor.getIsoCodes(!allLanguages);
             case BricksVariableType.ATTRIBUTE:
-                if (isCommentTrue(comment, BricksVariableComment.ATTRIBUTE_ONLY_TEXT)) return this.base.dataRequestor.getAttributes('TEXT');
+                if (isCommentTrue(comment, BricksVariableComment.ATTRIBUTE_ONLY_TEXT_LIKE)) return this.base.dataRequestor.getAttributes(['TEXT', 'CATEGORY']);
+                else if (isCommentTrue(comment, BricksVariableComment.ATTRIBUTE_ONLY_TEXT)) return this.base.dataRequestor.getAttributes(['TEXT']);
                 return this.base.dataRequestor.getAttributes(null);
             case BricksVariableType.LABELING_TASK:
                 let typeFilter = null;
