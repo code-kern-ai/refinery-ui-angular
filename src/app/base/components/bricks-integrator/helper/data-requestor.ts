@@ -77,14 +77,14 @@ export class BricksDataRequestor {
         vc.pipe(first()).subscribe(ll => this.lookupLists = ll);
     }
 
-    public getAttributes(typeFilter: string = 'TEXT', stateFilter: string[] = ["UPLOADED", "USABLE", "AUTOMATICALLY_CREATED"]): any[] {
+    public getAttributes(typeFilter: string[] = ['TEXT'], stateFilter: string[] = ["UPLOADED", "USABLE", "AUTOMATICALLY_CREATED"]): any[] {
         if (!this.attributes) {
             console.log("attributes not yet loaded");
             return null;
         }
         let filtered = this.attributes.filter(att => stateFilter.includes(att.state));
         if (typeFilter) {
-            filtered = filtered.filter(att => att.dataType == typeFilter);
+            filtered = filtered.filter(att => typeFilter.includes(att.dataType));
         }
         if (filtered.length == 0) return ['No useable attributes'];
         return filtered;

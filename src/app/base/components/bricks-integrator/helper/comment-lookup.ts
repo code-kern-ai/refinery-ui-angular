@@ -7,6 +7,9 @@ export enum BricksVariableComment {
     /** only text attributes are provided for selection. */
     ATTRIBUTE_ONLY_TEXT = "only text",
     /** @member {string} */
+    /** only text and category attributes are provided for selection. */
+    ATTRIBUTE_ONLY_TEXT_LIKE = "only text like",
+    /** @member {string} */
     /** only classification tasks are provided for selection. */
     LABELING_TASK_ONLY_CLASSIFICATION = "only classification",
     /** @member {string} */

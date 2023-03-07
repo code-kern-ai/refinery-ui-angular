@@ -31,7 +31,7 @@
                         class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">Overview</button>
                     <button *ngIf="executionTypeFilter!='activeLearner'"
                         (click)="switchToPage(IntegratorPageType.INPUT_EXAMPLE)"
-                        [ngClass]="[config.page == IntegratorPageType.INPUT_EXAMPLE ? 'border-indigo-500 text-indigo-600':'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', (config.api.requesting || config.api.data)?'cursor-pointer':'cursor-not-allowed']"
+                        [ngClass]="[config.page == IntegratorPageType.INPUT_EXAMPLE ? 'border-indigo-500 text-indigo-600':'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', ((config.api.requesting || config.api.data) && config.api.moduleId != -1)?'cursor-pointer':'cursor-not-allowed']"
                         class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">Input Example</button>
                     <button (click)="switchToPage(IntegratorPageType.INTEGRATION)"
                         [ngClass]="[config.page == IntegratorPageType.INTEGRATION ? 'border-indigo-500 text-indigo-600':'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', (config.api.requesting || config.api.data)?'cursor-pointer':'cursor-not-allowed']"
@@ -147,7 +147,7 @@
             <kern-loading></kern-loading>
         </ng-template>
         <ng-template #displayOverview>
-            <ng-template [ngIf]="config.api.data">
+            <ng-template [ngIf]="config.api.data && config.api.moduleId != -1">
                 <div class="grid grid-cols-2 grid-cols-2-max  gap-x-2 gap-y-2 items-center">
                     <div class="font-bold">Module Id</div>
                     <label>{{config.api.data.data.id}}</label>
@@ -193,6 +193,13 @@
                         </div>
                     </div>
                 </div>
+            </ng-template>
+            <ng-template [ngIf]="config.api.moduleId == -1">
+                <textarea #codeInput
+                    class="textarea placeholder-italic w-full p-2 line-height-textarea h-20 focus:outline-none border border-gray-300"
+                    placeholder="Example Module Code" (change)="setCodeTesterCode(codeInput.value)"
+                    style="width: min(80vw,1000px);height:min(80vh,850px);"></textarea>
+
             </ng-template>
         </ng-template>
     </div>
@@ -540,7 +547,7 @@
             <ng-template ngSwitchCase="GENERIC_STRING">
                 <input #genText type="text" class="input input-bordered input-sm"
                     style="outline:none; box-shadow:none;min-width: 10rem;max-width: 25rem;"
-                    [ngClass]="variable.values[i].length>20?'w-60':'w-50'" [value]="variable.values[i]"
+                    [ngClass]="variable.values[i]?.length>20?'w-60':'w-50'" [value]="variable.values[i]"
                     [id]="'GENERIC_STRING_'+j+'_'+i" autocomplete="off"
                     (keyup)="debounceSetGeneric(variable,i,genText);">
             </ng-template>
