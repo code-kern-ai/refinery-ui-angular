@@ -19,6 +19,7 @@ export class ConfigComponent implements OnInit, OnDestroy {
   constructor(
     private activatedRoute: ActivatedRoute,
     private routeService: RouteService,
+    private configApolloService: ConfigApolloService,
     private organizationApolloService: OrganizationApolloService,
     private projectApolloService: ProjectApolloService,
     private router: Router
@@ -86,11 +87,19 @@ export class ConfigComponent implements OnInit, OnDestroy {
     }
 
     localStorage.removeItem("base_config");
-    this.organizationApolloService.changeOrganization(this.organization.id, JSON.stringify(updateDict.limit_checks)).pipe(first()).subscribe((o: any) => {
-      if (!o?.data?.changeOrganization) {
-        window.alert('something went wrong with the update');
-      }
-    });
+    if (subkey == 'max_rows' || subkey == 'max_cols' || subkey == 'max_char_count') {
+      this.organizationApolloService.changeOrganization(this.organization.id, JSON.stringify(updateDict.limit_checks)).pipe(first()).subscribe((o: any) => {
+        if (!o?.data?.changeOrganization) {
+          window.alert('something went wrong with the update');
+        }
+      });
+    } else {
+      this.configApolloService.updateConfig(JSON.stringify(updateDict)).pipe(first()).subscribe((o: any) => {
+        if (!o?.data?.updateConfig) {
+          window.alert('something went wrong with the update');
+        }
+      });
+    }
   }
 
   getFirstName(userName) {
