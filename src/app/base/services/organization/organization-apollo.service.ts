@@ -179,4 +179,15 @@ export class OrganizationApolloService {
         })
       );
   }
+
+  changeOrganization(orgId: string, changes: string) {
+    return this.apollo
+      .mutate({
+        mutation: mutations.CHANGE_ORGANIZATION,
+        variables: {
+          orgId: orgId,
+          changes: changes
+        },
+      });
+  }
 }

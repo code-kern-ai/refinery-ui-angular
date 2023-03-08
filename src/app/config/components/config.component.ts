@@ -20,13 +20,13 @@ export class ConfigComponent implements OnInit, OnDestroy {
     private activatedRoute: ActivatedRoute,
     private routeService: RouteService,
     private organizationApolloService: OrganizationApolloService,
-    private configApolloService: ConfigApolloService,
     private projectApolloService: ProjectApolloService,
     private router: Router
   ) { }
   user$: any;
   avatarUri: string;
   tokenizerOptions: any[];
+  organization: any;
 
   localConfigCopy: any;
   ngOnDestroy(): void {
@@ -45,6 +45,11 @@ export class ConfigComponent implements OnInit, OnDestroy {
       .getAllTokenizerOptions()
       .pipe(first())
       .subscribe((v) => this.tokenizerOptions = v);
+    this.organizationApolloService
+      .getUserOrganization()
+      .pipe(first()).subscribe((org: any) => {
+        this.organization = org;
+      });
   }
 
   private initComponent() {
@@ -71,7 +76,7 @@ export class ConfigComponent implements OnInit, OnDestroy {
   checkAndSaveValue(value: any, key: string, subkey: string = null) {
     if (ConfigManager.getConfigValue(key, subkey) == value) return;
 
-    const updateDict = {};
+    const updateDict: any = {};
     if (subkey) {
       updateDict[key] = {};
       if (key == "limit_checks") updateDict[key][subkey] = Number(value);
@@ -81,9 +86,8 @@ export class ConfigComponent implements OnInit, OnDestroy {
     }
 
     localStorage.removeItem("base_config");
-
-    this.configApolloService.updateConfig(JSON.stringify(updateDict)).pipe(first()).subscribe(o => {
-      if (!o?.data?.updateConfig) {
+    this.organizationApolloService.changeOrganization(this.organization.id, JSON.stringify(updateDict.limit_checks)).pipe(first()).subscribe((o: any) => {
+      if (!o?.data?.changeOrganization) {
         window.alert('something went wrong with the update');
       }
     });

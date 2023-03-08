@@ -46,5 +46,12 @@ export const mutations = {
       ok
     }
   }
-  `
+  `,
+  CHANGE_ORGANIZATION: gql`
+mutation ($orgId: ID!, $changes: JSONString!) {
+  changeOrganization(orgId: $orgId, changes: $changes) {
+    ok
+  }
+}
+`,
 };

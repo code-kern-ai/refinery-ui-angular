@@ -6,6 +6,9 @@ export const queries = {
       userOrganization {
         id
         name
+        maxRows
+        maxCols
+      	maxCharCount
       }
     }
   `,
