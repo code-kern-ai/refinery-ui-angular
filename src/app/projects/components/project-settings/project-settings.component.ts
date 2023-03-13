@@ -56,6 +56,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
   embeddings$: any;
   suggestions$: any;
   lh: LabelHelper;
+  checkIfSomethingRunning: boolean = false;
 
   get projectExportArray() {
     return this.settingModals.projectExport.projectExportSchema.get('attributes') as FormArray;
@@ -105,6 +106,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
           attribute.visibilityIndex = this.attributeVisibilityStates.findIndex((type) => type.value === attribute?.visibility);
         });
         this.dataHandlerHelper.requestPKeyCheck(projectId, this.attributes);
+        this.checkIfSomethingRunning = this.attributes.filter(att => att.state == 'RUNNING').length > 0 || this.tokenizationProgress < 1;
 
         // prepare embeddings
         this.embeddings = JSON.parse(JSON.stringify((res[1])));
@@ -196,7 +198,6 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
           timer(5000).subscribe(() => this.checkProjectTokenization(this.project.id));
         }
       }
-
     } else if (msgParts[1] == 'embedding_deleted') {
       if (!this.embeddings) return;
       this.embeddings = this.embeddings.filter(e => e.id != msgParts[2]);
@@ -210,7 +211,14 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
       this.settingModals.projectExport.downloadPrepareMessage = DownloadState.NONE;
       this.requestProjectExportCredentials();
     } else if (msgParts[1] == 'calculate_attribute') {
-      this.attributesQuery$.refetch();
+      if (msgParts[2] == 'started' && msgParts[3] == 'all') {
+        this.checkIfSomethingRunning = true;
+      } else if (msgParts[2] == 'finished' && msgParts[3] == 'all') {
+        this.checkProjectTokenization(this.project.id);
+        this.checkIfSomethingRunning = false;
+      } else {
+        this.attributesQuery$.refetch();
+      }
     }
   }
 
