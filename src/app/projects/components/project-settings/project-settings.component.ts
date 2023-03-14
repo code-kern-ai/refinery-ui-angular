@@ -58,7 +58,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
   suggestions$: any;
   lh: LabelHelper;
   checkIfAcUploadedRecords: boolean = false;
-  checkIfSomethingRunning: boolean = false;
+  isAcRunning: boolean = false;
 
   get projectExportArray() {
     return this.settingModals.projectExport.projectExportSchema.get('attributes') as FormArray;
@@ -108,7 +108,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
           attribute.visibilityIndex = this.attributeVisibilityStates.findIndex((type) => type.value === attribute?.visibility);
         });
         this.dataHandlerHelper.requestPKeyCheck(projectId, this.attributes);
-        this.checkIfSomethingRunning = this.disabledUploadedRecordsButton();
+        this.isAcRunning = this.checkIfAcIsRunning();
 
         // prepare embeddings
         this.embeddings = JSON.parse(JSON.stringify((res[1])));
@@ -163,7 +163,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
   checkProjectTokenization(projectId: string) {
     this.projectApolloService.getProjectTokenization(projectId).pipe(first()).subscribe((v) => {
       this.tokenizationProgress = v?.progress;
-      this.checkIfSomethingRunning = this.disabledUploadedRecordsButton();
+      this.isAcRunning = this.checkIfAcIsRunning();
     })
   }
 
@@ -192,7 +192,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
           return;
         }
       }
-    } else if (msgParts[1] == 'tokenization' && (msgParts[2] == 'docbin' || msgParts[2] == 'rats')) {
+    } else if (msgParts[1] == 'tokenization' && msgParts[2] == 'docbin') {
       if (msgParts[3] == 'progress') {
         this.tokenizationProgress = Number(msgParts[4]);
       } else if (msgParts[3] == 'state') {
@@ -216,13 +216,13 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
     } else if (msgParts[1] == 'calculate_attribute') {
       if (msgParts[2] == 'started' && msgParts[3] == 'all') {
         this.checkIfAcUploadedRecords = true;
-        this.checkIfSomethingRunning = this.disabledUploadedRecordsButton();
+        this.isAcRunning = this.checkIfAcIsRunning();
       } else if (msgParts[2] == 'finished' && msgParts[3] == 'all') {
         this.checkIfAcUploadedRecords = false;
-        this.checkIfSomethingRunning = this.disabledUploadedRecordsButton();
+        this.isAcRunning = this.checkIfAcIsRunning();
       } else {
         this.attributesQuery$.refetch();
-        this.checkIfSomethingRunning = this.disabledUploadedRecordsButton();
+        this.isAcRunning = this.checkIfAcIsRunning();
       }
     }
   }
@@ -357,8 +357,8 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
     this.dataHandlerHelper.focusModalInputBox('attributeName');
   }
 
-  disabledUploadedRecordsButton() {
-    return this.attributes.some(a => a.state == AttributeCalculationState.RUNNING) || this.tokenizationProgress < 1 || this.checkIfAcUploadedRecords;
+  checkIfAcIsRunning() {
+    return this.attributes.some(a => a.state == AttributeCalculationState.RUNNING) || this.checkIfAcUploadedRecords;
   }
 }
 
