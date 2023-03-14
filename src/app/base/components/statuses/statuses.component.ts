@@ -1,4 +1,5 @@
 import { Component, Input, OnChanges } from '@angular/core';
+import { Status } from './statuses.helper';
 
 @Component({
   selector: 'kern-statuses',
@@ -21,53 +22,53 @@ export class StatusesComponent implements OnChanges {
   ngOnChanges(): void {
     if (this.page == 'gates-integrator') {
       switch (this.status) {
-        case 'READY':
+        case Status.READY:
           this.statusName = 'Ready to Use';
           this.color = 'green';
           break;
-        case 'UPDATING':
+        case Status.UPDATING:
           this.statusName = 'Updating';
           this.color = 'yellow';
           break;
-        case 'NOT_READY':
+        case Status.NOT_READY:
           this.statusName = 'Not Ready';
           this.color = 'red';
           break;
       }
     } else {
       switch (this.status) {
-        case 'CREATED':
-        case 'RUNNING':
+        case Status.CREATED:
+        case Status.RUNNING:
           this.dataTip = this.page === 'heuristics' ? 'Heuristic is currently being executed.' : 'Attribute is being calculated.';
           this.statusName = 'Running';
           this.color = 'yellow';
           break;
-        case 'STARTED':
+        case Status.STARTED:
           this.dataTip = 'Annotator has started labeling.';
           this.statusName = 'Started';
           this.color = 'yellow';
           break;
-        case 'FINISHED':
+        case Status.FINISHED:
           this.dataTip = 'Heuristic was successfully executed.';
           this.statusName = 'Finished';
           this.color = 'green';
           break;
-        case 'FAILED':
+        case Status.FAILED:
           this.dataTip = (this.page === 'heuristics' ? 'Heuristic' : 'Attribute') + ' ran into errors.';
           this.statusName = 'Error';
           this.color = 'red';
           break;
-        case 'USABLE':
+        case Status.USABLE:
           this.dataTip = 'Attribute can be used.';
           this.statusName = 'Usable';
           this.color = 'green';
           break;
-        case 'UPLOADED':
+        case Status.UPLOADED:
           this.dataTip = 'Attribute was uploaded.';
           this.statusName = 'Uploaded';
           this.color = 'indigo';
           break;
-        case 'AUTOMATICALLY_CREATED':
+        case Status.AUTOMATICALLY_CREATED:
           this.dataTip = 'Created during the upload process.';
           this.statusName = 'Auto. created';
           this.color = 'indigo';
