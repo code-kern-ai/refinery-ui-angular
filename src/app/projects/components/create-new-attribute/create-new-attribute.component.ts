@@ -17,7 +17,7 @@ import { CommentDataManager, CommentType } from 'src/app/base/components/comment
 import { dataTypes } from 'src/app/util/data-types';
 import { getColorForDataType, isStringTrue, toPythonFunctionName } from 'src/app/util/helper-functions';
 import { KnowledgeBasesApolloService } from 'src/app/base/services/knowledge-bases/knowledge-bases-apollo.service';
-import { AttributeCalculationModals, createDefaultAttributeCalculationModals } from './create-new-attribute-helper';
+import { AttributeCalculationModals, AttributeCalculationState, createDefaultAttributeCalculationModals } from './create-new-attribute-helper';
 import { AttributeVisibility, attributeVisibilityStates, getTooltipVisibilityState } from './attributes-visibility-helper';
 import { Attributes } from 'src/app/base/components/record-display/record-display.helper';
 
@@ -67,6 +67,10 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
   attributeDetails: Attributes;
   isNameLoading: boolean = false;
   attributesNames: string[] = [];
+
+  get AttributeCalculationState(): typeof AttributeCalculationState {
+    return AttributeCalculationState;
+  }
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -161,10 +165,10 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
 
       this.attributeLogs = attribute?.logs;
       this.attributeCalculationModals.executeAttribute.canRunProject = this.currentAttribute?.sourceCode !== '';
-      if (this.currentAttribute?.state == 'FAILED') {
+      if (this.currentAttribute?.state == AttributeCalculationState.FAILED) {
         this.editorOptions = { ...this.editorOptions, readOnly: false };
       }
-      if (this.currentAttribute?.state == 'RUNNING' || this.currentAttribute?.state == 'USABLE') {
+      if (this.currentAttribute?.state == AttributeCalculationState.RUNNING || this.currentAttribute?.state == AttributeCalculationState.USABLE) {
         this.editorOptions = { ...this.editorOptions, readOnly: true };
       }
       this.checkIfAtLeastRunning = this.checkIfSomethingRunning();
@@ -180,7 +184,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
   checkIfSomethingRunning(): boolean {
     if (!this.attributes) return true;
     if (!this.currentAttribute) return true;
-    const runningAtt = this.attributes?.find(att => att?.state == 'RUNNING');
+    const runningAtt = this.attributes?.find(att => att?.state == AttributeCalculationState.RUNNING);
     if (runningAtt != undefined) return true;
     return false;
   }
@@ -380,7 +384,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
       attributes.sort((a, b) => a.relativePosition - b.relativePosition);
       this.attributes = attributes;
       this.attributesNames = attributes.map((attribute) => attribute.name);
-      this.attributesUsableUploaded = attributesAll.filter((attribute) => attribute.state == 'UPLOADED' || attribute.state == 'USABLE' || attribute.state == 'AUTOMATICALLY_CREATED');
+      this.attributesUsableUploaded = attributesAll.filter((attribute) => attribute.state == AttributeCalculationState.UPLOADED || attribute.state == AttributeCalculationState.USABLE || attribute.state == AttributeCalculationState.AUTOMATICALLY_CREATED);
       this.attributesUsableUploaded.forEach(attribute => {
         attribute.color = getColorForDataType(attribute.dataType);
         attribute.dataTypeName = this.dataTypesArray.find((type) => type.value === attribute.dataType).name;

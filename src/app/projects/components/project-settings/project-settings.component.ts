@@ -22,6 +22,7 @@ import { Attribute } from './entities/attribute.type';
 import { downloadBlob, downloadText } from 'src/app/util/download-helper-functions';
 import { findFreeAttributeName, getMoveRight } from './helper/project-settings-helper';
 import { LabelHelper } from './helper/label-helper';
+import { AttributeCalculationState } from '../create-new-attribute/create-new-attribute-helper';
 
 @Component({
   selector: 'kern-project-settings',
@@ -56,6 +57,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
   embeddings$: any;
   suggestions$: any;
   lh: LabelHelper;
+  checkIfAcUploadedRecords: boolean = false;
   checkIfSomethingRunning: boolean = false;
 
   get projectExportArray() {
@@ -106,12 +108,12 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
           attribute.visibilityIndex = this.attributeVisibilityStates.findIndex((type) => type.value === attribute?.visibility);
         });
         this.dataHandlerHelper.requestPKeyCheck(projectId, this.attributes);
-        this.checkIfSomethingRunning = this.attributes.filter(att => att.state == 'RUNNING').length > 0 || this.tokenizationProgress < 1;
+        this.checkIfSomethingRunning = this.disabledUploadedRecordsButton();
 
         // prepare embeddings
         this.embeddings = JSON.parse(JSON.stringify((res[1])));
-        this.useableTextAttributes = this.useableTextAttributes.filter((attribute: any) => (attribute.state == 'UPLOADED' || attribute.state == 'AUTOMATICALLY_CREATED' || attribute.state == 'USABLE') && attribute.dataType == 'TEXT');
-        this.useableAttributes = this.attributes.filter((attribute: any) => (attribute.state == 'UPLOADED' || attribute.state == 'AUTOMATICALLY_CREATED' || attribute.state == 'USABLE'));
+        this.useableTextAttributes = this.useableTextAttributes.filter((attribute: any) => (attribute.state == AttributeCalculationState.UPLOADED || attribute.state == AttributeCalculationState.AUTOMATICALLY_CREATED || attribute.state == AttributeCalculationState.USABLE) && attribute.dataType == 'TEXT');
+        this.useableAttributes = this.attributes.filter((attribute: any) => (attribute.state == AttributeCalculationState.UPLOADED || attribute.state == AttributeCalculationState.AUTOMATICALLY_CREATED || attribute.state == AttributeCalculationState.USABLE));
 
         // prepare embedding suggestions
         const onlyTextAttributes = this.attributes.filter(a => a.dataType == 'TEXT');
@@ -161,6 +163,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
   checkProjectTokenization(projectId: string) {
     this.projectApolloService.getProjectTokenization(projectId).pipe(first()).subscribe((v) => {
       this.tokenizationProgress = v?.progress;
+      this.checkIfSomethingRunning = this.disabledUploadedRecordsButton();
     })
   }
 
@@ -189,7 +192,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
           return;
         }
       }
-    } else if (msgParts[1] == 'tokenization' && msgParts[2] == 'docbin') {
+    } else if (msgParts[1] == 'tokenization' && (msgParts[2] == 'docbin' || msgParts[2] == 'rats')) {
       if (msgParts[3] == 'progress') {
         this.tokenizationProgress = Number(msgParts[4]);
       } else if (msgParts[3] == 'state') {
@@ -212,12 +215,14 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
       this.requestProjectExportCredentials();
     } else if (msgParts[1] == 'calculate_attribute') {
       if (msgParts[2] == 'started' && msgParts[3] == 'all') {
-        this.checkIfSomethingRunning = true;
+        this.checkIfAcUploadedRecords = true;
+        this.checkIfSomethingRunning = this.disabledUploadedRecordsButton();
       } else if (msgParts[2] == 'finished' && msgParts[3] == 'all') {
-        this.checkProjectTokenization(this.project.id);
-        this.checkIfSomethingRunning = false;
+        this.checkIfAcUploadedRecords = false;
+        this.checkIfSomethingRunning = this.disabledUploadedRecordsButton();
       } else {
         this.attributesQuery$.refetch();
+        this.checkIfSomethingRunning = this.disabledUploadedRecordsButton();
       }
     }
   }
@@ -350,6 +355,10 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
     this.settingModals.attribute.open = true;
     this.settingModals.attribute.name = findFreeAttributeName(this.attributes);
     this.dataHandlerHelper.focusModalInputBox('attributeName');
+  }
+
+  disabledUploadedRecordsButton() {
+    return this.attributes.some(a => a.state == AttributeCalculationState.RUNNING) || this.tokenizationProgress < 1 || this.checkIfAcUploadedRecords;
   }
 }
 

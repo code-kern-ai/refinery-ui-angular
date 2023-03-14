@@ -27,9 +27,10 @@
             <div class="grid gap-4" [ngClass]="isHeaderNormal ? 'grid-cols-2' : 'grid-cols-1'">
                 <div class="flex items-center mt-2" *ngIf="isHeaderNormal">
                     <div class="tooltip tooltip-right"
-                        [attr.data-tip]="currentAttribute.state == 'USABLE' || currentAttribute.state == 'RUNNING' ? 'Cannot edit attribute\'s name, attribute is in use' : 'Edit your attribute\'s name'">
-                        <button [disabled]="currentAttribute.state == 'USABLE' || currentAttribute.state == 'RUNNING'"
-                            [ngClass]="currentAttribute.state == 'USABLE' || currentAttribute.state == 'RUNNING' ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
+                        [attr.data-tip]="currentAttribute.state == AttributeCalculationState.USABLE || currentAttribute.state == AttributeCalculationState.RUNNING ? 'Cannot edit attribute\'s name, attribute is in use' : 'Edit your attribute\'s name'">
+                        <button
+                            [disabled]="currentAttribute.state == AttributeCalculationState.USABLE || currentAttribute.state == AttributeCalculationState.RUNNING"
+                            [ngClass]="currentAttribute.state == AttributeCalculationState.USABLE || currentAttribute.state == AttributeCalculationState.RUNNING ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
                             (click)="openName(true)"
                             class="flex-shrink-0 bg-white text-gray-700 text-xs font-semibold mr-3 px-4 py-2 rounded-md border border-gray-300 block float-left hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                             Edit name
@@ -37,8 +38,8 @@
                     </div>
 
                     <div class="inline-block" (dblclick)="openName(true)">
-                        <ng-template [ngIf]="isNameOpen() && currentAttribute.state!='USABLE'" && currentAttribute.state
-                            !="'RUNNING" [ngIfElse]="displayName">
+                        <ng-template [ngIf]="isNameOpen() && currentAttribute.state!=AttributeCalculationState.USABLE"
+                            && currentAttribute.state !="'RUNNING" [ngIfElse]="displayName">
                             <input #nameArea type="text" class="p-2 flex-grow input input-sm"
                                 (input)="changeAttributeName($event)" (blur)="openName(false,project.id)"
                                 (keydown.enter)="openName(false,project.id)" [(ngModel)]="attributeName">
@@ -70,12 +71,12 @@
                 </div>
                 <div class="text-sm leading-5 font-medium text-gray-700 inline-block">Data type</div>
                 <div class="tooltip tooltip-right w-max"
-                    [attr.data-tip]="currentAttribute.state == 'USABLE' || currentAttribute.state == 'RUNNING' ? 'Cannot edit data type' : 'Edit your data type'">
+                    [attr.data-tip]="currentAttribute.state == AttributeCalculationState.USABLE || currentAttribute.state == AttributeCalculationState.RUNNING ? 'Cannot edit data type' : 'Edit your data type'">
                     <kern-dropdown [dropdownOptions]="{
                             optionArray: dataTypesArray,
                             buttonCaption: attributeDataType,
                             valuePropertyPath: 'value',
-                            isDisabled: currentAttribute.state == 'USABLE' || currentAttribute.state == 'RUNNING'
+                            isDisabled: currentAttribute.state == AttributeCalculationState.USABLE || currentAttribute.state == AttributeCalculationState.RUNNING
                         }" (optionClicked)="updateDataType($event)">
                     </kern-dropdown>
                 </div>
@@ -175,18 +176,18 @@
                         </div>
                         <div data-tip="Execute the attribute on 10 records" class="tooltip tooltip-left">
                             <button
-                                [disabled]="hasUnsavedChanges() || currentAttribute.state=='USABLE' || currentAttribute.state=='RUNNING' || testerRequestedSomething"
-                                [ngClass]="hasUnsavedChanges() || currentAttribute.state=='USABLE' || currentAttribute.state=='RUNNING' || testerRequestedSomething ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
+                                [disabled]="hasUnsavedChanges() || currentAttribute.state==AttributeCalculationState.USABLE || currentAttribute.state==AttributeCalculationState.RUNNING || testerRequestedSomething"
+                                [ngClass]="hasUnsavedChanges() || currentAttribute.state==AttributeCalculationState.USABLE || currentAttribute.state==AttributeCalculationState.RUNNING || testerRequestedSomething ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
                                 (click)="calculateUserAttributeSampleRecords()"
                                 class="bg-white text-gray-700 text-xs font-semibold px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                                 Run on 10
                             </button>
                         </div>
-                        <div [attr.data-tip]="hasUnsavedChanges() ? 'Unsaved changes': currentAttribute.state=='USABLE' || currentAttribute.state=='RUNNING' ? 'Attribute is already in use' : testerRequestedSomething ? 'Test is running' : checkIfAtLeastRunning? 'At least one attribute is running' : tokenizationProgress < 1 ? 'Tokenization is in progress' : runOn10HasError ? 'Run on 10 records has an error' : 'Execute the attribute on all records' "
+                        <div [attr.data-tip]="hasUnsavedChanges() ? 'Unsaved changes': currentAttribute.state==AttributeCalculationState.USABLE || currentAttribute.state==AttributeCalculationState.RUNNING ? 'Attribute is already in use' : testerRequestedSomething ? 'Test is running' : checkIfAtLeastRunning? 'At least one attribute is running' : tokenizationProgress < 1 ? 'Tokenization is in progress' : runOn10HasError ? 'Run on 10 records has an error' : 'Execute the attribute on all records' "
                             class="tooltip tooltip-left"
-                            [ngClass]="hasUnsavedChanges() || currentAttribute.state=='USABLE' || currentAttribute.state=='RUNNING' || testerRequestedSomething || checkIfAtLeastRunning || tokenizationProgress < 1 || runOn10HasError ? 'cursor-not-allowed' : ''">
+                            [ngClass]="hasUnsavedChanges() || currentAttribute.state==AttributeCalculationState.USABLE || currentAttribute.state==AttributeCalculationState.RUNNING || testerRequestedSomething || checkIfAtLeastRunning || tokenizationProgress < 1 || runOn10HasError ? 'cursor-not-allowed' : ''">
                             <label (click)="attributeCalculationModals.executeAttribute.open = true"
-                                [ngClass]="hasUnsavedChanges() || currentAttribute.state=='USABLE' || currentAttribute.state=='RUNNING' || testerRequestedSomething || checkIfAtLeastRunning || tokenizationProgress < 1 || runOn10HasError ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer'"
+                                [ngClass]="hasUnsavedChanges() || currentAttribute.state==AttributeCalculationState.USABLE || currentAttribute.state==AttributeCalculationState.RUNNING || testerRequestedSomething || checkIfAtLeastRunning || tokenizationProgress < 1 || runOn10HasError ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer'"
                                 class="bg-indigo-700 text-white text-xs leading-4 font-semibold px-4 py-2 rounded-md cursor-pointer ml-3 hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                                 Run
                             </label>
