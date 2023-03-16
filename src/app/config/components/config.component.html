@@ -26,7 +26,7 @@
                 </div>
                 <input #maxRows tabindex="0" type="number"
                     class="bg-white text-gray-700 text-xs font-semibold mr-3 px-4 py-2 rounded-md border border-gray-300 w-20 input input-sm"
-                    [value]="localConfigCopy.limitChecks.max_rows" (focus)="$event.target.select()"
+                    [value]="organization.maxRows" (focus)="$event.target.select()"
                     (keydown.enter)="checkAndSaveValue(maxRows.value,'limit_checks','max_rows')"
                     (blur)="checkAndSaveValue(maxRows.value,'limit_checks','max_rows')">
 
@@ -36,7 +36,7 @@
                 </div>
                 <input #maxCols tabindex="0" type="number"
                     class="bg-white text-gray-700 text-xs font-semibold mr-3 px-4 py-2 rounded-md border border-gray-300 w-20 input input-sm"
-                    [value]="localConfigCopy.limitChecks.max_cols" (focus)="$event.target.select()"
+                    [value]="organization.maxCols" (focus)="$event.target.select()"
                     (keydown.enter)="checkAndSaveValue(maxRows.value,'limit_checks','max_cols')"
                     (blur)="checkAndSaveValue(maxCols.value,'limit_checks','max_cols')">
 
@@ -46,7 +46,7 @@
                 </div>
                 <input #maxChar tabindex="0" type="number"
                     class="bg-white text-gray-700 text-xs font-semibold mr-3 px-4 py-2 rounded-md border border-gray-300 w-20 input input-sm"
-                    [value]="localConfigCopy.limitChecks.max_char_count" (focus)="$event.target.select()"
+                    [value]="organization.maxCharCount" (focus)="$event.target.select()"
                     (keydown.enter)="checkAndSaveValue(maxRows.value,'limit_checks','max_char_count')"
                     (blur)="checkAndSaveValue(maxChar.value,'limit_checks','max_char_count')">
                 <div class="h-full text-sm">
