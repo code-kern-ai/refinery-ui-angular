@@ -144,7 +144,8 @@
             type="submit">
             Proceed
         </button>
-        <kern-label-studio-assistant [inputData]="{
+        <kern-label-studio-assistant [projectId]=" uploadFileType == UploadFileType.RECORDS_ADD ? projectId : null"
+            [isProjectAdd]="uploadFileType == UploadFileType.RECORDS_ADD ? 'x' : null" [inputData]="{
             uploadComponent: this,
             uploadFunction: submitUploadFile,
             uploadFunctionThisObject:this}" (initialUploadTriggered)="disableInput=$event">
