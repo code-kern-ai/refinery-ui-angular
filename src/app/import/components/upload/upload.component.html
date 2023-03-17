@@ -64,6 +64,9 @@
     <ng-container *ngTemplateOutlet="upload"></ng-container>
     <ng-container *ngTemplateOutlet="fileValidation"></ng-container>
     <ng-container *ngTemplateOutlet="importOptionsTextarea"></ng-container>
+    <ng-template [ngIf]="uploadFileType == UploadFileType.RECORDS_ADD">
+        <ng-container *ngTemplateOutlet="cautionMessage"></ng-container>
+    </ng-template>
     <ng-template [ngIf]="!uploadOptions.isModal">
         <ng-container *ngTemplateOutlet="submitUpload"></ng-container>
     </ng-template>
@@ -141,7 +144,8 @@
             type="submit">
             Proceed
         </button>
-        <kern-label-studio-assistant [inputData]="{
+        <kern-label-studio-assistant [projectId]=" uploadFileType == UploadFileType.RECORDS_ADD ? projectId : null"
+            [isProjectAdd]="uploadFileType == UploadFileType.RECORDS_ADD ? 'x' : null" [inputData]="{
             uploadComponent: this,
             uploadFunction: submitUploadFile,
             uploadFunctionThisObject:this}" (initialUploadTriggered)="disableInput=$event">
@@ -252,5 +256,13 @@
                 </div>
             </div>
         </div>
+    </div>
+</ng-template>
+
+<ng-template #cautionMessage>
+    <div class="text-sm text-gray-500 font-normal">
+        <strong class="text-sm text-gray-700 font-medium">CAUTION:</strong> Submitting new records will automatically
+        run attribute calculation and embeddings for the newly
+        uploaded records
     </div>
 </ng-template>

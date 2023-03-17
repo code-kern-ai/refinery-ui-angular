@@ -41,7 +41,7 @@ const routes: Routes = [
     children: [
       { path: '', redirectTo: 'overview', pathMatch: 'full', data: { name: 'None' } },
       { path: 'overview', component: ProjectOverviewComponent, data: { name: 'ProjectOverviewComponent' } },
-      { path: 'add', component: ProjectAddComponent, data: { name: 'ProjectAddComponent' } },
+      { path: 'upload-records', component: ProjectAddComponent, data: { name: 'ProjectAddComponent' } },
       { path: 'heuristics', component: WeakSupervisionComponent, data: { name: 'WeakSupervisionComponent' } },
       {
         path: 'heuristics/:informationSourceId',

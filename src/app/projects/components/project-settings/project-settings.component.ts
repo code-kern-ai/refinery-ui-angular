@@ -22,6 +22,7 @@ import { Attribute } from './entities/attribute.type';
 import { downloadBlob, downloadText } from 'src/app/util/download-helper-functions';
 import { findFreeAttributeName, getMoveRight } from './helper/project-settings-helper';
 import { LabelHelper } from './helper/label-helper';
+import { AttributeCalculationState } from '../create-new-attribute/create-new-attribute-helper';
 
 @Component({
   selector: 'kern-project-settings',
@@ -56,6 +57,8 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
   embeddings$: any;
   suggestions$: any;
   lh: LabelHelper;
+  checkIfAcUploadedRecords: boolean = false;
+  isAcRunning: boolean = false;
 
   get projectExportArray() {
     return this.settingModals.projectExport.projectExportSchema.get('attributes') as FormArray;
@@ -105,11 +108,12 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
           attribute.visibilityIndex = this.attributeVisibilityStates.findIndex((type) => type.value === attribute?.visibility);
         });
         this.dataHandlerHelper.requestPKeyCheck(projectId, this.attributes);
+        this.isAcRunning = this.checkIfAcIsRunning();
 
         // prepare embeddings
         this.embeddings = JSON.parse(JSON.stringify((res[1])));
-        this.useableTextAttributes = this.useableTextAttributes.filter((attribute: any) => (attribute.state == 'UPLOADED' || attribute.state == 'AUTOMATICALLY_CREATED' || attribute.state == 'USABLE') && attribute.dataType == 'TEXT');
-        this.useableAttributes = this.attributes.filter((attribute: any) => (attribute.state == 'UPLOADED' || attribute.state == 'AUTOMATICALLY_CREATED' || attribute.state == 'USABLE'));
+        this.useableTextAttributes = this.useableTextAttributes.filter((attribute: any) => (attribute.state == AttributeCalculationState.UPLOADED || attribute.state == AttributeCalculationState.AUTOMATICALLY_CREATED || attribute.state == AttributeCalculationState.USABLE) && attribute.dataType == 'TEXT');
+        this.useableAttributes = this.attributes.filter((attribute: any) => (attribute.state == AttributeCalculationState.UPLOADED || attribute.state == AttributeCalculationState.AUTOMATICALLY_CREATED || attribute.state == AttributeCalculationState.USABLE));
 
         // prepare embedding suggestions
         const onlyTextAttributes = this.attributes.filter(a => a.dataType == 'TEXT');
@@ -159,6 +163,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
   checkProjectTokenization(projectId: string) {
     this.projectApolloService.getProjectTokenization(projectId).pipe(first()).subscribe((v) => {
       this.tokenizationProgress = v?.progress;
+      this.isAcRunning = this.checkIfAcIsRunning();
     })
   }
 
@@ -196,7 +201,6 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
           timer(5000).subscribe(() => this.checkProjectTokenization(this.project.id));
         }
       }
-
     } else if (msgParts[1] == 'embedding_deleted') {
       if (!this.embeddings) return;
       this.embeddings = this.embeddings.filter(e => e.id != msgParts[2]);
@@ -210,7 +214,16 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
       this.settingModals.projectExport.downloadPrepareMessage = DownloadState.NONE;
       this.requestProjectExportCredentials();
     } else if (msgParts[1] == 'calculate_attribute') {
-      this.attributesQuery$.refetch();
+      if (msgParts[2] == 'started' && msgParts[3] == 'all') {
+        this.checkIfAcUploadedRecords = true;
+        this.isAcRunning = this.checkIfAcIsRunning();
+      } else if (msgParts[2] == 'finished' && msgParts[3] == 'all') {
+        this.checkIfAcUploadedRecords = false;
+        this.isAcRunning = this.checkIfAcIsRunning();
+      } else {
+        this.attributesQuery$.refetch();
+        this.isAcRunning = this.checkIfAcIsRunning();
+      }
     }
   }
 
@@ -342,6 +355,10 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
     this.settingModals.attribute.open = true;
     this.settingModals.attribute.name = findFreeAttributeName(this.attributes);
     this.dataHandlerHelper.focusModalInputBox('attributeName');
+  }
+
+  checkIfAcIsRunning() {
+    return this.attributes.some(a => a.state == AttributeCalculationState.RUNNING) || this.checkIfAcUploadedRecords;
   }
 }
 

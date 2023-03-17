@@ -3,6 +3,7 @@ import { Apollo } from 'apollo-angular';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Slice } from 'src/app/data/components/data-browser/helper-classes/search-parameters';
+import { AttributeCalculationState } from 'src/app/projects/components/create-new-attribute/create-new-attribute-helper';
 import { dateAsUTCDate, parseLogData } from 'src/app/util/helper-functions';
 import { Project } from '../../entities/project';
 import { ApolloChecker } from '../base/apollo-checker';
@@ -1269,7 +1270,7 @@ export class ProjectApolloService {
             name: data.name,
             labelingTasks: data.labelingTasks.edges.map((edge) => edge.node),
             informationSources: data.informationSources.edges.map((edge) => edge.node),
-            attributes: data.attributes.edges.map((edge) => edge.node).filter((att) => ['UPLOADED', 'USABLE', 'AUTOMATICALLY_CREATED'].includes(att.state)),
+            attributes: data.attributes.edges.map((edge) => edge.node).filter((att) => [AttributeCalculationState.UPLOADED, AttributeCalculationState.USABLE, AttributeCalculationState.AUTOMATICALLY_CREATED].includes(att.state)),
             dataSlices: data.dataSlices.edges.map((edge) => edge.node),
           }
           x.dataSlices.forEach(element => {

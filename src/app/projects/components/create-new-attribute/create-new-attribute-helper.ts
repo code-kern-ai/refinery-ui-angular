@@ -36,3 +36,11 @@ export function createDefaultAttributeCalculationModals(): AttributeCalculationM
     };
 }
 
+export enum AttributeCalculationState {
+    UPLOADED = 'UPLOADED',
+    AUTOMATICALLY_CREATED = 'AUTOMATICALLY_CREATED',
+    USABLE = 'USABLE',
+    RUNNING = 'RUNNING',
+    FAILED = 'FAILED',
+};
+

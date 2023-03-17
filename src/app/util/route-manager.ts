@@ -22,7 +22,7 @@ export class RouteManager {
         data: { active: false, checkFor: ['data'] },
         labeling: { active: false, checkFor: ['labeling', 'record-ide'] },
         heuristics: { active: false, checkFor: ['heuristics', 'lookup-lists', 'model-callbacks', 'zero-shot', 'crowd-labeler'] },
-        settings: { active: false, checkFor: ['settings', 'attributes', 'add'] },
+        settings: { active: false, checkFor: ['settings', 'attributes', 'upload-records'] },
         admin: { active: false, checkFor: ['admin'] },
     }
 
