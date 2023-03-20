@@ -93,7 +93,7 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
   initialRequests() {
     CommentDataManager.initManager(this.organizationService);
     RouteManager.initRouteManager(this.router, this.organizationService);
-    this.configService.isManaged().pipe(first()).subscribe((v) => ConfigManager.initConfigManager(this.http, this.configService, v));
+    this.configService.isManaged().pipe(first()).subscribe((v) => ConfigManager.initConfigManager(this.http, v));
     this.configService.isDemo().pipe(first()).subscribe((v) => ConfigManager.setIsDemo(v));
     this.configService.isAdmin().pipe(first()).subscribe((v) => ConfigManager.setIsAdmin(v));
     this.configService.getBlackWhiteDemo().pipe(first()).subscribe((v) => ConfigManager.setBlackWhiteListDemo(v));
