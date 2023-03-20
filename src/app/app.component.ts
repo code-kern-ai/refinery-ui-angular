@@ -77,6 +77,7 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
         message.textColor = 'text-' + color + '-700';
         message.backgroundColor = 'bg-' + color + '-100';
         message.borderColor = 'border-' + color + '-400';
+        message.visible = true;
         return message;
       });
     }));
@@ -206,5 +207,9 @@ export class AppComponent implements OnDestroy, OnInit, AfterViewInit {
 
   onNotificationClick(notification) {
     NotificationCenterComponent.outlineSelectedNotification(notification.id);
+  }
+
+  closeMessage(id) {
+    this.activeAdminMessages.find((message) => message.id == id).visible = false;
   }
 }
