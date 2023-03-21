@@ -139,6 +139,13 @@ export function capitalizeFirstPerWord(str: string) {
 export function camelCaseToDashCase(str: string) {
     return str.replace(/[A-Z]/g, m => "-" + m.toLowerCase());
 }
+export function snakeCaseToCamelCase(str:string){
+    return str.toLowerCase().replace(/([_][a-z])/g, group =>
+    group
+      .toUpperCase()
+      .replace('_', '')
+  );
+}
 
 export function capitalizeFirst(str: string) {
     str = str.replace(/_/g, ' ');
