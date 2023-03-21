@@ -245,9 +245,10 @@
 
                             <div class="space-y-5 sm:space-y-4">
                                 <h3 class="text-3xl font-bold tracking-tight sm:text-4xl">Engineering team</h3>
-                                <p class="text-gray-500">Administers the project and works on programmatic tasks such as
+                                <p class="text-gray-900">Administers the project and works on programmatic tasks such as
                                     labeling automation or filter settings.</p>
-                                <p>They have access to all features of the application, including the Python SDK.</p>
+                                <p class="text-gray-500">They have access to all features of the application, including
+                                    the Python SDK.</p>
                             </div>
                             <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
                                 <div *ngFor="let user of engineers"
@@ -273,9 +274,9 @@
 
                             <div class="mt-4 space-y-5 sm:space-y-4">
                                 <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">Domain experts team</h2>
-                                <p class="text-gray-500">Working on reference manual labels, which can be used by the
+                                <p class="text-gray-900">Working on reference manual labels, which can be used by the
                                     engineering team to estimate the data quality.</p>
-                                <p>They have access to the labeling view only.</p>
+                                <p class="text-gray-500">They have access to the labeling view only.</p>
                             </div>
                             <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
                                 <div *ngFor="let user of experts"
@@ -311,10 +312,11 @@
 
                             <div class="mt-4 space-y-5 sm:space-y-4">
                                 <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">Annotator team</h2>
-                                <p class="text-gray-500">Working on manual labels as if they were heuristics. They can
+                                <p class="text-gray-900">Working on manual labels as if they were heuristics. They can
                                     be switched on/off by the engineering team, so that the engineers can in- or exclude
                                     them during weak supervision.</p>
-                                <p>They have access to a task-minimized labeling view only. Engineers can revoke their
+                                <p class="text-gray-500">They have access to a task-minimized labeling view only.
+                                    Engineers can revoke their
                                     access to the labeling view.</p>
                             </div>
                             <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
