@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Project } from 'aws-sdk/clients/codebuild';
 import { Subscription, timer } from 'rxjs';
+import { Project } from '../../entities/project';
 import { AuthApiService } from '../../services/auth-api.service';
 import { ConfigManager } from '../../services/config-service';
 import { createDefaultHeaderModals, HeaderModals } from './header-helper';

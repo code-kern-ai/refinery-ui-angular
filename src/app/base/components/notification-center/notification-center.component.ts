@@ -144,8 +144,13 @@ export class NotificationCenterComponent implements OnInit, OnDestroy {
   }
 
   navigateToProjectPage(notification): void {
-    this.router.navigate(['projects', notification.projectId, notification.page]);
+    this.redirectTo('projects/' + notification.projectId + '/' + notification.page);
     this.linkClicked.emit(false);
+  }
+
+  redirectTo(uri: string) {
+    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() =>
+      this.router.navigate([uri]));
   }
 
   switchExpandedState(notification) {
