@@ -162,7 +162,7 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
   }
 
   getWhiteListNotificationService(): string[] {
-    let toReturn = ['information_source_created', 'information_source_updated', 'information_source_deleted'];
+    let toReturn = ['information_source_created', 'information_source_updated', 'information_source_deleted', 'zero-shot'];
     toReturn.push(...['payload_finished', 'payload_failed', 'payload_created', 'payload_update_statistics']);
     toReturn.push(...['labeling_task_deleted', 'labeling_task_updated', 'labeling_task_created']);
     toReturn.push(...['weak_supervision_started', 'weak_supervision_finished']);
