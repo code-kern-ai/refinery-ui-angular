@@ -558,7 +558,8 @@
                 {{zeroShotModals.runOn10Details?.record?.fullRecordData[att.name]}}</div>
         </div>
 
-        <div class="grid gap-x-2 items-center" style="grid-template-columns: max-content 16.5rem max-content;">
+        <div class="grid gap-x-2 items-center overflow-x-hidden"
+            style="grid-template-columns: max-content 16.5rem max-content;">
             <div class="contents" *ngFor="let result of zeroShotModals.runOn10Details?.record?.labels">
                 <div *ngIf="labelColor.get(zeroShotSettings.taskId)?.get(result.labelName) as color; else otherLabel"
                     [ngClass]="[getBackground(color), getText(color), getBorder(color), getHover(color)]"
