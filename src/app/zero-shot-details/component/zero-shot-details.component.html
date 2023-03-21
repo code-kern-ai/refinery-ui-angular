@@ -125,7 +125,8 @@
                         <kern-loading color="yellow"></kern-loading>
                     </div>
                     <div class="font-normal">Required model confidence</div>
-                    <div class="relative tooltip tooltip-right flex" data-tip="Select input attribute">
+                    <div class="relative tooltip tooltip-right flex tooltip-left-disabled"
+                        data-tip="Select input attribute">
                         <kern-dropdown class="mr-2" [dropdownOptions]="{
                             optionArray:textAttributes,
                             buttonCaption:getAttributeName(zeroShotSettings.attributeId),
