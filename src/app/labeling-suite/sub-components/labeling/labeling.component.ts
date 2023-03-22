@@ -563,6 +563,9 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
     if (existingLabels.length == 1) return;
     const sourceId = this.lsm.sessionManager.getSourceId();
     this.lsm.recordManager.addClassificationLabelToRecord(labelingTaskId, labelId, sourceId);
+    if (this.lsm.settingManager.settings.main.autoNextRecord) {
+      this.lsm.nextRecord();
+    }
   }
 
   public deleteRecordLabelAssociation(rlaLabel: any) {

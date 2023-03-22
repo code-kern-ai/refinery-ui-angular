@@ -124,7 +124,8 @@
                         <!-- Classification labels -->
                         <ng-template [ngIf]="task.task.taskType == 'MULTICLASS_CLASSIFICATION'">
                             <!--show label buttons-->
-                            <ng-template [ngIf]="canEditLabels || lsm.userManager.currentRole == 'ANNOTATOR'">
+                            <ng-template
+                                [ngIf]="canEditLabels || lsm.userManager.currentRole == 'ANNOTATOR' || lsm.userManager.currentRole == 'EXPERT'">
                                 <div class="flex flex-row flex-wrap gap-2">
                                     <div #labelDiv *ngFor="let label of task.task.displayLabels; let i = index"
                                         class="text-sm font-medium px-2 py-0.5 rounded-md border focus:outline-none cursor-pointer"

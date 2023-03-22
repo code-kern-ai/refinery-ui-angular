@@ -30,6 +30,9 @@
                                         Name</th>
                                     <th scope="col"
                                         class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                        Zero-shot</th>
+                                    <th scope="col"
+                                        class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
                                         Revision</th>
                                     <th scope="col"
                                         class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
@@ -53,19 +56,29 @@
                                     [ngClass]="j%2!=0 ? 'bg-gray-50' :'bg-white'">
                                     <td class="text-center px-3 py-2 text-sm text-gray-500">
                                         <span class="inline-block mr-2">{{model.name}}</span>
-                                        <label *ngIf="model.zeroShotPipeline" class="tooltip tooltip-right"
+                                    </td>
+                                    <td class="text-center px-3 py-2 text-sm text-gray-500">
+                                        <label *ngIf="model.zeroShotPipeline" class="tooltip tooltip-top flex"
                                             data-tip="Can be used for zero-shot">
                                             <svg xmlns="http://www.w3.org/2000/svg"
-                                                class="icon icon-tabler icon-tabler-bow inline-block" width="20"
-                                                height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+                                                class="icon icon-tabler icon-tabler-checkbox m-auto" width="20"
+                                                height="20" viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50"
                                                 fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                                <path d="M17 3h4v4"></path>
-                                                <path d="M21 3l-15 15"></path>
-                                                <path d="M3 18h3v3"></path>
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                                <polyline points="9 11 12 14 20 6" />
                                                 <path
-                                                    d="M16.5 20c1.576 -1.576 2.5 -4.095 2.5 -6.5c0 -4.81 -3.69 -8.5 -8.5 -8.5c-2.415 0 -4.922 .913 -6.5 2.5l12.5 12.5z">
-                                                </path>
+                                                    d="M20 12v6a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h9" />
+                                            </svg>
+                                        </label>
+                                        <label *ngIf="!model.zeroShotPipeline" class="tooltip tooltip-top flex"
+                                            data-tip="Cannot be used for zero-shot">
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="icon icon-tabler icon-tabler-ban m-auto" width="20" height="20"
+                                                viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none"
+                                                stroke-linecap="round" stroke-linejoin="round">
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                                <circle cx="12" cy="12" r="9" />
+                                                <line x1="5.7" y1="5.7" x2="18.3" y2="18.3" />
                                             </svg>
                                         </label>
                                     </td>

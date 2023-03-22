@@ -20,3 +20,7 @@
 .tooltip-text-no-margin::before {
     text-transform: none;
 }
+
+.tooltip-left-disabled::before {
+    margin-left: -20px;
+}

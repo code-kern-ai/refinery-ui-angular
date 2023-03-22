@@ -125,7 +125,8 @@
                         <kern-loading color="yellow"></kern-loading>
                     </div>
                     <div class="font-normal">Required model confidence</div>
-                    <div class="relative tooltip tooltip-right flex" data-tip="Select input attribute">
+                    <div class="relative tooltip tooltip-right flex tooltip-left-disabled"
+                        data-tip="Select input attribute">
                         <kern-dropdown class="mr-2" [dropdownOptions]="{
                             optionArray:textAttributes,
                             buttonCaption:getAttributeName(zeroShotSettings.attributeId),
@@ -222,7 +223,7 @@
                             <div class="flex flex-row items-center">
                                 <span class="text-sm select-none self-start mr-2">{{result.confidenceText}}</span>
                                 <div *ngIf="result.confidence < zeroShotSettings.minConfidence"
-                                    data-tip="< minConfidence -> would be ignored" class="tooltip">
+                                    data-tip="&lt; minConfidence -> would be ignored" class="tooltip">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
                                         viewBox="0 0 24 24" stroke="#eab700" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -306,7 +307,7 @@
                                             </div>
                                             <div class="flex items-center justify-center">
                                                 <div *ngIf="(record.labels[0].confidence) < zeroShotSettings.minConfidence"
-                                                    data-tip="< minConfidence -> would be ignored"
+                                                    data-tip="&lt; minConfidence -> would be ignored"
                                                     class="tooltip tooltip-left mx-1">
                                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
                                                         viewBox="0 0 24 24" stroke="#eab700" stroke-width="2">
@@ -557,7 +558,8 @@
                 {{zeroShotModals.runOn10Details?.record?.fullRecordData[att.name]}}</div>
         </div>
 
-        <div class="grid gap-x-2 items-center" style="grid-template-columns: max-content 16.5rem max-content;">
+        <div class="grid gap-x-2 items-center"
+            style="grid-template-columns: max-content 16.5rem max-content;">
             <div class="contents" *ngFor="let result of zeroShotModals.runOn10Details?.record?.labels">
                 <div *ngIf="labelColor.get(zeroShotSettings.taskId)?.get(result.labelName) as color; else otherLabel"
                     [ngClass]="[getBackground(color), getText(color), getBorder(color), getHover(color)]"
@@ -574,7 +576,7 @@
                 <div class="flex flex-row items-center">
                     <span class="text-sm select-none">{{result.confidenceText}}</span>
                     <div *ngIf="result.confidence < zeroShotSettings.minConfidence"
-                        data-tip="< minConfidence -> would be ignored" class="tooltip">
+                        data-tip="&lt; minConfidence -> would be ignored" class="tooltip tooltip-left">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                             stroke="#eab700" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round"

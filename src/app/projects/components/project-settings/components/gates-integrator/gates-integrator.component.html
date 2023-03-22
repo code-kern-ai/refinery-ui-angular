@@ -12,8 +12,8 @@
             Gates is the inference API for refinery.
             <ng-container [ngSwitch]="gatesIntegrationData?.status">
                 <ng-container *ngSwitchCase="'READY'">
-                    This project is ready to be used with Gates. You can switch to the <a href="{{gatesLink}}"
-                        target="_blank"><span class="underline cursor-pointer">Gates App</span></a> to configure and run
+                    This project is ready to be used with Gates. You can switch to the <a href="{{gatesLink}}"><span
+                            class="underline cursor-pointer">Gates App</span></a> to configure and run
                     it.
                 </ng-container>
                 <ng-container *ngSwitchCase="'UPDATING'">

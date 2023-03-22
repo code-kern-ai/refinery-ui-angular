@@ -1,3 +1,4 @@
+import { timer } from "rxjs";
 import { first } from "rxjs/operators";
 import { UserRole } from "src/app/base/enum/graphql-enums";
 import { NotificationService } from "src/app/base/services/notification.service";
@@ -52,12 +53,22 @@ export class LabelingSuiteTaskManager implements DoBeforeDestroy {
     private fetchLabelingTasks() {
         let q, vc;
         [q, vc] = this.projectApolloService.getLabelingTasksByProjectId(this.projectId);
-        vc.pipe(first()).subscribe(lt => {
-            this.labelingTasks = this.prepareTasksForRole(jsonCopy(lt));
-            this.filterTasksForAttributeVisibility(false);
-            this.rebuildLabelButtonAmount();
-            this.baseManager.runUpdateListeners(UpdateType.LABELING_TASKS);
-        });
+        vc.pipe(first()).subscribe(lt => this.prepareTaskData(jsonCopy(lt)));
+    }
+
+    private prepareTaskData(taskData: any[], i = 0) {
+        this.labelingTasks = this.prepareTasksForRole(taskData);
+        if (this.labelingTasks == null) {
+            if (i > 50) {
+                console.log("error: could not load labeling tasks");
+                return;
+            }
+            timer(100).subscribe(() => this.prepareTaskData(taskData, ++i));
+            return;
+        }
+        this.filterTasksForAttributeVisibility(false);
+        this.rebuildLabelButtonAmount();
+        this.baseManager.runUpdateListeners(UpdateType.LABELING_TASKS);
     }
 
     public filterTasksForAttributeVisibility(runListener: boolean = true) {
@@ -84,7 +95,7 @@ export class LabelingSuiteTaskManager implements DoBeforeDestroy {
         if (this.baseManager.userManager.currentRole != UserRole.ANNOTATOR) return taskData;
 
         const taskId = this.baseManager.sessionManager.getAllowedTaskId();
-        if (!taskId) return [];
+        if (!taskId) return null;
         else return taskData.filter(t => t.id == taskId);
     }
 
