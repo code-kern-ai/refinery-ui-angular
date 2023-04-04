@@ -113,8 +113,6 @@ export class BricksCodeParser {
                     if (this.base.config.prepareJsonAsEnum) element.optional = "Boolean.FALSE.value";
                     else element.optional = "False";
                 }
-                // const refineryType = getTextForRefineryType(variable.type, this.base.config.prepareJsonAsEnum);
-                // if (refineryType) element.refineryType = refineryType;
                 const addInfo = getAddInfo(variable.type, this.base.config.prepareJsonAsEnum);
                 if (addInfo && addInfo.length > 0) element.addInfo = addInfo;
                 if (this.base.config.prepareJsonRemoveYOUR) json.variables[variable.baseName.substring(5)] = element;
