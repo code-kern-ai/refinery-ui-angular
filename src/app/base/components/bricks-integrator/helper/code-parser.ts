@@ -2,6 +2,7 @@ import { capitalizeFirst, capitalizeFirstForClassName, enumToArray, getPythonCla
 import { BricksIntegratorComponent } from "../bricks-integrator.component"
 import { BricksVariableComment, isCommentTrue } from "./comment-lookup";
 import { BricksExpectedLabels, BricksVariable, bricksVariableNeedsTaskId, BricksVariableType, ExpectedLabel, getEmptyBricksExpectedLabels, getEmptyBricksVariable } from "./type-helper";
+import { DummyNodes } from "./dummy-nodes";
 //currently included python types are: int, float, str, bool, list
 
 export class BricksCodeParser {
@@ -60,7 +61,11 @@ export class BricksCodeParser {
         this.extendCodeForLabelMapping();
         this.base.config.codeFullyPrepared = this.variables.every(v => v.optional || (v.values.length > 0 && v.values.every(va => va != null)));
         this.base.config.canAccept = this.base.config.codeFullyPrepared && !this.nameTaken && this.functionName != "";
+        if (this.base.config.api.data.data.id == DummyNodes.CODE_PARSER) this.parseJsonCode();
+    }
 
+    private parseJsonCode() {
+        this.base.config.preparedJson = "";
     }
 
     private parseExpectedLabelsComment(comment: string): string {

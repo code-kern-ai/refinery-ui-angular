@@ -147,8 +147,8 @@
             <kern-loading></kern-loading>
         </ng-template>
         <ng-template #displayOverview>
-            <ng-template [ngIf]="config.api.data && config.api.moduleId != -1">
-                <div class="grid grid-cols-2 grid-cols-2-max  gap-x-2 gap-y-2 items-center">
+            <ng-template [ngIf]="config.api.data && config.api.moduleId >=0">
+                <div class="grid grid-cols-2-max  gap-x-2 gap-y-2 items-center">
                     <div class="font-bold">Module Id</div>
                     <label>{{config.api.data.data.id}}</label>
                     <div class="font-bold">Module Name</div>
@@ -194,7 +194,7 @@
                     </div>
                 </div>
             </ng-template>
-            <ng-template [ngIf]="config.api.moduleId == -1">
+            <ng-template [ngIf]="config.api.moduleId <0 ">
                 <textarea #codeInput
                     class="textarea placeholder-italic w-full p-2 line-height-textarea h-20 focus:outline-none border border-gray-300"
                     placeholder="Example Module Code" (change)="setCodeTesterCode(codeInput.value)"
@@ -273,7 +273,7 @@
                         <span class="text-sm inline-flex items-center"
                             *ngFor="let label of codeParser.expected.expectedTaskLabels">
                             <label [ngClass]="[label.backgroundColor, label.textColor, label.borderColor]"
-                                class="border inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border">
+                                class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border">
                                 {{label.label}}
                                 <ng-template [ngIf]="label.exists" [ngIfElse]="labelMissing">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -326,7 +326,7 @@
                         <span class="text-sm inline-flex items-center"
                             *ngFor="let label of codeParser.expected.expectedTaskLabels">
                             <label [ngClass]="[label.backgroundColor, label.textColor, label.borderColor]"
-                                class="border inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border">
+                                class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border">
                                 {{label.label}}
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                     stroke-width="1.5" stroke="currentColor" class="w-4 h-4 -mr-1 ml-1">
@@ -474,6 +474,34 @@
                 </div>
             </div>
         </div>
+
+        <ng-template [ngIf]="config.api.moduleId == -2">
+            <div class="w-full">
+                <div class="flex flex-row justify-between cursor-pointer items-center"
+                    (click)="config.integratorParseOpen=!config.integratorParseOpen">
+                    <label class="text-base font-bold text-gray-900 cursor-pointer">Final Json</label>
+                    <div [ngClass]="config.integratorParseOpen?'rotate-transform':null">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevrons-down"
+                            width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+                            fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                            <polyline points="7 7 12 12 17 7"></polyline>
+                            <polyline points="7 13 12 18 17 13"></polyline>
+                        </svg>
+                    </div>
+                </div>
+
+                <div [ngClass]="config.integratorParseOpen?'':'hidden'" class="flex flex-col mt-1">
+                    <div class="overflow-y-auto" style="max-height:15rem;max-width: 35rem; overflow-x:hidden">
+                        <pre class="editor-pre">{{config.preparedJson}}</pre>
+                    </div>
+                </div>
+                <textarea #parseJson disabled
+                    class="textarea placeholder-italic w-full p-2 line-height-textarea h-20 focus:outline-none border border-gray-300"
+                    placeholder="Parsed code" (change)="setCodeTesterCode(codeInput.value)"
+                    style="width: min(80vw,1000px);height:min(80vh,500px);"></textarea>
+            </div>
+        </ng-template>
     </div>
 
 </kern-modal>
