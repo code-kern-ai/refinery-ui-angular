@@ -105,7 +105,8 @@ export function getAddInfo(type: BricksVariableType, asEnum: boolean): string[] 
         case BricksVariableType.LABEL:
         case BricksVariableType.LABELING_TASK:
         case BricksVariableType.LOOKUP_LIST:
-            list.push("BricksVariableType.GENERIC_STRING.value");
+            if (asEnum) list.push("BricksVariableType.GENERIC_STRING.value");
+            else list.push(BricksVariableType.GENERIC_STRING.toLowerCase());
             break;
     }
 
