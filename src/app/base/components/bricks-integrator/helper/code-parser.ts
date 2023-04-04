@@ -106,13 +106,9 @@ export class BricksCodeParser {
                     vComment = vComment.replace("only text attributes", "").trim();
                     if (vComment.length > 0) element.description = vComment;
                 }
-                if (variable.optional) {
-                    if (this.base.config.prepareJsonAsEnum) element.optional = "Boolean.TRUE.value";
-                    else element.optional = "True";
-                } else {
-                    if (this.base.config.prepareJsonAsEnum) element.optional = "Boolean.FALSE.value";
-                    else element.optional = "False";
-                }
+                if (variable.optional) element.optional = "true";
+                else element.optional = "false";
+
                 const addInfo = getAddInfo(variable.type, this.base.config.prepareJsonAsEnum);
                 if (addInfo && addInfo.length > 0) element.addInfo = addInfo;
                 if (this.base.config.prepareJsonRemoveYOUR) json.variables[variable.baseName.substring(5)] = element;
