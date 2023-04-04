@@ -495,11 +495,26 @@
                     <div class="overflow-y-auto" style="max-height:15rem;max-width: 35rem; overflow-x:hidden">
                         <pre class="editor-pre">{{config.preparedJson}}</pre>
                     </div>
+                    <div class="flex flex-row flex-wrap gap-2">
+                        <div class="flex flex-row flex-nowrap cursor-pointer"
+                            (click)="config.prepareJsonAsEnum = !config.prepareJsonAsEnum;codeParser.replaceVariables();">
+                            <input class="h-5 w-5 cursor-pointer" type="checkbox" [checked]='config.prepareJsonAsEnum'>
+                            <label class="text-sm ml-1">Prepare as enum</label>
+                        </div>
+                        <div class="flex flex-row flex-nowrap cursor-pointer"
+                            (click)="config.prepareJsonRemoveYOUR = !config.prepareJsonRemoveYOUR;codeParser.replaceVariables();">
+                            <input class="h-5 w-5 cursor-pointer" type="checkbox"
+                                [checked]='config.prepareJsonRemoveYOUR'>
+                            <label class="text-sm ml-1">Remove YOUR_</label>
+                        </div>
+
+                    </div>
+                    <div class="mt-2 tooltip" [attr.data-tip]="config.copied?'Copied':'Click to copy json'">
+
+                        <button (click)="copyToClipboard(config.preparedJson)" type="button"
+                            class="bg-indigo-700 text-white text-xs font-semibold px-4 py-2 rounded-md border hover:bg-indigo-800 focus:outline-none">Copy</button>
+                    </div>
                 </div>
-                <textarea #parseJson disabled
-                    class="textarea placeholder-italic w-full p-2 line-height-textarea h-20 focus:outline-none border border-gray-300"
-                    placeholder="Parsed code" (change)="setCodeTesterCode(codeInput.value)"
-                    style="width: min(80vw,1000px);height:min(80vh,500px);"></textarea>
             </div>
         </ng-template>
     </div>

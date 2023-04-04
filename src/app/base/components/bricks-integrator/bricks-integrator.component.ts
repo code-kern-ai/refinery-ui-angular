@@ -185,7 +185,7 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
         case IntegratorPage.INPUT_EXAMPLE:
           // jump to integration
           this.config.page = IntegratorPage.INTEGRATION;
-          if (this.config.api.moduleId == -1) this.codeParser.prepareCode();
+          if (this.config.api.moduleId < 0) this.codeParser.prepareCode();
           break;
         case IntegratorPage.INTEGRATION:
           //transfer code to editor
