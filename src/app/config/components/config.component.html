@@ -14,14 +14,6 @@
                 style="grid-template-columns: max-content min-content;">
 
                 <div class="text-sm">
-                    <label class="font-medium text-gray-700">Allow data tracking</label>
-                    <p class="text-gray-500">We collect few usage statistics to improve the user experience and product.
-                    </p>
-                </div>
-                <input #allowTracking class="h-5 w-5 cursor-pointer" type="checkbox"
-                    [checked]='localConfigCopy.allowDataTracking'
-                    (click)="checkAndSaveValue(allowTracking.checked,'allow_data_tracking')">
-                <div class="text-sm">
                     <label class="font-medium text-gray-700">Max rows</label>
                     <p class="text-gray-500">Maximum number of records per project.</p>
                 </div>
