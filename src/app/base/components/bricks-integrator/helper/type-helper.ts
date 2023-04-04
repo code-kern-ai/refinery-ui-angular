@@ -57,6 +57,7 @@ export type BricksIntegratorConfig = {
     canAccept: boolean,
     overviewCodeOpen: boolean,
     integratorCodeOpen: boolean,
+    integratorParseOpen: boolean,
     page: IntegratorPage,
     copied: boolean,
     api: {
@@ -83,6 +84,9 @@ export type BricksIntegratorConfig = {
     }
     codeFullyPrepared: boolean,
     preparedCode: string,
+    preparedJson: string,
+    prepareJsonAsEnum: boolean,
+    prepareJsonRemoveYOUR: boolean,
 }
 
 export function getEmptyBricksIntegratorConfig(): BricksIntegratorConfig {
@@ -91,6 +95,7 @@ export function getEmptyBricksIntegratorConfig(): BricksIntegratorConfig {
         canAccept: false,
         overviewCodeOpen: false,
         integratorCodeOpen: false,
+        integratorParseOpen: true,
         page: IntegratorPage.SEARCH,
         copied: false,
         api: {
@@ -117,6 +122,9 @@ export function getEmptyBricksIntegratorConfig(): BricksIntegratorConfig {
         },
         codeFullyPrepared: false,
         preparedCode: null,
+        preparedJson: null,
+        prepareJsonAsEnum: true,
+        prepareJsonRemoveYOUR: true
     }
 }
 export type BricksVariable = {

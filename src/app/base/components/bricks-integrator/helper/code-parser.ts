@@ -2,6 +2,7 @@ import { capitalizeFirst, capitalizeFirstForClassName, enumToArray, getPythonCla
 import { BricksIntegratorComponent } from "../bricks-integrator.component"
 import { BricksVariableComment, isCommentTrue } from "./comment-lookup";
 import { BricksExpectedLabels, BricksVariable, bricksVariableNeedsTaskId, BricksVariableType, ExpectedLabel, getEmptyBricksExpectedLabels, getEmptyBricksVariable } from "./type-helper";
+import { DummyNodes, getAddInfo, getSelectionType, getTextForRefineryType } from "./dummy-nodes";
 //currently included python types are: int, float, str, bool, list
 
 export class BricksCodeParser {
@@ -46,6 +47,7 @@ export class BricksCodeParser {
             const taskType = this.base.dataRequestor.getLabelingTaskAttribute(this.base.labelingTaskId, 'taskType');
             this.labelingTasks = this.base.dataRequestor.getLabelingTasks(taskType);
         }
+        if (this.base.config.api.data.data.id == DummyNodes.CODE_PARSER) this.parseJsonCode();
     }
 
     public replaceVariables() {
@@ -60,8 +62,70 @@ export class BricksCodeParser {
         this.extendCodeForLabelMapping();
         this.base.config.codeFullyPrepared = this.variables.every(v => v.optional || (v.values.length > 0 && v.values.every(va => va != null)));
         this.base.config.canAccept = this.base.config.codeFullyPrepared && !this.nameTaken && this.functionName != "";
+        if (this.base.config.api.data.data.id == DummyNodes.CODE_PARSER) this.parseJsonCode();
+    }
+
+    private parseJsonCode() {
+        let finalString = "integrator_inputs=";
+        const json: any = {
+            name: this.functionName,
+            refineryDataType: this.base.config.prepareJsonAsEnum ? "RefineryDataType.TEXT.value" : "text", //currently fix text since up until now all were interpreted as text
+        }
+        if (this.expected.expectedTaskLabels.length > 0) {
+            json.outputs = this.expected.expectedTaskLabels.map(x => x.label);
+        } else if (!this.base.labelingTaskId) {
+            //expectedTaskLabels can only be filled if task id is given
+            let nextUp = false;
+            for (let comment of this.globalComments) {
+                if (comment.startsWith("Will return")) nextUp = true;
+                if (nextUp) {
+                    const labelStringMatch = comment.match(/\[(.*?)\]/);
+                    if (labelStringMatch && labelStringMatch.length > 1) {
+                        json.outputs = labelStringMatch[1].split(",").map(x => x.replace(/\"/g, "").trim());
+                        break;
+                    }
+                }
+            }
+
+        }
+        if (this.globalComments.length > 0) {
+            const remainingComments = [];
+            for (let i = 0; i < this.globalComments.length; i++) {
+                if (this.globalComments[i].startsWith("Will return")) i++;
+                else remainingComments.push(this.globalComments[i]);
+            }
+            if (remainingComments.length > 0) json.globalComment = remainingComments.join("\n");
+        }
+        if (this.variables.length > 0) {
+            json.variables = {};
+            for (const variable of this.variables) {
+                const element: any = { selectionType: getSelectionType(variable.type, this.base.config.prepareJsonAsEnum) };
+                if (variable.values.length > 0 && variable.values[0] != null) element.defaultValue = variable.values[0];
+                let vComment = variable.comment;
+                if (vComment) {
+                    vComment = vComment.replace("only text attributes", "").trim();
+                    if (vComment.length > 0) element.description = vComment;
+                }
+                if (variable.optional) element.optional = "true";
+                else element.optional = "false";
+
+                const addInfo = getAddInfo(variable.type, this.base.config.prepareJsonAsEnum);
+                if (addInfo && addInfo.length > 0) element.addInfo = addInfo;
+                if (this.base.config.prepareJsonRemoveYOUR) json.variables[variable.baseName.substring(5)] = element;
+                else json.variables[variable.baseName] = element;
+            }
+        }
+        finalString += JSON.stringify(json, null, 4);
+
+
+        if (this.base.config.prepareJsonAsEnum) {
+            finalString = finalString.replace(/"(\w+\.\w+\.\w+)"/g, "$1")
+        }
+
+        this.base.config.preparedJson = finalString;
 
     }
+
 
     private parseExpectedLabelsComment(comment: string): string {
         if (!comment) return "";
