@@ -29,7 +29,6 @@ export class BricksCodeParser {
         this.expected = getEmptyBricksExpectedLabels();
         if (!this.base.config.api.data) return;
         this.integratorInputRef = this.base.config.api.data.data.attributes.integratorInputs;
-        console.log("integratorInputRef", this.integratorInputRef)
         this.baseCode = this.base.config.api.data.data.attributes.sourceCode;
         this.globalComments = this.collectGlobalComment();
         this.functionName = this.getFunctionName();
@@ -77,7 +76,6 @@ export class BricksCodeParser {
                 continue;
             }
             const inputV = this.integratorInputRef.variables[variable.baseName];
-            //TODO: interprete selection type
             if (inputV.description) variable.comment = inputV.description;
             if (inputV.optional) variable.optional = isStringTrue(inputV.optional);
             if (inputV.acceptsMultiple) variable.canMultipleValues = isStringTrue(inputV.acceptsMultiple);
@@ -90,12 +88,10 @@ export class BricksCodeParser {
             //check variable type 
             if (!inputV.addInfo.some(x => x == variable.type.toLowerCase())) {
                 //type doesn't match
-
-
+                this.errors.push(`Variable ${variable.baseName} type ${variable.type} doesn't match integrator input`);
             }
             //setting to choice afterwards, because it is not in addInfo & values need to be prepared
             const newType = getChoiceType(inputV.selectionType, inputV.addInfo);
-            console.log(newType, variable.type, inputV.selectionType, inputV.addInfo)
             if (newType != BricksVariableType.UNKNOWN && newType != variable.type) {
                 if (newType == BricksVariableType.GENERIC_CHOICE) {
                     if (!inputV.allowedValues) {
@@ -109,12 +105,6 @@ export class BricksCodeParser {
                     variable.allowedValues = this.getAllowedValues(variable.type, variable.comment);
                 }
             }
-            // if(inputV.selectionType == "choice"){
-            //     variable.type = getChoiceType(inputV.selectionType,inputV.addInfo))BricksVariableType.GENERIC_CHOICE;
-            //     variable.allowedValues = inputV.addInfo;
-            // }
-
-            // variable.allowedValues = this.getAllowedValues(variable.type, variable.comment);
         }
     }
 

@@ -98,7 +98,13 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
     let url = BricksIntegratorComponent.httpBaseLinkFilter;
     let filter = "?pagination[pageSize]=99999";
     filter += this.extendUrl(this.moduleTypeFilter, "moduleType");
-    filter += this.extendUrl(this.executionTypeFilter, "executionType");
+    filter += this.extendUrl(this.executionTypeFilter, "executionType")
+    // if (Array.isArray(this.executionTypeFilter)) {
+    //   this.executionTypeFilter.forEach((x) => filter += this.extendUrl(x, "executionType"));
+    // } else {
+    //   this.executionTypeFilter.split(",").forEach((x) => filter += this.extendUrl(x.trim(), "executionType"));
+    // }
+
     return url + filter;
   }
 
@@ -122,16 +128,15 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
         this.config.search.currentRequest = null;
         let finalData = data.data;
         if (this.executionTypeFilter) {
-          finalData = finalData.filter(e => e.attributes.executionType == this.executionTypeFilter);
+          const toFilter = this.executionTypeFilter.split(",");
+          finalData = finalData.filter(e => toFilter.includes(e.attributes.executionType));
+          // finalData = finalData.filter(e => e.attributes.executionType == this.executionTypeFilter);
         }
         finalData = this.filterMinVersion(finalData);
         extendDummyElements(finalData);
         finalData = this.scanAndFilterForExtendedIntegrator(finalData);
         this.config.search.fullResults = finalData;
         this.filterGroup();
-        // this.config.search.results = finalData;
-        // this.config.search.results.forEach(e => e.visible = true);
-        // this.config.search.nothingMatches = this.config.search.results.length == 0;
         this.searchInput.nativeElement.focus();
       },
       error: error => {
@@ -140,6 +145,15 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
         this.config.search.currentRequest = null;
       }
     });
+  }
+
+  setGroupActive(key: string) {
+    if (this.config.groupFilterOptions.filterValues[key].active) return;
+    for (let k in this.config.groupFilterOptions.filterValues) {
+      this.config.groupFilterOptions.filterValues[k].active = false;
+    }
+    this.config.groupFilterOptions.filterValues[key].active = true;
+    this.filterGroup();
   }
 
   private filterGroup() {
@@ -152,10 +166,14 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
     if (!this.config.extendedIntegrator) return true;
 
     const gRef = this.config.groupFilterOptions;
+    const activeGroups = [];
+    Object.keys(gRef.filterValues).forEach((x) => {
+      if (gRef.filterValues[x].active) activeGroups.push(x);
+    });
     if (gRef.intersection) {
       if (gRef.filterValues["all"].active) return true;
       if (!e.attributes.partOfGroup) return false;
-      return e.attributes.partOfGroup.every(group => gRef.filterValues[group].active);
+      return activeGroups.every(group => e.attributes.partOfGroup.includes(group));
     } else {
       if (gRef.filterValues["all"].active) return true;
       if (!e.attributes.partOfGroup) return false;
@@ -169,9 +187,8 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
       if (!e.attributes.partOfGroup) continue;
       e.attributes.partOfGroup.forEach(group => this.addFilterPartOfGroup(group));
     }
-
-    if (Object.keys(this.config.groupFilterOptions.filterValues).length > 1) {
-      // all will always be there so > 1
+    if (Object.keys(this.config.groupFilterOptions.filterValues).length < 2) {
+      // all will always be there so <=1
       this.config.extendedIntegrator = false;
       return data;
     }

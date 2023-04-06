@@ -64,26 +64,6 @@ export function getDummyNodeByIdForApi(id: DummyNodes): any {
                     }
                 }
             }
-            // baseNode.data.attributes.integratorInputs = {
-            //     globalComment: "Only for english text.",
-            //     name: "vader_sentiment",
-            //     refineryDataType: "text",
-            //     outputs: ["positive", "neutral", "negative"],
-            //     variables: {
-            //         ATTRIBUTE: {
-            //             selectionType: "string",
-            //             defaultValue: "your-text",
-            //             addInfo: []
-            //         },
-            //         MODE: {
-            //             selectionType: "choice",
-            //             allowedValues: ["classification", "scores"],
-            //             defaultValue: "classification",
-            //             description: "Choose classification to return either positive, neutral or negative. Choose scores to retrieve a float score.",
-            //             optional: "false",
-            //         },
-            //     },
-            // };
             return baseNode;
     }
 }

@@ -122,7 +122,7 @@
                             <kern-bricks-integrator (preparedCode)="codeFormCtrl.setValue($event);isInitialLf=false"
                                 (newTaskId)="setValueToLabelingTask($event)"
                                 [moduleTypeFilter]="labelingTasks.get(labelingTaskControl.value).taskType == 'MULTICLASS_CLASSIFICATION' ?'classifier':'extractor'"
-                                [executionTypeFilter]="informationSource.informationSourceType == 'LABELING_FUNCTION'? 'pythonFunction':'activeLearner'"
+                                [executionTypeFilter]="informationSource.informationSourceType == 'LABELING_FUNCTION'? 'pythonFunction,premium':'activeLearner'"
                                 [labelingTaskId]="labelingTaskControl.value" functionType="Heuristic">
                             </kern-bricks-integrator>
                         </div>
@@ -184,7 +184,7 @@
                     <div class="flex flex-row flex-nowrap items-center ml-auto">
                         <kern-bricks-integrator (preparedCode)="codeFormCtrl.setValue($event);isInitialLf=false"
                             [moduleTypeFilter]="labelingTasks.get(labelingTaskControl.value).taskType == 'MULTICLASS_CLASSIFICATION' ?'classifier':'extractor'"
-                            [executionTypeFilter]="informationSource.informationSourceType == 'LABELING_FUNCTION'? 'pythonFunction':'activeLearner'"
+                            [executionTypeFilter]="informationSource.informationSourceType == 'LABELING_FUNCTION'? 'pythonFunction,premium':'activeLearner'"
                             [labelingTaskId]="labelingTaskControl.value" functionType="Heuristic">
                         </kern-bricks-integrator>
                     </div>

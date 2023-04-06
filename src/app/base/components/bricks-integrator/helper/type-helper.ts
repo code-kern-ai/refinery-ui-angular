@@ -139,6 +139,7 @@ export type BricksIntegratorConfig = {
     prepareJsonRemoveYOUR: boolean,
     extendedIntegrator: boolean,
     groupFilterOptions: GroupFilterOptions,
+    extendedIntegratorGroupFilterOpen: boolean,
 }
 
 export type GroupFilterOptions = {
@@ -192,7 +193,8 @@ export function getEmptyBricksIntegratorConfig(): BricksIntegratorConfig {
         groupFilterOptions: {
             intersection: true,
             filterValues: {}
-        }
+        },
+        extendedIntegratorGroupFilterOpen: false,
     }
 }
 export type BricksVariable = {

@@ -44,8 +44,12 @@
     <!--PageSearch-->
     <div [ngClass]="config.page != IntegratorPageType.SEARCH ? 'hidden':''"
         class="flex flex-col gap-y-2 items-center my-4" style="height:28rem;width:30rem">
+
+
         <div
             class="w-full max-w-xl transform divide-y divide-gray-100 overflow-hidden rounded-xl bg-white shadow-2xl transition-all">
+
+            <!-- normal search box-->
             <div class="relative">
                 <svg class="pointer-events-none absolute top-3.5 left-4 h-5 w-5 text-gray-400"
                     xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -61,6 +65,39 @@
                     <kern-loading></kern-loading>
                 </div>
             </div>
+            <!-- extendedIntegrator group filtering-->
+            <ng-template [ngIf]="config.extendedIntegrator">
+                <div class="w-full px-4">
+
+                    <div class="flex flex-row justify-between cursor-pointer items-center w-full mt-1"
+                        (click)="config.extendedIntegratorGroupFilterOpen=!config.extendedIntegratorGroupFilterOpen">
+                        <label class="text-base font-bold text-gray-900 cursor-pointer">Group Filter</label>
+                        <div [ngClass]="config.extendedIntegratorGroupFilterOpen?'rotate-transform':null">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevrons-down"
+                                width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+                                fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <polyline points="7 7 12 12 17 7"></polyline>
+                                <polyline points="7 13 12 18 17 13"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                    <div [ngClass]="config.extendedIntegratorGroupFilterOpen?'':'hidden'"
+                        class="flex flex-col w-full my-2">
+                        <div class="flex flex-row flex-wrap w-full gap-x-2 gap-y-2">
+                            <div *ngFor="let group of config.groupFilterOptions.filterValues | keyvalue"
+                                class="flex flex-row gap-x-2 cursor-pointer" (click)="setGroupActive(group.key)">
+                                <input type="radio" formControlName="DRILL_DOWN" [checked]="group.value.active"
+                                    class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-200 cursor-pointer"
+                                    [value]="group.value.active">
+
+                                <label
+                                    class="text-sm font-bold text-gray-900 cursor-pointer">{{group.value.name}}</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
             <!-- Empty state, show/hide based on command palette state -->
             <ng-template [ngIf]="config.search.nothingMatches" [ngIfElse]="showResults">
 
