@@ -4,12 +4,12 @@ import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, 
 import { ActivatedRoute, Router } from '@angular/router';
 import { timer } from 'rxjs';
 import { first } from 'rxjs/operators';
-import { findProjectIdFromRoute, isStringTrue } from 'src/app/util/helper-functions';
+import { capitalizeFirst, findProjectIdFromRoute, isStringTrue } from 'src/app/util/helper-functions';
 import { KnowledgeBasesApolloService } from '../../services/knowledge-bases/knowledge-bases-apollo.service';
 import { ProjectApolloService } from '../../services/project/project-apollo.service';
 import { BricksCodeParser } from './helper/code-parser';
 import { BricksDataRequestor } from './helper/data-requestor';
-import { BricksAPIData, BricksIntegratorConfig, BricksVariable, BricksVariableType, getEmptyBricksIntegratorConfig, IntegratorPage } from './helper/type-helper';
+import { BricksAPIData, BricksIntegratorConfig, BricksSearchData, BricksVariable, BricksVariableType, getEmptyBricksIntegratorConfig, IntegratorPage } from './helper/type-helper';
 import { extendDummyElements, getDummyNodeByIdForApi } from './helper/dummy-nodes';
 
 @Component({
@@ -77,7 +77,9 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
 
   requestSearchDebounce(value: string) {
     //local search without requery
+    if (!value) value = "";
     const searchFor = value.toLowerCase();
+    this.config.search.searchValue = searchFor;
     this.config.search.results.forEach(e =>
       e.visible = e.id.toString().startsWith(searchFor) ||
       e.attributes.name.toLowerCase().includes(searchFor) ||
@@ -88,7 +90,7 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
     return;
     this.config.search.requesting = true;
     if (this.config.search.debounce) this.config.search.debounce.unsubscribe();
-    this.config.search.debounce = timer(500).subscribe(() => { this.requestSearch(searchFor); this.config.search.debounce = null; });
+    this.config.search.debounce = timer(500).subscribe(() => { this.requestSearch(); this.config.search.debounce = null; });
 
   }
 
@@ -110,9 +112,8 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
     return filter;
   }
 
-  requestSearch(value: string = "") {
+  requestSearch() {
     this.config.search.requesting = true;
-    this.config.search.searchValue = value;
     this.config.search.lastRequestUrl = this.buildSearchUrl();
     if (this.config.search.currentRequest) this.config.search.currentRequest.unsubscribe();
     this.config.search.currentRequest = this.http.get(this.config.search.lastRequestUrl).pipe(first()).subscribe({
@@ -125,9 +126,12 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
         }
         finalData = this.filterMinVersion(finalData);
         extendDummyElements(finalData);
-        this.config.search.results = finalData;
-        this.config.search.results.forEach(e => e.visible = true);
-        this.config.search.nothingMatches = this.config.search.results.length == 0;
+        finalData = this.scanAndFilterForExtendedIntegrator(finalData);
+        this.config.search.fullResults = finalData;
+        this.filterGroup();
+        // this.config.search.results = finalData;
+        // this.config.search.results.forEach(e => e.visible = true);
+        // this.config.search.nothingMatches = this.config.search.results.length == 0;
         this.searchInput.nativeElement.focus();
       },
       error: error => {
@@ -137,6 +141,56 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
       }
     });
   }
+
+  private filterGroup() {
+    this.config.search.results = this.config.search.fullResults.filter(e => this.filterForGroup(e));
+    this.config.search.results.forEach(e => e.visible = true);
+    this.requestSearchDebounce(this.config.search.searchValue);
+
+  }
+  private filterForGroup(e: BricksSearchData): boolean {
+    if (!this.config.extendedIntegrator) return true;
+
+    const gRef = this.config.groupFilterOptions;
+    if (gRef.intersection) {
+      if (gRef.filterValues["all"].active) return true;
+      if (!e.attributes.partOfGroup) return false;
+      return e.attributes.partOfGroup.every(group => gRef.filterValues[group].active);
+    } else {
+      if (gRef.filterValues["all"].active) return true;
+      if (!e.attributes.partOfGroup) return false;
+      return e.attributes.partOfGroup.some(group => gRef.filterValues[group].active);
+    }
+  }
+
+  private scanAndFilterForExtendedIntegrator(data: any[]): any[] {
+    this.addFilterPartOfGroup("all");
+    for (let e of data) {
+      if (!e.attributes.partOfGroup) continue;
+      e.attributes.partOfGroup.forEach(group => this.addFilterPartOfGroup(group));
+    }
+
+    if (Object.keys(this.config.groupFilterOptions.filterValues).length > 1) {
+      // all will always be there so > 1
+      this.config.extendedIntegrator = false;
+      return data;
+    }
+    this.config.extendedIntegrator = true;
+    return data.filter(e => e.attributes.availableFor ? e.attributes.availableFor.includes("refinery") : true)
+
+  }
+
+  private addFilterPartOfGroup(key: string, forceNew: boolean = false) {
+    if (this.config.groupFilterOptions.filterValues[key] && !forceNew) return;
+    let name: string;
+    switch (key) {
+      case "gdpr_compliant": name = "GDPR Compliant"; break;
+      default: name = capitalizeFirst(key);
+    }
+    this.config.groupFilterOptions.filterValues[key] = { name: name, active: key == "all" }
+
+  }
+
 
   setCodeTesterCode(code: string) {
     this.config.api.data.data.attributes.sourceCode = code;

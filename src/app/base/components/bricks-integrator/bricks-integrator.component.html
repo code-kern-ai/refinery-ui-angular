@@ -198,7 +198,7 @@
                 <textarea #codeInput
                     class="textarea placeholder-italic w-full p-2 line-height-textarea h-20 focus:outline-none border border-gray-300"
                     placeholder="Example Module Code" (change)="setCodeTesterCode(codeInput.value)"
-                    style="width: min(80vw,1000px);height:min(80vh,850px);"></textarea>
+                    style="width: min(80vw,1000px);height:min(80vh,850px);">{{config.api.data.data.attributes.sourceCode}}</textarea>
 
             </ng-template>
         </ng-template>
@@ -497,8 +497,9 @@
                     </div>
                     <div class="flex flex-row flex-wrap gap-2">
                         <div class="flex flex-row flex-nowrap cursor-pointer"
-                            (click)="config.prepareJsonAsEnum = !config.prepareJsonAsEnum;codeParser.replaceVariables();">
-                            <input class="h-5 w-5 cursor-pointer" type="checkbox" [checked]='config.prepareJsonAsEnum'>
+                            (click)="config.prepareJsonAsPythonEnum = !config.prepareJsonAsPythonEnum;codeParser.replaceVariables();">
+                            <input class="h-5 w-5 cursor-pointer" type="checkbox"
+                                [checked]='config.prepareJsonAsPythonEnum'>
                             <label class="text-sm ml-1">Prepare as enum</label>
                         </div>
                         <div class="flex flex-row flex-nowrap cursor-pointer"
@@ -579,6 +580,14 @@
                     emitIndex:true
                 }"
                     (optionClicked)="variable.values[i] = variable.allowedValues[$event].pythonVariable;codeParser.replaceVariables()">
+                </kern-dropdown>
+            </ng-template>
+            <ng-template ngSwitchCase="GENERIC_CHOICE">
+                <kern-dropdown [dropdownOptions]="{
+                    optionArray:variable.allowedValues,
+                    buttonCaption:variable.values[i]?variable.values[i]:'Select option',
+                    emitIndex:true
+                }" (optionClicked)="variable.values[i] = variable.allowedValues[$event];codeParser.replaceVariables()">
                 </kern-dropdown>
             </ng-template>
             <ng-template ngSwitchCase="REGEX">

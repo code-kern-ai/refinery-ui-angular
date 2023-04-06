@@ -1,7 +1,7 @@
 import { capitalizeFirst, capitalizeFirstForClassName, enumToArray, getPythonClassName, getPythonFunctionName, isStringTrue, toPythonFunctionName } from "src/app/util/helper-functions"
 import { BricksIntegratorComponent } from "../bricks-integrator.component"
 import { BricksVariableComment, isCommentTrue } from "./comment-lookup";
-import { BricksExpectedLabels, BricksVariable, bricksVariableNeedsTaskId, BricksVariableType, ExpectedLabel, getEmptyBricksExpectedLabels, getEmptyBricksVariable } from "./type-helper";
+import { BricksExpectedLabels, BricksVariable, bricksVariableNeedsTaskId, BricksVariableType, canHaveDefaultValue, ExpectedLabel, getChoiceType, getEmptyBricksExpectedLabels, getEmptyBricksVariable, IntegratorInput, IntegratorInputVariable, RefineryDataType, StringBoolean } from "./type-helper";
 import { DummyNodes, getAddInfo, getSelectionType, getTextForRefineryType } from "./dummy-nodes";
 //currently included python types are: int, float, str, bool, list
 
@@ -18,6 +18,9 @@ export class BricksCodeParser {
     expected: BricksExpectedLabels = getEmptyBricksExpectedLabels();
     nameTaken: boolean = false;
 
+    integratorInputRef: IntegratorInput;// undefined if old bricks version
+
+
     constructor(private base: BricksIntegratorComponent) {
         this.filterTypes = enumToArray(BricksVariableType).filter(x => x != BricksVariableType.UNKNOWN && !x.startsWith("GENERIC"));
     }
@@ -25,29 +28,106 @@ export class BricksCodeParser {
         this.errors = [];
         this.expected = getEmptyBricksExpectedLabels();
         if (!this.base.config.api.data) return;
-
+        this.integratorInputRef = this.base.config.api.data.data.attributes.integratorInputs;
+        console.log("integratorInputRef", this.integratorInputRef)
         this.baseCode = this.base.config.api.data.data.attributes.sourceCode;
         this.globalComments = this.collectGlobalComment();
-        this.functionName = this.base.executionTypeFilter == "activeLearner" ? getPythonClassName(this.baseCode) : getPythonFunctionName(this.baseCode);
+        this.functionName = this.getFunctionName();
         this.checkFunctionNameAndSet(this.functionName);
-        const variableLines = this.collectVariableLines();
-        if (variableLines.length == 0) {
-            this.base.config.preparedCode = this.baseCode;
-            this.base.config.codeFullyPrepared = true;
-        }
-        try {
-            this.variables = this.parseVariableLines(variableLines);
-            this.replaceVariables();
-        } catch (error) {
-            this.errors.push(error);
-            console.log("couldn't parse code", error);
-        }
+        this.checkVariableLines();
         if (this.base.labelingTaskId) {
             this.labelingTaskName = this.base.dataRequestor.getLabelingTaskAttribute(this.base.labelingTaskId, 'name');
             const taskType = this.base.dataRequestor.getLabelingTaskAttribute(this.base.labelingTaskId, 'taskType');
             this.labelingTasks = this.base.dataRequestor.getLabelingTasks(taskType);
         }
         if (this.base.config.api.data.data.id == DummyNodes.CODE_PARSER) this.parseJsonCode();
+    }
+
+    private checkVariableLines() {
+        const variableLines = this.collectVariableLinesFromCode();
+
+        if (variableLines.length == 0) {
+            this.base.config.preparedCode = this.baseCode;
+            this.base.config.codeFullyPrepared = true;
+        }
+        try {
+            this.variables = this.parseVariableLines(variableLines);
+            this.checkAndMatchVariables();
+            this.replaceVariables();
+        } catch (error) {
+            this.errors.push(error);
+            console.log("couldn't parse code", error);
+        }
+    }
+
+    private checkAndMatchVariables() {
+        if (!this.integratorInputRef) return;
+        console.log("integratorInputRef.variables", this.integratorInputRef)
+
+        if (this.variables.length != Object.keys(this.integratorInputRef.variables).length) {
+            // throw ("different number of variable lines in code and integrator input detected");
+            this.errors.push("different number of variable lines in code and integrator input detected");
+        }
+        console.log("this.variables", this.variables)
+        console.log("integratorInputRef.variables", this.integratorInputRef.variables)
+
+        for (const variable of this.variables) {
+            if (!(variable.baseName in this.integratorInputRef.variables)) {
+                this.errors.push(`Variable ${variable.baseName} in code is not defined in integrator input`);
+                continue;
+            }
+            const inputV = this.integratorInputRef.variables[variable.baseName];
+            //TODO: interprete selection type
+            if (inputV.description) variable.comment = inputV.description;
+            if (inputV.optional) variable.optional = isStringTrue(inputV.optional);
+            if (inputV.acceptsMultiple) variable.canMultipleValues = isStringTrue(inputV.acceptsMultiple);
+            if (inputV.defaultValue && inputV.addInfo) {
+                if (inputV.addInfo.some(x => canHaveDefaultValue(x.toUpperCase() as BricksVariableType))) {
+                    variable.values[0] = inputV.defaultValue;
+                }
+            }
+
+            //check variable type 
+            if (!inputV.addInfo.some(x => x == variable.type.toLowerCase())) {
+                //type doesn't match
+
+
+            }
+            //setting to choice afterwards, because it is not in addInfo & values need to be prepared
+            const newType = getChoiceType(inputV.selectionType, inputV.addInfo);
+            console.log(newType, variable.type, inputV.selectionType, inputV.addInfo)
+            if (newType != BricksVariableType.UNKNOWN && newType != variable.type) {
+                if (newType == BricksVariableType.GENERIC_CHOICE) {
+                    if (!inputV.allowedValues) {
+                        this.errors.push(`Variable ${variable.baseName} in code is of type choice, but allowed values are not provided`);
+                    } else {
+                        variable.type = newType;
+                        variable.allowedValues = inputV.allowedValues;
+                    }
+                } else {
+                    variable.type = newType;
+                    variable.allowedValues = this.getAllowedValues(variable.type, variable.comment);
+                }
+            }
+            // if(inputV.selectionType == "choice"){
+            //     variable.type = getChoiceType(inputV.selectionType,inputV.addInfo))BricksVariableType.GENERIC_CHOICE;
+            //     variable.allowedValues = inputV.addInfo;
+            // }
+
+            // variable.allowedValues = this.getAllowedValues(variable.type, variable.comment);
+        }
+    }
+
+    private getFunctionName() {
+        const parsedName = this.base.executionTypeFilter == "activeLearner" ? getPythonClassName(this.baseCode) : getPythonFunctionName(this.baseCode);
+        if (this.integratorInputRef) {
+            const providedName = this.integratorInputRef.name;
+            if (parsedName != providedName) {
+                this.errors.push(`Function name in code (${parsedName}) does not match name in integrator input (${providedName})`);
+            }
+            return providedName;
+        }
+        return parsedName;
     }
 
     public replaceVariables() {
@@ -69,7 +149,7 @@ export class BricksCodeParser {
         let finalString = "integrator_inputs=";
         const json: any = {
             name: this.functionName,
-            refineryDataType: this.base.config.prepareJsonAsEnum ? "RefineryDataType.TEXT.value" : "text", //currently fix text since up until now all were interpreted as text
+            refineryDataType: this.base.config.prepareJsonAsPythonEnum ? "RefineryDataType.TEXT.value" : RefineryDataType.TEXT, //currently fix text since up until now all were interpreted as text
         }
         if (this.expected.expectedTaskLabels.length > 0) {
             json.outputs = this.expected.expectedTaskLabels.map(x => x.label);
@@ -99,17 +179,17 @@ export class BricksCodeParser {
         if (this.variables.length > 0) {
             json.variables = {};
             for (const variable of this.variables) {
-                const element: any = { selectionType: getSelectionType(variable.type, this.base.config.prepareJsonAsEnum) };
+                const element: any = { selectionType: getSelectionType(variable.type, this.base.config.prepareJsonAsPythonEnum) };
                 if (variable.values.length > 0 && variable.values[0] != null) element.defaultValue = variable.values[0];
                 let vComment = variable.comment;
                 if (vComment) {
                     vComment = vComment.replace("only text attributes", "").trim();
                     if (vComment.length > 0) element.description = vComment;
                 }
-                if (variable.optional) element.optional = "true";
-                else element.optional = "false";
+                if (variable.optional) element.optional = StringBoolean.TRUE;
+                else element.optional = StringBoolean.FALSE;
 
-                const addInfo = getAddInfo(variable.type, this.base.config.prepareJsonAsEnum);
+                const addInfo = getAddInfo(variable.type, this.base.config.prepareJsonAsPythonEnum);
                 if (addInfo && addInfo.length > 0) element.addInfo = addInfo;
                 if (this.base.config.prepareJsonRemoveYOUR) json.variables[variable.baseName.substring(5)] = element;
                 else json.variables[variable.baseName] = element;
@@ -118,7 +198,7 @@ export class BricksCodeParser {
         finalString += JSON.stringify(json, null, 4);
 
 
-        if (this.base.config.prepareJsonAsEnum) {
+        if (this.base.config.prepareJsonAsPythonEnum) {
             finalString = finalString.replace(/"(\w+\.\w+\.\w+)"/g, "$1")
         }
 
@@ -286,6 +366,8 @@ export class BricksCodeParser {
                 else commentLines.push(tmpLine);
             }
         }
+        if (this.integratorInputRef && this.integratorInputRef.globalComment) commentLines.push(this.integratorInputRef.globalComment);
+
         return commentLines.filter(x => x.trim() != "");
     }
 
@@ -317,16 +399,32 @@ export class BricksCodeParser {
         return value;
     }
 
-    private collectVariableLines(): string[] {
-
-        const lines = this.baseCode.split("\n");
-        const variableLines = [];
-        for (let i = 0; i < lines.length; i++) {
-            const line = lines[i];
-            if (line.startsWith("def ")) break;
-            if (line.startsWith("YOUR_")) variableLines.push(line);
+    private collectVariableLinesFromCode(): string[] {
+        if (this.integratorInputRef) {
+            //new version doesn't start with YOUR_
+            const lines = this.baseCode.split("\n");
+            const variableLines = [];
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i];
+                if (line.startsWith("def ")) break;
+                if (line.includes("import")) continue; //import lines
+                if (line.trim().startsWith("#")) continue; //comment lines
+                if (line.trim().length == 0) continue; //empty lines
+                if (line.trim()[0].match(/[^A-Z]/)) continue;//not a python constant (reads as every not A-Z -> so my_var would be ignored)
+                variableLines.push(line);
+            }
+            return variableLines;
+        } else {
+            const lines = this.baseCode.split("\n");
+            const variableLines = [];
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i];
+                if (line.startsWith("def ")) break;
+                if (line.startsWith("YOUR_")) variableLines.push(line);
+            }
+            return variableLines;
         }
-        return variableLines;
+
     }
 
     private parseVariableLines(variableLines: string[]): BricksVariable[] {
@@ -342,7 +440,8 @@ export class BricksCodeParser {
         const variable = getEmptyBricksVariable();
         variable.line = line;
         variable.baseName = variable.line.split("=")[0].split(":")[0].trim();
-        variable.displayName = capitalizeFirst(variable.baseName.substring(5));
+        if (this.integratorInputRef) variable.displayName = capitalizeFirst(variable.baseName);
+        else variable.displayName = capitalizeFirst(variable.baseName.substring(5));
         variable.pythonType = line.split(":")[1].split("=")[0].trim();
         variable.canMultipleValues = variable.pythonType.toLowerCase().includes("list");
         variable.type = this.getVariableType(variable);
