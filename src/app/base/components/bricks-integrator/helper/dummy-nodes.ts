@@ -61,7 +61,15 @@ export function getDummyNodeByIdForApi(id: DummyNodes): any {
                         "addInfo": [
                             BricksVariableType.GENERIC_STRING.toLowerCase()
                         ]
-                    }
+                    },
+                    "MIN_SCORE": {
+                        "selectionType": SelectionType.RANGE,
+                        "defaultValue": 100,
+                        "allowedValueRange": [0, 100],
+                        "description": "The lowest possible sentiment score.",
+                        "addInfo": [BricksVariableType.GENERIC_INT],
+                        "optional": "false",
+                    },
                 }
             }
             return baseNode;
@@ -185,6 +193,7 @@ const DUMMY_CODE_VADER = `from vaderSentiment.vaderSentiment import SentimentInt
 
 ATTRIBUTE: str = "text" # only text attributes
 MODE: str = "classification" # choose "scores" to only get the sentiment scores as floats
+MIN_SCORE:int = 100
 
 def vader_sentiment(record):
     analyzer = SentimentIntensityAnalyzer()

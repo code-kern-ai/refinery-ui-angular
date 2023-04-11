@@ -20,3 +20,10 @@
 .line-height-textarea {
     line-height: 16px;
 }
+
+.hide-arrow {
+    -webkit-appearance: none;
+    margin: 0;
+    -moz-appearance: textfield;
+    appearance: textfield;
+}

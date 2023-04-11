@@ -4,13 +4,15 @@ import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, 
 import { ActivatedRoute, Router } from '@angular/router';
 import { timer } from 'rxjs';
 import { first } from 'rxjs/operators';
-import { capitalizeFirst, findProjectIdFromRoute, isStringTrue } from 'src/app/util/helper-functions';
+import { capitalizeFirst, findProjectIdFromRoute, isStringTrue, jsonCopy } from 'src/app/util/helper-functions';
 import { KnowledgeBasesApolloService } from '../../services/knowledge-bases/knowledge-bases-apollo.service';
 import { ProjectApolloService } from '../../services/project/project-apollo.service';
 import { BricksCodeParser } from './helper/code-parser';
 import { BricksDataRequestor } from './helper/data-requestor';
 import { BricksAPIData, BricksIntegratorConfig, BricksSearchData, BricksVariable, BricksVariableType, getEmptyBricksIntegratorConfig, IntegratorPage } from './helper/type-helper';
 import { extendDummyElements, getDummyNodeByIdForApi } from './helper/dummy-nodes';
+import { caesarCipher } from 'src/app/util/cipher';
+import { PASS_ME } from 'src/app/util/cipher';
 
 @Component({
   selector: 'kern-bricks-integrator',
@@ -19,9 +21,23 @@ import { extendDummyElements, getDummyNodeByIdForApi } from './helper/dummy-node
 })
 export class BricksIntegratorComponent implements OnInit, OnDestroy {
   static httpBaseLink: string = "https://cms.bricks.kern.ai/api/modules/";
-  static httpBaseLinkExample: string = "https://api.bricks.kern.ai/"
+  static httpBaseLinkExample: string = "https://api.bricks.kern.ai/";
 
-  static httpBaseLinkFilter: string = "https://cms.bricks.kern.ai/api/modules" // old version via Strapi
+  //add port option for local development
+  get HttpBaseLink(): string {
+    if (this.config.querySourceSelectionRemote) return BricksIntegratorComponent.httpBaseLink;
+    else return `http://localhost:${this.config.querySourceSelectionLocalStrapiPort}/api/modules/`
+  }
+
+  get HttpBaseLinkExample(): string {
+    if (this.config.querySourceSelectionRemote) return BricksIntegratorComponent.httpBaseLinkExample;
+    else return `http://localhost:${this.config.querySourceSelectionLocalBricksPort}/`
+  }
+
+  get HttpBaseLinkFilter(): string {
+    // old version via Strapi -> change if search engine is live
+    return this.HttpBaseLink;
+  }
 
 
   get IntegratorPageType(): typeof IntegratorPage {
@@ -61,6 +77,10 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
     this.dataRequestor.unsubscribeFromWebsocket();
   }
 
+  private getHttpBaseLink(): string {
+    if (this.config.querySourceSelectionRemote) return BricksIntegratorComponent.httpBaseLink;
+    else return `http://localhost:${this.config.querySourceSelectionLocalStrapiPort}/api/modules/`
+  }
 
   openBricksIntegrator() {
     this.config.modalOpen = true;
@@ -72,6 +92,23 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
 
   initConfig() {
     this.config = getEmptyBricksIntegratorConfig();
+    const localStrapiConfig = localStorage.getItem("localStrapiConfig");
+    if (localStrapiConfig) {
+      const unCiphered = JSON.parse(caesarCipher(localStrapiConfig, PASS_ME, true))
+      this.config.querySourceSelectionLocalStrapiPort = unCiphered.strapiPort;
+      this.config.querySourceSelectionLocalBricksPort = unCiphered.bricksPort;
+      this.config.querySourceSelectionLocalStrapiToken = unCiphered.token;
+    }
+  }
+  saveLocalConfig() {
+    const localStrapiConfig = {
+      querySourceSelectionRemote: this.config.querySourceSelectionRemote,
+      strapiPort: this.config.querySourceSelectionLocalStrapiPort,
+      bricksPort: this.config.querySourceSelectionLocalBricksPort,
+      token: this.config.querySourceSelectionLocalStrapiToken
+    };
+    const ciphered = caesarCipher(JSON.stringify(localStrapiConfig), PASS_ME)
+    localStorage.setItem("localStrapiConfig", ciphered);
   }
 
 
@@ -86,7 +123,7 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
       e.attributes.description.toLowerCase().includes(searchFor));
     this.config.search.nothingMatches = !this.config.search.results.find(e => e.visible)
 
-    //once real search is enabled remove return
+    //once real search is enabled change BricksIntegratorComponent.httpBaseLinkFilter & remove return
     return;
     this.config.search.requesting = true;
     if (this.config.search.debounce) this.config.search.debounce.unsubscribe();
@@ -95,17 +132,10 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
   }
 
   private buildSearchUrl(): string {
-    let url = BricksIntegratorComponent.httpBaseLinkFilter;
     let filter = "?pagination[pageSize]=99999";
     filter += this.extendUrl(this.moduleTypeFilter, "moduleType");
     filter += this.extendUrl(this.executionTypeFilter, "executionType")
-    // if (Array.isArray(this.executionTypeFilter)) {
-    //   this.executionTypeFilter.forEach((x) => filter += this.extendUrl(x, "executionType"));
-    // } else {
-    //   this.executionTypeFilter.split(",").forEach((x) => filter += this.extendUrl(x.trim(), "executionType"));
-    // }
-
-    return url + filter;
+    return this.HttpBaseLink + filter;
   }
 
   private extendUrl(value: string, attribute: string): string {
@@ -122,15 +152,33 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
     this.config.search.requesting = true;
     this.config.search.lastRequestUrl = this.buildSearchUrl();
     if (this.config.search.currentRequest) this.config.search.currentRequest.unsubscribe();
-    this.config.search.currentRequest = this.http.get(this.config.search.lastRequestUrl).pipe(first()).subscribe({
+
+    let options = undefined;
+
+    if (!this.config.querySourceSelectionRemote) {
+      options = {
+        headers: {
+          "Authorization": `Bearer ${this.config.querySourceSelectionLocalStrapiToken}`
+        }
+      };
+      this.saveLocalConfig();
+    }
+    this.config.search.currentRequest = this.http.get(this.config.search.lastRequestUrl, options).pipe(first()).subscribe({
       next: (data: any) => {
+
         this.config.search.requesting = false;
         this.config.search.currentRequest = null;
-        let finalData = data.data;
+        let finalData = data.data.map(e => {
+          if (!e.attributes.integratorInputs) return e;
+          const c = jsonCopy(e);
+          c.attributes.partOfGroup = JSON.parse(c.attributes.partOfGroup);
+          c.attributes.availableFor = JSON.parse(c.attributes.availableFor);
+          c.attributes.integratorInputs = JSON.parse(c.attributes.integratorInputs);
+          return c;
+        });
         if (this.executionTypeFilter) {
           const toFilter = this.executionTypeFilter.split(",");
           finalData = finalData.filter(e => toFilter.includes(e.attributes.executionType));
-          // finalData = finalData.filter(e => e.attributes.executionType == this.executionTypeFilter);
         }
         finalData = this.filterMinVersion(finalData);
         extendDummyElements(finalData);
@@ -202,6 +250,7 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
     let name: string;
     switch (key) {
       case "gdpr_compliant": name = "GDPR Compliant"; break;
+      case "not_gdpr_compliant": name = "Not GDPR Compliant"; break;
       default: name = capitalizeFirst(key);
     }
     this.config.groupFilterOptions.filterValues[key] = { name: name, active: key == "all" }
@@ -284,15 +333,43 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
       this.config.api.data = getDummyNodeByIdForApi(this.config.api.moduleId);
       return;
     }
-    this.config.api.requestUrl = BricksIntegratorComponent.httpBaseLink + this.config.api.moduleId;
+    this.config.api.requestUrl = this.HttpBaseLink + this.config.api.moduleId;
     this.config.api.requesting = true;
-    this.http.get(this.config.api.requestUrl).pipe(first()).subscribe((c: BricksAPIData) => {
-      this.config.api.data = c;
-      this.config.api.data.data.attributes.link = "https://bricks.kern.ai/" + c.data.attributes.moduleType + "s/" + c.data.id;
-      this.config.api.requesting = false;
-      this.config.example.requestData = this.config.api.data.data.attributes.inputExample;
-      this.codeParser.prepareCode();
-      this.checkCanAccept();
+    let options = undefined;
+    if (!this.config.querySourceSelectionRemote) {
+      options = {
+        headers: {
+          "Authorization": `Bearer ${this.config.querySourceSelectionLocalStrapiToken}`
+        }
+      };
+    }
+
+    this.http.get(this.config.api.requestUrl, options).pipe(first()).subscribe({
+      next: (c: any) => {
+        if (!c.data.attributes.integratorInputs) this.config.api.data = c;
+        else {
+          this.config.api.data = c;
+          this.config.api.data.data.attributes.partOfGroup = JSON.parse(c.data.attributes.partOfGroup);
+          this.config.api.data.data.attributes.availableFor = JSON.parse(c.data.attributes.availableFor);
+          this.config.api.data.data.attributes.integratorInputs = JSON.parse(c.data.attributes.integratorInputs);
+        }
+        // if(!c.data.attributes.integratorInputs)
+        //   if (!e.attributes.integratorInputs) return e;)
+        // this.config.api.data = c;
+
+        // c.attributes.partOfGroup = JSON.parse(c.attributes.partOfGroup);
+        // c.attributes.availableFor = JSON.parse(c.attributes.availableFor);
+        // c.attributes.integratorInputs = JSON.parse(c.attributes.integratorInputs);
+        this.config.api.data.data.attributes.link = "https://bricks.kern.ai/" + c.data.attributes.moduleType + "s/" + c.data.id;
+        this.config.api.requesting = false;
+        this.config.example.requestData = this.config.api.data.data.attributes.inputExample;
+        this.codeParser.prepareCode();
+        this.checkCanAccept();
+      },
+      error: error => {
+        console.log("error in search request", error);
+        this.config.api.requesting = false;
+      }
     });
   }
 
@@ -302,7 +379,8 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
       return;
     }
     this.config.example.requesting = true;
-    this.config.example.requestUrl = BricksIntegratorComponent.httpBaseLinkExample;
+    // const baseLink = this.config.querySourceSelectionRemote ? BricksIntegratorComponent.httpBaseLinkExample : BricksIntegratorComponent.httpBaseLinkExampleLocal;
+    this.config.example.requestUrl = this.HttpBaseLinkExample;
     this.config.example.requestUrl += this.config.api.data.data.attributes.moduleType + "s/" + this.config.api.data.data.attributes.endpoint;
     const headers = { "Content-Type": "application/json" };
     this.http.post(this.config.example.requestUrl, this.config.example.requestData, { headers }).pipe(first()).subscribe({

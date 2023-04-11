@@ -21,6 +21,7 @@ export enum BricksVariableType {
     GENERIC_FLOAT = "GENERIC_FLOAT",
     GENERIC_BOOLEAN = "GENERIC_BOOLEAN",
     GENERIC_CHOICE = "GENERIC_CHOICE",
+    GENERIC_RANGE = "GENERIC_RANGE",
     UNKNOWN = "UNKNOWN",
 }
 
@@ -57,6 +58,7 @@ export type BricksAPIData = {
             integratorInputs?: IntegratorInput,
             availableFor?: string[],
             partOfGroup?: string[],
+            sourceCodeRefinery?: string
         }
         id: number
     }
@@ -140,6 +142,11 @@ export type BricksIntegratorConfig = {
     extendedIntegrator: boolean,
     groupFilterOptions: GroupFilterOptions,
     extendedIntegratorGroupFilterOpen: boolean,
+    querySourceSelectionOpen: boolean,
+    querySourceSelectionRemote: boolean,
+    querySourceSelectionLocalStrapiPort: number,
+    querySourceSelectionLocalStrapiToken: string,
+    querySourceSelectionLocalBricksPort: number,
 }
 
 export type GroupFilterOptions = {
@@ -195,6 +202,11 @@ export function getEmptyBricksIntegratorConfig(): BricksIntegratorConfig {
             filterValues: {}
         },
         extendedIntegratorGroupFilterOpen: false,
+        querySourceSelectionOpen: false,
+        querySourceSelectionRemote: true,
+        querySourceSelectionLocalStrapiPort: 1337,
+        querySourceSelectionLocalStrapiToken: "",
+        querySourceSelectionLocalBricksPort: 8000,
     }
 }
 export type BricksVariable = {

@@ -14,11 +14,71 @@
 }" [modalBoxStyle]="{'overflow-x':'visible'}" (optionClicked)="optionClicked($event)">
     <div class="flex flex-row items-center justify-center gap-x-2">
 
-        <span class="text-lg leading-6 text-gray-900 font-medium">
+        <span class="text-lg leading-6 text-gray-900 font-medium"
+            (dblclick)="config.querySourceSelectionOpen=!config.querySourceSelectionOpen">
             Bricks Integrator
         </span>
+        <div *ngIf="config.querySourceSelectionOpen && config.page == IntegratorPageType.SEARCH"
+            class="flex cursor-pointer items-center" (click)="requestSearch()">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-refresh" width="24" height="24"
+                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                <path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4"></path>
+                <path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4"></path>
+            </svg>
+        </div>
 
     </div>
+    <ng-template [ngIf]="config.querySourceSelectionOpen && config.page == IntegratorPageType.SEARCH">
+        <div class="flex flex-row flex-wrap justify-center w-full gap-x-2 gap-y-2">
+            <!--default, remote location-->
+            <div class="flex flex-row gap-x-2 cursor-pointer items-center"
+                (click)="config.querySourceSelectionRemote = true;requestSearch();">
+                <input type="radio" [checked]="config.querySourceSelectionRemote"
+                    class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-200 cursor-pointer"
+                    [value]="config.querySourceSelectionRemote">
+                <label class="text-sm font-bold text-gray-900 cursor-pointer">Remote</label>
+            </div>
+            <!--local location-->
+            <div class="flex flex-row gap-x-2 cursor-pointer items-center"
+                (click)="config.querySourceSelectionRemote = false;requestSearch();">
+                <input type="radio" [checked]="!config.querySourceSelectionRemote"
+                    class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-200 cursor-pointer"
+                    [value]="!config.querySourceSelectionRemote">
+                <label class="text-sm font-bold text-gray-900 cursor-pointer">Local</label>
+            </div>
+        </div>
+        <ng-template [ngIf]="!config.querySourceSelectionRemote">
+
+            <!--local config-->
+            <div class="flex flex-row flex-wrap justify-center w-full gap-x-2 gap-y-2 my-1">
+
+                <div class="flex flex-row gap-x-2 items-center">
+                    <label class="text-sm font-bold text-gray-900">Strapi Port</label>
+                    <input #portStrapi type="number" step="1" style="outline:none; box-shadow:none;"
+                        class="input input-bordered w-16 input-sm px-1"
+                        [value]="config.querySourceSelectionLocalStrapiPort" autocomplete="off"
+                        (input)="config.querySourceSelectionLocalStrapiPort = portStrapi.value;">
+                </div>
+                <div class="flex flex-row gap-x-2 items-center">
+                    <label class="text-sm font-bold text-gray-900">Bricks Port</label>
+                    <input #portBricks type="number" step="1" style="outline:none; box-shadow:none;"
+                        class="input input-bordered w-16 input-sm px-1"
+                        [value]="config.querySourceSelectionLocalBricksPort" autocomplete="off"
+                        (input)="config.querySourceSelectionLocalBricksPort = portBricks.value;">
+                </div>
+            </div>
+            <div class="flex flex-row gap-x-2 items-center mx-4">
+                <label class="text-sm font-bold text-gray-900 whitespace-nowrap">Strapi Token</label>
+                <input #strapiToken type="text" step="1" style="outline:none; box-shadow:none;"
+                    class="input input-bordered w-full input-sm px-1"
+                    [value]="config.querySourceSelectionLocalStrapiToken" autocomplete="off"
+                    (focus)="strapiToken.select();"
+                    (blur)="config.querySourceSelectionLocalStrapiToken = strapiToken.value;">
+            </div>
+        </ng-template>
+    </ng-template>
     <div class="flex justify-center">
         <div class="sm:block">
             <div class="border-b border-gray-200">
@@ -86,11 +146,11 @@
                         class="flex flex-col w-full my-2">
                         <div class="flex flex-row flex-wrap w-full gap-x-2 gap-y-2">
                             <div *ngFor="let group of config.groupFilterOptions.filterValues | keyvalue"
-                                class="flex flex-row gap-x-2 cursor-pointer" (click)="setGroupActive(group.key)">
-                                <input type="radio" formControlName="DRILL_DOWN" [checked]="group.value.active"
+                                class="flex flex-row gap-x-2 cursor-pointer items-center"
+                                (click)="setGroupActive(group.key)">
+                                <input type="radio" [checked]="group.value.active"
                                     class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-200 cursor-pointer"
                                     [value]="group.value.active">
-
                                 <label
                                     class="text-sm font-bold text-gray-900 cursor-pointer">{{group.value.name}}</label>
                             </div>
@@ -219,12 +279,11 @@
                         <div [ngClass]="config.overviewCodeOpen?'':'hidden'" class="flex flex-col mt-1">
 
                             <div class="overflow-y-auto" style="max-height:15rem;max-width: 35rem; overflow-x:hidden">
-                                <pre class="editor-pre">{{config.api.data.data.attributes.sourceCode}}</pre>
+                                <pre class="editor-pre">{{codeParser.baseCode}}</pre>
                             </div>
                             <div class="mt-2 tooltip" [attr.data-tip]="config.copied?'Copied':'Click to copy raw code'">
 
-                                <button (click)="copyToClipboard(config.api.data.data.attributes.sourceCode)"
-                                    type="button"
+                                <button (click)="copyToClipboard(codeParser.baseCode)" type="button"
                                     class="bg-indigo-700 text-white text-xs font-semibold px-4 py-2 rounded-md border hover:bg-indigo-800 focus:outline-none">Copy</button>
                             </div>
                         </div>
@@ -656,6 +715,17 @@
                     autocomplete="off"
                     [ngStyle]="{'background-color':variable.options.colors[i], 'border-color':variable.options.colors[i]}">
                 </div>
+            </ng-template>
+            <ng-template ngSwitchCase="GENERIC_RANGE">
+                <div class="flex flex-row flex-nowrap items-center gap-x-2">
+                    <input #genRange type="range" step="1" class="input input-bordered input-sm px-0"
+                        min="{{variable.allowedValues[0]}}" max="{{variable.allowedValues[1]}}"
+                        style="outline:none; box-shadow:none;" [value]="variable.values[i]" autocomplete="off"
+                        [id]="'GENERIC_RANGE_'+j + '_' + i" (change)="debounceSetGeneric(variable,i,genRange);"
+                        (input)="genRange.nextElementSibling.value = genRange.value">
+                    <output>{{variable.values[i]}}</output>
+                </div>
+
             </ng-template>
         </ng-container>
         <div *ngIf="variable.values.length > 1" (click)="removeValueEntry(variable,i)"

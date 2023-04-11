@@ -1,7 +1,7 @@
 import { capitalizeFirst, capitalizeFirstForClassName, enumToArray, getPythonClassName, getPythonFunctionName, isStringTrue, toPythonFunctionName } from "src/app/util/helper-functions"
 import { BricksIntegratorComponent } from "../bricks-integrator.component"
 import { BricksVariableComment, isCommentTrue } from "./comment-lookup";
-import { BricksExpectedLabels, BricksVariable, bricksVariableNeedsTaskId, BricksVariableType, canHaveDefaultValue, ExpectedLabel, getChoiceType, getEmptyBricksExpectedLabels, getEmptyBricksVariable, IntegratorInput, IntegratorInputVariable, RefineryDataType, StringBoolean } from "./type-helper";
+import { BricksExpectedLabels, BricksVariable, bricksVariableNeedsTaskId, BricksVariableType, canHaveDefaultValue, ExpectedLabel, getChoiceType, getEmptyBricksExpectedLabels, getEmptyBricksVariable, IntegratorInput, IntegratorInputVariable, RefineryDataType, SelectionType, StringBoolean } from "./type-helper";
 import { DummyNodes, getAddInfo, getSelectionType, getTextForRefineryType } from "./dummy-nodes";
 //currently included python types are: int, float, str, bool, list
 
@@ -29,7 +29,9 @@ export class BricksCodeParser {
         this.expected = getEmptyBricksExpectedLabels();
         if (!this.base.config.api.data) return;
         this.integratorInputRef = this.base.config.api.data.data.attributes.integratorInputs;
-        this.baseCode = this.base.config.api.data.data.attributes.sourceCode;
+        if (this.integratorInputRef) this.baseCode = this.base.config.api.data.data.attributes.sourceCodeRefinery;
+        else this.baseCode = this.base.config.api.data.data.attributes.sourceCode;
+
         this.globalComments = this.collectGlobalComment();
         this.functionName = this.getFunctionName();
         this.checkFunctionNameAndSet(this.functionName);
@@ -61,14 +63,10 @@ export class BricksCodeParser {
 
     private checkAndMatchVariables() {
         if (!this.integratorInputRef) return;
-        console.log("integratorInputRef.variables", this.integratorInputRef)
 
         if (this.variables.length != Object.keys(this.integratorInputRef.variables).length) {
-            // throw ("different number of variable lines in code and integrator input detected");
             this.errors.push("different number of variable lines in code and integrator input detected");
         }
-        console.log("this.variables", this.variables)
-        console.log("integratorInputRef.variables", this.integratorInputRef.variables)
 
         for (const variable of this.variables) {
             if (!(variable.baseName in this.integratorInputRef.variables)) {
@@ -85,26 +83,27 @@ export class BricksCodeParser {
                 }
             }
 
-            //check variable type 
-            if (!inputV.addInfo.some(x => x == variable.type.toLowerCase())) {
-                //type doesn't match
-                this.errors.push(`Variable ${variable.baseName} type ${variable.type} doesn't match integrator input`);
-            }
             //setting to choice afterwards, because it is not in addInfo & values need to be prepared
-            const newType = getChoiceType(inputV.selectionType, inputV.addInfo);
-            if (newType != BricksVariableType.UNKNOWN && newType != variable.type) {
-                if (newType == BricksVariableType.GENERIC_CHOICE) {
-                    if (!inputV.allowedValues) {
-                        this.errors.push(`Variable ${variable.baseName} in code is of type choice, but allowed values are not provided`);
+            if (inputV.selectionType == SelectionType.CHOICE) {
+                const newType = getChoiceType(inputV.selectionType, inputV.addInfo);
+                if (newType != BricksVariableType.UNKNOWN && newType != variable.type) {
+                    if (newType == BricksVariableType.GENERIC_CHOICE) {
+                        if (!inputV.allowedValues) {
+                            this.errors.push(`Variable ${variable.baseName} in code is of type choice, but allowed values are not provided`);
+                        } else {
+                            variable.type = newType;
+                            variable.allowedValues = inputV.allowedValues;
+                        }
                     } else {
                         variable.type = newType;
-                        variable.allowedValues = inputV.allowedValues;
+                        variable.allowedValues = this.getAllowedValues(variable.type, variable.comment);
                     }
-                } else {
-                    variable.type = newType;
-                    variable.allowedValues = this.getAllowedValues(variable.type, variable.comment);
                 }
+            } else if (inputV.selectionType == SelectionType.RANGE) {
+                variable.type = BricksVariableType.GENERIC_RANGE;
+                variable.allowedValues = inputV.allowedValueRange; // e.g. [0,100]
             }
+
         }
     }
 
