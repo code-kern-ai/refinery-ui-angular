@@ -101,8 +101,6 @@ export class BricksCodeParser {
                         } else {
                             variable.type = newType;
                             variable.allowedValues = this.getAllowedValues(variable.type, variable.comment);
-                            // variable.values[0] = null;
-
                         }
                     }
                 }

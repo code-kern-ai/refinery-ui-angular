@@ -146,7 +146,7 @@
                         class="flex flex-col w-full my-2">
                         <div class="flex flex-row flex-wrap w-full gap-x-2 gap-y-2">
                             <div *ngFor="let group of config.groupFilterOptions.filterValuesArray"
-                                class="flex flex-row gap-x-2 cursor-pointer items-center"
+                                class="flex flex-row gap-x-1 cursor-pointer items-center"
                                 (click)="setGroupActive(group.key)">
                                 <input type="radio" [checked]="group.active"
                                     class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-200 cursor-pointer"
@@ -456,7 +456,7 @@
                     </div>
                     <label class="text-sm -mt-1">Your selected task doesn't have all necessary
                         labels:</label>
-                    <div class="flex flex-row gap-x-2 flex-wrap gap-2" style="max-width:30rem">
+                    <div class="flex flex-row flex-wrap gap-2" style="max-width:30rem">
                         <span class="text-sm inline-flex items-center"
                             *ngFor="let label of codeParser.expected.expectedTaskLabels">
                             <label [ngClass]="[label.backgroundColor, label.textColor, label.borderColor]"
