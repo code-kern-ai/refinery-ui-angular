@@ -114,7 +114,7 @@ export function extendDummyElements(finalData: any[]) {
     if (!ConfigManager.getIsAdmin()) return;
     addElementToList(finalData, getDummyNodeByIdForSelection(DummyNodes.CODE_TESTER));
     addElementToList(finalData, getDummyNodeByIdForSelection(DummyNodes.CODE_PARSER));
-    addElementToList(finalData, getDummyNodeByIdForSelection(DummyNodes.REFACTOR_TESTER));
+    // addElementToList(finalData, getDummyNodeByIdForSelection(DummyNodes.REFACTOR_TESTER));
 }
 
 function addElementToList(finalData: any[], element: any) {
@@ -159,7 +159,6 @@ export function getAddInfo(type: BricksVariableType, asPythonEnum: boolean): str
 
     if (asPythonEnum) list.unshift("BricksVariableType." + type + ".value");
     else list.unshift(type.toLowerCase());
-
     return list;
 }
 export function getSelectionType(type: BricksVariableType, asPythonEnum: boolean) {

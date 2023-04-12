@@ -77,11 +77,6 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
     this.dataRequestor.unsubscribeFromWebsocket();
   }
 
-  private getHttpBaseLink(): string {
-    if (this.config.querySourceSelectionRemote) return BricksIntegratorComponent.httpBaseLink;
-    else return `http://localhost:${this.config.querySourceSelectionLocalStrapiPort}/api/modules/`
-  }
-
   openBricksIntegrator() {
     this.config.modalOpen = true;
     this.checkCanAccept();
@@ -353,13 +348,6 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
           this.config.api.data.data.attributes.availableFor = JSON.parse(c.data.attributes.availableFor);
           this.config.api.data.data.attributes.integratorInputs = JSON.parse(c.data.attributes.integratorInputs);
         }
-        // if(!c.data.attributes.integratorInputs)
-        //   if (!e.attributes.integratorInputs) return e;)
-        // this.config.api.data = c;
-
-        // c.attributes.partOfGroup = JSON.parse(c.attributes.partOfGroup);
-        // c.attributes.availableFor = JSON.parse(c.attributes.availableFor);
-        // c.attributes.integratorInputs = JSON.parse(c.attributes.integratorInputs);
         this.config.api.data.data.attributes.link = "https://bricks.kern.ai/" + c.data.attributes.moduleType + "s/" + c.data.id;
         this.config.api.requesting = false;
         this.config.example.requestData = this.config.api.data.data.attributes.inputExample;
@@ -379,7 +367,6 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
       return;
     }
     this.config.example.requesting = true;
-    // const baseLink = this.config.querySourceSelectionRemote ? BricksIntegratorComponent.httpBaseLinkExample : BricksIntegratorComponent.httpBaseLinkExampleLocal;
     this.config.example.requestUrl = this.HttpBaseLinkExample;
     this.config.example.requestUrl += this.config.api.data.data.attributes.moduleType + "s/" + this.config.api.data.data.attributes.endpoint;
     const headers = { "Content-Type": "application/json" };
