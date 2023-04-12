@@ -292,7 +292,9 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
     const brickVersionSplit = brickVersion.split(".").map(e => parseInt(e));
     if (brickVersionSplit.length != 3) return false;
     for (let i = 0; i < 3; i++) {
-      if (brickVersionSplit[i] > refineryVersion[i]) return false;
+      if (refineryVersion[i] > brickVersionSplit[i]) return true;
+      else if (refineryVersion[i] < brickVersionSplit[i]) return false;
+      //else continue with next digit
     }
     return true;
   }

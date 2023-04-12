@@ -809,7 +809,7 @@
             </ng-template>
             <ng-template ngSwitchCase="GENERIC_RANGE">
                 <div class="flex flex-row flex-nowrap items-center gap-x-2">
-                    <input #genRange type="range" step="1" class="input input-bordered input-sm px-0"
+                    <input #genRange type="range" step="0.1" class="input input-bordered input-sm px-0"
                         min="{{variable.allowedValues[0]}}" max="{{variable.allowedValues[1]}}"
                         style="outline:none; box-shadow:none;" [value]="variable.values[i]" autocomplete="off"
                         [id]="'GENERIC_RANGE_'+j + '_' + i" (change)="debounceSetGeneric(variable,i,genRange);"

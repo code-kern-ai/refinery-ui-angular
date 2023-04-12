@@ -67,6 +67,31 @@ export class BricksCodeParser {
         if (this.variables.length != Object.keys(this.integratorInputRef.variables).length) {
             this.errors.push("different number of variable lines in code and integrator input detected");
         }
+        if (this.integratorInputRef.outputs) {
+            if (this.base.labelingTaskId) {
+
+                this.expected.expectedTaskLabels = [];
+                const existingLabels = this.base.dataRequestor.getLabels(this.base.labelingTaskId);
+                for (const label of this.integratorInputRef.outputs) {
+                    const existingLabel = existingLabels.find(x => x.name == label);
+                    this.expected.expectedTaskLabels.push({
+                        label: label,
+                        exists: !!existingLabel,
+                        backgroundColor: 'bg-' + (existingLabel ? existingLabel.color : 'gray') + '-100',
+                        textColor: 'text-' + (existingLabel ? existingLabel.color : 'gray') + '-700',
+                        borderColor: 'border-' + (existingLabel ? existingLabel.color : 'gray') + '-400'
+                    });
+                }
+                this.expected.expectedTaskLabels.sort((a, b) => (-a.exists) - (-b.exists) || a.label.localeCompare(b.label));
+                this.expected.labelsToBeCreated = this.expected.expectedTaskLabels.filter(x => !x.exists).length;
+                this.expected.labelWarning = !this.expected.expectedTaskLabels[this.expected.expectedTaskLabels.length - 1].exists;
+                this.expected.canCreateTask = this.base.dataRequestor.getLabelingTaskAttribute(this.base.labelingTaskId, 'taskType') == 'MULTICLASS_CLASSIFICATION';
+            } else {
+                if (!this.globalComments.some(x => x.startsWith("Will return"))) {
+                    this.globalComments.push("Will return: [\"" + this.integratorInputRef.outputs.join("\", \"") + "\"]");
+                }
+            }
+        }
 
         for (const variable of this.variables) {
             if (!(variable.baseName in this.integratorInputRef.variables)) {
@@ -105,6 +130,10 @@ export class BricksCodeParser {
                     }
                 }
             } else if (inputV.selectionType == SelectionType.RANGE) {
+                if (!inputV.allowedValueRange || inputV.allowedValueRange.length != 2) {
+                    this.errors.push(`Variable ${variable.baseName} is of type range but allowedValueRange is not provided`);
+                    continue;
+                }
                 variable.type = BricksVariableType.GENERIC_RANGE;
                 variable.allowedValues = inputV.allowedValueRange; // e.g. [0,100]
             }
@@ -404,7 +433,7 @@ export class BricksCodeParser {
                 if (line.includes("import")) continue; //import lines
                 if (line.trim().startsWith("#")) continue; //comment lines
                 if (line.trim().length == 0) continue; //empty lines
-                if (line.trim()[0].match(/[^A-Z]/)) continue;//not a python constant (reads as every not A-Z -> so my_var would be ignored)
+                if (line[0].match(/[^A-Z]/)) continue;//not a python constant (reads as every not A-Z -> so my_var would be ignored)
                 variableLines.push(line);
             }
             return variableLines;
@@ -459,7 +488,7 @@ export class BricksCodeParser {
             if (value == "None") return [null];
             if (value == "[]") return [null];
             if (value.charAt(0) == "[") {
-                return value.substring(1, value.length - 1).split(",").map(x => this.parseValue(x, variable.pythonType));
+                return value.substring(1, value.length - 1).split(",").map(x => this.parseValue(x.trimStart(), variable.pythonType));
             } else {
                 return [this.parseValue(value, variable.pythonType)];
             }
