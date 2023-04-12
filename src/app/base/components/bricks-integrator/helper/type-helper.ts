@@ -147,6 +147,8 @@ export type BricksIntegratorConfig = {
     querySourceSelectionLocalStrapiPort: number,
     querySourceSelectionLocalStrapiToken: string,
     querySourceSelectionLocalBricksPort: number,
+    extendedIntegratorOverviewAddInfoOpen: boolean,
+    extendedIntegratorNewParse: boolean,
 }
 
 export type GroupFilterOptions = {
@@ -210,6 +212,8 @@ export function getEmptyBricksIntegratorConfig(): BricksIntegratorConfig {
         querySourceSelectionLocalStrapiPort: 1337,
         querySourceSelectionLocalStrapiToken: "",
         querySourceSelectionLocalBricksPort: 8000,
+        extendedIntegratorOverviewAddInfoOpen: false,
+        extendedIntegratorNewParse: true,
     }
 }
 export type BricksVariable = {

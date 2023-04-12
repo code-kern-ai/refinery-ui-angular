@@ -254,50 +254,132 @@
         </ng-template>
         <ng-template #displayOverview>
             <ng-template [ngIf]="config.api.data && config.api.moduleId >=0">
-                <div class="grid grid-cols-2-max  gap-x-2 gap-y-2 items-center">
-                    <div class="font-bold">Module Id</div>
-                    <label>{{config.api.data.data.id}}</label>
-                    <div class="font-bold">Module Name</div>
-                    <label>{{config.api.data.data.attributes.name}}</label>
-                    <div class="font-bold">Description</div>
-                    <label style="max-width:25rem">{{config.api.data.data.attributes.description}}</label>
-                    <div class="font-bold">Execution Type</div>
-                    <label>{{config.api.data.data.attributes.executionType}}</label>
-                    <div class="font-bold">Module Type</div>
-                    <label>{{config.api.data.data.attributes.moduleType}}</label>
-                    <div class="font-bold">Link</div>
-                    <a href="{{config.api.data.data.attributes.link}}" target="_blank"><span
-                            class="underline cursor-pointer">{{config.api.data.data.attributes.name}}</span></a>
-                    <div class="col-start-1 col-span-full">
-                        <div class="flex flex-row justify-between cursor-pointer items-center"
-                            (click)="config.overviewCodeOpen=!config.overviewCodeOpen">
-                            <label class="text-base font-bold text-gray-900 cursor-pointer">Source Code<span
-                                    class="text-sm font-normal">(guided integration through tab
-                                    integration)</span></label>
-                            <div [ngClass]="config.overviewCodeOpen?'rotate-transform':null">
-                                <svg xmlns="http://www.w3.org/2000/svg"
-                                    class="icon icon-tabler icon-tabler-chevrons-down" width="24" height="24"
-                                    viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                                    stroke-linecap="round" stroke-linejoin="round">
-                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                    <polyline points="7 7 12 12 17 7"></polyline>
-                                    <polyline points="7 13 12 18 17 13"></polyline>
-                                </svg>
+                <ng-template [ngIf]="config.extendedIntegrator" [ngIfElse]="oldDisplay">
+                    <div class="grid grid-cols-2-max  gap-x-2 gap-y-2 items-center">
+                        <div class="font-bold">Module Name</div>
+                        <label>{{config.api.data.data.attributes.name}}</label>
+                        <div class="font-bold">Description</div>
+                        <label style="max-width:25rem">{{config.api.data.data.attributes.description}}</label>
+                        <div class="font-bold">Bricks Link</div>
+                        <a href="{{config.api.data.data.attributes.bricksLink}}" target="_blank"><span
+                                class="underline cursor-pointer">{{config.api.data.data.attributes.name}}</span></a>
+
+                        <div class="col-start-1 col-span-full">
+                            <div class="flex flex-row justify-between cursor-pointer items-center"
+                                (click)="config.extendedIntegratorOverviewAddInfoOpen=!config.extendedIntegratorOverviewAddInfoOpen">
+                                <label class="text-base font-bold text-gray-900 cursor-pointer">Details</label>
+                                <div [ngClass]="config.extendedIntegratorOverviewAddInfoOpen?'rotate-transform':null">
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                        class="icon icon-tabler icon-tabler-chevrons-down" width="24" height="24"
+                                        viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <polyline points="7 7 12 12 17 7"></polyline>
+                                        <polyline points="7 13 12 18 17 13"></polyline>
+                                    </svg>
+                                </div>
                             </div>
                         </div>
-                        <div [ngClass]="config.overviewCodeOpen?'':'hidden'" class="flex flex-col mt-1">
-
-                            <div class="overflow-y-auto" style="max-height:15rem;max-width: 35rem; overflow-x:hidden">
-                                <pre class="editor-pre">{{codeParser.baseCode}}</pre>
+                        <div class="contents" [ngClass]="config.extendedIntegratorOverviewAddInfoOpen?'':'hidden'">
+                            <div class="font-bold">Github Issue Link</div>
+                            <a href="{{config.api.data.data.attributes.issueLink}}" target="_blank"><span
+                                    class="underline cursor-pointer">#{{config.api.data.data.attributes.issueId}}</span></a>
+                            <div class="font-bold">Min Refinery Version</div>
+                            <label>{{config.api.data.data.attributes.minRefineryVersion}}</label>
+                            <div class="font-bold">Grouping</div>
+                            <label>{{config.api.data.data.attributes.partOfGroupText}}</label>
+                            <div class="font-bold">Execution Type</div>
+                            <label>{{config.api.data.data.attributes.executionType}}</label>
+                            <div class="font-bold">Module Type</div>
+                            <label>{{config.api.data.data.attributes.moduleType}}</label>
+                            <div class="font-bold">Data Type</div>
+                            <label>{{config.api.data.data.attributes.dataType}}</label>
+                        </div>
+                        <div class="col-start-1 col-span-full">
+                            <div class="flex flex-row justify-between cursor-pointer items-center"
+                                (click)="config.overviewCodeOpen=!config.overviewCodeOpen">
+                                <label class="text-base font-bold text-gray-900 cursor-pointer">Source Code<span
+                                        class="text-sm font-normal">(guided integration through tab
+                                        integration)</span></label>
+                                <div [ngClass]="config.overviewCodeOpen?'rotate-transform':null">
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                        class="icon icon-tabler icon-tabler-chevrons-down" width="24" height="24"
+                                        viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <polyline points="7 7 12 12 17 7"></polyline>
+                                        <polyline points="7 13 12 18 17 13"></polyline>
+                                    </svg>
+                                </div>
                             </div>
-                            <div class="mt-2 tooltip" [attr.data-tip]="config.copied?'Copied':'Click to copy raw code'">
+                            <div [ngClass]="config.overviewCodeOpen?'':'hidden'"
+                                class="flex flex-col mt-1 items-center">
 
-                                <button (click)="copyToClipboard(codeParser.baseCode)" type="button"
-                                    class="bg-indigo-700 text-white text-xs font-semibold px-4 py-2 rounded-md border hover:bg-indigo-800 focus:outline-none">Copy</button>
+                                <div class="overflow-y-auto"
+                                    style="max-height:15rem;max-width: 35rem; overflow-x:hidden">
+                                    <pre class="editor-pre">{{codeParser.baseCode}}</pre>
+                                </div>
+                                <div class="mt-2 tooltip"
+                                    [attr.data-tip]="config.copied?'Copied':'Click to copy raw code'">
+
+                                    <button (click)="copyToClipboard(codeParser.baseCode)" type="button"
+                                        class="bg-indigo-700 text-white text-xs font-semibold px-4 py-2 rounded-md border hover:bg-indigo-800 focus:outline-none">Copy</button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                </ng-template>
+
+                <ng-template #oldDisplay>
+
+                    <div class="grid grid-cols-2-max  gap-x-2 gap-y-2 items-center">
+                        <div class="font-bold">Module Id</div>
+                        <label>{{config.api.data.data.id}}</label>
+                        <div class="font-bold">Module Name</div>
+                        <label>{{config.api.data.data.attributes.name}}</label>
+                        <div class="font-bold">Description</div>
+                        <label style="max-width:25rem">{{config.api.data.data.attributes.description}}</label>
+                        <div class="font-bold">Execution Type</div>
+                        <label>{{config.api.data.data.attributes.executionType}}</label>
+                        <div class="font-bold">Module Type</div>
+                        <label>{{config.api.data.data.attributes.moduleType}}</label>
+                        <div class="font-bold">Link</div>
+                        <a href="{{config.api.data.data.attributes.link}}" target="_blank"><span
+                                class="underline cursor-pointer">{{config.api.data.data.attributes.name}}</span></a>
+                        <div class="col-start-1 col-span-full">
+                            <div class="flex flex-row justify-between cursor-pointer items-center"
+                                (click)="config.overviewCodeOpen=!config.overviewCodeOpen">
+                                <label class="text-base font-bold text-gray-900 cursor-pointer">Source Code<span
+                                        class="text-sm font-normal">(guided integration through tab
+                                        integration)</span></label>
+                                <div [ngClass]="config.overviewCodeOpen?'rotate-transform':null">
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                        class="icon icon-tabler icon-tabler-chevrons-down" width="24" height="24"
+                                        viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <polyline points="7 7 12 12 17 7"></polyline>
+                                        <polyline points="7 13 12 18 17 13"></polyline>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div [ngClass]="config.overviewCodeOpen?'':'hidden'"
+                                class="flex flex-col mt-1 items-center">
+
+                                <div class="overflow-y-auto"
+                                    style="max-height:15rem;max-width: 35rem; overflow-x:hidden">
+                                    <pre class="editor-pre">{{codeParser.baseCode}}</pre>
+                                </div>
+                                <div class="mt-2 tooltip"
+                                    [attr.data-tip]="config.copied?'Copied':'Click to copy raw code'">
+
+                                    <button (click)="copyToClipboard(codeParser.baseCode)" type="button"
+                                        class="bg-indigo-700 text-white text-xs font-semibold px-4 py-2 rounded-md border hover:bg-indigo-800 focus:outline-none">Copy</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </ng-template>
             </ng-template>
             <ng-template [ngIf]="config.api.moduleId <0 ">
                 <textarea #codeInput
@@ -573,7 +655,7 @@
                     </svg>
                 </div>
             </div>
-            <div [ngClass]="config.integratorCodeOpen?'':'hidden'" class="flex flex-col mt-1">
+            <div [ngClass]="config.integratorCodeOpen?'':'hidden'" class="flex flex-col mt-1 items-center">
                 <div class="overflow-y-auto" style="max-height:15rem;max-width: 35rem; overflow-x:hidden">
                     <pre class="editor-pre">{{config.preparedCode}}</pre>
                 </div>
@@ -596,7 +678,7 @@
                     </div>
                 </div>
 
-                <div [ngClass]="config.integratorParseOpen?'':'hidden'" class="flex flex-col mt-1">
+                <div [ngClass]="config.integratorParseOpen?'':'hidden'" class="flex flex-col mt-1 items-center">
                     <div class="overflow-y-auto" style="max-height:15rem;max-width: 35rem; overflow-x:hidden">
                         <pre class="editor-pre">{{config.preparedJson}}</pre>
                     </div>

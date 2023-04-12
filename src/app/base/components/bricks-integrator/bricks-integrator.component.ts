@@ -119,7 +119,7 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
     this.config.search.nothingMatches = !this.config.search.results.find(e => e.searchVisible && e.groupVisible)
 
     this.countGroupEntries();
-    //once real search is enabled change BricksIntegratorComponent.httpBaseLinkFilter & remove return, caution group filter needs to be adjusted
+    //once real search is enabled change BricksIntegratorComponent.httpBaseLinkFilter & remove return
     return;
     this.config.search.requesting = true;
     if (this.config.search.debounce) this.config.search.debounce.unsubscribe();
@@ -253,16 +253,19 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
 
   private addFilterPartOfGroup(key: string, forceNew: boolean = false) {
     if (this.config.groupFilterOptions.filterValues[key] && !forceNew) return;
-    let name: string;
-    switch (key) {
-      case "gdpr_compliant": name = "GDPR Compliant"; break;
-      case "not_gdpr_compliant": name = "Not GDPR Compliant"; break;
-      default: name = capitalizeFirst(key);
-    }
+    const name = this.getGroupName(key);
+
     this.config.groupFilterOptions.filterValues[key] = { key: key, name: name, active: key == "all", countInGroup: -1 }
 
   }
 
+  private getGroupName(groupKey: string): string {
+    switch (groupKey) {
+      case "gdpr_compliant": return "GDPR Compliant";
+      case "not_gdpr_compliant": return "Not GDPR Compliant";
+      default: return capitalizeFirst(groupKey);
+    }
+  }
 
   setCodeTesterCode(code: string) {
     this.config.api.data.data.attributes.sourceCode = code;
@@ -356,10 +359,12 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
         else {
           this.config.api.data = c;
           this.config.api.data.data.attributes.partOfGroup = JSON.parse(c.data.attributes.partOfGroup);
+          this.config.api.data.data.attributes.partOfGroupText = this.config.api.data.data.attributes.partOfGroup.map(x => this.getGroupName(x)).join(", ");
           this.config.api.data.data.attributes.availableFor = JSON.parse(c.data.attributes.availableFor);
           this.config.api.data.data.attributes.integratorInputs = JSON.parse(c.data.attributes.integratorInputs);
         }
-        this.config.api.data.data.attributes.link = "https://bricks.kern.ai/" + c.data.attributes.moduleType + "s/" + c.data.id;
+        this.config.api.data.data.attributes.bricksLink = "https://bricks.kern.ai/" + c.data.attributes.moduleType + "s/" + c.data.id;
+        this.config.api.data.data.attributes.issueLink = "https://github.com/code-kern-ai/bricks/issues/" + c.data.attributes.issueId;
         this.config.api.requesting = false;
         this.config.example.requestData = this.config.api.data.data.attributes.inputExample;
         this.codeParser.prepareCode();

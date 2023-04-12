@@ -78,7 +78,7 @@ export class BricksCodeParser {
             if (inputV.optional) variable.optional = isStringTrue(inputV.optional);
             if (inputV.acceptsMultiple) variable.canMultipleValues = isStringTrue(inputV.acceptsMultiple);
             if (inputV.defaultValue && inputV.addInfo) {
-                if (inputV.addInfo.some(x => canHaveDefaultValue(x.toUpperCase() as BricksVariableType))) {
+                if (!inputV.addInfo.some(x => !canHaveDefaultValue(x.toUpperCase() as BricksVariableType))) {
                     variable.values[0] = inputV.defaultValue;
                 }
             }
@@ -95,8 +95,15 @@ export class BricksCodeParser {
                             variable.allowedValues = inputV.allowedValues;
                         }
                     } else {
-                        variable.type = newType;
-                        variable.allowedValues = this.getAllowedValues(variable.type, variable.comment);
+                        if (newType == BricksVariableType.LABEL && this.base.forIde) {
+                            variable.type = BricksVariableType.GENERIC_STRING;
+                            variable.values[0] = inputV.defaultValue;
+                        } else {
+                            variable.type = newType;
+                            variable.allowedValues = this.getAllowedValues(variable.type, variable.comment);
+                            // variable.values[0] = null;
+
+                        }
                     }
                 }
             } else if (inputV.selectionType == SelectionType.RANGE) {
@@ -389,7 +396,7 @@ export class BricksCodeParser {
     }
 
     private collectVariableLinesFromCode(): string[] {
-        if (this.integratorInputRef) {
+        if (this.integratorInputRef || (this.base.config.api.moduleId < 0 && this.base.config.extendedIntegratorNewParse)) {
             //new version doesn't start with YOUR_
             const lines = this.baseCode.split("\n");
             const variableLines = [];
