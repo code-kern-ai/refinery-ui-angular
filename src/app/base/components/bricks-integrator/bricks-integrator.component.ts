@@ -113,12 +113,13 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
     const searchFor = value.toLowerCase();
     this.config.search.searchValue = searchFor;
     this.config.search.results.forEach(e =>
-      e.visible = e.id.toString().startsWith(searchFor) ||
+      e.searchVisible = e.id.toString().startsWith(searchFor) ||
       e.attributes.name.toLowerCase().includes(searchFor) ||
       e.attributes.description.toLowerCase().includes(searchFor));
-    this.config.search.nothingMatches = !this.config.search.results.find(e => e.visible)
+    this.config.search.nothingMatches = !this.config.search.results.find(e => e.searchVisible && e.groupVisible)
 
-    //once real search is enabled change BricksIntegratorComponent.httpBaseLinkFilter & remove return
+    this.countGroupEntries();
+    //once real search is enabled change BricksIntegratorComponent.httpBaseLinkFilter & remove return, caution group filter needs to be adjusted
     return;
     this.config.search.requesting = true;
     if (this.config.search.debounce) this.config.search.debounce.unsubscribe();
@@ -177,8 +178,8 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
         }
         finalData = this.filterMinVersion(finalData);
         extendDummyElements(finalData);
-        finalData = this.scanAndFilterForExtendedIntegrator(finalData);
-        this.config.search.fullResults = finalData;
+        finalData = this.filterForExtendedIntegrator(finalData);
+        this.config.search.results = finalData;
         this.filterGroup();
         this.searchInput.nativeElement.focus();
       },
@@ -200,8 +201,7 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
   }
 
   private filterGroup() {
-    this.config.search.results = this.config.search.fullResults.filter(e => this.filterForGroup(e));
-    this.config.search.results.forEach(e => e.visible = true);
+    this.config.search.results.forEach(e => e.groupVisible = this.filterForGroup(e));
     this.requestSearchDebounce(this.config.search.searchValue);
 
   }
@@ -213,7 +213,7 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
     Object.keys(gRef.filterValues).forEach((x) => {
       if (gRef.filterValues[x].active) activeGroups.push(x);
     });
-    if (gRef.intersection) {
+    if (true/*gRef.intersection*/) {
       if (gRef.filterValues["all"].active) return true;
       if (!e.attributes.partOfGroup) return false;
       return activeGroups.every(group => e.attributes.partOfGroup.includes(group));
@@ -223,19 +223,30 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
       return e.attributes.partOfGroup.some(group => gRef.filterValues[group].active);
     }
   }
+  private countGroupEntries() {
+    const data = this.config.groupFilterOptions.filterValues;
+    for (const key in data) data[key].countInGroup = 0;
 
-  private scanAndFilterForExtendedIntegrator(data: any[]): any[] {
+    for (let e of this.config.search.results) {
+      if (!e.attributes.partOfGroup) continue;
+      if (!e.searchVisible) continue;
+      e.attributes.partOfGroup.forEach(group => data[group].countInGroup++);
+      data["all"].countInGroup++
+    }
+    this.config.groupFilterOptions.filterValuesArray = []
+    for (const key in data) if (data[key].countInGroup > 0) this.config.groupFilterOptions.filterValuesArray.push(data[key]);
+    this.config.groupFilterOptions.filterValuesArray.sort((a, b) => b.countInGroup - a.countInGroup || a.name.localeCompare(b.name));
+  }
+
+  private filterForExtendedIntegrator(data: any[]): any[] {
     this.addFilterPartOfGroup("all");
     for (let e of data) {
       if (!e.attributes.partOfGroup) continue;
       e.attributes.partOfGroup.forEach(group => this.addFilterPartOfGroup(group));
     }
-    if (Object.keys(this.config.groupFilterOptions.filterValues).length < 2) {
-      // all will always be there so <=1
-      this.config.extendedIntegrator = false;
-      return data;
-    }
-    this.config.extendedIntegrator = true;
+    this.config.extendedIntegrator = data.some(e => e.attributes.partOfGroup);
+    if (Object.keys(this.config.groupFilterOptions.filterValues).length < 2) return data;
+
     return data.filter(e => e.attributes.availableFor ? e.attributes.availableFor.includes("refinery") : true)
 
   }
@@ -248,7 +259,7 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
       case "not_gdpr_compliant": name = "Not GDPR Compliant"; break;
       default: name = capitalizeFirst(key);
     }
-    this.config.groupFilterOptions.filterValues[key] = { name: name, active: key == "all" }
+    this.config.groupFilterOptions.filterValues[key] = { key: key, name: name, active: key == "all", countInGroup: -1 }
 
   }
 

@@ -100,7 +100,8 @@ export type BricksSearchData = {
         partOfGroup?: string[],
     }
     id: number
-    visible?: boolean
+    searchVisible?: boolean
+    groupVisible?: boolean
 }
 
 export type BricksIntegratorConfig = {
@@ -129,7 +130,6 @@ export type BricksIntegratorConfig = {
         lastRequestUrl: string,
         requestData: string,
         debounce: Subscription,
-        fullResults: BricksSearchData[],
         results: BricksSearchData[],
         nothingMatches: boolean,
         currentRequest: Subscription
@@ -150,13 +150,17 @@ export type BricksIntegratorConfig = {
 }
 
 export type GroupFilterOptions = {
-    intersection: boolean,
     filterValues: {
-        [key: string]: {
-            name: string,
-            active: boolean,
-        }
+        [key: string]: GroupFilterOption
     }
+    filterValuesArray: GroupFilterOption[]
+}
+
+export type GroupFilterOption = {
+    key: string,
+    name: string,
+    active: boolean,
+    countInGroup: number,
 }
 
 export function getEmptyBricksIntegratorConfig(): BricksIntegratorConfig {
@@ -187,7 +191,6 @@ export function getEmptyBricksIntegratorConfig(): BricksIntegratorConfig {
             requestData: null,
             debounce: null,
             results: [],
-            fullResults: null,
             nothingMatches: false,
             currentRequest: null
         },
@@ -198,8 +201,8 @@ export function getEmptyBricksIntegratorConfig(): BricksIntegratorConfig {
         prepareJsonRemoveYOUR: true,
         extendedIntegrator: false,
         groupFilterOptions: {
-            intersection: true,
-            filterValues: {}
+            filterValues: {},
+            filterValuesArray: []
         },
         extendedIntegratorGroupFilterOpen: false,
         querySourceSelectionOpen: false,
