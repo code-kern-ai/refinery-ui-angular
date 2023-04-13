@@ -161,23 +161,26 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
     }
     this.config.search.currentRequest = this.http.get(this.config.search.lastRequestUrl, options).pipe(first()).subscribe({
       next: (data: any) => {
+        this.config.extendedIntegrator = data.data.some(e => e.attributes.partOfGroup); //new field in integrator
 
         this.config.search.requesting = false;
         this.config.search.currentRequest = null;
-        let finalData = data.data.map(e => {
-          if (!e.attributes.integratorInputs) return e;
-          const c = jsonCopy(e);
-          c.attributes.partOfGroup = JSON.parse(c.attributes.partOfGroup);
-          c.attributes.availableFor = JSON.parse(c.attributes.availableFor);
-          c.attributes.integratorInputs = JSON.parse(c.attributes.integratorInputs);
-          return c;
-        });
+        let finalData;
+        if (this.config.extendedIntegrator) {
+          finalData = data.data.map(e => {
+            const c = jsonCopy(e);
+            if (e.attributes.partOfGroup) c.attributes.partOfGroup = JSON.parse(c.attributes.partOfGroup);
+            if (e.attributes.availableFor) c.attributes.availableFor = JSON.parse(c.attributes.availableFor);
+            if (e.attributes.integratorInputs) c.attributes.integratorInputs = JSON.parse(c.attributes.integratorInputs);
+            return c;
+          });
+        } else finalData = data.data;
         if (this.executionTypeFilter) {
           const toFilter = this.executionTypeFilter.split(",");
           finalData = finalData.filter(e => toFilter.includes(e.attributes.executionType));
         }
         finalData = this.filterMinVersion(finalData);
-        extendDummyElements(finalData);
+        extendDummyElements(finalData, this.config.extendedIntegrator);
         finalData = this.filterForExtendedIntegrator(finalData);
         this.config.search.results = finalData;
         this.filterGroup();
@@ -244,7 +247,6 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
       if (!e.attributes.partOfGroup) continue;
       e.attributes.partOfGroup.forEach(group => this.addFilterPartOfGroup(group));
     }
-    this.config.extendedIntegrator = data.some(e => e.attributes.partOfGroup);
     if (Object.keys(this.config.groupFilterOptions.filterValues).length < 2) return data;
 
     return data.filter(e => e.attributes.availableFor ? e.attributes.availableFor.includes("refinery") : true)

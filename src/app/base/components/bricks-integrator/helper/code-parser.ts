@@ -389,7 +389,7 @@ export class BricksCodeParser {
                 else commentLines.push(tmpLine);
             }
         }
-        if (this.integratorInputRef && this.integratorInputRef.globalComment) commentLines.push(this.integratorInputRef.globalComment);
+        if (this.integratorInputRef && this.integratorInputRef.globalComment) this.integratorInputRef.globalComment.split("\n").forEach(x => commentLines.push(x));
 
         return commentLines.filter(x => x.trim() != "");
     }

@@ -600,7 +600,9 @@
                 <label class="font-bold">Variable</label>
                 <label class="font-bold">Value</label>
                 <div class="contents" *ngFor="let v of codeParser.variables;let i = index">
-                    <label class="text-sm col-start-1">{{v.displayName}}</label>
+                    <label class="text-sm col-start-1" data-tip="optional"
+                        [ngClass]="v.optional?'text-gray-400 tooltip tooltip-left text-left':''">{{v.displayName}}<span
+                            *ngIf="!v.optional">*</span></label>
                     <ng-container class="contents" [ngTemplateOutlet]="variableSelect"
                         [ngTemplateOutletContext]="{variable:v,j:i}">
                     </ng-container>

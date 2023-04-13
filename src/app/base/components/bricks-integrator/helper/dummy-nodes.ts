@@ -76,7 +76,7 @@ export function getDummyNodeByIdForApi(id: DummyNodes): any {
     }
 }
 
-function getDummyNodeByIdForSelection(id: DummyNodes): any {
+function getDummyNodeByIdForSelection(id: DummyNodes, extendedIntegrator: boolean): any {
     const baseNode: any = {
         id: id,
         attributes: {
@@ -92,10 +92,18 @@ function getDummyNodeByIdForSelection(id: DummyNodes): any {
         case DummyNodes.CODE_TESTER:
             baseNode.attributes.name = "Code tester";
             baseNode.attributes.description = "Lets you test random code for the integrator (only available for kern admins)";
+            if (extendedIntegrator) {
+                baseNode.attributes.availableFor = ["refinery"];
+                baseNode.attributes.partOfGroup = ["admin"];
+            }
             return baseNode;
         case DummyNodes.CODE_PARSER:
             baseNode.attributes.name = "Code parser";
             baseNode.attributes.description = "Lets you parse random code to the new structure (only available for kern admins)";
+            if (extendedIntegrator) {
+                baseNode.attributes.availableFor = ["refinery"];
+                baseNode.attributes.partOfGroup = ["admin"];
+            }
             return baseNode;
         case DummyNodes.REFACTOR_TESTER:
             baseNode.attributes.name = "Refactor tester";
@@ -110,10 +118,10 @@ function getDummyNodeByIdForSelection(id: DummyNodes): any {
     }
 }
 
-export function extendDummyElements(finalData: any[]) {
+export function extendDummyElements(finalData: any[], extendedIntegrator: boolean) {
     if (!ConfigManager.getIsAdmin()) return;
-    addElementToList(finalData, getDummyNodeByIdForSelection(DummyNodes.CODE_TESTER));
-    addElementToList(finalData, getDummyNodeByIdForSelection(DummyNodes.CODE_PARSER));
+    addElementToList(finalData, getDummyNodeByIdForSelection(DummyNodes.CODE_TESTER, extendedIntegrator));
+    addElementToList(finalData, getDummyNodeByIdForSelection(DummyNodes.CODE_PARSER, extendedIntegrator));
     // addElementToList(finalData, getDummyNodeByIdForSelection(DummyNodes.REFACTOR_TESTER));
 }
 
