@@ -79,6 +79,7 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
 
   openBricksIntegrator() {
     this.config.modalOpen = true;
+    this.config.search.searchValue = "";
     this.checkCanAccept();
     this.requestSearch();
     this.searchInput.nativeElement.value = "";

@@ -415,6 +415,11 @@ export class BricksCodeParser {
 
     private getPythonVariable(value: string, pythonType: string, bricksType: BricksVariableType) {
         if (value == null) return "None";
+        if (bricksType == BricksVariableType.GENERIC_BOOLEAN) {
+            if (value.toLowerCase() == "none") return "None";
+            if (isStringTrue(value)) return "True";
+            return "False";
+        }
         if (bricksType == BricksVariableType.LOOKUP_LIST) return "knowledge." + value;
         if (bricksType == BricksVariableType.REGEX) return "r\"" + value + "\"";
         if (pythonType.includes("str")) return "\"" + value + "\"";

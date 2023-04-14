@@ -789,7 +789,7 @@
                 <input #genText type="text" class="input input-bordered input-sm"
                     style="outline:none; box-shadow:none;min-width: 10rem;max-width: 25rem;"
                     [ngClass]="variable.values[i]?.length>20?'w-60':'w-50'" [value]="variable.values[i]"
-                    [id]="'GENERIC_STRING_'+j+'_'+i" autocomplete="off"
+                    [id]="'GENERIC_STRING_'+j+'_'+i" autocomplete="off" (focus)="genText.select()"
                     (keyup)="debounceSetGeneric(variable,i,genText);">
             </ng-template>
             <ng-template ngSwitchCase="GENERIC_INT">
