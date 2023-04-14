@@ -246,6 +246,7 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
     this.addFilterPartOfGroup("all");
     for (let e of data) {
       if (!e.attributes.partOfGroup) continue;
+      if (e.attributes.executionType) e.attributes.partOfGroup.push(e.attributes.executionType);
       e.attributes.partOfGroup.forEach(group => this.addFilterPartOfGroup(group));
     }
     if (Object.keys(this.config.groupFilterOptions.filterValues).length < 2) return data;
@@ -266,6 +267,7 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
     switch (groupKey) {
       case "gdpr_compliant": return "GDPR Compliant";
       case "not_gdpr_compliant": return "Not GDPR Compliant";
+      case "no_api_key": return "No API Key";
       default: return capitalizeFirst(groupKey);
     }
   }
