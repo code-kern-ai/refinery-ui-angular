@@ -217,15 +217,10 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
     Object.keys(gRef.filterValues).forEach((x) => {
       if (gRef.filterValues[x].active) activeGroups.push(x);
     });
-    if (true/*gRef.intersection*/) {
-      if (gRef.filterValues["all"].active) return true;
-      if (!e.attributes.partOfGroup) return false;
-      return activeGroups.every(group => e.attributes.partOfGroup.includes(group));
-    } else {
-      if (gRef.filterValues["all"].active) return true;
-      if (!e.attributes.partOfGroup) return false;
-      return e.attributes.partOfGroup.some(group => gRef.filterValues[group].active);
-    }
+    if (gRef.filterValues["all"].active) return true;
+    if (!e.attributes.partOfGroup) return false;
+    return activeGroups.every(group => e.attributes.partOfGroup.includes(group));
+
   }
   private countGroupEntries() {
     const data = this.config.groupFilterOptions.filterValues;
@@ -238,7 +233,7 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
       data["all"].countInGroup++
     }
     this.config.groupFilterOptions.filterValuesArray = []
-    for (const key in data) if (data[key].countInGroup > 0) this.config.groupFilterOptions.filterValuesArray.push(data[key]);
+    for (const key in data) if (data[key].countInGroup > 0 || data[key].active) this.config.groupFilterOptions.filterValuesArray.push(data[key]);
     this.config.groupFilterOptions.filterValuesArray.sort((a, b) => b.countInGroup - a.countInGroup || a.name.localeCompare(b.name));
   }
 
@@ -246,7 +241,7 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
     this.addFilterPartOfGroup("all");
     for (let e of data) {
       if (!e.attributes.partOfGroup) continue;
-      if (e.attributes.executionType) e.attributes.partOfGroup.push(e.attributes.executionType);
+      if (e.attributes.executionType && e.attributes.executionType != "activeLearner") e.attributes.partOfGroup.push(e.attributes.executionType);
       e.attributes.partOfGroup.forEach(group => this.addFilterPartOfGroup(group));
     }
     if (Object.keys(this.config.groupFilterOptions.filterValues).length < 2) return data;
