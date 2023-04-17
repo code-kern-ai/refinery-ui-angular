@@ -14,11 +14,71 @@
 }" [modalBoxStyle]="{'overflow-x':'visible'}" (optionClicked)="optionClicked($event)">
     <div class="flex flex-row items-center justify-center gap-x-2">
 
-        <span class="text-lg leading-6 text-gray-900 font-medium">
+        <span class="text-lg leading-6 text-gray-900 font-medium"
+            (dblclick)="config.querySourceSelectionOpen=!config.querySourceSelectionOpen">
             Bricks Integrator
         </span>
+        <div *ngIf="config.querySourceSelectionOpen && config.page == IntegratorPageType.SEARCH"
+            class="flex cursor-pointer items-center" (click)="requestSearch()">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-refresh" width="24" height="24"
+                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                <path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4"></path>
+                <path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4"></path>
+            </svg>
+        </div>
 
     </div>
+    <ng-template [ngIf]="config.querySourceSelectionOpen && config.page == IntegratorPageType.SEARCH">
+        <div class="flex flex-row flex-wrap justify-center w-full gap-x-2 gap-y-2">
+            <!--default, remote location-->
+            <div class="flex flex-row gap-x-2 cursor-pointer items-center"
+                (click)="config.querySourceSelectionRemote = true;requestSearch();">
+                <input type="radio" [checked]="config.querySourceSelectionRemote"
+                    class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-200 cursor-pointer"
+                    [value]="config.querySourceSelectionRemote">
+                <label class="text-sm font-bold text-gray-900 cursor-pointer">Remote</label>
+            </div>
+            <!--local location-->
+            <div class="flex flex-row gap-x-2 cursor-pointer items-center"
+                (click)="config.querySourceSelectionRemote = false;requestSearch();">
+                <input type="radio" [checked]="!config.querySourceSelectionRemote"
+                    class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-200 cursor-pointer"
+                    [value]="!config.querySourceSelectionRemote">
+                <label class="text-sm font-bold text-gray-900 cursor-pointer">Local</label>
+            </div>
+        </div>
+        <ng-template [ngIf]="!config.querySourceSelectionRemote">
+
+            <!--local config-->
+            <div class="flex flex-row flex-wrap justify-center w-full gap-x-2 gap-y-2 my-1">
+
+                <div class="flex flex-row gap-x-2 items-center">
+                    <label class="text-sm font-bold text-gray-900">Strapi Port</label>
+                    <input #portStrapi type="number" step="1" style="outline:none; box-shadow:none;"
+                        class="input input-bordered w-16 input-sm px-1"
+                        [value]="config.querySourceSelectionLocalStrapiPort" autocomplete="off"
+                        (input)="config.querySourceSelectionLocalStrapiPort = portStrapi.value;">
+                </div>
+                <div class="flex flex-row gap-x-2 items-center">
+                    <label class="text-sm font-bold text-gray-900">Bricks Port</label>
+                    <input #portBricks type="number" step="1" style="outline:none; box-shadow:none;"
+                        class="input input-bordered w-16 input-sm px-1"
+                        [value]="config.querySourceSelectionLocalBricksPort" autocomplete="off"
+                        (input)="config.querySourceSelectionLocalBricksPort = portBricks.value;">
+                </div>
+            </div>
+            <div class="flex flex-row gap-x-2 items-center mx-4">
+                <label class="text-sm font-bold text-gray-900 whitespace-nowrap">Strapi Token</label>
+                <input #strapiToken type="text" step="1" style="outline:none; box-shadow:none;"
+                    class="input input-bordered w-full input-sm px-1"
+                    [value]="config.querySourceSelectionLocalStrapiToken" autocomplete="off"
+                    (focus)="strapiToken.select();"
+                    (blur)="config.querySourceSelectionLocalStrapiToken = strapiToken.value;">
+            </div>
+        </ng-template>
+    </ng-template>
     <div class="flex justify-center">
         <div class="sm:block">
             <div class="border-b border-gray-200">
@@ -44,8 +104,12 @@
     <!--PageSearch-->
     <div [ngClass]="config.page != IntegratorPageType.SEARCH ? 'hidden':''"
         class="flex flex-col gap-y-2 items-center my-4" style="height:28rem;width:30rem">
+
+
         <div
-            class="w-full max-w-xl transform divide-y divide-gray-100 overflow-hidden rounded-xl bg-white shadow-2xl transition-all">
+            class="flex flex-col w-full max-w-xl transform divide-y divide-gray-100 overflow-hidden rounded-xl bg-white shadow-2xl transition-all">
+
+            <!-- normal search box-->
             <div class="relative">
                 <svg class="pointer-events-none absolute top-3.5 left-4 h-5 w-5 text-gray-400"
                     xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -61,6 +125,39 @@
                     <kern-loading></kern-loading>
                 </div>
             </div>
+            <!-- extendedIntegrator group filtering-->
+            <ng-template [ngIf]="config.extendedIntegrator">
+                <div class="w-full px-4">
+
+                    <div class="flex flex-row justify-between cursor-pointer items-center w-full mt-1"
+                        (click)="config.extendedIntegratorGroupFilterOpen=!config.extendedIntegratorGroupFilterOpen">
+                        <label class="text-base font-bold text-gray-900 cursor-pointer">Group Filter</label>
+                        <div [ngClass]="config.extendedIntegratorGroupFilterOpen?'rotate-transform':null">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevrons-down"
+                                width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+                                fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <polyline points="7 7 12 12 17 7"></polyline>
+                                <polyline points="7 13 12 18 17 13"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                    <div [ngClass]="config.extendedIntegratorGroupFilterOpen?'':'hidden'"
+                        class="flex flex-col w-full my-2">
+                        <div class="flex flex-row flex-wrap w-full gap-x-2 gap-y-2">
+                            <div *ngFor="let group of config.groupFilterOptions.filterValuesArray"
+                                class="flex flex-row gap-x-1 cursor-pointer items-center"
+                                (click)="setGroupActive(group.key)">
+                                <input type="radio" [checked]="group.active"
+                                    class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-200 cursor-pointer"
+                                    [value]="group.active">
+                                <label class="text-sm font-bold text-gray-900 cursor-pointer">{{group.name +
+                                    ' ('+group.countInGroup+')'}}</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
             <!-- Empty state, show/hide based on command palette state -->
             <ng-template [ngIf]="config.search.nothingMatches" [ngIfElse]="showResults">
 
@@ -98,9 +195,18 @@
                 <ul class="max-h-96 scroll-py-3 overflow-y-auto p-3" style="max-height:24rem" id="options"
                     role="listbox">
                     <li *ngFor="let result of config.search.results; let i = index"
-                        [ngClass]="result.visible ? '':'hidden'" (click)="selectSearchResult(result.id)"
-                        class="group flex flex-row items-center cursor-pointer select-none rounded-xl p-3 hover:bg-gray-100"
+                        [ngClass]="!result.searchVisible || !result.groupVisible ? 'hidden':''"
+                        (click)="selectSearchResult(result.id)"
+                        class="group flex flex-row items-center cursor-pointer select-none rounded-xl p-3 hover:bg-gray-100 relative"
                         id="option-1" role="option" tabindex="-1">
+                        <div *ngIf="result.id >0 && config.extendedIntegrator" class="absolute right-2 top-2">
+                            <div class="tooltip tooltip-left"
+                                [attr.data-tip]="result.attributes.gdprCompliant?'GDPR Compliant':'Not GDPR Compliant'">
+                                <button
+                                    [ngClass]="result.attributes.gdprCompliant?'bg-green-100 border border-green-400 text-green-700':'bg-red-100 border border-red-400 text-red-700'"
+                                    class="rounded-lg text-xs px-2.5 py-0.5 cursor-default border">GDPR</button>
+                            </div>
+                        </div>
                         <svg *ngIf="result.attributes.moduleType == 'generator'" xmlns="http://www.w3.org/2000/svg"
                             class="h-6 w-6 flex-none text-gray-900 text-opacity-40" width="24" height="24"
                             viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
@@ -148,57 +254,138 @@
         </ng-template>
         <ng-template #displayOverview>
             <ng-template [ngIf]="config.api.data && config.api.moduleId >=0">
-                <div class="grid grid-cols-2-max  gap-x-2 gap-y-2 items-center">
-                    <div class="font-bold">Module Id</div>
-                    <label>{{config.api.data.data.id}}</label>
-                    <div class="font-bold">Module Name</div>
-                    <label>{{config.api.data.data.attributes.name}}</label>
-                    <div class="font-bold">Description</div>
-                    <label style="max-width:25rem">{{config.api.data.data.attributes.description}}</label>
-                    <div class="font-bold">Execution Type</div>
-                    <label>{{config.api.data.data.attributes.executionType}}</label>
-                    <div class="font-bold">Module Type</div>
-                    <label>{{config.api.data.data.attributes.moduleType}}</label>
-                    <div class="font-bold">Link</div>
-                    <a href="{{config.api.data.data.attributes.link}}" target="_blank"><span
-                            class="underline cursor-pointer">{{config.api.data.data.attributes.name}}</span></a>
-                    <div class="col-start-1 col-span-full">
-                        <div class="flex flex-row justify-between cursor-pointer items-center"
-                            (click)="config.overviewCodeOpen=!config.overviewCodeOpen">
-                            <label class="text-base font-bold text-gray-900 cursor-pointer">Source Code<span
-                                    class="text-sm font-normal">(guided integration through tab
-                                    integration)</span></label>
-                            <div [ngClass]="config.overviewCodeOpen?'rotate-transform':null">
-                                <svg xmlns="http://www.w3.org/2000/svg"
-                                    class="icon icon-tabler icon-tabler-chevrons-down" width="24" height="24"
-                                    viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                                    stroke-linecap="round" stroke-linejoin="round">
-                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                    <polyline points="7 7 12 12 17 7"></polyline>
-                                    <polyline points="7 13 12 18 17 13"></polyline>
-                                </svg>
+                <ng-template [ngIf]="config.extendedIntegrator" [ngIfElse]="oldDisplay">
+                    <div class="grid grid-cols-2-max  gap-x-2 gap-y-2 items-center">
+                        <div class="font-bold">Module Name</div>
+                        <label>{{config.api.data.data.attributes.name}}</label>
+                        <div class="font-bold">Description</div>
+                        <label style="max-width:25rem">{{config.api.data.data.attributes.description}}</label>
+                        <div class="font-bold">Bricks Link</div>
+                        <a href="{{config.api.data.data.attributes.bricksLink}}" target="_blank"><span
+                                class="underline cursor-pointer">{{config.api.data.data.attributes.name}}</span></a>
+
+                        <div class="col-start-1 col-span-full">
+                            <div class="flex flex-row justify-between cursor-pointer items-center"
+                                (click)="config.extendedIntegratorOverviewAddInfoOpen=!config.extendedIntegratorOverviewAddInfoOpen">
+                                <label class="text-base font-bold text-gray-900 cursor-pointer">Details</label>
+                                <div [ngClass]="config.extendedIntegratorOverviewAddInfoOpen?'rotate-transform':null">
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                        class="icon icon-tabler icon-tabler-chevrons-down" width="24" height="24"
+                                        viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <polyline points="7 7 12 12 17 7"></polyline>
+                                        <polyline points="7 13 12 18 17 13"></polyline>
+                                    </svg>
+                                </div>
                             </div>
                         </div>
-                        <div [ngClass]="config.overviewCodeOpen?'':'hidden'" class="flex flex-col mt-1">
-
-                            <div class="overflow-y-auto" style="max-height:15rem;max-width: 35rem; overflow-x:hidden">
-                                <pre class="editor-pre">{{config.api.data.data.attributes.sourceCode}}</pre>
+                        <div class="contents" [ngClass]="config.extendedIntegratorOverviewAddInfoOpen?'':'hidden'">
+                            <div class="font-bold">Github Issue Link</div>
+                            <a href="{{config.api.data.data.attributes.issueLink}}" target="_blank"><span
+                                    class="underline cursor-pointer">#{{config.api.data.data.attributes.issueId}}</span></a>
+                            <div class="font-bold">Min Refinery Version</div>
+                            <label>{{config.api.data.data.attributes.minRefineryVersion}}</label>
+                            <div class="font-bold">Grouping</div>
+                            <label>{{config.api.data.data.attributes.partOfGroupText}}</label>
+                            <div class="font-bold">Execution Type</div>
+                            <label>{{config.api.data.data.attributes.executionType}}</label>
+                            <div class="font-bold">Module Type</div>
+                            <label>{{config.api.data.data.attributes.moduleType}}</label>
+                            <div class="font-bold">Data Type</div>
+                            <label>{{config.api.data.data.attributes.integratorInputs?.refineryDataType}}</label>
+                        </div>
+                        <div class="col-start-1 col-span-full">
+                            <div class="flex flex-row justify-between cursor-pointer items-center"
+                                (click)="config.overviewCodeOpen=!config.overviewCodeOpen">
+                                <label class="text-base font-bold text-gray-900 cursor-pointer">Source Code<span
+                                        class="text-sm font-normal">(guided integration through tab
+                                        integration)</span></label>
+                                <div [ngClass]="config.overviewCodeOpen?'rotate-transform':null">
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                        class="icon icon-tabler icon-tabler-chevrons-down" width="24" height="24"
+                                        viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <polyline points="7 7 12 12 17 7"></polyline>
+                                        <polyline points="7 13 12 18 17 13"></polyline>
+                                    </svg>
+                                </div>
                             </div>
-                            <div class="mt-2 tooltip" [attr.data-tip]="config.copied?'Copied':'Click to copy raw code'">
+                            <div [ngClass]="config.overviewCodeOpen?'':'hidden'"
+                                class="flex flex-col mt-1 items-center">
 
-                                <button (click)="copyToClipboard(config.api.data.data.attributes.sourceCode)"
-                                    type="button"
-                                    class="bg-indigo-700 text-white text-xs font-semibold px-4 py-2 rounded-md border hover:bg-indigo-800 focus:outline-none">Copy</button>
+                                <div class="overflow-y-auto"
+                                    style="max-height:15rem;max-width: 35rem; overflow-x:hidden">
+                                    <pre class="editor-pre">{{codeParser.baseCode}}</pre>
+                                </div>
+                                <div class="mt-2 tooltip"
+                                    [attr.data-tip]="config.copied?'Copied':'Click to copy raw code'">
+
+                                    <button (click)="copyToClipboard(codeParser.baseCode)" type="button"
+                                        class="bg-indigo-700 text-white text-xs font-semibold px-4 py-2 rounded-md border hover:bg-indigo-800 focus:outline-none">Copy</button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                </ng-template>
+
+                <ng-template #oldDisplay>
+
+                    <div class="grid grid-cols-2-max  gap-x-2 gap-y-2 items-center">
+                        <div class="font-bold">Module Id</div>
+                        <label>{{config.api.data.data.id}}</label>
+                        <div class="font-bold">Module Name</div>
+                        <label>{{config.api.data.data.attributes.name}}</label>
+                        <div class="font-bold">Description</div>
+                        <label style="max-width:25rem">{{config.api.data.data.attributes.description}}</label>
+                        <div class="font-bold">Execution Type</div>
+                        <label>{{config.api.data.data.attributes.executionType}}</label>
+                        <div class="font-bold">Module Type</div>
+                        <label>{{config.api.data.data.attributes.moduleType}}</label>
+                        <div class="font-bold">Link</div>
+                        <a href="{{config.api.data.data.attributes.link}}" target="_blank"><span
+                                class="underline cursor-pointer">{{config.api.data.data.attributes.name}}</span></a>
+                        <div class="col-start-1 col-span-full">
+                            <div class="flex flex-row justify-between cursor-pointer items-center"
+                                (click)="config.overviewCodeOpen=!config.overviewCodeOpen">
+                                <label class="text-base font-bold text-gray-900 cursor-pointer">Source Code<span
+                                        class="text-sm font-normal">(guided integration through tab
+                                        integration)</span></label>
+                                <div [ngClass]="config.overviewCodeOpen?'rotate-transform':null">
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                        class="icon icon-tabler icon-tabler-chevrons-down" width="24" height="24"
+                                        viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <polyline points="7 7 12 12 17 7"></polyline>
+                                        <polyline points="7 13 12 18 17 13"></polyline>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div [ngClass]="config.overviewCodeOpen?'':'hidden'"
+                                class="flex flex-col mt-1 items-center">
+
+                                <div class="overflow-y-auto"
+                                    style="max-height:15rem;max-width: 35rem; overflow-x:hidden">
+                                    <pre class="editor-pre">{{codeParser.baseCode}}</pre>
+                                </div>
+                                <div class="mt-2 tooltip"
+                                    [attr.data-tip]="config.copied?'Copied':'Click to copy raw code'">
+
+                                    <button (click)="copyToClipboard(codeParser.baseCode)" type="button"
+                                        class="bg-indigo-700 text-white text-xs font-semibold px-4 py-2 rounded-md border hover:bg-indigo-800 focus:outline-none">Copy</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </ng-template>
             </ng-template>
             <ng-template [ngIf]="config.api.moduleId <0 ">
                 <textarea #codeInput
                     class="textarea placeholder-italic w-full p-2 line-height-textarea h-20 focus:outline-none border border-gray-300"
                     placeholder="Example Module Code" (change)="setCodeTesterCode(codeInput.value)"
-                    style="width: min(80vw,1000px);height:min(80vh,850px);"></textarea>
+                    style="width: min(80vw,1000px);height:min(80vh,850px);">{{config.api.data.data.attributes.sourceCode}}</textarea>
 
             </ng-template>
         </ng-template>
@@ -269,7 +456,7 @@
                     </div>
                     <label class="text-sm -mt-1">Your selected task doesn't have all necessary
                         labels:</label>
-                    <div class="flex flex-row gap-x-2 flex-wrap gap-2" style="max-width:30rem">
+                    <div class="flex flex-row flex-wrap gap-2" style="max-width:30rem">
                         <span class="text-sm inline-flex items-center"
                             *ngFor="let label of codeParser.expected.expectedTaskLabels">
                             <label [ngClass]="[label.backgroundColor, label.textColor, label.borderColor]"
@@ -413,7 +600,9 @@
                 <label class="font-bold">Variable</label>
                 <label class="font-bold">Value</label>
                 <div class="contents" *ngFor="let v of codeParser.variables;let i = index">
-                    <label class="text-sm col-start-1">{{v.displayName}}</label>
+                    <label class="text-sm col-start-1" data-tip="optional"
+                        [ngClass]="v.optional?'text-gray-400 tooltip tooltip-left text-left':''">{{v.displayName}}<span
+                            *ngIf="!v.optional">*</span></label>
                     <ng-container class="contents" [ngTemplateOutlet]="variableSelect"
                         [ngTemplateOutletContext]="{variable:v,j:i}">
                     </ng-container>
@@ -468,7 +657,7 @@
                     </svg>
                 </div>
             </div>
-            <div [ngClass]="config.integratorCodeOpen?'':'hidden'" class="flex flex-col mt-1">
+            <div [ngClass]="config.integratorCodeOpen?'':'hidden'" class="flex flex-col mt-1 items-center">
                 <div class="overflow-y-auto" style="max-height:15rem;max-width: 35rem; overflow-x:hidden">
                     <pre class="editor-pre">{{config.preparedCode}}</pre>
                 </div>
@@ -491,14 +680,15 @@
                     </div>
                 </div>
 
-                <div [ngClass]="config.integratorParseOpen?'':'hidden'" class="flex flex-col mt-1">
+                <div [ngClass]="config.integratorParseOpen?'':'hidden'" class="flex flex-col mt-1 items-center">
                     <div class="overflow-y-auto" style="max-height:15rem;max-width: 35rem; overflow-x:hidden">
                         <pre class="editor-pre">{{config.preparedJson}}</pre>
                     </div>
                     <div class="flex flex-row flex-wrap gap-2">
                         <div class="flex flex-row flex-nowrap cursor-pointer"
-                            (click)="config.prepareJsonAsEnum = !config.prepareJsonAsEnum;codeParser.replaceVariables();">
-                            <input class="h-5 w-5 cursor-pointer" type="checkbox" [checked]='config.prepareJsonAsEnum'>
+                            (click)="config.prepareJsonAsPythonEnum = !config.prepareJsonAsPythonEnum;codeParser.replaceVariables();">
+                            <input class="h-5 w-5 cursor-pointer" type="checkbox"
+                                [checked]='config.prepareJsonAsPythonEnum'>
                             <label class="text-sm ml-1">Prepare as enum</label>
                         </div>
                         <div class="flex flex-row flex-nowrap cursor-pointer"
@@ -581,6 +771,14 @@
                     (optionClicked)="variable.values[i] = variable.allowedValues[$event].pythonVariable;codeParser.replaceVariables()">
                 </kern-dropdown>
             </ng-template>
+            <ng-template ngSwitchCase="GENERIC_CHOICE">
+                <kern-dropdown [dropdownOptions]="{
+                    optionArray:variable.allowedValues,
+                    buttonCaption:variable.values[i]?variable.values[i]:'Select option',
+                    emitIndex:true
+                }" (optionClicked)="variable.values[i] = variable.allowedValues[$event];codeParser.replaceVariables()">
+                </kern-dropdown>
+            </ng-template>
             <ng-template ngSwitchCase="REGEX">
                 <input #regex type="text" class="input input-bordered input-sm" style="outline:none; box-shadow:none;"
                     [value]="variable.values[i]" [id]="'REGEX_'+j+'_'+i" autocomplete="off"
@@ -591,7 +789,7 @@
                 <input #genText type="text" class="input input-bordered input-sm"
                     style="outline:none; box-shadow:none;min-width: 10rem;max-width: 25rem;"
                     [ngClass]="variable.values[i]?.length>20?'w-60':'w-50'" [value]="variable.values[i]"
-                    [id]="'GENERIC_STRING_'+j+'_'+i" autocomplete="off"
+                    [id]="'GENERIC_STRING_'+j+'_'+i" autocomplete="off" (focus)="genText.select()"
                     (keyup)="debounceSetGeneric(variable,i,genText);">
             </ng-template>
             <ng-template ngSwitchCase="GENERIC_INT">
@@ -610,6 +808,17 @@
                     autocomplete="off"
                     [ngStyle]="{'background-color':variable.options.colors[i], 'border-color':variable.options.colors[i]}">
                 </div>
+            </ng-template>
+            <ng-template ngSwitchCase="GENERIC_RANGE">
+                <div class="flex flex-row flex-nowrap items-center gap-x-2">
+                    <input #genRange type="range" step="0.1" class="input input-bordered input-sm px-0"
+                        min="{{variable.allowedValues[0]}}" max="{{variable.allowedValues[1]}}"
+                        style="outline:none; box-shadow:none;" [value]="variable.values[i]" autocomplete="off"
+                        [id]="'GENERIC_RANGE_'+j + '_' + i" (change)="debounceSetGeneric(variable,i,genRange);"
+                        (input)="genRange.nextElementSibling.value = genRange.value">
+                    <output>{{variable.values[i]}}</output>
+                </div>
+
             </ng-template>
         </ng-container>
         <div *ngIf="variable.values.length > 1" (click)="removeValueEntry(variable,i)"
