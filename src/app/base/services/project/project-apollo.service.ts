@@ -781,14 +781,6 @@ export class ProjectApolloService {
         projectId: projectId,
         taskId: taskId,
       },
-      // refetchQueries: [
-      //   {
-      //     query: queries.GET_EMBEDDING_SCHEMA_BY_PROJECT_ID,
-      //     variables: {
-      //       projectId: projectId,
-      //     },
-      //   },
-      // ],
     });
   }
   exportRecords(projectId: string, sessionId: string = null) {
