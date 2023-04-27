@@ -35,6 +35,7 @@ export type CreateEmbeddingModal = {
 export type DeleteEmbeddingModal = {
     open: boolean;
     id: string;
+    isQueueElement: boolean;
 };
 
 export type ProjectExportModal = {
@@ -90,7 +91,8 @@ export function createDefaultSettingModals(): SettingModals {
             },
             delete: {
                 open: false,
-                id: null
+                id: null,
+                isQueueElement: false
             }
         },
         projectExport: {

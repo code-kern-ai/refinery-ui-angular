@@ -773,6 +773,24 @@ export class ProjectApolloService {
       ],
     });
   }
+
+  deleteFromTaskQueue(projectId: string, taskId: string) {
+    return this.apollo.mutate({
+      mutation: mutations.DELETE_FROM_TASK_QUEUE,
+      variables: {
+        projectId: projectId,
+        taskId: taskId,
+      },
+      // refetchQueries: [
+      //   {
+      //     query: queries.GET_EMBEDDING_SCHEMA_BY_PROJECT_ID,
+      //     variables: {
+      //       projectId: projectId,
+      //     },
+      //   },
+      // ],
+    });
+  }
   exportRecords(projectId: string, sessionId: string = null) {
     return this.apollo
       .query({
@@ -1459,4 +1477,24 @@ export class ProjectApolloService {
     return [query, vc]
   }
 
+  getQueuedTasks(projectId: string, taskType: string) {
+    return this.apollo
+      .query({
+        query: queries.GET_QUEUED_TASKS,
+        variables: {
+          projectId: projectId,
+          taskType: taskType,
+        },
+        fetchPolicy: 'no-cache',
+      })
+      .pipe(
+        map((result) => {
+          return result['data']['queuedTasks'].map((task) => {
+            const copy = { ...task };
+            copy.taskInfo = JSON.parse(task.taskInfo);
+            return copy;
+          });
+        })
+      );
+  }
 }

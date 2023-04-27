@@ -50,7 +50,6 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
   attributeVisibilityStates = attributeVisibilityStates;
   settingModals: SettingModals = createDefaultSettingModals();
   dataHandlerHelper: DataHandlerHelper;
-  projectId: string;
   attributes: Attribute[] = [];
   useableTextAttributes: Attribute[];
   useableAttributes: Attribute[];
@@ -112,6 +111,8 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
 
         // prepare embeddings
         this.embeddings = JSON.parse(JSON.stringify((res[1])));
+        this.dataHandlerHelper.extendQueuedEmbeddings(projectId, this.embeddings);
+
         this.useableTextAttributes = this.useableTextAttributes.filter((attribute: any) => (attribute.state == AttributeCalculationState.UPLOADED || attribute.state == AttributeCalculationState.AUTOMATICALLY_CREATED || attribute.state == AttributeCalculationState.USABLE) && attribute.dataType == 'TEXT');
         this.useableAttributes = this.attributes.filter((attribute: any) => (attribute.state == AttributeCalculationState.UPLOADED || attribute.state == AttributeCalculationState.AUTOMATICALLY_CREATED || attribute.state == AttributeCalculationState.USABLE));
 

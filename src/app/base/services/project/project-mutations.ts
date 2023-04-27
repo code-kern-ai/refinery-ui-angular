@@ -192,6 +192,14 @@ export const mutations = {
   }
   
   `,
+  DELETE_FROM_TASK_QUEUE: gql`
+  mutation ($projectId: ID!, $taskId: ID!) {
+    deleteFromTaskQueue(projectId: $projectId, taskId: $taskId) {
+      ok
+    }
+  }
+  
+  `,
   CREATE_DATA_SLICE: gql`
   mutation($projectId: ID!, $name: String!, $static: Boolean!, $filterRaw: JSONString!, $filterData: [JSONString]!){
     createDataSlice(projectId: $projectId, name: $name, static: $static, filterRaw: $filterRaw, filterData: $filterData){

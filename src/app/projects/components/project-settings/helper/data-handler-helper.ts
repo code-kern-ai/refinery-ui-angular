@@ -6,6 +6,7 @@ import { Attribute } from "../entities/attribute.type";
 import { Embedding } from "../entities/embedding.type";
 import { SettingModals } from "./modal-helper";
 import { granularityTypesArray } from "./project-settings-helper";
+import { jsonCopy } from "src/app/util/helper-functions";
 
 export class DataHandlerHelper {
 
@@ -136,6 +137,23 @@ export class DataHandlerHelper {
 
     prepareEmbeddingsRequest(projectId: string) {
         return this.projectApolloService.getEmbeddingSchema(projectId);
+    }
+
+    extendQueuedEmbeddings(projectId: string, embeddings: any[]) {
+        this.projectApolloService.getQueuedTasks(projectId, "EMBEDDING").pipe(first()).subscribe((r) => {
+            r.forEach((task) => {
+                embeddings.push({
+                    id: task.id,
+                    name: task.taskInfo["embedding_name"],
+                    custom: false,
+                    type: task.taskInfo["type"] == "attribute" ? "ON_ATTRIBUTE" : "ON_TOKEN",
+                    state: "QUEUED",
+                    progress: 0,
+                    dimension: 0,
+                    count: 0
+                });
+            });
+        })
     }
 
 }
