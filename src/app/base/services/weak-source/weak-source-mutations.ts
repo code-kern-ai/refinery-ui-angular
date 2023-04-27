@@ -5,9 +5,7 @@ export const mutations = {
   CREATE_INFORMATION_SOURCE_PAYLOAD: gql`
     mutation ($projectId: ID!, $informationSourceId: ID!) {
       createPayload(projectId: $projectId, informationSourceId: $informationSourceId) {
-        payload {
-          id
-        }
+        queueId
       }
     }
   `,

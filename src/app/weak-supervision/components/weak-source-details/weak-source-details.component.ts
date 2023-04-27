@@ -300,12 +300,17 @@ export class WeakSourceDetailsComponent
 
   checkLogs(projectId: string, informationSource: any) {
     if (informationSource.lastTask) {
-      [this.lastTaskQuery$, this.lastTask$] = this.informationSourceApolloService.getTaskByTaskId(
-        projectId,
-        informationSource.lastTask.id
-      );
-      if ((!this.displayLogWarning || !this.lastTaskLogs || this.lastTaskLogs.length == 0)) {
-        this.lastTask$.pipe(first()).subscribe((task) => this.lastTaskLogs = task.logs);
+      if (informationSource.lastTask.state == 'QUEUED') {
+        this.lastTaskLogs = ["Task queued for execution."]
+      } else {
+        [this.lastTaskQuery$, this.lastTask$] = this.informationSourceApolloService.getTaskByTaskId(
+          projectId,
+          informationSource.lastTask.id
+        );
+        if ((!this.displayLogWarning || !this.lastTaskLogs || this.lastTaskLogs.length == 0)) {
+          this.lastTask$.pipe(first()).subscribe((task) => this.lastTaskLogs = task.logs);
+        }
+
       }
     } else {
       this.lastTask$ = null;
