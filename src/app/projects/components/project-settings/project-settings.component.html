@@ -74,6 +74,16 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                         </svg><span class="text-sm font-medium text-gray-700">Completed</span>
                     </div>
+                    <div *ngIf="tokenizationProgress==-1"
+                        class="absolute top-0 left-0 right-0 bottom-0 flex flex-row items-center justify-center"
+                        style="background-color:#f4f4f5bf">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+                        </svg>
+                        <span class="text-sm font-medium text-gray-700">Queued</span>
+                    </div>
                 </ng-template>
                 <ng-template [ngIf]="!tokenizationProgress">
                     <progress class="progress progress-primary w-48 md:w-72 xl:w-96" value="0" max="1">
