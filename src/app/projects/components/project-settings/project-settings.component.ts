@@ -12,7 +12,7 @@ import { ConfigManager } from 'src/app/base/services/config-service';
 import { UserManager } from 'src/app/util/user-manager';
 import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
 import { dataTypes } from 'src/app/util/data-types';
-import { formatBytes, toPythonFunctionName } from 'src/app/util/helper-functions';
+import { formatBytes, jsonCopy, toPythonFunctionName } from 'src/app/util/helper-functions';
 import { createDefaultSettingModals, SettingModals } from './helper/modal-helper';
 import { attributeVisibilityStates } from '../create-new-attribute/attributes-visibility-helper';
 import { DataHandlerHelper } from './helper/data-handler-helper';
@@ -42,6 +42,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
   attributes$: any;
   subscriptions$: Subscription[] = [];
   embeddings: Embedding[];
+  combineLatestResultBackup: any[];
   embeddingQuery$: any;
   tokenizationProgress: Number;
   downloadMessage: DownloadState = DownloadState.NONE;
@@ -99,27 +100,9 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
       tasks$.push(this.suggestions$);
 
       combineLatest(tasks$).subscribe((res: any[]) => {
-        // prepare attributes
-        this.attributes = res[0];
-        this.useableTextAttributes = res[0];
-        this.attributes.forEach((attribute) => {
-          attribute.dataTypeName = this.dataTypesArray.find((type) => type.value === attribute?.dataType).name;
-          attribute.visibilityIndex = this.attributeVisibilityStates.findIndex((type) => type.value === attribute?.visibility);
-        });
-        this.dataHandlerHelper.requestPKeyCheck(projectId, this.attributes);
-        this.isAcRunning = this.checkIfAcIsRunning();
+        this.combineLatestResultBackup = res;
+        this.prepareCombineLatestResults(projectId);
 
-        // prepare embeddings
-        this.embeddings = JSON.parse(JSON.stringify((res[1])));
-        this.dataHandlerHelper.extendQueuedEmbeddings(projectId, this.embeddings);
-
-        this.useableTextAttributes = this.useableTextAttributes.filter((attribute: any) => (attribute.state == AttributeCalculationState.UPLOADED || attribute.state == AttributeCalculationState.AUTOMATICALLY_CREATED || attribute.state == AttributeCalculationState.USABLE) && attribute.dataType == 'TEXT');
-        this.useableAttributes = this.attributes.filter((attribute: any) => (attribute.state == AttributeCalculationState.UPLOADED || attribute.state == AttributeCalculationState.AUTOMATICALLY_CREATED || attribute.state == AttributeCalculationState.USABLE));
-
-        // prepare embedding suggestions
-        const onlyTextAttributes = this.attributes.filter(a => a.dataType == 'TEXT');
-        this.dataHandlerHelper.prepareEmbeddingFormGroup(onlyTextAttributes, this.settingModals, this.embeddings);
-        this.embeddingHandles = this.dataHandlerHelper.prepareEmbeddingHandles(projectId, onlyTextAttributes, project.tokenizer, res[2]);
       });
     })
 
@@ -136,6 +119,30 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
     }
     this.initForms();
     this.checkIfManagedVersion();
+  }
+
+  private prepareCombineLatestResults(projectId: string) {
+    // prepare attributes
+    this.attributes = this.combineLatestResultBackup[0];
+    this.useableTextAttributes = this.combineLatestResultBackup[0];
+    this.attributes.forEach((attribute) => {
+      attribute.dataTypeName = this.dataTypesArray.find((type) => type.value === attribute?.dataType).name;
+      attribute.visibilityIndex = this.attributeVisibilityStates.findIndex((type) => type.value === attribute?.visibility);
+    });
+    this.dataHandlerHelper.requestPKeyCheck(projectId, this.attributes);
+    this.isAcRunning = this.checkIfAcIsRunning();
+
+    // prepare embeddings
+    this.embeddings = jsonCopy(this.combineLatestResultBackup[1]);
+    this.dataHandlerHelper.extendQueuedEmbeddings(projectId, this.embeddings);
+
+    this.useableTextAttributes = this.useableTextAttributes.filter((attribute: any) => (attribute.state == AttributeCalculationState.UPLOADED || attribute.state == AttributeCalculationState.AUTOMATICALLY_CREATED || attribute.state == AttributeCalculationState.USABLE) && attribute.dataType == 'TEXT');
+    this.useableAttributes = this.attributes.filter((attribute: any) => (attribute.state == AttributeCalculationState.UPLOADED || attribute.state == AttributeCalculationState.AUTOMATICALLY_CREATED || attribute.state == AttributeCalculationState.USABLE));
+
+    // prepare embedding suggestions
+    const onlyTextAttributes = this.attributes.filter(a => a.dataType == 'TEXT');
+    this.dataHandlerHelper.prepareEmbeddingFormGroup(onlyTextAttributes, this.settingModals, this.embeddings);
+    this.embeddingHandles = this.dataHandlerHelper.prepareEmbeddingHandles(projectId, onlyTextAttributes, this.project.tokenizer, this.combineLatestResultBackup[2]);
   }
 
   private setUpCommentRequests(projectId: string) {
@@ -178,6 +185,10 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
   handleWebsocketNotification(msgParts) {
     if (msgParts[1] == 'embedding') {
       if (!this.embeddings) return;
+      if (["queued", "dequeued"].includes(msgParts[2])) {
+        this.prepareCombineLatestResults(this.project.id);
+        return;
+      }
       if (msgParts[4] == "INITIALIZING") {
         timer(100).subscribe(() => this.embeddingQuery$.refetch());
         return;
