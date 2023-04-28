@@ -50,6 +50,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
   knowledgeBases: any;
   knowledgeBasesQuery$: any;
   checkIfAtLeastRunning: boolean = false;
+  checkIfAtLeastQueued: boolean = false;
   attributesUsableUploaded: any;
   tokenizationProgress: Number = 0;
   isDeleting: boolean = false;
@@ -171,8 +172,8 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
       if (this.currentAttribute?.state == AttributeCalculationState.RUNNING || this.currentAttribute?.state == AttributeCalculationState.USABLE) {
         this.editorOptions = { ...this.editorOptions, readOnly: true };
       }
-      this.checkIfAtLeastRunning = this.checkIfSomethingRunning();
-
+      this.checkIfAtLeastRunning = this.checkIfAttributeState(AttributeCalculationState.RUNNING);
+      this.checkIfAtLeastQueued = this.checkIfAttributeState(AttributeCalculationState.QUEUED);
       this.tooltipsArray = [];
       this.attributeVisibilityStates.forEach((state) => {
         this.tooltipsArray.push(getTooltipVisibilityState(state.value));
@@ -181,10 +182,10 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
     }));
   }
 
-  checkIfSomethingRunning(): boolean {
+  checkIfAttributeState(state: AttributeCalculationState): boolean {
     if (!this.attributes) return true;
     if (!this.currentAttribute) return true;
-    const runningAtt = this.attributes?.find(att => att?.state == AttributeCalculationState.RUNNING);
+    const runningAtt = this.attributes?.find(att => att?.state == state);
     if (runningAtt != undefined) return true;
     return false;
   }
@@ -314,6 +315,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
       .subscribe(() => {
         this.attributeCalculationModals.executeAttribute.open = false;
         this.duplicateNameExists = false;
+        this.currentAttribute.state = AttributeCalculationState.QUEUED;
       });
   }
 
@@ -390,7 +392,9 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
         attribute.dataTypeName = this.dataTypesArray.find((type) => type.value === attribute.dataType).name;
       });
       this.attributeDetails = Object.fromEntries(this.attributesUsableUploaded.map((attribute) => [attribute.id, attribute]));
-      this.checkIfAtLeastRunning = this.checkIfSomethingRunning();
+
+      this.checkIfAtLeastRunning = this.checkIfAttributeState(AttributeCalculationState.RUNNING);
+      this.checkIfAtLeastQueued = this.checkIfAttributeState(AttributeCalculationState.QUEUED);
     }));
     return attributes$.pipe(first());
   }

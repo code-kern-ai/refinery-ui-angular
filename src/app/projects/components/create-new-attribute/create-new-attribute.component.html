@@ -57,7 +57,7 @@
                 Attribute name exists
             </div>
 
-            <div class="w-full mt-8 grid grid-cols-2 grid-cols-2-max items-center gap-2">
+            <div class="w-full mt-8 grid grid-cols-2-max items-center gap-2">
                 <div class="text-sm leading-5 font-medium text-gray-700 inline-block">Visibility
                 </div>
                 <div class="inline-block">
@@ -98,7 +98,7 @@
                 </div>
             </div>
 
-            <div class="w-full mt-2 grid grid-cols-2 grid-cols-2-max items-center gap-2">
+            <div class="w-full mt-2 grid grid-cols-2-max items-center gap-2">
                 <div class="text-sm leading-5 font-medium text-gray-700 inline-block">
                     {{knowledgeBases.length == 0?'No lookup lists in project':'Lookup lists'}}</div>
                 <div class="flex flex-row items-center">
@@ -183,11 +183,11 @@
                                 Run on 10
                             </button>
                         </div>
-                        <div [attr.data-tip]="hasUnsavedChanges() ? 'Unsaved changes': currentAttribute.state==AttributeCalculationState.USABLE || currentAttribute.state==AttributeCalculationState.RUNNING ? 'Attribute is already in use' : testerRequestedSomething ? 'Test is running' : checkIfAtLeastRunning? 'At least one attribute is running' : tokenizationProgress < 1 ? 'Tokenization is in progress' : runOn10HasError ? 'Run on 10 records has an error' : 'Execute the attribute on all records' "
+                        <div [attr.data-tip]="hasUnsavedChanges() ? 'Unsaved changes': currentAttribute.state==AttributeCalculationState.USABLE || currentAttribute.state==AttributeCalculationState.RUNNING ? 'Attribute is already in use' : testerRequestedSomething ? 'Test is running' : checkIfAtLeastRunning? 'Another attribute is running': checkIfAtLeastQueued? 'Another attribute is queued for execution' : tokenizationProgress < 1 ? 'Tokenization is in progress' : runOn10HasError ? 'Run on 10 records has an error' : 'Execute the attribute on all records' "
                             class="tooltip tooltip-left"
-                            [ngClass]="hasUnsavedChanges() || currentAttribute.state==AttributeCalculationState.USABLE || currentAttribute.state==AttributeCalculationState.RUNNING || testerRequestedSomething || checkIfAtLeastRunning || tokenizationProgress < 1 || runOn10HasError ? 'cursor-not-allowed' : ''">
+                            [ngClass]="hasUnsavedChanges() || currentAttribute.state==AttributeCalculationState.USABLE || currentAttribute.state==AttributeCalculationState.RUNNING || testerRequestedSomething || checkIfAtLeastRunning ||checkIfAtLeastQueued || tokenizationProgress < 1 || runOn10HasError ? 'cursor-not-allowed' : ''">
                             <label (click)="attributeCalculationModals.executeAttribute.open = true"
-                                [ngClass]="hasUnsavedChanges() || currentAttribute.state==AttributeCalculationState.USABLE || currentAttribute.state==AttributeCalculationState.RUNNING || testerRequestedSomething || checkIfAtLeastRunning || tokenizationProgress < 1 || runOn10HasError ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer'"
+                                [ngClass]="hasUnsavedChanges() || currentAttribute.state==AttributeCalculationState.USABLE || currentAttribute.state==AttributeCalculationState.RUNNING || testerRequestedSomething || checkIfAtLeastRunning ||checkIfAtLeastQueued || tokenizationProgress < 1 || runOn10HasError ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'opacity-100 cursor-pointer'"
                                 class="bg-indigo-700 text-white text-xs leading-4 font-semibold px-4 py-2 rounded-md cursor-pointer ml-3 hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                                 Run
                             </label>
@@ -212,7 +212,7 @@
                                         <div class="flex items-center justify-center mr-5 ml-auto">
                                             <label [for]="'attribute-details-'+sampleRecords.recordIds[i]"
                                                 (click)="getRecordByRecordId(sampleRecords.recordIds[i],i);recordData=null; attributeCalculationModals.attributeDetails.open = true"
-                                                class="text-xs bg-white text-gray-700 text-xs font-semibold px-4 py-1 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">
+                                                class="bg-white text-gray-700 text-xs font-semibold px-4 py-1 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">
                                                 View
                                             </label>
                                         </div>
