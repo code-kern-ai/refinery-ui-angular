@@ -232,9 +232,11 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
       } else if (msgParts[2] == 'finished' && msgParts[3] == 'all') {
         this.checkIfAcUploadedRecords = false;
         this.isAcRunning = this.checkIfAcIsRunning();
+        timer(500).subscribe(() => this.checkProjectTokenization(this.project.id));
       } else {
         this.attributesQuery$.refetch();
         this.isAcRunning = this.checkIfAcIsRunning();
+        if (msgParts[2] == 'finished') timer(500).subscribe(() => this.checkProjectTokenization(this.project.id));
       }
     }
   }
