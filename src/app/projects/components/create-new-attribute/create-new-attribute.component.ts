@@ -326,6 +326,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
     } else if (msgParts[1] == 'calculate_attribute') {
       this.attributesQuery$.refetch();
       this.currentAttributeQuery$.refetch();
+      if (msgParts[2] == "finished") timer(2000).subscribe(() => this.checkProjectTokenization(this.project.id));
     } else if (['knowledge_base_updated', 'knowledge_base_deleted', 'knowledge_base_created'].includes(msgParts[1])) {
       if (this.knowledgeBasesQuery$) this.knowledgeBasesQuery$.refetch();
     } else if (msgParts[1] == 'tokenization' && msgParts[2] == 'docbin') {
