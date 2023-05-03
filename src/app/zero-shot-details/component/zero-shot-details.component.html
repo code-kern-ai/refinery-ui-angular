@@ -70,8 +70,8 @@
                 <div class="font-normal mt-2">Labeling task</div>
 
 
-                <div class="relative flex-shrink-0 h-16 flex justify-between">
-                    <div class="flex items-center">
+                <div class="relative flex-shrink-0 min-h-16 flex justify-between">
+                    <div class="flex flex-wrap items-center">
                         <kern-dropdown class="mr-2" [dropdownOptions]="{
                             optionArray:labelingTasksClassification,
                             buttonCaption:labelingTasks.get(zeroShotSettings.taskId).name,
@@ -558,8 +558,7 @@
                 {{zeroShotModals.runOn10Details?.record?.fullRecordData[att.name]}}</div>
         </div>
 
-        <div class="grid gap-x-2 items-center"
-            style="grid-template-columns: max-content 16.5rem max-content;">
+        <div class="grid gap-x-2 items-center" style="grid-template-columns: max-content 16.5rem max-content;">
             <div class="contents" *ngFor="let result of zeroShotModals.runOn10Details?.record?.labels">
                 <div *ngIf="labelColor.get(zeroShotSettings.taskId)?.get(result.labelName) as color; else otherLabel"
                     [ngClass]="[getBackground(color), getText(color), getBorder(color), getHover(color)]"
