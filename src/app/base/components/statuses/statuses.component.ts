@@ -73,6 +73,11 @@ export class StatusesComponent implements OnChanges {
           this.statusName = 'Auto. created';
           this.color = 'indigo';
           break;
+        case Status.QUEUED:
+          this.dataTip = 'Task is queued for processing.';
+          this.statusName = 'Queued';
+          this.color = 'gray';
+          break;
 
         default:
           this.dataTip = (this.page === 'heuristics' ? 'Heuristic' : 'Attribute') + ' was successfully registered.';

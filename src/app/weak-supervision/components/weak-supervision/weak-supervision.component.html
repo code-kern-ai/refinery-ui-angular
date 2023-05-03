@@ -249,7 +249,7 @@
                                 <div class="h-full flex flex-col gap-2 items-center">
                                     <label (click)="toggleInformationSource(project.id, source.id)"
                                         class="cursor-pointer flex justify-center">
-                                        <input type="checkbox" [checked]='source.selected'>
+                                        <input type="checkbox" class="cursor-pointer" [checked]='source.selected'>
                                     </label>
                                     <ng-container [ngSwitch]="source.informationSourceType">
                                         <ng-template ngSwitchDefault>

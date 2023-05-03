@@ -138,4 +138,21 @@ export class DataHandlerHelper {
         return this.projectApolloService.getEmbeddingSchema(projectId);
     }
 
+    extendQueuedEmbeddings(projectId: string, embeddings: any[]) {
+        this.projectApolloService.getQueuedTasks(projectId, "EMBEDDING").pipe(first()).subscribe((r) => {
+            r.forEach((task) => {
+                embeddings.push({
+                    id: task.id,
+                    name: task.taskInfo["embedding_name"],
+                    custom: false,
+                    type: task.taskInfo["type"] == "attribute" ? "ON_ATTRIBUTE" : "ON_TOKEN",
+                    state: "QUEUED",
+                    progress: 0,
+                    dimension: 0,
+                    count: 0
+                });
+            });
+        })
+    }
+
 }

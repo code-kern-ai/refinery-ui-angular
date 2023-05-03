@@ -254,6 +254,16 @@ export const queries = {
     }
   } 
   `,
+  GET_QUEUED_TASKS: gql`
+  query ($projectId: ID!,$taskType: String!) {
+    queuedTasks(projectId: $projectId, taskType: $taskType) {
+      id
+      projectId
+      taskType
+      taskInfo
+    }
+  }
+  `,
 
   EXPORT_RECORDS_BY_PROJECT_ID: gql`
     query ($projectId: ID!, $sessionId: ID) {

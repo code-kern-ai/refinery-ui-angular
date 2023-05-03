@@ -80,14 +80,25 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   deleteEmbedding() {
-    const embeddingId = this.settingModals.embedding.delete.id;
-    if (!embeddingId) return;
-    this.projectApolloService
-      .deleteEmbedding(this.project.id, embeddingId).pipe(first())
-      .subscribe(() => {
-        this.embeddings = this.embeddings.filter(e => e.id != embeddingId);
-        this.settingModals.embedding.create.blocked = !this.dataHandlerHelper.canCreateEmbedding(this.settingModals, this.embeddings, this.attributes);
-      });
+    const elementId = this.settingModals.embedding.delete.id;
+    if (!elementId) return;
+    if (this.settingModals.embedding.delete.isQueueElement) {
+      this.projectApolloService
+        .deleteFromTaskQueue(this.project.id, elementId).pipe(first())
+        .subscribe(() => {
+          this.embeddings = this.embeddings.filter(e => e.id != elementId);
+          this.settingModals.embedding.create.blocked = !this.dataHandlerHelper.canCreateEmbedding(this.settingModals, this.embeddings, this.attributes);
+        });
+
+    }
+    else {
+      this.projectApolloService
+        .deleteEmbedding(this.project.id, elementId).pipe(first())
+        .subscribe(() => {
+          this.embeddings = this.embeddings.filter(e => e.id != elementId);
+          this.settingModals.embedding.create.blocked = !this.dataHandlerHelper.canCreateEmbedding(this.settingModals, this.embeddings, this.attributes);
+        });
+    }
   }
 
   addEmbedding() {

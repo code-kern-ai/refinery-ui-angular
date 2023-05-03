@@ -9,5 +9,6 @@ export enum Status {
     READY = 'READY',
     UPDATING = 'UPDATING',
     NOT_READY = 'NOT_READY',
+    QUEUED = 'QUEUED',
     AUTOMATICALLY_CREATED = 'AUTOMATICALLY_CREATED',
 }
