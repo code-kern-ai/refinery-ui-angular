@@ -6,7 +6,6 @@ import { Attribute } from "../entities/attribute.type";
 import { Embedding } from "../entities/embedding.type";
 import { SettingModals } from "./modal-helper";
 import { granularityTypesArray } from "./project-settings-helper";
-import { jsonCopy } from "src/app/util/helper-functions";
 
 export class DataHandlerHelper {
 

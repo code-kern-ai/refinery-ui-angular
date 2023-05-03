@@ -154,7 +154,7 @@
 
 <kern-modal [isOpen]="settingModals.embedding.delete.open" [modalBoxStyle]="{'width':'30rem','text-align':'center'}"
     [abortButton]="{
-    buttonCaption: 'Delete embedding',
+    buttonCaption: settingModals.embedding.delete.isQueueElement ?'Dequeue embedding':'Delete embedding',
     emitObject: this, emitFunction: deleteEmbedding
 }" closeButton="X" (optionClicked)="settingModals.embedding.delete.open = false">
     <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">

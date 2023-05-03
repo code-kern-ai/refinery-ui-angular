@@ -334,7 +334,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
       } else if (msgParts[3] == 'state') {
         if (msgParts[4] == 'IN_PROGRESS') this.tokenizationProgress = 0;
         else if (msgParts[4] == 'FINISHED') {
-          timer(5000).subscribe(() => this.checkProjectTokenization(this.project.id));
+          timer(2000).subscribe(() => this.checkProjectTokenization(this.project.id));
         }
       }
 

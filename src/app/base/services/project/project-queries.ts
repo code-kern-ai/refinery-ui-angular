@@ -259,7 +259,7 @@ export const queries = {
     queuedTasks(projectId: $projectId, taskType: $taskType) {
       id
       projectId
-      type
+      taskType
       taskInfo
     }
   }
