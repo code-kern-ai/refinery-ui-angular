@@ -375,5 +375,3 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
     return this.attributes.some(a => a.state == AttributeCalculationState.RUNNING) || this.checkIfAcUploadedRecords;
   }
 }
-
-
