@@ -18,14 +18,17 @@
                             <div class="absolute top-0 left-2/4 flex flex-row flex-nowrap gap-x-1 bg-gray-100 px-1 rounded-br rounded-bl"
                                 style="transform: translate(-50%);" *ngIf="project.timeStamp">
                                 <span class="text-sm text-gray-500">Created by</span>
-                                <span class="text-sm text-gray-900 tooltip tooltip-bottom text-gray-500"
-                                    [attr.data-tip]="project.user.mail">{{project.user.firstName}}
-                                    {{project.user.lastName}}</span>
+                                <span class="text-sm text-gray-900"
+                                    [ngClass]="project.user.firstName && project.user.lastName ? 'tooltip tooltip-bottom' : ''"
+                                    [attr.data-tip]="project.user.mail">
+                                    {{project.user.firstName && project.user.lastName ? project.user.firstName + ' ' +
+                                    project.user.lastName : 'Unknown user'}}
+                                </span>
                                 <ng-template [ngIf]="!isDemoUser">
                                     <span class="text-sm text-gray-500">on</span>
-                                    <span class="text-sm text-gray-900 text-gray-500">{{project.date}}</span>
+                                    <span class="text-sm text-gray-900 ">{{project.date}}</span>
                                     <span class="text-sm text-gray-500">at</span>
-                                    <span class="text-sm text-gray-900 text-gray-500">{{project.time}}</span>
+                                    <span class="text-sm text-gray-900 ">{{project.time}}</span>
                                 </ng-template>
                             </div>
                             <div *ngIf="adminData.isAdmin"
