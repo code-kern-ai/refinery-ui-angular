@@ -40,7 +40,7 @@
             <!--Export DataSlices-->
             <ng-container [ngTemplateOutlet]="groupDisplay" [ngTemplateOutletContext]="{
                 type:ExportEnumsType.DataSlices,
-                hiddenCheckCtrl:formGroups.get(ExportEnumsType.ExportRowType).get('DATA_SLICE').get('active'),
+                hiddenCheckCtrl:formGroups.get(ExportEnumsType.ExportRowType).get('SLICE').get('active'),
                 heading:'Export data slice',
                 subText:null,
                 isCheckbox:false}">
