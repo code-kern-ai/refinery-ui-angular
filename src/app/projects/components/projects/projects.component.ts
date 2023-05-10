@@ -80,6 +80,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     prjDeleteProject: null as Project,
   }
   projectsModals: ProjectsModals = createDefaultProjectsModals();
+  unknownUser: string = '<unknown user>';
 
   constructor(
     private projectApolloService: ProjectApolloService,

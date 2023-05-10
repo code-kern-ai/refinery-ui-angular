@@ -22,7 +22,7 @@
                                     [ngClass]="project.user.firstName && project.user.lastName ? 'tooltip tooltip-bottom' : ''"
                                     [attr.data-tip]="project.user.mail">
                                     {{project.user.firstName && project.user.lastName ? project.user.firstName + ' ' +
-                                    project.user.lastName : 'Unknown user'}}
+                                    project.user.lastName : unknownUser}}
                                 </span>
                                 <ng-template [ngIf]="!isDemoUser">
                                     <span class="text-sm text-gray-500">on</span>
