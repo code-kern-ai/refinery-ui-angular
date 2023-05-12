@@ -402,6 +402,7 @@ export const queries = {
       state
       logs
       visibility
+      progress
     }
   }
   `,
