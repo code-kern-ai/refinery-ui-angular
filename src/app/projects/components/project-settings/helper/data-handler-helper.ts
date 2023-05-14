@@ -5,11 +5,12 @@ import { ProjectApolloService } from "src/app/base/services/project/project-apol
 import { Attribute } from "../entities/attribute.type";
 import { Embedding } from "../entities/embedding.type";
 import { SettingModals } from "./modal-helper";
-import { granularityTypesArray } from "./project-settings-helper";
+import { granularityTypesArray, platformNamesArray } from "./project-settings-helper";
 
 export class DataHandlerHelper {
 
     granularityTypesArray = granularityTypesArray;
+    platformNamesArray = platformNamesArray;
     pKeyValid: boolean = null;
     pKeyCheckTimer: any;
 
@@ -72,6 +73,7 @@ export class DataHandlerHelper {
             settingModals.embedding.create.embeddingCreationFormGroup = this.formBuilder.group({
                 targetAttribute: attributes[0].id,
                 embeddingHandle: "",
+                platform: this.platformNamesArray[0].value,
                 granularity: this.granularityTypesArray[0].value
             });
             settingModals.embedding.create.embeddingCreationFormGroup.valueChanges.pipe(debounceTime(200)).subscribe(() =>

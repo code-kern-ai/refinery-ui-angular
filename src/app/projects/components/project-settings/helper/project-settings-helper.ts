@@ -5,6 +5,13 @@ export const granularityTypesArray = [
     { name: 'Token', value: 'ON_TOKEN' }
 ];
 
+export const platformNamesArray = [
+    { name: 'Hugging Face', value: 'huggingface' },
+    { name: 'Open AI', value: 'openai' },
+    { name: 'Cohere', value: 'cohere' },
+    { name: 'Python', value: 'python' }
+];
+
 export function getMoveRight(tblName: string): boolean {
     //at some point a better grouping would be useful
     switch (tblName) {

@@ -106,9 +106,16 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
     const embeddingForm = this.settingModals.embedding.create.embeddingCreationFormGroup;
     const embeddingHandle = embeddingForm.get("embeddingHandle").value;
     const attributeId = embeddingForm.get("targetAttribute").value;
-    const granularity = embeddingForm.get("granularity").value;
-
-    this.projectApolloService.createEmbedding(this.project.id, attributeId, embeddingHandle, granularity.substring(3)).pipe(first()).subscribe();
+    const platform = embeddingForm.get("platform").value;
+    const granularity = embeddingForm.get("granularity").value.substring(3);
+    
+    this.projectApolloService.createEmbedding(
+      this.project.id,
+      attributeId,
+      embeddingHandle, 
+      granularity,
+      platform,
+    ).pipe(first()).subscribe();
   }
 
   selectFirstUnhiddenEmbeddingHandle(inputElement: HTMLInputElement) {
