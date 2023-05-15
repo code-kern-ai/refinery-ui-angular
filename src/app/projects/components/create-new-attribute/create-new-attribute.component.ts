@@ -324,6 +324,9 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
       this.updatedThroughWebsocket = true;
       this.currentAttributeQuery$.refetch();
     } else if (msgParts[1] == 'calculate_attribute') {
+      if (msgParts[3] == 'progress') {
+        this.currentAttribute.progress = Number(msgParts[4]);
+      }
       this.attributesQuery$.refetch();
       this.currentAttributeQuery$.refetch();
       if (msgParts[2] == "finished") timer(2000).subscribe(() => this.checkProjectTokenization(this.project.id));

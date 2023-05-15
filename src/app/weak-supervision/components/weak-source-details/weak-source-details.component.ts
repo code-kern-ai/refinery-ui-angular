@@ -203,7 +203,7 @@ export class WeakSourceDetailsComponent
       if (this.knowledgeBasesQuery$) this.knowledgeBasesQuery$.refetch();
     } else if (msgParts[1] == 'payload_progress') {
       if (msgParts[2] != this.informationSource.id) return;
-      this.informationSourceQuery$.refetch();
+      this.informationSource.lastTask.progress = Number(msgParts[4]);
     } else {
       if (msgParts[2] != this.informationSource.id) return;
       this.informationSourceQuery$.refetch();
