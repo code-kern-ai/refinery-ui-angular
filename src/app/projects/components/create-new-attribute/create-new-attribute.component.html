@@ -265,7 +265,7 @@
             <kern-logs [logs]="attributeLogs"></kern-logs>
 
             <div class="mt-8">
-                <div class="text-sm leading-5 font-medium text-gray-700 inline-block">Progress</div>
+                <div class="text-sm leading-5 font-medium text-gray-700 inline-block">Calculation progress</div>
                 <div *ngIf="currentAttribute.progress == 0" class="bg-white">
                     <div class="py-6 text-sm leading-5 font-normal text-gray-500">This attribute was not yet run.</div>
                 </div>
@@ -274,8 +274,11 @@
                     <div class="card-body p-6">
                         <div class="flex flex-row justify-between items-center">
                             <div class="flex flex-grow items-center">
-                                <progress class="progress progress-info w-full m-2" [value]="currentAttribute.progress"
-                                    max="1"></progress>
+                                <div class="w-full bg-gray-200 rounded-full dark:bg-gray-700 h-3">
+                                    <div class="bg-blue-600 font-extra-small font-medium text-blue-100 h-3 text-center leading-none rounded-full"
+                                        [ngStyle]="{'width': (currentAttribute.progress * 100) + '%'}">
+                                        {{currentAttribute.progress * 100}}%</div>
+                                </div>
                             </div>
                         </div>
 
@@ -285,7 +288,8 @@
 
             <div class="mt-8 pb-4">
                 <div class="text-gray-900 text-lg leading-6 font-medium">Danger zone</div>
-                <div class="text-sm leading-5 font-normal mt-2 text-gray-500 inline-block">This action can not be
+                <div class="text-sm leading-5 font-normal mt-2 text-gray-500 inline-block">This action can not
+                    be
                     reversed.
                     Are you sure you want to delete this attribute?</div>
 
@@ -327,7 +331,8 @@
         <div class="text-sm leading-5 text-left text-gray-900 font-bold">
             Calculated value</div>
         <div class="text-sm leading-5 text-left text-gray-500 font-normal">
-            {{sampleRecords.calculatedAttributes[attributeCalculationModals.attributeDetails.currentRecordIdx]}}</div>
+            {{sampleRecords.calculatedAttributes[attributeCalculationModals.attributeDetails.currentRecordIdx]}}
+        </div>
     </div>
     <ng-template #requestingData>
         <kern-loading></kern-loading>

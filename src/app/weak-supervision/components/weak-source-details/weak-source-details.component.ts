@@ -142,7 +142,7 @@ export class WeakSourceDetailsComponent
   }
 
   getWhiteListNotificationService(): string[] {
-    let toReturn = ['payload_finished', 'payload_failed', 'payload_created', 'payload_update_statistics', 'model_callback_update_statistics'];
+    let toReturn = ['payload_finished', 'payload_failed', 'payload_created', 'payload_update_statistics', 'model_callback_update_statistics', 'payload_progress'];
     toReturn.push(...['labeling_task_deleted', 'labeling_task_updated', 'labeling_task_created']);
     toReturn.push(...['information_source_deleted', 'information_source_updated']);
     toReturn.push(...['label_created', 'label_deleted']);
@@ -201,8 +201,10 @@ export class WeakSourceDetailsComponent
       if (this.embeddingQuery$) this.embeddingQuery$.refetch();
     } else if (['knowledge_base_updated', 'knowledge_base_deleted', 'knowledge_base_created'].includes(msgParts[1])) {
       if (this.knowledgeBasesQuery$) this.knowledgeBasesQuery$.refetch();
-    }
-    else {
+    } else if (msgParts[1] == 'payload_progress') {
+      if (msgParts[2] != this.informationSource.id) return;
+      this.informationSourceQuery$.refetch();
+    } else {
       if (msgParts[2] != this.informationSource.id) return;
       this.informationSourceQuery$.refetch();
 
