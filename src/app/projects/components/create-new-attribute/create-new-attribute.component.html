@@ -278,28 +278,6 @@
                                     class="tooltip tooltip-right relative z-10">
                                     <kern-loading></kern-loading>
                                 </div>
-                                <div *ngIf="currentAttribute.state === 'USABLE'" data-tip="Successfully executed."
-                                    class="tooltip tooltip-right">
-                                    <div class="btn cursor-default btn-circle btn-xs no-animation btn-primary mx-2">
-                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                            class="inline-block w-4 h-4 stroke-current" fill="none" viewBox="0 0 24 24"
-                                            stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M5 13l4 4L19 7" />
-                                        </svg>
-                                    </div>
-                                </div>
-                                <div *ngIf="currentAttribute.state === 'ERROR'" data-tip="Execution ran into errors."
-                                    class="tooltip tooltip-right">
-                                    <div class="btn cursor-default btn-circle btn-xs no-animation btn-error mx-2">
-                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                            class="inline-block w-4 h-4 stroke-current" fill="none" viewBox="0 0 24 24"
-                                            stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                        </svg>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                         <ng-template [ngIf]="currentAttribute.state === 'RUNNING'">
@@ -318,10 +296,32 @@
                     </div>
                 </div>
                 <ng-template [ngIf]="currentAttribute.state !== 'RUNNING' && currentAttribute.state !== 'INITIAL'">
-                    <div class="py-6 text-sm leading-5 font-normal text-gray-500">
-                        {{currentAttribute.state === 'FAILED' ? 'Attribute calculation ran into errors.'
-                        :
-                        'Attribute calculation finished successfully.'}}
+                    <div class="flex flex-row items-center">
+                        <div *ngIf="currentAttribute.state === 'USABLE'" data-tip="Successfully executed."
+                            class="tooltip tooltip-right">
+                            <div class="btn cursor-default btn-circle btn-xs no-animation btn-primary mx-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="inline-block w-4 h-4 stroke-current"
+                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div *ngIf="currentAttribute.state === 'FAILED'" data-tip="Execution ran into errors."
+                            class="tooltip tooltip-right">
+                            <div class="btn cursor-default btn-circle btn-xs no-animation btn-error mx-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="inline-block w-4 h-4 stroke-current"
+                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="py-6 text-sm leading-5 font-normal text-gray-500">
+                            {{currentAttribute.state === 'FAILED' ? 'Attribute calculation ran into errors.'
+                            :
+                            'Attribute calculation finished successfully.'}}
+                        </div>
                     </div>
                 </ng-template>
             </div>

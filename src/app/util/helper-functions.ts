@@ -70,6 +70,7 @@ export function parseLogData(logs: string[], isType: InformationSourceType = nul
     let neededIDLength = String(logs.length)?.length;
     return logs.map((wrapper, index) => {
         const d: Date = new Date(wrapper.substr(0, wrapper.indexOf(' ')));
+        if (isNaN(d.getTime())) return wrapper;
         return (
             String(index + 1).padStart(neededIDLength, '0') +
             ': ' +
@@ -139,12 +140,12 @@ export function capitalizeFirstPerWord(str: string) {
 export function camelCaseToDashCase(str: string) {
     return str.replace(/[A-Z]/g, m => "-" + m.toLowerCase());
 }
-export function snakeCaseToCamelCase(str:string){
+export function snakeCaseToCamelCase(str: string) {
     return str.toLowerCase().replace(/([_][a-z])/g, group =>
-    group
-      .toUpperCase()
-      .replace('_', '')
-  );
+        group
+            .toUpperCase()
+            .replace('_', '')
+    );
 }
 
 export function capitalizeFirst(str: string) {
