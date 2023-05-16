@@ -174,6 +174,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
       }
       this.checkIfAtLeastRunning = this.checkIfAttributeState(AttributeCalculationState.RUNNING);
       this.checkIfAtLeastQueued = this.checkIfAttributeState(AttributeCalculationState.QUEUED);
+      this.currentAttribute.progress = Number(this.currentAttribute.progress.toFixed(2));
       this.tooltipsArray = [];
       this.attributeVisibilityStates.forEach((state) => {
         this.tooltipsArray.push(getTooltipVisibilityState(state.value));
@@ -324,7 +325,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
       this.updatedThroughWebsocket = true;
       this.currentAttributeQuery$.refetch();
     } else if (msgParts[1] == 'calculate_attribute') {
-      if (msgParts[3] == 'progress') {
+      if (msgParts[2] == 'progress') {
         this.currentAttribute.progress = Number(msgParts[4]);
       }
       this.attributesQuery$.refetch();
