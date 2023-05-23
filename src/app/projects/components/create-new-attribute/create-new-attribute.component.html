@@ -266,22 +266,17 @@
 
             <div class="mt-8">
                 <div class="text-sm leading-5 font-medium text-gray-700 inline-block">Calculation progress</div>
-                <div *ngIf="currentAttribute.progress == 0 || currentAttribute.state == 'INITIAL'" class="bg-white">
+                <div *ngIf="currentAttribute.progress == 0 && currentAttribute.state == 'INITIAL'" class="bg-white">
                     <div class="py-6 text-sm leading-5 font-normal text-gray-500">This attribute was not yet run.</div>
                 </div>
-                <div *ngIf="currentAttribute.progress > 0 && currentAttribute.progress < 1"
-                    class="mb-4 card border border-gray-200 bg-white flex-grow overflow-visible">
+                <div *ngIf="currentAttribute.progress < 1 && currentAttribute.state == 'RUNNING'"
+                    class=" mb-4 card border border-gray-200 bg-white flex-grow overflow-visible">
                     <div class="card-body">
-                        <div class="flex flex-row justify-between items-center">
-                            <div class="flex flex-grow items-center">
-                                <div *ngIf="currentAttribute.state === 'RUNNING'" data-tip="Currently being executed."
-                                    class="tooltip tooltip-right relative z-10">
-                                    <kern-loading></kern-loading>
-                                </div>
+                        <div class="flex flex-row items-center">
+                            <div data-tip="Currently being executed." class="tooltip tooltip-right relative z-10">
+                                <kern-loading></kern-loading>
                             </div>
-                        </div>
-                        <ng-template [ngIf]="currentAttribute.state === 'RUNNING'">
-                            <div class="text-sm leading-5 font-normal text-gray-500">
+                            <div class="text-sm leading-5 font-normal text-gray-500 w-full">
                                 <div class="flex flex-row justify-between items-center">
                                     <div class="flex flex-grow items-center">
                                         <div class="w-full bg-gray-200 rounded-full dark:bg-gray-700 h-3">
@@ -292,7 +287,8 @@
                                     </div>
                                 </div>
                             </div>
-                        </ng-template>
+                        </div>
+
                     </div>
                 </div>
                 <ng-template [ngIf]="currentAttribute.state !== 'RUNNING' && currentAttribute.state !== 'INITIAL'">
