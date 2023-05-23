@@ -277,15 +277,8 @@
                                 <kern-loading></kern-loading>
                             </div>
                             <div class="text-sm leading-5 font-normal text-gray-500 w-full">
-                                <div class="flex flex-row justify-between items-center">
-                                    <div class="flex flex-grow items-center">
-                                        <div class="w-full bg-gray-200 rounded-full dark:bg-gray-700 h-3">
-                                            <div class="bg-blue-600 font-extra-small font-medium text-blue-100 h-3 text-center leading-none rounded-full"
-                                                [ngStyle]="{'width': (currentAttribute.progress * 100) + '%'}">
-                                                {{currentAttribute.progress * 100}}%</div>
-                                        </div>
-                                    </div>
-                                </div>
+                                <progress class="progress progress-info w-full m-2" [value]="currentAttribute.progress"
+                                    max="1"></progress>
                             </div>
                         </div>
 
