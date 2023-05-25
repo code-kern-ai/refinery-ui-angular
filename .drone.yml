@@ -10,7 +10,7 @@ steps:
     image: alpine/git
     commands:
       - git submodule init
-      - 'git config --global url."https://github.com/".insteadOf git@github.com:'
+      - 'git config --global url."http://github.com/".insteadOf git@github.com:'
       - "git submodule update --recursive --remote"
   - name: build and publish
     image: plugins/docker
@@ -56,7 +56,7 @@ steps:
     image: alpine/git
     commands:
       - git submodule init
-      - 'git config --global url."https://github.com/".insteadOf git@github.com:'
+      - 'git config --global url."http://github.com/".insteadOf git@github.com:'
       - "git submodule update --recursive --remote"
   - name: build and publish
     image: plugins/docker
@@ -91,7 +91,7 @@ steps:
     image: alpine/git
     commands:
       - git submodule init
-      - 'git config --global url."https://github.com/".insteadOf git@github.com:'
+      - 'git config --global url."http://github.com/".insteadOf git@github.com:'
       - "git submodule update --recursive --remote"
   - name: build and publish
     image: plugins/docker
@@ -120,7 +120,7 @@ steps:
     image: alpine/git
     commands:
       - git submodule init
-      - 'git config --global url."https://github.com/".insteadOf git@github.com:'
+      - 'git config --global url."http://github.com/".insteadOf git@github.com:'
       - "git submodule update --recursive --remote"
   - name: build and publish
     image: plugins/docker
