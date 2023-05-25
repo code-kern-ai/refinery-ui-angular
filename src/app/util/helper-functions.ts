@@ -1,4 +1,3 @@
-import { capitalizeFirst, capitalizeFirstPerWord } from "submodules/javascript-functions/case-types-parser";
 import { InformationSourceType, informationSourceTypeToString } from "../base/enum/graphql-enums";
 
 export function parseLinkFromText(link: string) {
@@ -32,7 +31,6 @@ export function parseLinkFromText(link: string) {
     return linkData;
 }
 
-
 export function parseLogData(logs: string[], isType: InformationSourceType = null) {
     if (!logs) {
         if (isType) return [`Running ${informationSourceTypeToString(isType, false)}...`];
@@ -51,45 +49,6 @@ export function parseLogData(logs: string[], isType: InformationSourceType = nul
             ' - ' +
             wrapper.substr(wrapper.indexOf(' ') + 1)
         );
-    });
-}
-
-export enum caseType {
-    LOWER,
-    UPPER,
-    CAPITALIZE_FIRST,
-    CAPITALIZE_FIRST_PER_WORD
-}
-
-export type enumToArrayOptions = {
-    caseType?: caseType;
-    prefix?: string;
-    nameFunction?: (name: string) => string;
-}
-
-export function enumToArray(e: Object, options: enumToArrayOptions = null): any[] {
-    const arr = Object.values(e);
-    if (!options) return sortByEnumPos(e, arr);
-    let func;
-    if (options.caseType == caseType.LOWER) func = (x) => x.toLowerCase();
-    else if (options.caseType == caseType.UPPER) func = (x) => x.toUpperCase();
-    else if (options.caseType == caseType.CAPITALIZE_FIRST) func = capitalizeFirst;
-    else if (options.caseType == caseType.CAPITALIZE_FIRST_PER_WORD) func = capitalizeFirstPerWord;
-
-    if (func) return enumToArray(e, { prefix: options.prefix, nameFunction: func });
-    if (!options.nameFunction) return sortByEnumPos(e, arr.map(x => ({ name: options.prefix + x, value: x })));
-    return sortByEnumPos(e, arr.map(x => ({ name: (options.prefix ? options.prefix : "") + options.nameFunction(x), value: x })));
-}
-
-function sortByEnumPos(e: Object, arr: any[]) {
-    const order = [];
-    for (let key in e) {
-        order.push(key);
-    }
-    return arr.sort((a, b) => {
-        const index1 = order.findIndex(key => e[key] === a.code);
-        const index2 = order.findIndex(key => e[key] === b.code);
-        return index1 - index2;
     });
 }
 

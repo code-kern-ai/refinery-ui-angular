@@ -1,9 +1,8 @@
-import { enumToArray } from "src/app/util/helper-functions"
 import { BricksIntegratorComponent } from "../bricks-integrator.component"
 import { BricksVariableComment, isCommentTrue } from "./comment-lookup";
 import { BricksExpectedLabels, BricksVariable, bricksVariableNeedsTaskId, BricksVariableType, canHaveDefaultValue, ExpectedLabel, getChoiceType, getEmptyBricksExpectedLabels, getEmptyBricksVariable, IntegratorInput, IntegratorInputVariable, RefineryDataType, SelectionType, StringBoolean } from "./type-helper";
 import { DummyNodes, getAddInfo, getSelectionType } from "./dummy-nodes";
-import { isStringTrue } from "submodules/javascript-functions/general";
+import { enumToArray, isStringTrue } from "submodules/javascript-functions/general";
 import { capitalizeFirst, capitalizeFirstForClassName } from "submodules/javascript-functions/case-types-parser";
 import { getPythonClassName, getPythonFunctionName, toPythonFunctionName } from "submodules/javascript-functions/python-functions-parser";
 //currently included python types are: int, float, str, bool, list
