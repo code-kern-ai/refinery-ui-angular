@@ -12,8 +12,8 @@ import { getUserAvatarUri } from 'src/app/util/helper-functions';
 import { RouteManager } from 'src/app/util/route-manager';
 import { UserManager } from 'src/app/util/user-manager';
 import { createDefaultModelDownloadModals, ModelDownloadModals } from './model-download-helper';
-import { formatBytes } from 'submodules/javascript-functions/general';
 import { dateAsUTCDate, parseUTC } from 'submodules/javascript-functions/date-parser';
+import { formatBytes } from 'submodules/javascript-functions/general';
 
 @Component({
   selector: 'kern-model-download-component',

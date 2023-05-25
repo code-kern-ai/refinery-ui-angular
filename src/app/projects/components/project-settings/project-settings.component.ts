@@ -22,7 +22,7 @@ import { downloadBlob, downloadText } from 'src/app/util/download-helper-functio
 import { findFreeAttributeName, getMoveRight } from './helper/project-settings-helper';
 import { LabelHelper } from './helper/label-helper';
 import { AttributeCalculationState } from '../create-new-attribute/create-new-attribute-helper';
-import { jsonCopy } from 'submodules/javascript-functions/general';
+import { formatBytes, jsonCopy } from 'submodules/javascript-functions/general';
 import { toPythonFunctionName } from 'submodules/javascript-functions/python-functions-parser';
 
 @Component({
@@ -375,8 +375,5 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
   checkIfAcIsRunning() {
     return this.attributes.some(a => a.state == AttributeCalculationState.RUNNING) || this.checkIfAcUploadedRecords;
   }
-}
-function formatBytes(downloadSize: number, arg1: number): string {
-  throw new Error('Function not implemented.');
 }
 
