@@ -26,25 +26,8 @@ steps:
         - "registry.dev.onetask.ai/${DRONE_REPO}:dev"
         - "registry.dev.onetask.ai/${DRONE_REPO}:${DRONE_COMMIT_BRANCH}"
 
-trigger:
-  event:
-    - push
-
-image_pull_secrets:
-  - dockerconfigjson
-
----
-kind: pipeline
-type: docker
-name: trigger update
-
-platform:
-  arch: amd64
-
-steps:
   - name: trigger update
     image: appleboy/drone-ssh
-    failure: ignore
     settings:
       host: app.dev.onetask.ai
       username:
@@ -56,12 +39,7 @@ steps:
       script:
         - /bin/sh ./trigger_dev_deployment.sh
 
-depends_on:
-  - amd64
-
 trigger:
-  branch:
-    - dev
   event:
     - push
 
@@ -176,6 +154,29 @@ steps:
 depends_on:
   - amd64-dockerhub
   - arm64-dockerhub
+
+trigger:
+  event:
+    - tag
+
+
+---
+kind: pipeline
+name: manifest-latest
+steps:
+- name: manifest
+  image: plugins/manifest
+  settings:
+    spec: drone-manifest-latest.tmpl
+    tag: "${DRONE_TAG}"
+    ignore_missing: true
+    username:
+      from_secret: dockerhub_username
+    password:
+      from_secret: dockerhub_password
+
+depends_on:
+  - manifest-version
 
 trigger:
   event:
