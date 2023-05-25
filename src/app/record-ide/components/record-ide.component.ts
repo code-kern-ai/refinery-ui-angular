@@ -16,8 +16,8 @@ import { bool } from 'aws-sdk/clients/signer';
 import { UserManager } from 'src/app/util/user-manager';
 import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
 import { caesarCipher, PASS_ME } from 'src/app/util/cipher';
-import { tryParseJSON } from 'src/app/util/helper-functions';
 import { LabelingHuddle, LabelingLinkData, parseLabelingLinkData } from 'src/app/labeling-suite/helper/manager/session';
+import { tryParseJSON } from 'submodules/javascript-functions/general';
 
 
 @Component({

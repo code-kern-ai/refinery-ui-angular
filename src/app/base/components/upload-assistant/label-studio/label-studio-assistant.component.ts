@@ -2,13 +2,14 @@
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { timer } from 'rxjs';
 import { first } from 'rxjs/operators';
-import { caseType, enumToArray, isStringTrue } from 'src/app/util/helper-functions';
+import { caseType, enumToArray } from 'src/app/util/helper-functions';
 import { NotificationService } from '../../../services/notification.service';
 import { ProjectApolloService } from '../../../services/project/project-apollo.service';
 import { UserManager } from 'src/app/util/user-manager';
 import { AssistantConstants, AssistantInputData, AssistantSetupData, AssistantStep, LabelStudioTaskMapping, PreparationStep } from './label-studio-assistant-helper';
 import { ModalButtonType } from '../../modal/modal-helper';
 import { UploadType } from 'src/app/import/components/helpers/upload-types';
+import { isStringTrue } from 'submodules/javascript-functions/general';
 
 
 

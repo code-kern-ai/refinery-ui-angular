@@ -8,7 +8,8 @@ import { first } from 'rxjs/operators';
 import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { UserManager } from 'src/app/util/user-manager';
-import { getUserAvatarUri, snakeCaseToCamelCase } from 'src/app/util/helper-functions';
+import { getUserAvatarUri } from 'src/app/util/helper-functions';
+import { snakeCaseToCamelCase } from 'submodules/javascript-functions/case-types-parser';
 
 @Component({
   selector: 'kern-config',
@@ -76,7 +77,7 @@ export class ConfigComponent implements OnInit, OnDestroy {
   }
   checkAndSaveValue(value: any, key: string, subkey: string = null) {
     if (key == "limit_checks") {
-      if(Number(value) == this.organization[snakeCaseToCamelCase(subkey)]) return;
+      if (Number(value) == this.organization[snakeCaseToCamelCase(subkey)]) return;
     } else if (ConfigManager.getConfigValue(key, subkey) == value) return;
 
     const updateDict: any = {};

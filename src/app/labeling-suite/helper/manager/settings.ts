@@ -1,6 +1,7 @@
 import { LabelSource } from "src/app/base/enum/graphql-enums";
-import { enumToArray, transferNestedDict } from "src/app/util/helper-functions";
+import { enumToArray } from "src/app/util/helper-functions";
 import { DoBeforeDestroy } from "src/app/util/interfaces";
+import { transferNestedDict } from "submodules/javascript-functions/general";
 
 export type LabelingSuiteSettings = {
     main: LabelingSuiteMainSettings;

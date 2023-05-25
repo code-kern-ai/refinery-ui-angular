@@ -12,7 +12,6 @@ import { ConfigManager } from 'src/app/base/services/config-service';
 import { UserManager } from 'src/app/util/user-manager';
 import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
 import { dataTypes } from 'src/app/util/data-types';
-import { toPythonFunctionName } from 'src/app/util/helper-functions';
 import { createDefaultSettingModals, SettingModals } from './helper/modal-helper';
 import { attributeVisibilityStates } from '../create-new-attribute/attributes-visibility-helper';
 import { DataHandlerHelper } from './helper/data-handler-helper';
@@ -23,7 +22,8 @@ import { downloadBlob, downloadText } from 'src/app/util/download-helper-functio
 import { findFreeAttributeName, getMoveRight } from './helper/project-settings-helper';
 import { LabelHelper } from './helper/label-helper';
 import { AttributeCalculationState } from '../create-new-attribute/create-new-attribute-helper';
-import { formatBytes, jsonCopy } from 'submodules/javascript-functions/general';
+import { jsonCopy } from 'submodules/javascript-functions/general';
+import { toPythonFunctionName } from 'submodules/javascript-functions/python-functions-parser';
 
 @Component({
   selector: 'kern-project-settings',
@@ -376,3 +376,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
     return this.attributes.some(a => a.state == AttributeCalculationState.RUNNING) || this.checkIfAcUploadedRecords;
   }
 }
+function formatBytes(downloadSize: number, arg1: number): string {
+  throw new Error('Function not implemented.');
+}
+

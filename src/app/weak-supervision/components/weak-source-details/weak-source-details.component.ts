@@ -22,7 +22,7 @@ import {
 import { forkJoin, Subscription, timer } from 'rxjs';
 import { InformationSourceType, informationSourceTypeToString, LabelingTask, LabelSource } from 'src/app/base/enum/graphql-enums';
 import { InformationSourceCodeLookup, InformationSourceExamples } from '../information-sources-code-lookup';
-import { capitalizeFirstForClassName, getColorForDataType, getPythonClassName, getPythonClassRegExMatch, getPythonFunctionName, getPythonFunctionRegExMatch, toPythonFunctionName } from 'src/app/util/helper-functions';
+import { getColorForDataType } from 'src/app/util/helper-functions';
 import { NotificationService } from 'src/app/base/services/notification.service';
 import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
 import { schemeCategory24 } from 'src/app/util/colors';
@@ -35,6 +35,9 @@ import { AttributeVisibility } from 'src/app/projects/components/create-new-attr
 import { BricksIntegratorComponent } from 'src/app/base/components/bricks-integrator/bricks-integrator.component';
 import { Attributes } from 'src/app/base/components/record-display/record-display.helper';
 import { dateAsUTCDate } from 'submodules/javascript-functions/date-parser';
+import { capitalizeFirstForClassName } from 'submodules/javascript-functions/case-types-parser';
+import { copyToClipboard } from 'submodules/javascript-functions/general';
+import { getPythonClassName, getPythonClassRegExMatch, getPythonFunctionName, getPythonFunctionRegExMatch, toPythonFunctionName } from 'submodules/javascript-functions/python-functions-parser';
 
 @Component({
   selector: 'kern-weak-source-details',
@@ -397,7 +400,7 @@ export class WeakSourceDetailsComponent
   }
   copyClicked: Number = -1;
   copyToClipboard(textToCopy, i = -1) {
-    navigator.clipboard.writeText(textToCopy);
+    copyToClipboard(textToCopy);
     if (i != -1) {
       this.copyClicked = i;
       timer(1000).pipe(first()).subscribe(() => {

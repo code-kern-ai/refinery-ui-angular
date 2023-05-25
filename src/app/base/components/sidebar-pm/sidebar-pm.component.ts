@@ -18,6 +18,7 @@ import { ConfigManager } from '../../services/config-service';
 import { RouteManager } from 'src/app/util/route-manager';
 import { createDefaultSideBarPmModals, SideBarPmModals } from './sidebar-pm-helper';
 import { parseUTC } from 'submodules/javascript-functions/date-parser';
+import { copyToClipboard } from 'submodules/javascript-functions/general';
 
 
 @Component({
@@ -223,7 +224,7 @@ export class SidebarPmComponent implements OnInit, OnDestroy {
   }
 
   copyToClipboard(textToCopy) {
-    navigator.clipboard.writeText(textToCopy);
+    copyToClipboard(textToCopy);
   }
 
   checkIfManagedVersion() {

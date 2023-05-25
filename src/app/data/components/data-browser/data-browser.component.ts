@@ -64,6 +64,7 @@ import { Attributes } from 'src/app/base/components/record-display/record-displa
 import { LabelingLinkType } from 'src/app/labeling-suite/helper/manager/session';
 import { ConfigManager } from 'src/app/base/services/config-service';
 import { dateAsUTCDate } from 'submodules/javascript-functions/date-parser';
+import { copyToClipboard } from 'submodules/javascript-functions/general';
 
 
 type DataSlice = {
@@ -1320,7 +1321,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   }
 
   copyToClipboard(textToCopy: string) {
-    navigator.clipboard.writeText(textToCopy);
+    copyToClipboard(textToCopy)
   }
 
   toggleHighlightText() {

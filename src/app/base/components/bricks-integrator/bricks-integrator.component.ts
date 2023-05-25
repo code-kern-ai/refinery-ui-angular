@@ -4,7 +4,6 @@ import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, 
 import { ActivatedRoute, Router } from '@angular/router';
 import { timer } from 'rxjs';
 import { first } from 'rxjs/operators';
-import { capitalizeFirst, isStringTrue } from 'src/app/util/helper-functions';
 import { KnowledgeBasesApolloService } from '../../services/knowledge-bases/knowledge-bases-apollo.service';
 import { ProjectApolloService } from '../../services/project/project-apollo.service';
 import { BricksCodeParser } from './helper/code-parser';
@@ -13,8 +12,9 @@ import { BricksIntegratorConfig, BricksSearchData, BricksVariable, BricksVariabl
 import { extendDummyElements, getDummyNodeByIdForApi } from './helper/dummy-nodes';
 import { caesarCipher } from 'src/app/util/cipher';
 import { PASS_ME } from 'src/app/util/cipher';
+import { copyToClipboard, isStringTrue, jsonCopy } from 'submodules/javascript-functions/general';
 import { findProjectIdFromRoute } from 'submodules/javascript-functions/angular-specific';
-import { jsonCopy } from 'submodules/javascript-functions/general';
+import { capitalizeFirst } from 'submodules/javascript-functions/case-types-parser';
 
 @Component({
   selector: 'kern-bricks-integrator',
@@ -429,7 +429,7 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
 
 
   copyToClipboard(textToCopy: string) {
-    navigator.clipboard.writeText(textToCopy);
+    copyToClipboard(textToCopy);
     this.config.copied = true;
     timer(1000).subscribe(() => this.config.copied = false);
   }

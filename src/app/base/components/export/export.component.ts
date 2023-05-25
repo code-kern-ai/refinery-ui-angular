@@ -6,13 +6,14 @@ import { timer } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { DownloadState } from 'src/app/import/services/s3.enums';
 import { S3Service } from 'src/app/import/services/s3.service';
-import { caseType, copyToClipboard, enumToArray } from 'src/app/util/helper-functions';
+import { caseType, enumToArray } from 'src/app/util/helper-functions';
 import { LabelSource, labelSourceToString } from '../../enum/graphql-enums';
 import { NotificationService } from '../../services/notification.service';
 import { ProjectApolloService } from '../../services/project/project-apollo.service';
 import { ExportEnums, ExportFileType, ExportFormat, ExportHelper, ExportPreset, ExportRowType, getExportTooltipFor } from './export-helper';
 import { UserManager } from 'src/app/util/user-manager';
 import { findProjectIdFromRoute } from 'submodules/javascript-functions/angular-specific';
+import { copyToClipboard } from 'submodules/javascript-functions/general';
 
 
 

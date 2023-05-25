@@ -24,6 +24,7 @@ import { OrganizationApolloService } from 'src/app/base/services/organization/or
 import { UserManager } from 'src/app/util/user-manager';
 import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
 import { createDefaultCrowdLabelersModals, CrowdLabelersModals } from './crowd-labeler-details-helper';
+import { copyToClipboard } from 'submodules/javascript-functions/general';
 
 @Component({
   selector: 'kern-crowd-labeler-details',
@@ -384,7 +385,7 @@ export class CrowdLabelerDetailsComponent
   }
 
   copyToClipboard(textToCopy) {
-    navigator.clipboard.writeText(textToCopy);
+    copyToClipboard(textToCopy);
   }
 
   onScrollEvent(event: Event) {
