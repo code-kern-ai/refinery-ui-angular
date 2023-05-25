@@ -140,16 +140,16 @@ trigger:
 kind: pipeline
 name: manifest-version
 steps:
-  - name: manifest
-    image: plugins/manifest
-    settings:
-      spec: drone-manifest-version.tmpl
-      tag: "${DRONE_TAG}"
-      ignore_missing: true
-      username:
-        from_secret: dockerhub_username
-      password:
-        from_secret: dockerhub_password
+- name: manifest
+  image: plugins/manifest
+  settings:
+    spec: drone-manifest-version.tmpl
+    tag: "${DRONE_TAG}"
+    ignore_missing: true
+    username:
+      from_secret: dockerhub_username
+    password:
+      from_secret: dockerhub_password
 
 depends_on:
   - amd64-dockerhub
