@@ -174,7 +174,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
       }
       this.checkIfAtLeastRunning = this.checkIfAttributeState(AttributeCalculationState.RUNNING);
       this.checkIfAtLeastQueued = this.checkIfAttributeState(AttributeCalculationState.QUEUED);
-      this.currentAttribute.progress = Number(this.currentAttribute.progress.toFixed(2));
+      this.currentAttribute.progress = Number(this.currentAttribute.progress?.toFixed(2));
       this.tooltipsArray = [];
       this.attributeVisibilityStates.forEach((state) => {
         this.tooltipsArray.push(getTooltipVisibilityState(state.value));
