@@ -6,8 +6,9 @@ import { first } from 'rxjs/operators';
 import { NotificationService } from 'src/app/base/services/notification.service';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { RouteService } from 'src/app/base/services/route.service';
-import { copyToClipboard, dateAsUTCDate } from 'src/app/util/helper-functions';
+import { copyToClipboard } from 'src/app/util/helper-functions';
 import { ConfigManager } from 'src/app/base/services/config-service';
+import { dateAsUTCDate } from 'submodules/javascript-functions/date-parser';
 
 @Component({
   selector: 'project-admin-admin',

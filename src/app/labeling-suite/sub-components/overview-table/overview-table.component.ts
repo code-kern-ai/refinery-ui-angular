@@ -6,11 +6,11 @@ import {
   OnInit,
   SimpleChanges,
 } from '@angular/core';
-import { jsonCopy } from 'src/app/util/helper-functions';
 import { LabelingSuiteManager, UpdateType } from '../../helper/manager/manager';
 import { LabelingSuiteRlaPreparator } from '../../helper/manager/recordRla';
 import { ComponentType, LabelingSuiteOverviewTableSettings } from '../../helper/manager/settings';
 import { getEmptyHeaderHover, HeaderHover, TableDisplayData } from './helper';
+import { jsonCopy } from 'submodules/javascript-functions/general';
 
 @Component({
   selector: 'kern-labeling-suite-overview-table',

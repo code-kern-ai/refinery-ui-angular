@@ -8,7 +8,8 @@ import { NotificationService } from 'src/app/base/services/notification.service'
 import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
 import { AuthApiService } from 'src/app/base/services/auth-api.service';
 import { UserManager } from 'src/app/util/user-manager';
-import { dateAsUTCDate, getUserAvatarUri } from 'src/app/util/helper-functions';
+import { getUserAvatarUri } from 'src/app/util/helper-functions';
+import { dateAsUTCDate } from 'submodules/javascript-functions/date-parser';
 
 
 type NotificationListWrapper = {

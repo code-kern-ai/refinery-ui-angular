@@ -14,10 +14,10 @@ import { OrganizationApolloService } from '../../services/organization/organizat
 import { DOCUMENT } from '@angular/common';
 import { ProjectApolloService } from '../../services/project/project-apollo.service';
 import { ConfigApolloService } from '../../services/config/config-apollo.service';
-import { parseUTC } from 'src/app/util/helper-functions';
 import { ConfigManager } from '../../services/config-service';
 import { RouteManager } from 'src/app/util/route-manager';
 import { createDefaultSideBarPmModals, SideBarPmModals } from './sidebar-pm-helper';
+import { parseUTC } from 'submodules/javascript-functions/date-parser';
 
 
 @Component({

@@ -15,7 +15,7 @@ import { RouteService } from 'src/app/base/services/route.service';
 import { WeakSourceApolloService } from 'src/app/base/services/weak-source/weak-source-apollo.service';
 import { forkJoin, Subscription, timer } from 'rxjs';
 import { InformationSourceType, informationSourceTypeToString, LabelingTask, LabelSource } from 'src/app/base/enum/graphql-enums';
-import { dateAsUTCDate, parseLinkFromText } from 'src/app/util/helper-functions';
+import { parseLinkFromText } from 'src/app/util/helper-functions';
 import { NotificationService } from 'src/app/base/services/notification.service';
 import { schemeCategory24 } from 'src/app/util/colors';
 import { parseToSettingsJson, parseCrowdSettings, CrowdLabelerHeuristicSettings, buildFullLink } from './crowd-labeler-settings';

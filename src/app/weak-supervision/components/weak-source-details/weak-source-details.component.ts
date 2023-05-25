@@ -22,7 +22,7 @@ import {
 import { forkJoin, Subscription, timer } from 'rxjs';
 import { InformationSourceType, informationSourceTypeToString, LabelingTask, LabelSource } from 'src/app/base/enum/graphql-enums';
 import { InformationSourceCodeLookup, InformationSourceExamples } from '../information-sources-code-lookup';
-import { capitalizeFirstForClassName, dateAsUTCDate, getColorForDataType, getPythonClassName, getPythonClassRegExMatch, getPythonFunctionName, getPythonFunctionRegExMatch, toPythonFunctionName } from 'src/app/util/helper-functions';
+import { capitalizeFirstForClassName, getColorForDataType, getPythonClassName, getPythonClassRegExMatch, getPythonFunctionName, getPythonFunctionRegExMatch, toPythonFunctionName } from 'src/app/util/helper-functions';
 import { NotificationService } from 'src/app/base/services/notification.service';
 import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
 import { schemeCategory24 } from 'src/app/util/colors';
@@ -34,6 +34,7 @@ import { createDefaultHeuristicsDetailsModals, HeuristicsDetailsModals } from '.
 import { AttributeVisibility } from 'src/app/projects/components/create-new-attribute/attributes-visibility-helper';
 import { BricksIntegratorComponent } from 'src/app/base/components/bricks-integrator/bricks-integrator.component';
 import { Attributes } from 'src/app/base/components/record-display/record-display.helper';
+import { dateAsUTCDate } from 'submodules/javascript-functions/date-parser';
 
 @Component({
   selector: 'kern-weak-source-details',

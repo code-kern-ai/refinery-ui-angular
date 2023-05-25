@@ -15,7 +15,8 @@ import { RouteManager } from './util/route-manager';
 import { NotificationCenterComponent } from './base/components/notification-center/notification-center.component';
 import { ProjectApolloService } from './base/services/project/project-apollo.service';
 import { AdminMessage, AdminMessageLevel, adminMessageLevels } from './util/admin-messages-helper';
-import { jsonCopy, parseUTC } from './util/helper-functions';
+import { parseUTC } from 'submodules/javascript-functions/date-parser';
+import { jsonCopy } from 'submodules/javascript-functions/general';
 
 @Component({
   selector: 'app-root',

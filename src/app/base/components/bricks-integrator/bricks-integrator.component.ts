@@ -4,15 +4,17 @@ import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, 
 import { ActivatedRoute, Router } from '@angular/router';
 import { timer } from 'rxjs';
 import { first } from 'rxjs/operators';
-import { capitalizeFirst, findProjectIdFromRoute, isStringTrue, jsonCopy } from 'src/app/util/helper-functions';
+import { capitalizeFirst, isStringTrue } from 'src/app/util/helper-functions';
 import { KnowledgeBasesApolloService } from '../../services/knowledge-bases/knowledge-bases-apollo.service';
 import { ProjectApolloService } from '../../services/project/project-apollo.service';
 import { BricksCodeParser } from './helper/code-parser';
 import { BricksDataRequestor } from './helper/data-requestor';
-import { BricksAPIData, BricksIntegratorConfig, BricksSearchData, BricksVariable, BricksVariableType, getEmptyBricksIntegratorConfig, IntegratorPage } from './helper/type-helper';
+import { BricksIntegratorConfig, BricksSearchData, BricksVariable, BricksVariableType, getEmptyBricksIntegratorConfig, IntegratorPage } from './helper/type-helper';
 import { extendDummyElements, getDummyNodeByIdForApi } from './helper/dummy-nodes';
 import { caesarCipher } from 'src/app/util/cipher';
 import { PASS_ME } from 'src/app/util/cipher';
+import { findProjectIdFromRoute } from 'submodules/javascript-functions/angular-specific';
+import { jsonCopy } from 'submodules/javascript-functions/general';
 
 @Component({
   selector: 'kern-bricks-integrator',

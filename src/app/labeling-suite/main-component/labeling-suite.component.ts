@@ -7,10 +7,10 @@ import {
 import { UserRole } from 'src/app/base/enum/graphql-enums';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { RecordApolloService } from 'src/app/base/services/record/record-apollo.service';
-import { findProjectIdFromRoute } from 'src/app/util/helper-functions';
 import { LabelingSuiteManager } from '../helper/manager/manager';
 import { ComponentType } from '../helper/manager/settings';
 import { UserType } from '../helper/manager/user';
+import { findProjectIdFromRoute } from 'submodules/javascript-functions/angular-specific';
 
 @Component({
   selector: 'kern-labeling-suite',

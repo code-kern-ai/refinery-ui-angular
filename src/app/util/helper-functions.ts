@@ -1,31 +1,4 @@
-import { ActivatedRoute } from "@angular/router";
 import { InformationSourceType, informationSourceTypeToString } from "../base/enum/graphql-enums";
-
-export function parseUTC(utc: string) {
-    const utcDate = dateAsUTCDate(new Date(utc));
-    return utcDate.toLocaleString();
-}
-
-export function dateAsUTCDate(date: Date) {
-    let d = new Date();
-    d.setUTCFullYear(date.getFullYear());
-    d.setUTCMonth(date.getMonth());
-    d.setUTCDate(date.getDate());
-    d.setUTCHours(date.getHours());
-    d.setUTCMinutes(date.getMinutes());
-    d.setUTCSeconds(date.getSeconds());
-    d.setUTCMilliseconds(date.getMilliseconds());
-    return d;
-}
-
-export function formatBytes(bytes, decimals = 2) {
-    if (bytes === 0) return '0 Bytes';
-    const dm = decimals < 0 ? 0 : decimals;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(1024));
-    return parseFloat((bytes / Math.pow(1024, i)).toFixed(dm)) + ' ' + sizes[i];
-}
-
 
 export function parseLinkFromText(link: string) {
     if (!link) return null;
@@ -139,28 +112,17 @@ export function capitalizeFirstPerWord(str: string) {
 export function camelCaseToDashCase(str: string) {
     return str.replace(/[A-Z]/g, m => "-" + m.toLowerCase());
 }
-export function snakeCaseToCamelCase(str:string){
+export function snakeCaseToCamelCase(str: string) {
     return str.toLowerCase().replace(/([_][a-z])/g, group =>
-    group
-      .toUpperCase()
-      .replace('_', '')
-  );
+        group
+            .toUpperCase()
+            .replace('_', '')
+    );
 }
 
 export function capitalizeFirst(str: string) {
     str = str.replace(/_/g, ' ');
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
-}
-
-
-export function findProjectIdFromRoute(route: ActivatedRoute): string {
-    while (route.parent) {
-        route = route.parent;
-        if (route.snapshot.params.projectId) {
-            return route.snapshot.params.projectId;
-        }
-    }
-    return null;
 }
 
 export function copyToClipboard(textToCopy: string) {
@@ -226,11 +188,6 @@ export function getPythonClassName(codeToCheck: string): string {
 export function getPythonClassRegExMatch(codeToCheck: string): any {
     return /class ([\w]+)\([^)]+\):/.exec(codeToCheck);
 }
-
-export function jsonCopy(src): any {
-    return JSON.parse(JSON.stringify(src));
-}
-
 
 export function loopNestedDict(dict: any, callback: (key: string, value: any) => void) {
     for (let key in dict) {
