@@ -15,7 +15,7 @@ import { AttributeCalculationExamples, AttributeCodeLookup } from './new-attribu
 import { RecordApolloService } from 'src/app/base/services/record/record-apollo.service';
 import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
 import { dataTypes } from 'src/app/util/data-types';
-import { getColorForDataType, isStringTrue, toPythonFunctionName } from 'src/app/util/helper-functions';
+import { getColorForDataType, isStringTrue, parseLogData, toPythonFunctionName } from 'src/app/util/helper-functions';
 import { KnowledgeBasesApolloService } from 'src/app/base/services/knowledge-bases/knowledge-bases-apollo.service';
 import { AttributeCalculationModals, AttributeCalculationState, createDefaultAttributeCalculationModals } from './create-new-attribute-helper';
 import { AttributeVisibility, attributeVisibilityStates, getTooltipVisibilityState } from './attributes-visibility-helper';
@@ -164,7 +164,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
         if (this.isInitial == null) this.isInitial = AttributeCodeLookup.isCodeStillTemplate(this.currentAttribute.sourceCode, this.currentAttribute.dataType);
       }
 
-      this.attributeLogs = attribute?.logs;
+      this.attributeLogs = parseLogData(attribute?.logs);
       this.attributeCalculationModals.executeAttribute.canRunProject = this.currentAttribute?.sourceCode !== '';
       if (this.currentAttribute?.state == AttributeCalculationState.FAILED) {
         this.editorOptions = { ...this.editorOptions, readOnly: false };
