@@ -5,3 +5,6 @@ UI for [refinery](https://github.com/code-kern-ai/refinery). Used to interact wi
 
 
 If you like what we're working on, please leave a ⭐ for [refinery](https://github.com/code-kern-ai/refinery)!
+
+Note:
+The javascript function can be replaced with shared functions from the submodules. The current version of refinery has some issues with the submodules and they are not added. In order to include the submodules the following command should be used: **git submodule add git@github.com:code-kern-ai/submodule-javascript-functions.git submodules/javascript-functions**. The submodules will be added in the folder submodules/javascript-functions.
