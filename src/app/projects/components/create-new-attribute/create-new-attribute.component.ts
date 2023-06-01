@@ -15,7 +15,7 @@ import { AttributeCalculationExamples, AttributeCodeLookup } from './new-attribu
 import { RecordApolloService } from 'src/app/base/services/record/record-apollo.service';
 import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
 import { dataTypes } from 'src/app/util/data-types';
-import { getColorForDataType, isStringTrue, parseLogData, toPythonFunctionName } from 'src/app/util/helper-functions';
+import { getColorForDataType, isStringTrue, jsonCopy, parseLogData, toPythonFunctionName } from 'src/app/util/helper-functions';
 import { KnowledgeBasesApolloService } from 'src/app/base/services/knowledge-bases/knowledge-bases-apollo.service';
 import { AttributeCalculationModals, AttributeCalculationState, createDefaultAttributeCalculationModals } from './create-new-attribute-helper';
 import { AttributeVisibility, attributeVisibilityStates, getTooltipVisibilityState } from './attributes-visibility-helper';
@@ -321,16 +321,19 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
   }
 
   handleWebsocketNotification(msgParts) {
-    if (msgParts[1] == 'attributes_updated') {
+    if (msgParts[1] == 'attributes_updated' && msgParts[2] == this.currentAttribute.id) {
       this.updatedThroughWebsocket = true;
       this.currentAttributeQuery$.refetch();
     } else if (msgParts[1] == 'calculate_attribute') {
-      if (msgParts[2] == 'progress') {
+      if (msgParts[2] == 'progress' && msgParts[3] == this.currentAttribute.id) {
         this.currentAttribute.progress = Number(msgParts[4]);
+      } else {
+        this.attributesQuery$.refetch();
+        this.currentAttributeQuery$.refetch();
+        if (msgParts[2] == "finished") timer(2000).subscribe(() => this.checkProjectTokenization(this.project.id));
+
       }
-      this.attributesQuery$.refetch();
-      this.currentAttributeQuery$.refetch();
-      if (msgParts[2] == "finished") timer(2000).subscribe(() => this.checkProjectTokenization(this.project.id));
+
     } else if (['knowledge_base_updated', 'knowledge_base_deleted', 'knowledge_base_created'].includes(msgParts[1])) {
       if (this.knowledgeBasesQuery$) this.knowledgeBasesQuery$.refetch();
     } else if (msgParts[1] == 'tokenization' && msgParts[2] == 'docbin') {
