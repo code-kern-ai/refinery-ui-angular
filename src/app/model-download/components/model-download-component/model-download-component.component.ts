@@ -8,10 +8,12 @@ import { NotificationService } from 'src/app/base/services/notification.service'
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { RouteService } from 'src/app/base/services/route.service';
 import { WeakSourceApolloService } from 'src/app/base/services/weak-source/weak-source-apollo.service';
-import { dateAsUTCDate, formatBytes, getUserAvatarUri, parseUTC } from 'src/app/util/helper-functions';
+import { getUserAvatarUri } from 'src/app/util/helper-functions';
 import { RouteManager } from 'src/app/util/route-manager';
 import { UserManager } from 'src/app/util/user-manager';
 import { createDefaultModelDownloadModals, ModelDownloadModals } from './model-download-helper';
+import { dateAsUTCDate, parseUTC } from 'submodules/javascript-functions/date-parser';
+import { formatBytes } from 'submodules/javascript-functions/general';
 
 @Component({
   selector: 'kern-model-download-component',

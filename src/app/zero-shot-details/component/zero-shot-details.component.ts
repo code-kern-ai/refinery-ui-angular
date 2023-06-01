@@ -16,7 +16,6 @@ import { WeakSourceApolloService } from 'src/app/base/services/weak-source/weak-
 
 import { forkJoin, Subscription, timer } from 'rxjs';
 import { InformationSourceType, informationSourceTypeToString, LabelingTask, LabelSource } from 'src/app/base/enum/graphql-enums';
-import { dateAsUTCDate, parseUTC } from 'src/app/util/helper-functions';
 import { NotificationService } from 'src/app/base/services/notification.service';
 import { schemeCategory24 } from 'src/app/util/colors';
 import { parseToSettingsJson, parseZeroShotSettings, ZeroShotSettings } from './zero-shot-settings';
@@ -24,6 +23,7 @@ import { ConfigManager } from 'src/app/base/services/config-service';
 import { UserManager } from 'src/app/util/user-manager';
 import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
 import { createDefaultZeroShotModals, ZeroShotModals } from './zero-shot-details-helper';
+import { dateAsUTCDate, parseUTC } from 'submodules/javascript-functions/date-parser';
 
 @Component({
   selector: 'kern-zero-shot-details',

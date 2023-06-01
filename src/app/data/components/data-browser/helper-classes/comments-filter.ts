@@ -1,9 +1,9 @@
 import { FormArray, FormGroup } from "@angular/forms";
 import { distinctUntilChanged, first, pairwise, startWith } from "rxjs/operators";
 import { ProjectApolloService } from "src/app/base/services/project/project-apollo.service";
-import { tryParseJSON } from "src/app/util/helper-functions";
 import { DataBrowserComponent } from "../data-browser.component";
 import { getBasicGroupItems, getBasicSearchGroup, SearchGroup, SearchGroupItem } from "./search-parameters";
+import { tryParseJSON } from "submodules/javascript-functions/general";
 
 export class CommentsFilter {
     private dataBrowser: DataBrowserComponent;

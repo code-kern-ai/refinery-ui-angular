@@ -1,11 +1,11 @@
 import { Component, ElementRef, HostListener, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { getLabelSourceOrder, getTaskTypeOrder, InformationSourceReturnType, LabelingTask, LabelSource, UserRole } from 'src/app/base/enum/graphql-enums';
-import { copyToClipboard, enumToArray, jsonCopy } from 'src/app/util/helper-functions';
 import { LabelingSuiteManager, UpdateType } from '../../helper/manager/manager';
 import { LabelingSuiteRlaPreparator } from '../../helper/manager/recordRla';
 import { ComponentType, LabelingSuiteLabelingSettings, LabelingSuiteSettings, LabelingSuiteTaskHeaderProjectSettings } from '../../helper/manager/settings';
 import { ALL_USERS_USER_ID, GOLD_STAR_USER_ID } from '../../helper/manager/user';
 import { getDefaultLabelingVars, LabelingVars, FULL_RECORD_ID, TokenLookup, HotkeyLookup } from './helper';
+import { copyToClipboard, enumToArray, jsonCopy } from 'submodules/javascript-functions/general';
 
 const SWIM_LANE_SIZE_PX = 12;
 @Component({

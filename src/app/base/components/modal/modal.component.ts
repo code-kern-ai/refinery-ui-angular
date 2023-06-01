@@ -1,8 +1,8 @@
 
 import { Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { timer } from 'rxjs';
-import { isStringTrue } from 'src/app/util/helper-functions';
 import { ModalButton, modalButtonCaption, ModalButtonType } from './modal-helper';
+import { isStringTrue } from 'submodules/javascript-functions/general';
 
 
 

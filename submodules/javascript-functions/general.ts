@@ -118,7 +118,7 @@ export type enumToArrayOptions = {
     nameFunction: (name: string) => string;
 }
 
-export function enumToArray(e: Object, options: enumToArrayOptions | null = null): any[] {
+export function enumToArray(e: Object, options: any | null = null): any[] {
     const arr = Object.values(e);
     if (!options) return sortByEnumPos(e, arr);
     let func;

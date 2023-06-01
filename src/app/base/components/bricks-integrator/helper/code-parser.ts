@@ -1,8 +1,10 @@
-import { capitalizeFirst, capitalizeFirstForClassName, enumToArray, getPythonClassName, getPythonFunctionName, isStringTrue, toPythonFunctionName } from "src/app/util/helper-functions"
 import { BricksIntegratorComponent } from "../bricks-integrator.component"
 import { BricksVariableComment, isCommentTrue } from "./comment-lookup";
 import { BricksExpectedLabels, BricksVariable, bricksVariableNeedsTaskId, BricksVariableType, canHaveDefaultValue, ExpectedLabel, getChoiceType, getEmptyBricksExpectedLabels, getEmptyBricksVariable, IntegratorInput, IntegratorInputVariable, RefineryDataType, SelectionType, StringBoolean } from "./type-helper";
-import { DummyNodes, getAddInfo, getSelectionType, getTextForRefineryType } from "./dummy-nodes";
+import { DummyNodes, getAddInfo, getSelectionType } from "./dummy-nodes";
+import { enumToArray, isStringTrue } from "submodules/javascript-functions/general";
+import { capitalizeFirst, capitalizeFirstForClassName } from "submodules/javascript-functions/case-types-parser";
+import { getPythonClassName, getPythonFunctionName, toPythonFunctionName } from "submodules/javascript-functions/python-functions-parser";
 //currently included python types are: int, float, str, bool, list
 
 export class BricksCodeParser {

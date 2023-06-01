@@ -1,10 +1,10 @@
 import { Component, ElementRef, HostListener, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { LabelingTask } from 'src/app/base/enum/graphql-enums';
-import { jsonCopy } from 'src/app/util/helper-functions';
 import { LabelingSuiteManager, UpdateType } from '../../helper/manager/manager';
 import { ComponentType, LabelingSuiteTaskHeaderProjectSettings } from '../../helper/manager/settings';
 import { getHoverGroupsTaskOverview } from '../../helper/util-functions';
 import { getQuickButtonConfig, LabelingSuiteTaskHeaderDisplayData, LabelingSuiteTaskHeaderLabelDisplayData, QuickButtonConfig } from './helper';
+import { jsonCopy } from 'submodules/javascript-functions/general';
 
 @Component({
   selector: 'kern-labeling-suite-task-header',

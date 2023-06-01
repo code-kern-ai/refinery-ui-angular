@@ -1,8 +1,7 @@
 
 import { HttpClient } from '@angular/common/http';
 import { first } from 'rxjs/operators';
-import { jsonCopy } from 'src/app/util/helper-functions';
-import { ConfigApolloService } from './config/config-apollo.service';
+import { jsonCopy } from 'submodules/javascript-functions/general';
 
 export class ConfigManager {
 

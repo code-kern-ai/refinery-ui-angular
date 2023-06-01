@@ -4,11 +4,12 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Slice } from 'src/app/data/components/data-browser/helper-classes/search-parameters';
 import { AttributeCalculationState } from 'src/app/projects/components/create-new-attribute/create-new-attribute-helper';
-import { dateAsUTCDate, parseLogData } from 'src/app/util/helper-functions';
+import { parseLogData } from 'src/app/util/helper-functions';
 import { Project } from '../../entities/project';
 import { ApolloChecker } from '../base/apollo-checker';
 import { mutations } from './project-mutations';
 import { queries } from './project-queries';
+import { dateAsUTCDate } from 'submodules/javascript-functions/date-parser';
 
 @Injectable({
   providedIn: 'root',

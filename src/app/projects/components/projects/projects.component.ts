@@ -16,10 +16,12 @@ import { NotificationService } from 'src/app/base/services/notification.service'
 import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { ProjectStatus } from 'src/app/projects/enums/project-status.enum';
-import { getUserAvatarUri, isStringTrue, parseUTC } from 'src/app/util/helper-functions';
+import { getUserAvatarUri } from 'src/app/util/helper-functions';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { createDefaultProjectsModals, ProjectsModals } from './projects-helper';
 import { UploadFileType } from 'src/app/import/components/helpers/upload-types';
+import { parseUTC } from 'submodules/javascript-functions/date-parser';
+import { isStringTrue } from 'submodules/javascript-functions/general';
 
 @Component({
   selector: 'kern-projects',

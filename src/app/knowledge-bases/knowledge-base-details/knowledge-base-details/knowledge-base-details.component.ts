@@ -23,7 +23,6 @@ import { createDefaultLookupListDetailsModals, LookupListsDetailsModals } from '
 import { UploadFileType } from 'src/app/import/components/helpers/upload-types';
 import { Project } from 'src/app/base/entities/project';
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
-import { toPythonFunctionName } from 'src/app/util/helper-functions';
 
 
 @Component({
