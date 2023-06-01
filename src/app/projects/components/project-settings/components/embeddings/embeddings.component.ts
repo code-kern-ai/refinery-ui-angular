@@ -108,13 +108,19 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
     const attributeId = embeddingForm.get("targetAttribute").value;
     const platform = embeddingForm.get("platform").value;
     const granularity = embeddingForm.get("granularity").value.substring(3);
-    
+    const model = embeddingForm.get("model").value;
+    const apiToken = embeddingForm.get("apiToken").value;
+    const acceptTerms = embeddingForm.get("acceptTerms").value;
+
     this.projectApolloService.createEmbedding(
       this.project.id,
       attributeId,
-      embeddingHandle, 
+      embeddingHandle,
       granularity,
       platform,
+      model,
+      apiToken,
+      acceptTerms
     ).pipe(first()).subscribe();
   }
 

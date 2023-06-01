@@ -737,7 +737,7 @@ export class ProjectApolloService {
       );
   }
 
-  createEmbedding(projectId: string, attributeId: string, embeddingHandle: string, granularity: string, platform: string) {
+  createEmbedding(projectId: string, attributeId: string, embeddingHandle: string, granularity: string, platform: string, model: string, apiToken: string, acceptTerms: boolean) {
     return this.apollo.mutate({
       mutation: granularity == "TOKEN" ? mutations.CREATE_TOKEN_LEVEL_EMBEDDING : mutations.CREATE_ATTRIBUTE_LEVEL_EMBEDDING,
       variables: {
@@ -745,6 +745,9 @@ export class ProjectApolloService {
         attributeId: attributeId,
         embeddingHandle: embeddingHandle,
         platform: platform,
+        model: model,
+        apiToken: apiToken,
+        acceptTerms: acceptTerms,
       },
       refetchQueries: [
         {
