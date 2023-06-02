@@ -9,6 +9,7 @@ import { DownloadedModel } from '../../entities/downloaded-model.type';
 import { Embedding } from '../../entities/embedding.type';
 import { DataHandlerHelper } from '../../helper/data-handler-helper';
 import { SettingModals } from '../../helper/modal-helper';
+import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
 
 @Component({
   selector: 'kern-embeddings',
@@ -31,11 +32,17 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
   subscriptions$: Subscription[] = [];
   somethingLoading: boolean = false;
   downloadedModelsQuery$: any;
+  organization: any;
 
-  constructor(private projectApolloService: ProjectApolloService) { }
+  constructor(private projectApolloService: ProjectApolloService, private organizationApolloService: OrganizationApolloService) { }
 
   ngOnInit(): void {
     this.prepareDownloadedModels();
+    this.organizationApolloService
+      .getUserOrganization()
+      .pipe(first()).subscribe((org: any) => {
+        this.organization = org;
+      });
 
     NotificationService.subscribeToNotification(this, {
       whitelist: ['model_provider_download'],
