@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { Subscription, timer } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { Project } from 'src/app/base/entities/project';
@@ -33,6 +33,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
   somethingLoading: boolean = false;
   downloadedModelsQuery$: any;
   organization: any;
+  @ViewChild('gdprText') gdprText: ElementRef;
 
   constructor(private projectApolloService: ProjectApolloService, private organizationApolloService: OrganizationApolloService) { }
 
@@ -111,23 +112,23 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
   addEmbedding() {
     if (!this.dataHandlerHelper.canCreateEmbedding(this.settingModals, this.embeddings, this.attributes)) return;
     const embeddingForm = this.settingModals.embedding.create.embeddingCreationFormGroup;
-    const embeddingHandle = embeddingForm.get("embeddingHandle").value;
     const attributeId = embeddingForm.get("targetAttribute").value;
-    const platform = embeddingForm.get("platform").value;
-    const granularity = embeddingForm.get("granularity").value.substring(3);
-    const model = embeddingForm.get("model").value;
-    const apiToken = embeddingForm.get("apiToken").value;
-    const acceptTerms = embeddingForm.get("acceptTerms").value;
+
+    const newEmbedding = {
+      embeddingHandle: embeddingForm.get("embeddingHandle").value,
+      platform: embeddingForm.get("platform").value,
+      granularity: embeddingForm.get("granularity").value.substring(3),
+      model: embeddingForm.get("model").value,
+      apiToken: embeddingForm.get("apiToken").value,
+      acceptedText: this.gdprText.nativeElement.innerHTML,
+      acceptTerms: embeddingForm.get("acceptTerms").value,
+    }
 
     this.projectApolloService.createEmbedding(
       this.project.id,
       attributeId,
-      embeddingHandle,
-      granularity,
-      platform,
-      model,
-      apiToken,
-      acceptTerms
+      newEmbedding.granularity,
+      JSON.stringify(newEmbedding)
     ).pipe(first()).subscribe();
   }
 
