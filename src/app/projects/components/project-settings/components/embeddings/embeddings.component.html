@@ -167,11 +167,13 @@
         tensors!</p>
 </kern-modal>
 
-
 <kern-modal [isOpen]="settingModals.embedding.create.open" [modalBoxStyle]="{'overflow-x':'visible'}" closeButton="X"
     [acceptButton]="{
     buttonCaption: 'Add embedding',
-    disabled: !settingModals.embedding.create.blocked || !(useableTextAttributes && settingModals.embedding.create.embeddingCreationFormGroup),
+    disabled: settingModals.embedding.create.blocked || !(useableTextAttributes && settingModals.embedding.create.embeddingCreationFormGroup) || !settingModals.embedding.create.embeddingCreationFormGroup.get('termsAccepted').value ||
+    (settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.HUGGING_FACE && settingModals.embedding.create.embeddingCreationFormGroup.get('embeddingHandle').value == '') ||
+    (settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.OPEN_AI && (settingModals.embedding.create.embeddingCreationFormGroup.get('model').value == '' || settingModals.embedding.create.embeddingCreationFormGroup.get('apiToken').value == '')) ||
+    (settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.COHERE && settingModals.embedding.create.embeddingCreationFormGroup.get('apiToken').value == ''),
     emitObject: this, emitFunction:addEmbedding
 }" (optionClicked)="settingModals.embedding.create.open = false">
     <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">

@@ -79,8 +79,9 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   checkForceHiddenHandles() {
-    const granularity = this.settingModals.embedding.create.embeddingCreationFormGroup.get('granularity').value;
-    const attId = this.settingModals.embedding.create.embeddingCreationFormGroup.get('targetAttribute').value;
+    const form = this.settingModals.embedding.create.embeddingCreationFormGroup;
+    const granularity = form.get('granularity').value;
+    const attId = form.get('targetAttribute').value;
     const suggestionList = this.embeddingHandles[attId];
     for (let element of suggestionList) {
       element.forceHidden = true;
@@ -90,6 +91,10 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
         element.forceHidden = false;
       }
     }
+    form.get('model').setValue(null);
+    form.get('embeddingHandle').setValue(null);
+    form.get('apiToken').setValue(null);
+    form.get('termsAccepted').setValue(false);
   }
 
   deleteEmbedding() {

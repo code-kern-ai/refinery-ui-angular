@@ -5,7 +5,7 @@ import { ProjectApolloService } from "src/app/base/services/project/project-apol
 import { Attribute } from "../entities/attribute.type";
 import { Embedding } from "../entities/embedding.type";
 import { SettingModals } from "./modal-helper";
-import { granularityTypesArray, platformNamesArray } from "./project-settings-helper";
+import { PlatformType, granularityTypesArray, platformNamesArray } from "./project-settings-helper";
 
 export class DataHandlerHelper {
 
@@ -89,7 +89,16 @@ export class DataHandlerHelper {
         const values = settingModals.embedding.create.embeddingCreationFormGroup.getRawValue();
         let toReturn = this.getAttributeArrayAttribute(values.targetAttribute, 'name', attributes);
         toReturn += "-" + (values.granularity == 'ON_ATTRIBUTE' ? 'classification' : 'extraction');
-        toReturn += "-" + values.embeddingHandle;
+        const platform = settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value
+        if (platform == PlatformType.HUGGING_FACE) {
+            toReturn += "-" + values.embeddingHandle;
+        } else if (platform == PlatformType.OPEN_AI) {
+            toReturn += "-" + values.model + "-" + values.apiToken;
+        } else if (platform == PlatformType.COHERE) {
+            toReturn += "-" + values.apiToken;
+        } else if (platform == PlatformType.PYTHON) {
+            toReturn += "-";
+        }
 
         return toReturn;
     }
