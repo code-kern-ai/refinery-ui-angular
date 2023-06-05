@@ -77,7 +77,7 @@ export class DataHandlerHelper {
                 granularity: this.granularityTypesArray[0].value,
                 model: "",
                 apiToken: "",
-                acceptTerms: false
+                termsAccepted: false
             });
             settingModals.embedding.create.embeddingCreationFormGroup.valueChanges.pipe(debounceTime(200)).subscribe(() =>
                 settingModals.embedding.create.blocked = !this.canCreateEmbedding(settingModals, embeddings, attributes)

@@ -168,17 +168,9 @@ export const mutations = {
     }
   }`,
 
-  CREATE_TOKEN_LEVEL_EMBEDDING: gql`
-  mutation ($projectId: ID!, $attributeId: ID!, $newEmbedding: JSONString!) {
-    createTokenLevelEmbedding(projectId: $projectId, attributeId: $attributeId, newEmbedding: $newEmbedding) {
-      ok
-    }
-  }  
-  `,
-
-  CREATE_ATTRIBUTE_LEVEL_EMBEDDING: gql`
-  mutation ($projectId: ID!, $attributeId: ID!, $newEmbedding: JSONString!) {
-    createAttributeLevelEmbedding(projectId: $projectId, attributeId: $attributeId, newEmbedding: $newEmbedding) {
+  CREATE_EMBEDDING: gql`
+  mutation($projectId: ID!, $attributeId: ID!, $embedding: JSONString!) {
+    createEmbedding(projectId: $projectId, attributeId: $attributeId, embedding: $embedding) {
       ok
     }
   }  

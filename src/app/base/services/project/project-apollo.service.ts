@@ -737,9 +737,9 @@ export class ProjectApolloService {
       );
   }
 
-  createEmbedding(projectId: string, attributeId: string, granularity: string, newEmbedding: any) {
+  createEmbedding(projectId: string, attributeId: string, newEmbedding: any) {
     return this.apollo.mutate({
-      mutation: granularity == "TOKEN" ? mutations.CREATE_TOKEN_LEVEL_EMBEDDING : mutations.CREATE_ATTRIBUTE_LEVEL_EMBEDDING,
+      mutation: mutations.CREATE_EMBEDDING,
       variables: {
         projectId: projectId,
         attributeId: attributeId,

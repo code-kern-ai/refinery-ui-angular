@@ -5,11 +5,18 @@ export const granularityTypesArray = [
     { name: 'Token', value: 'ON_TOKEN' }
 ];
 
+export enum PlatformType {
+    HUGGING_FACE = "huggingface",
+    OPEN_AI = "openai",
+    COHERE = "cohere",
+    PYTHON = "python"
+}
+
 export const platformNamesArray = [
-    { name: 'Hugging Face', value: 'huggingface' },
-    { name: 'Open AI', value: 'openai' },
-    { name: 'Cohere', value: 'cohere' },
-    { name: 'Python', value: 'python' }
+    { name: 'Hugging Face', value: PlatformType.HUGGING_FACE },
+    { name: 'Open AI', value: PlatformType.OPEN_AI },
+    { name: 'Cohere', value: PlatformType.COHERE },
+    { name: 'Python', value: PlatformType.PYTHON }
 ];
 
 export function getMoveRight(tblName: string): boolean {

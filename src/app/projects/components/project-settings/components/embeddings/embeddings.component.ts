@@ -10,6 +10,7 @@ import { Embedding } from '../../entities/embedding.type';
 import { DataHandlerHelper } from '../../helper/data-handler-helper';
 import { SettingModals } from '../../helper/modal-helper';
 import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
+import { PlatformType } from '../../helper/project-settings-helper';
 
 @Component({
   selector: 'kern-embeddings',
@@ -34,6 +35,10 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
   downloadedModelsQuery$: any;
   organization: any;
   @ViewChild('gdprText') gdprText: ElementRef;
+
+  get PlatformType(): typeof PlatformType {
+    return PlatformType;
+  }
 
   constructor(private projectApolloService: ProjectApolloService, private organizationApolloService: OrganizationApolloService) { }
 
@@ -113,21 +118,21 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
     if (!this.dataHandlerHelper.canCreateEmbedding(this.settingModals, this.embeddings, this.attributes)) return;
     const embeddingForm = this.settingModals.embedding.create.embeddingCreationFormGroup;
     const attributeId = embeddingForm.get("targetAttribute").value;
+    const platform = embeddingForm.get("platform").value;
 
     const newEmbedding = {
-      embeddingHandle: embeddingForm.get("embeddingHandle").value,
-      platform: embeddingForm.get("platform").value,
-      granularity: embeddingForm.get("granularity").value.substring(3),
-      model: embeddingForm.get("model").value,
-      apiToken: embeddingForm.get("apiToken").value,
-      acceptedText: this.gdprText.nativeElement.innerHTML,
-      acceptTerms: embeddingForm.get("acceptTerms").value,
-    }
+      ...(platform == PlatformType.HUGGING_FACE && { embeddingHandle: embeddingForm.get("embeddingHandle").value }),
+      ...(platform == PlatformType.OPEN_AI && { model: embeddingForm.get("model").value, apiToken: embeddingForm.get("apiToken").value }),
+      ...(platform == PlatformType.COHERE && { apiToken: embeddingForm.get("apiToken").value }),
+      platform: platform,
+      termsText: this.gdprText.nativeElement.innerHTML,
+      termsAccepted: embeddingForm.get("termsAccepted").value,
+      embeddingType: embeddingForm.get("granularity").value.substring(3) === "TOKEN" ? "ON_TOKEN" : "ON_ATTRIBUTE"
+    };
 
     this.projectApolloService.createEmbedding(
       this.project.id,
       attributeId,
-      newEmbedding.granularity,
       JSON.stringify(newEmbedding)
     ).pipe(first()).subscribe();
   }
