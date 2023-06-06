@@ -12,6 +12,7 @@ import { SettingModals } from '../../helper/modal-helper';
 import { EmbeddingType, PlatformType, platformNamesDict } from '../../helper/project-settings-helper';
 import { jsonCopy } from 'src/app/util/helper-functions';
 import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
+import { Organization } from 'src/app/base/entities/organization';
 
 @Component({
   selector: 'kern-embeddings',
@@ -38,7 +39,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
   downloadedModelsQuery$: any;
   embeddingHandlesCopy: { [embeddingId: string]: any };;
   selectedPlatform: EmbeddingPlatform;
-  organization: any;
+  organization: Organization;
 
   get PlatformType(): typeof PlatformType {
     return PlatformType;
