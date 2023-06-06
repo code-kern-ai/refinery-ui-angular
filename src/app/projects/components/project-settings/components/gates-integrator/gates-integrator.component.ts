@@ -4,6 +4,7 @@ import { Project } from 'src/app/base/entities/project';
 import { first } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { NotificationService } from 'src/app/base/services/notification.service';
+import { GatesIntegratorModal, createDefaultGatesIntegratorModal } from './gates-integrator-helper';
 
 @Component({
   selector: 'kern-gates-integrator',
@@ -19,6 +20,7 @@ export class GatesIntegratorComponent implements OnInit, OnDestroy {
   gatesIntegrationData: any;
   gatesIntegrationDataQuery$: any;
   subscriptions$: Subscription[] = [];
+  gatesIntegratorModals: GatesIntegratorModal = createDefaultGatesIntegratorModal();
   constructor(private projectApolloService: ProjectApolloService) { }
 
   ngOnInit(): void {

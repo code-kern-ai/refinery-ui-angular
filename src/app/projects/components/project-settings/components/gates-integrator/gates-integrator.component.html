@@ -23,7 +23,7 @@
                     This project is not ready to be used with Gates. You can update the project to make it ready.
                     This will rerun the project's embeddings and heuristics to create the necessary data for Gates.
                     <div>
-                        <label (click)="updateProjectForGates()"
+                        <label (click)="gatesIntegratorModals.warningModal.open = true"
                             class="mr-1 mt-2 inline-flex items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none cursor-pointer">
                             <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-reload"
                                 width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
@@ -43,3 +43,16 @@
         </div>
     </div>
 </div>
+
+<kern-modal [isOpen]="gatesIntegratorModals.warningModal.open" closeButton="X"
+    [modalBoxStyle]="{'width':'30rem','text-align':'center'}" [acceptButton]="{
+    buttonCaption: 'Accept',
+    emitObject: this, emitFunction: updateProjectForGates
+}" (optionClicked)="gatesIntegratorModals.warningModal.open = false">
+    <h1 class="text-lg text-gray-900 mb-2">Confirmation</h1>
+    <div class="text-sm text-gray-500 my-2">
+        Are you sure you want to run the gates integration?
+        <p>This will cause double fees since embeddings will be recreated.</p>
+    </div>
+
+</kern-modal>

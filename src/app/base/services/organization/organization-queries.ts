@@ -1,7 +1,6 @@
 import { gql } from 'apollo-angular';
 
 export const queries = {
-  // add gdprCompliant as part of the query 
   GET_ORGANIZATION: gql`
     query {
       userOrganization {
