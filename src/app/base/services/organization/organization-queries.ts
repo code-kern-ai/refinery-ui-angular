@@ -9,6 +9,7 @@ export const queries = {
         maxRows
         maxCols
       	maxCharCount
+        gdprCompliant
       }
     }
   `,

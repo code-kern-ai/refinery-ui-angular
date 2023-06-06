@@ -11,6 +11,7 @@ import { DataHandlerHelper } from '../../helper/data-handler-helper';
 import { SettingModals } from '../../helper/modal-helper';
 import { EmbeddingType, PlatformType, platformNamesDict } from '../../helper/project-settings-helper';
 import { jsonCopy } from 'src/app/util/helper-functions';
+import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
 
 @Component({
   selector: 'kern-embeddings',
@@ -37,15 +38,20 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
   downloadedModelsQuery$: any;
   embeddingHandlesCopy: { [embeddingId: string]: any };;
   selectedPlatform: EmbeddingPlatform;
+  organization: any;
 
   get PlatformType(): typeof PlatformType {
     return PlatformType;
   }
 
-  constructor(private projectApolloService: ProjectApolloService) { }
+  constructor(private projectApolloService: ProjectApolloService, private organizationApolloService: OrganizationApolloService) { }
 
   ngOnInit(): void {
     this.prepareDownloadedModels();
+    this.organizationApolloService.getUserOrganization().pipe(first()).subscribe((organization) => {
+      this.organization = organization;
+    });
+
     NotificationService.subscribeToNotification(this, {
       whitelist: ['model_provider_download'],
       func: this.handleWebsocketNotification
@@ -80,6 +86,9 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   prepareEmbeddingPlatforms() {
+    if (this.organization.gdprCompliant && this.isManaged) {
+      this.embeddingPlatforms = this.embeddingPlatforms.filter((platform) => platform.gdprCompliant === true);
+    }
     this.embeddingPlatforms.forEach((platform: EmbeddingPlatform) => {
       platform.name = platformNamesDict[platform.platform];
     });
