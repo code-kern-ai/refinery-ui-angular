@@ -44,6 +44,7 @@ export function parseLogData(logs: string[], isType: InformationSourceType = nul
     let neededIDLength = String(logs.length)?.length;
     return logs.map((wrapper, index) => {
         const d: Date = new Date(wrapper.substr(0, wrapper.indexOf(' ')));
+        if (isNaN(d.getTime())) return wrapper;
         return (
             String(index + 1).padStart(neededIDLength, '0') +
             ': ' +

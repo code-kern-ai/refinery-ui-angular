@@ -1210,7 +1210,6 @@ export class ProjectApolloService {
         map((result) => {
           const att = result['data']['attributeByAttributeId'];
           if (att == null) return null;
-          att.logs = parseLogData(att['logs']);
           return att
         })
       );
