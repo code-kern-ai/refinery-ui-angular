@@ -4,7 +4,7 @@ import { mutations } from './knowledge-bases-mutations';
 import { queries } from './knowledge-bases-queries';
 import { map } from 'rxjs/operators';
 import { ApolloChecker } from '../base/apollo-checker';
-import { asPythonVariable } from 'src/app/util/helper-functions';
+import { asPythonVariable } from 'submodules/javascript-functions/python-functions-parser';
 
 @Injectable({
   providedIn: 'root',

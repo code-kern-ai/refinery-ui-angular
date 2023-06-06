@@ -1,9 +1,9 @@
 import { getLabelSourceOrder, InformationSourceReturnType, informationSourceTypeToString, LabelSource, labelSourceToString, UserRole } from "src/app/base/enum/graphql-enums";
-import { jsonCopy } from "src/app/util/helper-functions";
 import { TableDisplayData } from "../../sub-components/overview-table/helper";
 import { getHoverGroupsForLabeling, getHoverGroupsOverviewTable } from "../util-functions";
 import { LabelingSuiteManager } from "./manager";
 import { GOLD_STAR_USER_ID } from "./user";
+import { jsonCopy } from "submodules/javascript-functions/general";
 
 export class LabelingSuiteRlaPreparator {
 

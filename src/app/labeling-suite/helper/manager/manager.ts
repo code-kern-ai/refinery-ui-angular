@@ -1,7 +1,6 @@
 import { ActivatedRoute, Router } from "@angular/router";
 import { ProjectApolloService } from "src/app/base/services/project/project-apollo.service";
 import { RecordApolloService } from "src/app/base/services/record/record-apollo.service";
-import { enumToArray } from "src/app/util/helper-functions";
 import { DoBeforeDestroy } from "src/app/util/interfaces";
 import { LabelingSuiteComponent } from "../../main-component/labeling-suite.component";
 import { LabelingSuiteAttributeManager } from "./attribute";
@@ -11,6 +10,7 @@ import { LabelingSuiteSessionManager } from "./session";
 import { LabelingSuiteSettingManager } from "./settings";
 import { LabelingSuiteTaskManager } from "./task";
 import { LabelingSuiteUserManager } from "./user";
+import { enumToArray } from "submodules/javascript-functions/general";
 
 
 export class LabelingSuiteManager implements DoBeforeDestroy {

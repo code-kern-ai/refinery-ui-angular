@@ -3,10 +3,10 @@ import { first } from "rxjs/operators";
 import { UserRole } from "src/app/base/enum/graphql-enums";
 import { NotificationService } from "src/app/base/services/notification.service";
 import { ProjectApolloService } from "src/app/base/services/project/project-apollo.service";
-import { jsonCopy } from "src/app/util/helper-functions";
 import { DoBeforeDestroy } from "src/app/util/interfaces";
 import { LabelingSuiteManager, UpdateType } from "./manager";
 import { ComponentType } from "./settings";
+import { jsonCopy } from "submodules/javascript-functions/general";
 
 export class LabelingSuiteTaskManager implements DoBeforeDestroy {
     public labelingTasks: any[];

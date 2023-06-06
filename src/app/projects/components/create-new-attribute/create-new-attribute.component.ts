@@ -15,11 +15,13 @@ import { AttributeCalculationExamples, AttributeCodeLookup } from './new-attribu
 import { RecordApolloService } from 'src/app/base/services/record/record-apollo.service';
 import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
 import { dataTypes } from 'src/app/util/data-types';
-import { getColorForDataType, isStringTrue, jsonCopy, parseLogData, toPythonFunctionName } from 'src/app/util/helper-functions';
+import { getColorForDataType, parseLogData } from 'src/app/util/helper-functions';
 import { KnowledgeBasesApolloService } from 'src/app/base/services/knowledge-bases/knowledge-bases-apollo.service';
 import { AttributeCalculationModals, AttributeCalculationState, createDefaultAttributeCalculationModals } from './create-new-attribute-helper';
 import { AttributeVisibility, attributeVisibilityStates, getTooltipVisibilityState } from './attributes-visibility-helper';
 import { Attributes } from 'src/app/base/components/record-display/record-display.helper';
+import { copyToClipboard, isStringTrue } from 'submodules/javascript-functions/general';
+import { toPythonFunctionName } from 'submodules/javascript-functions/python-functions-parser';
 
 @Component({
   selector: 'kern-create-new-attribute',
@@ -351,7 +353,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
 
   copyClicked: Number = -1;
   copyToClipboard(textToCopy, i = -1) {
-    navigator.clipboard.writeText(textToCopy);
+    copyToClipboard(textToCopy);
     if (i != -1) {
       this.copyClicked = i;
       timer(1000).pipe(first()).subscribe(() => {
