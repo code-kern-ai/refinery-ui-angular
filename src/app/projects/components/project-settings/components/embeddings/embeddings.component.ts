@@ -11,6 +11,7 @@ import { DataHandlerHelper } from '../../helper/data-handler-helper';
 import { SettingModals } from '../../helper/modal-helper';
 import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
 import { EmbeddingType, PlatformType } from '../../helper/project-settings-helper';
+import { jsonCopy } from 'src/app/util/helper-functions';
 
 @Component({
   selector: 'kern-embeddings',
@@ -34,6 +35,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
   somethingLoading: boolean = false;
   downloadedModelsQuery$: any;
   organization: any;
+  embeddingHandlesCopy: { [embeddingId: string]: any };;
   @ViewChild('gdprText') gdprText: ElementRef;
 
   get PlatformType(): typeof PlatformType {
@@ -64,6 +66,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     this.checkStillLoading();
     if (changes.embeddingHandles) {
+      this.embeddingHandlesCopy = jsonCopy(this.embeddingHandles);
       this.checkModelDownloaded();
     }
   }
@@ -85,6 +88,10 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
     let suggestionList = this.embeddingHandles[attId];
     if (this.settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.PYTHON) {
       suggestionList = suggestionList.filter(e => e.configString == 'bag-of-characters' || e.configString == 'bag-of-words');
+      this.embeddingHandles[attId] = suggestionList;
+    } else if (this.settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.HUGGING_FACE) {
+      this.embeddingHandles[attId] = this.embeddingHandlesCopy[attId];
+      this.checkModelDownloaded();
     }
     for (let element of suggestionList) {
       element.forceHidden = true;
@@ -94,7 +101,6 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
         element.forceHidden = false;
       }
     }
-    this.embeddingHandles[attId] = suggestionList;
     form.get('model').setValue(null);
     form.get('apiToken').setValue(null);
     form.get('termsAccepted').setValue(false);
