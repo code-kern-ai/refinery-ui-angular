@@ -1,8 +1,13 @@
 import { Attribute } from "../entities/attribute.type";
 
+export enum EmbeddingType {
+    ON_ATTRIBUTE = "ON_ATTRIBUTE",
+    ON_TOKEN = "ON_TOKEN"
+};
+
 export const granularityTypesArray = [
-    { name: 'Attribute', value: 'ON_ATTRIBUTE' },
-    { name: 'Token', value: 'ON_TOKEN' }
+    { name: 'Attribute', value: EmbeddingType.ON_ATTRIBUTE },
+    { name: 'Token', value: EmbeddingType.ON_TOKEN }
 ];
 
 export enum PlatformType {

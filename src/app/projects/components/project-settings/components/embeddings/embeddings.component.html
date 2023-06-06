@@ -171,9 +171,10 @@
     [acceptButton]="{
     buttonCaption: 'Add embedding',
     disabled: settingModals.embedding.create.blocked || !(useableTextAttributes && settingModals.embedding.create.embeddingCreationFormGroup) || !settingModals.embedding.create.embeddingCreationFormGroup.get('termsAccepted').value ||
-    (settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.HUGGING_FACE && settingModals.embedding.create.embeddingCreationFormGroup.get('embeddingHandle').value == '') ||
+    (settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.HUGGING_FACE && settingModals.embedding.create.embeddingCreationFormGroup.get('model').value == '') ||
     (settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.OPEN_AI && (settingModals.embedding.create.embeddingCreationFormGroup.get('model').value == '' || settingModals.embedding.create.embeddingCreationFormGroup.get('apiToken').value == '')) ||
-    (settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.COHERE && settingModals.embedding.create.embeddingCreationFormGroup.get('apiToken').value == ''),
+    (settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.COHERE && settingModals.embedding.create.embeddingCreationFormGroup.get('apiToken').value == '') ||
+    (settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.PYTHON && settingModals.embedding.create.embeddingCreationFormGroup.get('model').value == ''),
     emitObject: this, emitFunction:addEmbedding
 }" (optionClicked)="settingModals.embedding.create.open = false">
     <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
@@ -197,7 +198,7 @@
                         {{attribute.name}}
                     </option>
                 </select>
-                <div class="tooltip tooltip-right" data-tip="One embedding per record vs. per token">
+                <div class="tooltip tooltip-right" data-tip="One embedding per attribute vs. per token">
                     <span class="card-title mb-0 label-text flex"><span class="cursor-help underline"
                             style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">
                             Granularity
@@ -227,49 +228,7 @@
                 <ng-container
                     [ngSwitch]="settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value">
                     <ng-template [ngSwitchCase]="PlatformType.HUGGING_FACE">
-                        <div class="tooltip tooltip-right"
-                            data-tip="If platform=Huggingface: <uri of your model>; if platform=Open AI: <name of your model>+<API token>; if platform=Cohere: <API token>; if platform=Python: see docs">
-                            <span class="card-title mb-0 label-text flex"><span class="cursor-help underline"
-                                    style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">
-                                    Configuration
-                                </span>
-                            </span>
-                        </div>
-                        <div class="dropdown"
-                            *ngIf="embeddingHandles && embeddingHandles[settingModals.embedding.create.embeddingCreationFormGroup.get('targetAttribute').value] as suggestions;else noSuggestions">
-                            <div tabindex="0" class="flex flex-row select select-bordered select-sm pl-0 pr-8">
-                                <input #inputEmbeddingHandle type="text" placeholder="Type to search..."
-                                    class="w-full font-bold input input-sm"
-                                    style="outline:none; box-shadow:none;height:1.9rem;"
-                                    [value]="settingModals.embedding.create.embeddingCreationFormGroup.get('embeddingHandle').value"
-                                    (focus)="$event.target.select()"
-                                    (keydown.enter)="selectFirstUnhiddenEmbeddingHandle(inputEmbeddingHandle)"
-                                    (input)="checkEmbeddingHandles($event.target)">
-                            </div>
-                            <ul tabindex="0"
-                                class="p-2 w-full menu dropdown-content bg-base-100 shadow height-dropdown overflow-y-auto">
-                                <li #me *ngFor="let embeddingHandle of suggestions; let k = index"
-                                    [ngClass]="embeddingHandle.hidden || embeddingHandle.forceHidden?'hidden':null"
-                                    (mouseenter)="setCurrentEmbeddingHandle(embeddingHandle,hoverBox,me)"
-                                    (mouseleave)="setCurrentEmbeddingHandle(null,null,null)">
-
-                                    <label class="cursor-pointer label"
-                                        [ngClass]="embeddingHandle.isModelDownloaded ? 'text-green-700' : ''"
-                                        (click)="selectEmbeddingHandle(embeddingHandle,inputEmbeddingHandle,hoverBox)">
-                                        {{embeddingHandle.configString}}
-                                    </label>
-                                </li>
-                            </ul>
-                        </div>
-                        <ng-template #noSuggestions>
-                            <div class="flex flex-row select select-bordered select-sm pl-0 pr-8">
-                                <input #inputEmbeddingHandle type="text" placeholder="Enter config string..."
-                                    class="w-full font-bold input input-sm"
-                                    style="outline:none; box-shadow:none;height:1.9rem;"
-                                    [value]="settingModals.embedding.create.embeddingCreationFormGroup.get('embeddingHandle').value"
-                                    (focus)="$event.target.select()" (input)="checkEmbeddingHandles($event.target)">
-                            </div>
-                        </ng-template>
+                        <ng-container *ngTemplateOutlet="suggestions"></ng-container>
                     </ng-template>
                     <ng-template [ngSwitchCase]="PlatformType.OPEN_AI">
                         <div class="tooltip tooltip-right" data-tip="Enter the name of your model">
@@ -299,16 +258,11 @@
                         </div>
                         <input formControlName="apiToken" class="input input-bordered input-sm" />
                     </ng-template>
+                    <ng-template [ngSwitchCase]="PlatformType.PYTHON">
+                        <ng-container *ngTemplateOutlet="suggestions"></ng-container>
+                    </ng-template>
                 </ng-container>
             </div>
-            <ng-template
-                [ngIf]="settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.PYTHON">
-                <label class="text-gray-500 text-sm font-normal text-center my-2 block">
-                    See our <a href="https://docs.kern.ai/refinery/" target="_blank"><span
-                            class="underline cursor-pointer">documentation</span></a> for further
-                    details.
-                </label>
-            </ng-template>
 
             <div class="flex flex-row items-center my-2 mx-auto justify-center">
                 <div class="tooltip tooltip-bottom text-left flex"
@@ -350,3 +304,45 @@
         </div>
     </ng-template>
 </div>
+
+<ng-template #suggestions>
+    <div class="tooltip tooltip-right"
+        data-tip="If platform=Huggingface: <uri of your model>; if platform=Open AI: <name of your model>+<API token>; if platform=Cohere: <API token>; if platform=Python: see docs">
+        <span class="card-title mb-0 label-text flex"><span class="cursor-help underline"
+                style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">
+                Configuration
+            </span>
+        </span>
+    </div>
+    <div class="dropdown"
+        *ngIf="embeddingHandles && embeddingHandles[settingModals.embedding.create.embeddingCreationFormGroup.get('targetAttribute').value] as suggestions;else noSuggestions">
+        <div tabindex="0" class="flex flex-row select select-bordered select-sm pl-0 pr-8">
+            <input #inputEmbeddingHandle type="text" placeholder="Type to search..."
+                class="w-full font-bold input input-sm" style="outline:none; box-shadow:none;height:1.9rem;"
+                [value]="settingModals.embedding.create.embeddingCreationFormGroup.get('model').value"
+                (focus)="$event.target.select()"
+                (keydown.enter)="selectFirstUnhiddenEmbeddingHandle(inputEmbeddingHandle)"
+                (input)="checkEmbeddingHandles($event.target)">
+        </div>
+        <ul tabindex="0" class="p-2 w-full menu dropdown-content bg-base-100 shadow height-dropdown overflow-y-auto">
+            <li #me *ngFor="let model of suggestions; let k = index"
+                [ngClass]="model.hidden || model.forceHidden?'hidden':null"
+                (mouseenter)="setCurrentEmbeddingHandle(model,hoverBox,me)"
+                (mouseleave)="setCurrentEmbeddingHandle(null,null,null)">
+
+                <label class="cursor-pointer label" [ngClass]="model.isModelDownloaded ? 'text-green-700' : ''"
+                    (click)="selectEmbeddingHandle(model,inputEmbeddingHandle,hoverBox)">
+                    {{model.configString}}
+                </label>
+            </li>
+        </ul>
+    </div>
+    <ng-template #noSuggestions>
+        <div class="flex flex-row select select-bordered select-sm pl-0 pr-8">
+            <input #inputEmbeddingHandle type="text" placeholder="Enter config string..."
+                class="w-full font-bold input input-sm" style="outline:none; box-shadow:none;height:1.9rem;"
+                [value]="settingModals.embedding.create.embeddingCreationFormGroup.get('model').value"
+                (focus)="$event.target.select()" (input)="checkEmbeddingHandles($event.target)">
+        </div>
+    </ng-template>
+</ng-template>

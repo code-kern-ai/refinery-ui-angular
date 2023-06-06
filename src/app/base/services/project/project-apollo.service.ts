@@ -737,13 +737,13 @@ export class ProjectApolloService {
       );
   }
 
-  createEmbedding(projectId: string, attributeId: string, newEmbedding: any) {
+  createEmbedding(projectId: string, attributeId: string, config: any) {
     return this.apollo.mutate({
       mutation: mutations.CREATE_EMBEDDING,
       variables: {
         projectId: projectId,
         attributeId: attributeId,
-        newEmbedding: newEmbedding,
+        config: config,
       },
       refetchQueries: [
         {

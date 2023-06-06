@@ -5,7 +5,7 @@ import { ProjectApolloService } from "src/app/base/services/project/project-apol
 import { Attribute } from "../entities/attribute.type";
 import { Embedding } from "../entities/embedding.type";
 import { SettingModals } from "./modal-helper";
-import { PlatformType, granularityTypesArray, platformNamesArray } from "./project-settings-helper";
+import { EmbeddingType, PlatformType, granularityTypesArray, platformNamesArray } from "./project-settings-helper";
 
 export class DataHandlerHelper {
 
@@ -72,10 +72,9 @@ export class DataHandlerHelper {
         if (attributes.length > 0) {
             settingModals.embedding.create.embeddingCreationFormGroup = this.formBuilder.group({
                 targetAttribute: attributes[0].id,
-                embeddingHandle: "",
+                model: "",
                 platform: this.platformNamesArray[0].value,
                 granularity: this.granularityTypesArray[0].value,
-                model: "",
                 apiToken: "",
                 termsAccepted: false
             });
@@ -90,16 +89,13 @@ export class DataHandlerHelper {
         let toReturn = this.getAttributeArrayAttribute(values.targetAttribute, 'name', attributes);
         toReturn += "-" + (values.granularity == 'ON_ATTRIBUTE' ? 'classification' : 'extraction');
         const platform = settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value
-        if (platform == PlatformType.HUGGING_FACE) {
-            toReturn += "-" + values.embeddingHandle;
+        if (platform == PlatformType.HUGGING_FACE || platform == PlatformType.PYTHON) {
+            toReturn += "-" + values.model;
         } else if (platform == PlatformType.OPEN_AI) {
             toReturn += "-" + values.model + "-" + values.apiToken;
         } else if (platform == PlatformType.COHERE) {
             toReturn += "-" + values.apiToken;
-        } else if (platform == PlatformType.PYTHON) {
-            toReturn += "-";
         }
-
         return toReturn;
     }
 
@@ -159,7 +155,7 @@ export class DataHandlerHelper {
                     id: task.id,
                     name: task.taskInfo["embedding_name"],
                     custom: false,
-                    type: task.taskInfo["type"] == "attribute" ? "ON_ATTRIBUTE" : "ON_TOKEN",
+                    type: task.taskInfo["type"] == "attribute" ? EmbeddingType.ON_ATTRIBUTE : EmbeddingType.ON_TOKEN,
                     state: "QUEUED",
                     progress: 0,
                     dimension: 0,

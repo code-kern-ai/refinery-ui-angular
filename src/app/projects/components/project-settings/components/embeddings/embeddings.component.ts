@@ -10,7 +10,7 @@ import { Embedding } from '../../entities/embedding.type';
 import { DataHandlerHelper } from '../../helper/data-handler-helper';
 import { SettingModals } from '../../helper/modal-helper';
 import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
-import { PlatformType } from '../../helper/project-settings-helper';
+import { EmbeddingType, PlatformType } from '../../helper/project-settings-helper';
 
 @Component({
   selector: 'kern-embeddings',
@@ -82,17 +82,20 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
     const form = this.settingModals.embedding.create.embeddingCreationFormGroup;
     const granularity = form.get('granularity').value;
     const attId = form.get('targetAttribute').value;
-    const suggestionList = this.embeddingHandles[attId];
+    let suggestionList = this.embeddingHandles[attId];
+    if (this.settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.PYTHON) {
+      suggestionList = suggestionList.filter(e => e.configString == 'bag-of-characters' || e.configString == 'bag-of-words');
+    }
     for (let element of suggestionList) {
       element.forceHidden = true;
       const parseEl = JSON.parse(element.applicability);
-      if ((granularity == 'ON_ATTRIBUTE' && parseEl.attribute)
-        || (granularity == 'ON_TOKEN' && parseEl.token)) {
+      if ((granularity == EmbeddingType.ON_ATTRIBUTE && parseEl.attribute)
+        || (granularity == EmbeddingType.ON_TOKEN && parseEl.token)) {
         element.forceHidden = false;
       }
     }
+    this.embeddingHandles[attId] = suggestionList;
     form.get('model').setValue(null);
-    form.get('embeddingHandle').setValue(null);
     form.get('apiToken').setValue(null);
     form.get('termsAccepted').setValue(false);
   }
@@ -125,35 +128,35 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
     const attributeId = embeddingForm.get("targetAttribute").value;
     const platform = embeddingForm.get("platform").value;
 
-    const newEmbedding = {
-      ...(platform == PlatformType.HUGGING_FACE && { embeddingHandle: embeddingForm.get("embeddingHandle").value }),
+    const config = {
+      ...((platform == PlatformType.HUGGING_FACE || platform == PlatformType.PYTHON) && { model: embeddingForm.get("model").value }),
       ...(platform == PlatformType.OPEN_AI && { model: embeddingForm.get("model").value, apiToken: embeddingForm.get("apiToken").value }),
       ...(platform == PlatformType.COHERE && { apiToken: embeddingForm.get("apiToken").value }),
       platform: platform,
       termsText: this.gdprText.nativeElement.innerHTML,
       termsAccepted: embeddingForm.get("termsAccepted").value,
-      embeddingType: embeddingForm.get("granularity").value.substring(3) === "TOKEN" ? "ON_TOKEN" : "ON_ATTRIBUTE"
+      embeddingType: embeddingForm.get("granularity").value.substring(3) === "TOKEN" ? EmbeddingType.ON_TOKEN : EmbeddingType.ON_ATTRIBUTE
     };
 
     this.projectApolloService.createEmbedding(
       this.project.id,
       attributeId,
-      JSON.stringify(newEmbedding)
+      JSON.stringify(config)
     ).pipe(first()).subscribe();
   }
 
   selectFirstUnhiddenEmbeddingHandle(inputElement: HTMLInputElement) {
-    const suggestionList = this.embeddingHandles[this.settingModals.embedding.create.embeddingCreationFormGroup.get("targetAttribute").value];
-    for (let embeddingHandle of suggestionList) {
-      if (!embeddingHandle.hidden && !embeddingHandle.forceHidden) {
-        this.selectEmbeddingHandle(embeddingHandle, inputElement);
+    let suggestionList = this.embeddingHandles[this.settingModals.embedding.create.embeddingCreationFormGroup.get("targetAttribute").value];
+    for (let model of suggestionList) {
+      if (!model.hidden && !model.forceHidden) {
+        this.selectEmbeddingHandle(model, inputElement);
         return;
       }
     }
   }
 
-  selectEmbeddingHandle(embeddingHandle: Embedding, inputElement: HTMLInputElement, hoverBox?: any) {
-    inputElement.value = embeddingHandle.configString;
+  selectEmbeddingHandle(model: Embedding, inputElement: HTMLInputElement, hoverBox?: any) {
+    inputElement.value = model.configString;
     if (hoverBox) hoverBox.style.display = 'none';
     if (document.activeElement instanceof HTMLElement) {
       document.activeElement.blur();
@@ -163,22 +166,22 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
 
   checkEmbeddingHandles(eventTarget: HTMLInputElement) {
     const embeddingForm = this.settingModals.embedding.create.embeddingCreationFormGroup;
-    embeddingForm.get('embeddingHandle').setValue(eventTarget.value);
-    const suggestionList = this.embeddingHandles[embeddingForm.get("targetAttribute").value];
+    embeddingForm.get('model').setValue(eventTarget.value);
+    let suggestionList = this.embeddingHandles[embeddingForm.get("targetAttribute").value];
     if (!suggestionList || suggestionList.length == 0) return;
     const lowerEventValue = eventTarget.value.toLowerCase();
     let suggestionsSave = [];
-    for (let embeddingHandle of suggestionList) {
-      embeddingHandle = { ...embeddingHandle, hidden: !embeddingHandle.configString.toLowerCase().includes(lowerEventValue) };
-      suggestionsSave.push(embeddingHandle)
+    for (let model of suggestionList) {
+      model = { ...model, hidden: !model.configString.toLowerCase().includes(lowerEventValue) };
+      suggestionsSave.push(model)
     }
     this.embeddingHandles[embeddingForm.get("targetAttribute").value] = suggestionsSave;
   }
 
-  setCurrentEmbeddingHandle(embeddingHandle: any, hoverBox: HTMLElement, listElement: HTMLElement) {
+  setCurrentEmbeddingHandle(model: any, hoverBox: HTMLElement, listElement: HTMLElement) {
     if (hoverBox != null) hoverBox.style.display = 'block';
-    this.settingModals.embedding.create.currentEmbeddingHandle = embeddingHandle;
-    if (embeddingHandle) {
+    this.settingModals.embedding.create.currentEmbeddingHandle = model;
+    if (model) {
       const dataBoundingBox: DOMRect = listElement.getBoundingClientRect();
       hoverBox.style.top = (dataBoundingBox.top - 60) + "px"
       hoverBox.style.left = (dataBoundingBox.left + dataBoundingBox.width) + "px"
