@@ -169,8 +169,8 @@ export const mutations = {
   }`,
 
   CREATE_EMBEDDING: gql`
-  mutation($projectId: ID!, $attributeId: ID!, $embedding: JSONString!) {
-    createEmbedding(projectId: $projectId, attributeId: $attributeId, embedding: $embedding) {
+  mutation($projectId: ID!, $attributeId: ID!, $config: JSONString!) {
+    createEmbedding(projectId: $projectId, attributeId: $attributeId, config: $config) {
       ok
     }
   }  
