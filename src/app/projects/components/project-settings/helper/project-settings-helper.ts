@@ -17,12 +17,12 @@ export enum PlatformType {
     PYTHON = "python"
 }
 
-export const platformNamesArray = [
-    { name: 'Hugging Face', value: PlatformType.HUGGING_FACE },
-    { name: 'Open AI', value: PlatformType.OPEN_AI },
-    { name: 'Cohere', value: PlatformType.COHERE },
-    { name: 'Python', value: PlatformType.PYTHON }
-];
+export const platformNamesDict = {
+    [PlatformType.HUGGING_FACE]: "Hugging Face",
+    [PlatformType.OPEN_AI]: "Open AI",
+    [PlatformType.COHERE]: "Cohere",
+    [PlatformType.PYTHON]: "Python"
+}
 
 export function getMoveRight(tblName: string): boolean {
     //at some point a better grouping would be useful

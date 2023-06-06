@@ -3,14 +3,13 @@ import { interval, timer } from "rxjs";
 import { debounceTime, first } from "rxjs/operators";
 import { ProjectApolloService } from "src/app/base/services/project/project-apollo.service";
 import { Attribute } from "../entities/attribute.type";
-import { Embedding } from "../entities/embedding.type";
+import { Embedding, EmbeddingPlatform } from "../entities/embedding.type";
 import { SettingModals } from "./modal-helper";
-import { EmbeddingType, PlatformType, granularityTypesArray, platformNamesArray } from "./project-settings-helper";
+import { EmbeddingType, PlatformType, granularityTypesArray } from "./project-settings-helper";
 
 export class DataHandlerHelper {
 
     granularityTypesArray = granularityTypesArray;
-    platformNamesArray = platformNamesArray;
     pKeyValid: boolean = null;
     pKeyCheckTimer: any;
 
@@ -68,12 +67,12 @@ export class DataHandlerHelper {
         return false;
     }
 
-    prepareEmbeddingFormGroup(attributes: Attribute[], settingModals: SettingModals, embeddings: Embedding[]) {
+    prepareEmbeddingFormGroup(attributes: Attribute[], settingModals: SettingModals, embeddings: Embedding[], embeddingPlatforms: EmbeddingPlatform[]) {
         if (attributes.length > 0) {
             settingModals.embedding.create.embeddingCreationFormGroup = this.formBuilder.group({
                 targetAttribute: attributes[0].id,
                 model: "",
-                platform: this.platformNamesArray[0].value,
+                platform: embeddingPlatforms[0].platform,
                 granularity: this.granularityTypesArray[0].value,
                 apiToken: "",
                 termsAccepted: false

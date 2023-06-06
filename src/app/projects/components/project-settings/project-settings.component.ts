@@ -17,7 +17,7 @@ import { createDefaultSettingModals, SettingModals } from './helper/modal-helper
 import { attributeVisibilityStates } from '../create-new-attribute/attributes-visibility-helper';
 import { DataHandlerHelper } from './helper/data-handler-helper';
 import { Project } from 'src/app/base/entities/project';
-import { Embedding } from './entities/embedding.type';
+import { Embedding, EmbeddingPlatform } from './entities/embedding.type';
 import { Attribute } from './entities/attribute.type';
 import { downloadBlob, downloadText } from 'src/app/util/download-helper-functions';
 import { findFreeAttributeName, getMoveRight } from './helper/project-settings-helper';
@@ -59,6 +59,8 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
   lh: LabelHelper;
   checkIfAcUploadedRecords: boolean = false;
   isAcRunning: boolean = false;
+  embeddingPlatforms$: any;
+  embeddingPlatforms: EmbeddingPlatform[]
 
   get projectExportArray() {
     return this.settingModals.projectExport.projectExportSchema.get('attributes') as FormArray;
@@ -94,10 +96,12 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
       [this.attributesQuery$, this.attributes$] = this.dataHandlerHelper.prepareAttributesRequest(projectId);
       [this.embeddingQuery$, this.embeddings$] = this.dataHandlerHelper.prepareEmbeddingsRequest(projectId);
       this.suggestions$ = this.projectApolloService.getRecommendedEncodersForEmbeddings(projectId);
+      this.embeddingPlatforms$ = this.projectApolloService.getEmbeddingPlatforms();
       let tasks$ = [];
       tasks$.push(this.attributes$);
       tasks$.push(this.embeddings$);
       tasks$.push(this.suggestions$);
+      tasks$.push(this.embeddingPlatforms$);
 
       combineLatest(tasks$).subscribe((res: any[]) => {
         this.combineLatestResultBackup = res;
@@ -141,7 +145,8 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
 
     // prepare embedding suggestions
     const onlyTextAttributes = this.attributes.filter(a => a.dataType == 'TEXT');
-    this.dataHandlerHelper.prepareEmbeddingFormGroup(onlyTextAttributes, this.settingModals, this.embeddings);
+    this.embeddingPlatforms = this.combineLatestResultBackup[3].reverse();
+    this.dataHandlerHelper.prepareEmbeddingFormGroup(onlyTextAttributes, this.settingModals, this.embeddings, this.embeddingPlatforms);
     this.embeddingHandles = this.dataHandlerHelper.prepareEmbeddingHandles(projectId, onlyTextAttributes, this.project.tokenizer, this.combineLatestResultBackup[2]);
   }
 

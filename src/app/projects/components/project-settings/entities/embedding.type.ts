@@ -9,3 +9,10 @@ export type Embedding = {
     state?: string;
     progress?: number;
 };
+
+export type EmbeddingPlatform = {
+    platform: string;
+    gdprCompliant: boolean;
+    terms: string;
+    name: string;
+}

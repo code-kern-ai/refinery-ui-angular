@@ -1489,4 +1489,17 @@ export class ProjectApolloService {
         })
       );
   }
+
+  getEmbeddingPlatforms() {
+    return this.apollo
+      .query({
+        query: queries.GET_EMBEDDING_PLATFORMS,
+        fetchPolicy: 'no-cache',
+      })
+      .pipe(
+        map((result) => {
+          return result['data']['embeddingPlatforms'];
+        })
+      );
+  }
 }

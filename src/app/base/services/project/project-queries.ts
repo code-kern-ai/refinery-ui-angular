@@ -579,4 +579,13 @@ query ($projectId: ID!, $exportOptions: JSONString) {
       createdAt
     }
   }`,
+
+  GET_EMBEDDING_PLATFORMS: gql`
+  query {
+    embeddingPlatforms {
+      platform
+      gdprCompliant
+      terms
+    }
+  }`,
 };

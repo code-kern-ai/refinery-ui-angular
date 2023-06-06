@@ -6,11 +6,10 @@ import { NotificationService } from 'src/app/base/services/notification.service'
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { Attribute } from '../../entities/attribute.type';
 import { DownloadedModel } from '../../entities/downloaded-model.type';
-import { Embedding } from '../../entities/embedding.type';
+import { Embedding, EmbeddingPlatform } from '../../entities/embedding.type';
 import { DataHandlerHelper } from '../../helper/data-handler-helper';
 import { SettingModals } from '../../helper/modal-helper';
-import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
-import { EmbeddingType, PlatformType } from '../../helper/project-settings-helper';
+import { EmbeddingType, PlatformType, platformNamesDict } from '../../helper/project-settings-helper';
 import { jsonCopy } from 'src/app/util/helper-functions';
 
 @Component({
@@ -29,29 +28,24 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
   @Input() embeddingHandles: { [embeddingId: string]: any };
   @Input() dataHandlerHelper: DataHandlerHelper;
   @Input() attributes: Attribute[];
+  @Input() embeddingPlatforms: EmbeddingPlatform[];
 
+  @ViewChild('gdprText') gdprText: ElementRef;
   downloadedModels: DownloadedModel[];
   subscriptions$: Subscription[] = [];
   somethingLoading: boolean = false;
   downloadedModelsQuery$: any;
-  organization: any;
   embeddingHandlesCopy: { [embeddingId: string]: any };;
-  @ViewChild('gdprText') gdprText: ElementRef;
+  selectedPlatform: EmbeddingPlatform;
 
   get PlatformType(): typeof PlatformType {
     return PlatformType;
   }
 
-  constructor(private projectApolloService: ProjectApolloService, private organizationApolloService: OrganizationApolloService) { }
+  constructor(private projectApolloService: ProjectApolloService) { }
 
   ngOnInit(): void {
     this.prepareDownloadedModels();
-    this.organizationApolloService
-      .getUserOrganization()
-      .pipe(first()).subscribe((org: any) => {
-        this.organization = org;
-      });
-
     NotificationService.subscribeToNotification(this, {
       whitelist: ['model_provider_download'],
       func: this.handleWebsocketNotification
@@ -69,6 +63,10 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
       this.embeddingHandlesCopy = jsonCopy(this.embeddingHandles);
       this.checkModelDownloaded();
     }
+    if (changes.embeddingPlatforms && this.embeddingPlatforms) {
+      this.prepareEmbeddingPlatforms();
+      this.selectedPlatform = this.embeddingPlatforms[0];
+    }
   }
 
   prepareDownloadedModels() {
@@ -81,15 +79,22 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
       }));
   }
 
+  prepareEmbeddingPlatforms() {
+    this.embeddingPlatforms.forEach((platform: EmbeddingPlatform) => {
+      platform.name = platformNamesDict[platform.platform];
+    });
+  }
+
   checkForceHiddenHandles() {
     const form = this.settingModals.embedding.create.embeddingCreationFormGroup;
     const granularity = form.get('granularity').value;
     const attId = form.get('targetAttribute').value;
+    const platform = form.get('platform').value;
     let suggestionList = this.embeddingHandles[attId];
-    if (this.settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.PYTHON) {
-      suggestionList = suggestionList.filter(e => e.configString == 'bag-of-characters' || e.configString == 'bag-of-words');
+    if (platform == PlatformType.PYTHON) {
+      suggestionList = suggestionList.filter(e => e.configString == 'bag-of-words');
       this.embeddingHandles[attId] = suggestionList;
-    } else if (this.settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.HUGGING_FACE) {
+    } else if (platform == PlatformType.HUGGING_FACE) {
       this.embeddingHandles[attId] = this.embeddingHandlesCopy[attId];
       this.checkModelDownloaded();
     }
@@ -101,6 +106,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
         element.forceHidden = false;
       }
     }
+    this.selectedPlatform = this.embeddingPlatforms.find((p: EmbeddingPlatform) => p.platform == platform);
     form.get('model').setValue(null);
     form.get('apiToken').setValue(null);
     form.get('termsAccepted').setValue(false);

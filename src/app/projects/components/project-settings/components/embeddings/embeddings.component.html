@@ -167,7 +167,8 @@
         tensors!</p>
 </kern-modal>
 
-<kern-modal [isOpen]="settingModals.embedding.create.open" [modalBoxStyle]="{'overflow-x':'visible'}" closeButton="X"
+<kern-modal [isOpen]="settingModals.embedding.create.open"
+    [modalBoxStyle]="{'overflow-x':'visible', 'max-width':'80%', 'width': 'fit-content'}" closeButton="X"
     [acceptButton]="{
     buttonCaption: 'Add embedding',
     disabled: settingModals.embedding.create.blocked || !(useableTextAttributes && settingModals.embedding.create.embeddingCreationFormGroup) || !settingModals.embedding.create.embeddingCreationFormGroup.get('termsAccepted').value ||
@@ -221,7 +222,7 @@
                 </div>
                 <select formControlName="platform" class="select select-bordered select-sm max-w-xs"
                     (change)="checkForceHiddenHandles()">
-                    <option *ngFor="let platform of dataHandlerHelper.platformNamesArray" [value]="platform.value">
+                    <option *ngFor="let platform of embeddingPlatforms" [value]="platform.platform">
                         {{platform.name}}
                     </option>
                 </select>
@@ -238,7 +239,8 @@
                                 </span>
                             </span>
                         </div>
-                        <input formControlName="model" class="input input-bordered input-sm" />
+                        <input formControlName="model" class="input input-bordered input-sm placeholder-italic"
+                            placeholder="Enter a model name..." />
                         <div class="tooltip tooltip-right" data-tip="Enter your API token">
                             <span class="card-title mb-0 label-text flex"><span class="cursor-help underline"
                                     style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">
@@ -246,7 +248,8 @@
                                 </span>
                             </span>
                         </div>
-                        <input formControlName="apiToken" class="input input-bordered input-sm" />
+                        <input formControlName="apiToken" class="input input-bordered input-sm placeholder-italic"
+                            placeholder="Enter api token..." />
                     </ng-template>
                     <ng-template [ngSwitchCase]="PlatformType.COHERE">
                         <div class="tooltip tooltip-right" data-tip="Enter your API token">
@@ -256,31 +259,23 @@
                                 </span>
                             </span>
                         </div>
-                        <input formControlName="apiToken" class="input input-bordered input-sm" />
+                        <input formControlName="apiToken" class="input input-bordered input-sm"
+                            placeholder="Enter api token..." />
                     </ng-template>
                     <ng-template [ngSwitchCase]="PlatformType.PYTHON">
                         <ng-container *ngTemplateOutlet="suggestions"></ng-container>
                     </ng-template>
                 </ng-container>
             </div>
-
             <div class="flex flex-row items-center my-2 mx-auto justify-center">
                 <div class="tooltip tooltip-bottom text-left flex"
-                    [attr.data-tip]="organization.gdprCompliant ?'GDPR Compliant':'Not GDPR Compliant'">
+                    [attr.data-tip]="selectedPlatform.gdprCompliant ?'GDPR Compliant':'Not GDPR Compliant'">
                     <button
-                        [ngClass]="organization.gdprCompliant ?'bg-green-100 border border-green-400 text-green-700':'bg-red-100 border border-red-400 text-red-700'"
+                        [ngClass]="selectedPlatform.gdprCompliant ?'bg-green-100 border border-green-400 text-green-700':'bg-red-100 border border-red-400 text-red-700'"
                         class="rounded-lg text-xs px-2.5 py-0.5 cursor-default border">GDPR</button>
                 </div>
                 <label #gdprText class="text-gray-700 italic text-sm ml-3">
-                    {{
-                    settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value ==
-                    PlatformType.HUGGING_FACE ||
-                    settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value ==
-                    PlatformType.PYTHON ?
-                    'Can be used without any limitations':
-                    settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value ==
-                    PlatformType.OPEN_AI
-                    ? 'Can be used with limitations' : 'You need to read TOS' }}
+                    {{selectedPlatform.terms }}
                 </label>
             </div>
             <div className='mt-2 flex flex-row items-center' style="text-align: center;">
