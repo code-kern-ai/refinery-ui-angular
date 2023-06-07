@@ -100,7 +100,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
     const granularity = form.get('granularity').value;
     const attId = form.get('targetAttribute').value;
     const platform = form.get('platform').value;
-    let suggestionList = this.embeddingHandles[attId];
+    let suggestionList = this.embeddingHandlesCopy[attId];
     if (platform == PlatformType.PYTHON) {
       suggestionList = suggestionList.filter(e => e.configString == 'bag-of-words' || e.configString == 'bag-of-characters' || e.configString == 'tf-idf');
       this.embeddingHandles[attId] = suggestionList;
@@ -167,7 +167,11 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
       this.project.id,
       attributeId,
       JSON.stringify(config)
-    ).pipe(first()).subscribe();
+    ).pipe(first()).subscribe(() => {
+      this.settingModals.embedding.create.embeddingCreationFormGroup.get("platform").setValue(PlatformType.HUGGING_FACE);
+      this.settingModals.embedding.create.embeddingCreationFormGroup.get("model").setValue(null);
+      this.settingModals.embedding.create.embeddingCreationFormGroup.get("apiToken").setValue(null);
+    });
   }
 
   selectFirstUnhiddenEmbeddingHandle(inputElement: HTMLInputElement) {

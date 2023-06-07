@@ -71,10 +71,10 @@ export class DataHandlerHelper {
         if (attributes.length > 0) {
             settingModals.embedding.create.embeddingCreationFormGroup = this.formBuilder.group({
                 targetAttribute: attributes[0].id,
-                model: "",
+                model: null,
                 platform: embeddingPlatforms[0].platform,
                 granularity: this.granularityTypesArray[0].value,
-                apiToken: "",
+                apiToken: null,
                 termsAccepted: false
             });
             settingModals.embedding.create.embeddingCreationFormGroup.valueChanges.pipe(debounceTime(200)).subscribe(() =>

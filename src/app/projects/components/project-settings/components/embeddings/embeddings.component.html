@@ -166,16 +166,17 @@
         corresponding
         tensors!</p>
 </kern-modal>
-
 <kern-modal [isOpen]="settingModals.embedding.create.open"
     [modalBoxStyle]="{'overflow-x':'visible', 'max-width':'80%', 'width': 'fit-content'}" closeButton="X"
     [acceptButton]="{
     buttonCaption: 'Add embedding',
-    disabled: settingModals.embedding.create.blocked || !(useableTextAttributes && settingModals.embedding.create.embeddingCreationFormGroup) || !settingModals.embedding.create.embeddingCreationFormGroup.get('termsAccepted').value ||
-    (settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.HUGGING_FACE && settingModals.embedding.create.embeddingCreationFormGroup.get('model').value == '') ||
-    (settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.OPEN_AI && (settingModals.embedding.create.embeddingCreationFormGroup.get('model').value == '' || settingModals.embedding.create.embeddingCreationFormGroup.get('apiToken').value == '')) ||
-    (settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.COHERE && settingModals.embedding.create.embeddingCreationFormGroup.get('apiToken').value == '') ||
-    (settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.PYTHON && settingModals.embedding.create.embeddingCreationFormGroup.get('model').value == ''),
+    disabled: settingModals.embedding.create.blocked || 
+    !(useableTextAttributes && settingModals.embedding.create.embeddingCreationFormGroup) || 
+    !settingModals.embedding.create.embeddingCreationFormGroup.get('termsAccepted').value ||
+    (settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.HUGGING_FACE && settingModals.embedding.create.embeddingCreationFormGroup.get('model').value == null) ||
+    (settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.OPEN_AI && (settingModals.embedding.create.embeddingCreationFormGroup.get('model').value == null || settingModals.embedding.create.embeddingCreationFormGroup.get('apiToken').value === null)) ||
+    (settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.COHERE && settingModals.embedding.create.embeddingCreationFormGroup.get('apiToken').value === null) ||
+    (settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.PYTHON && settingModals.embedding.create.embeddingCreationFormGroup.get('model').value == null),
     emitObject: this, emitFunction:addEmbedding
 }" (optionClicked)="settingModals.embedding.create.open = false">
     <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
@@ -315,7 +316,7 @@
     <div class="dropdown"
         *ngIf="embeddingHandles && embeddingHandles[settingModals.embedding.create.embeddingCreationFormGroup.get('targetAttribute').value] as suggestions;else noSuggestions">
         <div tabindex="0" class="flex flex-row select select-bordered select-sm pl-0 pr-8">
-            <input #inputEmbeddingHandle type="text" placeholder="Type to search..." formControlName="model"
+            <input #inputEmbeddingHandle type="text" placeholder="Type to search..."
                 class="w-full font-bold input input-sm" style="outline:none; box-shadow:none;height:1.9rem;"
                 [value]="settingModals.embedding.create.embeddingCreationFormGroup.get('model').value"
                 (focus)="$event.target.select()"
@@ -337,7 +338,7 @@
     </div>
     <ng-template #noSuggestions>
         <div class="flex flex-row select select-bordered select-sm pl-0 pr-8">
-            <input #inputEmbeddingHandle type="text" placeholder="Enter config string..." formControlName="model"
+            <input #inputEmbeddingHandle type="text" placeholder="Enter config string..."
                 class="w-full font-bold input input-sm" style="outline:none; box-shadow:none;height:1.9rem;"
                 [value]="settingModals.embedding.create.embeddingCreationFormGroup.get('model').value"
                 (focus)="$event.target.select()" (input)="checkEmbeddingHandles($event.target)">
