@@ -104,6 +104,9 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
     if (platform == PlatformType.PYTHON) {
       suggestionList = suggestionList.filter(e => e.configString == 'bag-of-words' || e.configString == 'bag-of-characters' || e.configString == 'tf-idf');
       this.embeddingHandles[attId] = suggestionList;
+    } else if (platform == PlatformType.OPEN_AI) {
+      suggestionList = suggestionList.filter(e => e.configString == 'text-embedding-ada-002');
+      this.embeddingHandles[attId] = suggestionList;
     } else if (platform == PlatformType.HUGGING_FACE) {
       this.embeddingHandles[attId] = this.embeddingHandlesCopy[attId];
       this.checkModelDownloaded();

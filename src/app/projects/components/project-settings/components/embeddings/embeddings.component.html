@@ -232,15 +232,7 @@
                         <ng-container *ngTemplateOutlet="suggestions"></ng-container>
                     </ng-template>
                     <ng-template [ngSwitchCase]="PlatformType.OPEN_AI">
-                        <div class="tooltip tooltip-right" data-tip="Enter the name of your model">
-                            <span class="card-title mb-0 label-text flex"><span class="cursor-help underline"
-                                    style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">
-                                    Model
-                                </span>
-                            </span>
-                        </div>
-                        <input formControlName="model" class="input input-bordered input-sm placeholder-italic"
-                            placeholder="Enter a model name..." />
+                        <ng-container *ngTemplateOutlet="suggestions"></ng-container>
                         <div class="tooltip tooltip-right" data-tip="Enter your API token">
                             <span class="card-title mb-0 label-text flex"><span class="cursor-help underline"
                                     style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">
