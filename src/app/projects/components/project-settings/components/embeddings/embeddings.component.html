@@ -281,7 +281,19 @@
             <div className='mt-2 flex flex-row items-center' style="text-align: center;">
                 <input type="checkbox" id="termsAccepted" className="cursor-pointer" formControlName="termsAccepted" />
                 <label for="termsAccepted" className="text-gray-700 text-xs font-medium cursor-pointer ml-1">
-                    I agree to the terms and services
+                    I have read the
+                    <ng-template
+                        [ngIf]="settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.COHERE || settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.OPEN_AI"
+                        [ngIfElse]="gdprCompliantPlatforms">
+                        <a class="cursor-pointer underline" target="_blank"
+                            [href]="settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.COHERE ? 'https://cohere.com/terms-of-use' :settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.OPEN_AI ? 'https://openai.com/policies/terms-of-use':''">terms
+                            and
+                            conditions</a>
+                    </ng-template>
+                    <ng-template #gdprCompliantPlatforms>
+                        <span>terms and conditions</span>
+                    </ng-template>
+                    and accept them.
                 </label>
             </div>
         </form>
