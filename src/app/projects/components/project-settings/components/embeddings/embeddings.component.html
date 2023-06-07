@@ -220,29 +220,12 @@
                         </span>
                     </span>
                 </div>
-                <div class="grid grid-cols-2" [ngStyle]="{
-                    'grid-template-columns': isManaged ? '100%' : '90% 10%'
-                }" style="grid-template-columns: 80% 20%;">
-                    <select formControlName="platform" class="select select-bordered select-sm max-w-xs"
-                        (change)="checkForceHiddenHandles()">
-                        <option *ngFor="let platform of embeddingPlatforms" [value]="platform.platform"
-                            [disabled]="!platform.gdprCompliant && isManaged">
-                            {{platform.name}}
-                        </option>
-                    </select>
-                    <div *ngIf="!isManaged" class="tooltip tooltip-right flex justify-center items-center"
-                        data-tip="Recommended search TOS for ...">
-                        <svg xmlns="http://www.w3.org/2000/svg"
-                            class="icon icon-tabler icon-tabler-alert-triangle text-yellow-700" width="24" height="24"
-                            viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                            <path d="M12 9v2m0 4v.01" />
-                            <path
-                                d="M5 19h14a2 2 0 0 0 1.84 -2.75l-7.1 -12.25a2 2 0 0 0 -3.5 0l-7.1 12.25a2 2 0 0 0 1.75 2.75" />
-                        </svg>
-                    </div>
-                </div>
+                <select formControlName="platform" class="select select-bordered select-sm max-w-xs"
+                    (change)="checkForceHiddenHandles()">
+                    <option *ngFor="let platform of embeddingPlatforms" [value]="platform.platform">
+                        {{platform.name}}
+                    </option>
+                </select>
                 <ng-container
                     [ngSwitch]="settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value">
                     <ng-template [ngSwitchCase]="PlatformType.HUGGING_FACE">
@@ -276,7 +259,7 @@
                                 </span>
                             </span>
                         </div>
-                        <input formControlName="apiToken" class="input input-bordered input-sm"
+                        <input formControlName="apiToken" class="input input-bordered input-sm placeholder-italic"
                             placeholder="Enter api token..." />
                     </ng-template>
                     <ng-template [ngSwitchCase]="PlatformType.PYTHON">
@@ -321,7 +304,7 @@
     <div class="tooltip tooltip-right" data-tip="Choose your model">
         <span class="card-title mb-0 label-text flex"><span class="cursor-help underline"
                 style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">
-                Configuration
+                Model
             </span>
         </span>
     </div>
