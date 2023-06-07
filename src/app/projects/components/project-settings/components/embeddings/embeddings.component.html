@@ -315,7 +315,7 @@
     <div class="dropdown"
         *ngIf="embeddingHandles && embeddingHandles[settingModals.embedding.create.embeddingCreationFormGroup.get('targetAttribute').value] as suggestions;else noSuggestions">
         <div tabindex="0" class="flex flex-row select select-bordered select-sm pl-0 pr-8">
-            <input #inputEmbeddingHandle type="text" placeholder="Type to search..."
+            <input #inputEmbeddingHandle type="text" placeholder="Type to search..." formControlName="model"
                 class="w-full font-bold input input-sm" style="outline:none; box-shadow:none;height:1.9rem;"
                 [value]="settingModals.embedding.create.embeddingCreationFormGroup.get('model').value"
                 (focus)="$event.target.select()"
@@ -337,7 +337,7 @@
     </div>
     <ng-template #noSuggestions>
         <div class="flex flex-row select select-bordered select-sm pl-0 pr-8">
-            <input #inputEmbeddingHandle type="text" placeholder="Enter config string..."
+            <input #inputEmbeddingHandle type="text" placeholder="Enter config string..." formControlName="model"
                 class="w-full font-bold input input-sm" style="outline:none; box-shadow:none;height:1.9rem;"
                 [value]="settingModals.embedding.create.embeddingCreationFormGroup.get('model').value"
                 (focus)="$event.target.select()" (input)="checkEmbeddingHandles($event.target)">
