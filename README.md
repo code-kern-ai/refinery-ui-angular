@@ -5,3 +5,6 @@ UI for [refinery](https://github.com/code-kern-ai/refinery). Used to interact wi
 
 
 If you like what we're working on, please leave a ⭐ for [refinery](https://github.com/code-kern-ai/refinery)!
+
+Note:
+The javascript function can be replaced with shared functions from the submodules. The current version of refinery-ui (angular) has some issues with the submodules and they are not added via git. Instead it is a copy of the submodules functions and imported from there.

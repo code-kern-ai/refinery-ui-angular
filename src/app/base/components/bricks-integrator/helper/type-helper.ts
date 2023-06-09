@@ -1,5 +1,4 @@
 import { Subscription } from "rxjs"
-import { capitalizeFirst } from "src/app/util/helper-functions"
 
 export enum IntegratorPage {
     SEARCH = "SEARCH",

@@ -346,6 +346,79 @@
             <kern-logs [logs]="lastTaskLogs"></kern-logs>
 
             <div class="mt-8">
+                <div class="text-sm leading-5 font-medium text-gray-700 inline-block">Last execution</div>
+                <div *ngIf="!informationSource.lastTask" class="bg-white">
+                    <div class="py-6 text-sm leading-5 font-normal text-gray-500">This
+                        {{getInformationSourceTypeString(informationSource.informationSourceType)}} was not yet run.
+                    </div>
+                </div>
+                <div *ngIf="informationSource.lastTask as task"
+                    class="mb-4 card border border-gray-200 bg-white flex-grow overflow-visible">
+                    <div class="card-body p-6">
+                        <div class="flex flex-row justify-between items-center">
+                            <div class="flex flex-grow items-center">
+                                <div *ngIf="task.state === 'CREATED'" data-tip="Currently being executed."
+                                    class="tooltip tooltip-right relative z-10">
+                                    <kern-loading></kern-loading>
+                                </div>
+                                <div *ngIf="task.state === 'FINISHED'" data-tip="Successfully executed."
+                                    class="tooltip tooltip-right">
+                                    <div class="btn cursor-default btn-circle btn-xs no-animation btn-primary mx-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                            class="inline-block w-4 h-4 stroke-current" fill="none" viewBox="0 0 24 24"
+                                            stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M5 13l4 4L19 7" />
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div *ngIf="task.state === 'FAILED'" data-tip="Execution ran into errors."
+                                    class="tooltip tooltip-right">
+                                    <div class="btn cursor-default btn-circle btn-xs no-animation btn-error mx-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                            class="inline-block w-4 h-4 stroke-current" fill="none" viewBox="0 0 24 24"
+                                            stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                        </svg>
+                                    </div>
+                                </div>
+                                <ng-template [ngIf]="task.state === 'CREATED'" [ngIfElse]="notRunning">
+                                    <div class="text-sm leading-5 font-normal text-gray-500">
+                                        run#{{task.iteration}}
+                                    </div>
+                                    <progress class="progress progress-info w-full m-2" [value]="task.progress"
+                                        max="1"></progress>
+                                </ng-template>
+                                <ng-template #notRunning>
+                                    <div class="text-sm leading-5 font-normal text-gray-500">run#{{task.iteration}}
+                                    </div>
+                                    <div data-tip="execution time" class="tooltip">
+                                        <div *ngIf="task.durationText"
+                                            class="text-sm leading-5 font-normal text-gray-500 ml-2 select-none">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block -mt-0.5"
+                                                viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd"
+                                                    d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                            <span class="ml-2">{{task.durationText}}</span>
+                                        </div>
+                                    </div>
+                                </ng-template>
+                            </div>
+                            <div class="flex">
+                                <div class="text-sm leading-5 font-normal text-gray-500">
+                                    {{task.createdAtDisplay}}
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-8">
                 <div class="text-sm leading-5 font-medium text-gray-700 inline-block">Statistics</div>
                 <div class="mt-1 flex flex-col">
                     <div class="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">

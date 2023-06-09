@@ -22,7 +22,7 @@ import {
 import { forkJoin, Subscription, timer } from 'rxjs';
 import { InformationSourceType, informationSourceTypeToString, LabelingTask, LabelSource } from 'src/app/base/enum/graphql-enums';
 import { InformationSourceCodeLookup, InformationSourceExamples } from '../information-sources-code-lookup';
-import { capitalizeFirstForClassName, dateAsUTCDate, getColorForDataType, getPythonClassName, getPythonClassRegExMatch, getPythonFunctionName, getPythonFunctionRegExMatch, toPythonFunctionName } from 'src/app/util/helper-functions';
+import { getColorForDataType } from 'src/app/util/helper-functions';
 import { NotificationService } from 'src/app/base/services/notification.service';
 import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
 import { schemeCategory24 } from 'src/app/util/colors';
@@ -34,6 +34,10 @@ import { createDefaultHeuristicsDetailsModals, HeuristicsDetailsModals } from '.
 import { AttributeVisibility } from 'src/app/projects/components/create-new-attribute/attributes-visibility-helper';
 import { BricksIntegratorComponent } from 'src/app/base/components/bricks-integrator/bricks-integrator.component';
 import { Attributes } from 'src/app/base/components/record-display/record-display.helper';
+import { dateAsUTCDate } from 'submodules/javascript-functions/date-parser';
+import { copyToClipboard } from 'submodules/javascript-functions/general';
+import { getPythonClassName, getPythonClassRegExMatch, getPythonFunctionName, getPythonFunctionRegExMatch, toPythonFunctionName } from 'submodules/javascript-functions/python-functions-parser';
+import { capitalizeFirstForClassName } from 'submodules/javascript-functions/case-types-parser';
 
 @Component({
   selector: 'kern-weak-source-details',
@@ -142,7 +146,7 @@ export class WeakSourceDetailsComponent
   }
 
   getWhiteListNotificationService(): string[] {
-    let toReturn = ['payload_finished', 'payload_failed', 'payload_created', 'payload_update_statistics', 'model_callback_update_statistics'];
+    let toReturn = ['payload_finished', 'payload_failed', 'payload_created', 'payload_update_statistics', 'model_callback_update_statistics', 'payload_progress'];
     toReturn.push(...['labeling_task_deleted', 'labeling_task_updated', 'labeling_task_created']);
     toReturn.push(...['information_source_deleted', 'information_source_updated']);
     toReturn.push(...['label_created', 'label_deleted']);
@@ -201,8 +205,10 @@ export class WeakSourceDetailsComponent
       if (this.embeddingQuery$) this.embeddingQuery$.refetch();
     } else if (['knowledge_base_updated', 'knowledge_base_deleted', 'knowledge_base_created'].includes(msgParts[1])) {
       if (this.knowledgeBasesQuery$) this.knowledgeBasesQuery$.refetch();
-    }
-    else {
+    } else if (msgParts[1] == 'payload_progress') {
+      if (msgParts[2] != this.informationSource.id) return;
+      this.informationSource.lastTask.progress = Number(msgParts[4]);
+    } else {
       if (msgParts[2] != this.informationSource.id) return;
       this.informationSourceQuery$.refetch();
 
@@ -396,7 +402,7 @@ export class WeakSourceDetailsComponent
   }
   copyClicked: Number = -1;
   copyToClipboard(textToCopy, i = -1) {
-    navigator.clipboard.writeText(textToCopy);
+    copyToClipboard(textToCopy);
     if (i != -1) {
       this.copyClicked = i;
       timer(1000).pipe(first()).subscribe(() => {
