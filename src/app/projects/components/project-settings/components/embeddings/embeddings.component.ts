@@ -172,11 +172,12 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
       JSON.stringify(config)
     ).pipe(first()).subscribe(() => {
       this.initEmbeddingModal();
+      this.selectedPlatform = this.embeddingPlatforms[0];
     });
   }
 
   selectFirstUnhiddenEmbeddingHandle(inputElement: HTMLInputElement) {
-    let suggestionList = this.embeddingHandles[this.settingModals.embedding.create.embeddingCreationFormGroup.get("targetAttribute").value];
+    const suggestionList = this.embeddingHandles[this.settingModals.embedding.create.embeddingCreationFormGroup.get("targetAttribute").value];
     for (let model of suggestionList) {
       if (!model.hidden && !model.forceHidden) {
         this.selectEmbeddingHandle(model, inputElement);
@@ -197,7 +198,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
   checkEmbeddingHandles(eventTarget: HTMLInputElement) {
     const embeddingForm = this.settingModals.embedding.create.embeddingCreationFormGroup;
     embeddingForm.get('model').setValue(eventTarget.value);
-    let suggestionList = this.embeddingHandles[embeddingForm.get("targetAttribute").value];
+    const suggestionList = this.embeddingHandles[embeddingForm.get("targetAttribute").value];
     if (!suggestionList || suggestionList.length == 0) return;
     const lowerEventValue = eventTarget.value.toLowerCase();
     let suggestionsSave = [];
@@ -267,10 +268,11 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
     if (fullInit) {
       this.settingModals.embedding.create.embeddingCreationFormGroup.reset();
     } else {
-      this.settingModals.embedding.create.embeddingCreationFormGroup.get("platform").setValue(defaultPlatform);
-      this.settingModals.embedding.create.embeddingCreationFormGroup.get("model").setValue(null);
-      this.settingModals.embedding.create.embeddingCreationFormGroup.get("apiToken").setValue(null);
-
+      const form = this.settingModals.embedding.create.embeddingCreationFormGroup;
+      form.get("platform").setValue(defaultPlatform);
+      form.get("model").setValue(null);
+      form.get("apiToken").setValue(null);
+      form.get("termsAccepted").setValue(false);
     }
   }
 }
