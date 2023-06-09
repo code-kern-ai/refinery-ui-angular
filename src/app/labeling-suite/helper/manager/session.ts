@@ -4,11 +4,12 @@ import { first } from "rxjs/operators";
 import { UserRole } from "src/app/base/enum/graphql-enums";
 import { NotificationService } from "src/app/base/services/notification.service";
 import { ProjectApolloService } from "src/app/base/services/project/project-apollo.service";
-import { dateAsUTCDate, parseLinkFromText } from "src/app/util/helper-functions";
+import { parseLinkFromText } from "src/app/util/helper-functions";
 import { DoBeforeDestroy } from "src/app/util/interfaces";
 import { RouteManager } from "src/app/util/route-manager";
 import { UserManager } from "src/app/util/user-manager";
 import { LabelingSuiteManager } from "./manager";
+import { dateAsUTCDate } from "submodules/javascript-functions/date-parser";
 
 
 export type LabelingLinkData = {

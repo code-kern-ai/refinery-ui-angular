@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
-import { isStringTrue } from 'src/app/util/helper-functions';
 import { HighlightSearch, RegexDisplay, RegexMatch } from './helper';
+import { isStringTrue } from 'submodules/javascript-functions/general';
 
 @Component({
   selector: 'kern-highlight',

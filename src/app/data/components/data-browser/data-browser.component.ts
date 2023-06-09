@@ -13,7 +13,7 @@ import {
 import { ActivatedRoute, Router } from '@angular/router';
 import { KeyValue } from '@angular/common';
 import { combineLatest, forkJoin, interval, Observable, Subscription, timer } from 'rxjs';
-import { dateAsUTCDate, getColorForDataType, parseLinkFromText } from 'src/app/util/helper-functions';
+import { getColorForDataType, parseLinkFromText } from 'src/app/util/helper-functions';
 import {
   debounceTime,
   distinctUntilChanged,
@@ -63,6 +63,8 @@ import { HighlightSearch } from 'src/app/base/components/highlight/helper';
 import { Attributes } from 'src/app/base/components/record-display/record-display.helper';
 import { LabelingLinkType } from 'src/app/labeling-suite/helper/manager/session';
 import { ConfigManager } from 'src/app/base/services/config-service';
+import { dateAsUTCDate } from 'submodules/javascript-functions/date-parser';
+import { copyToClipboard } from 'submodules/javascript-functions/general';
 
 
 type DataSlice = {
@@ -1319,7 +1321,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   }
 
   copyToClipboard(textToCopy: string) {
-    navigator.clipboard.writeText(textToCopy);
+    copyToClipboard(textToCopy);
   }
 
   toggleHighlightText() {
