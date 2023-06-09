@@ -170,13 +170,7 @@
     [modalBoxStyle]="{'overflow-x':'visible', 'max-width':'80%', 'width': 'fit-content'}" closeButton="X"
     [acceptButton]="{
     buttonCaption: 'Add embedding',
-    disabled: settingModals.embedding.create.blocked || 
-    !(useableTextAttributes && settingModals.embedding.create.embeddingCreationFormGroup) || 
-    !settingModals.embedding.create.embeddingCreationFormGroup.get('termsAccepted').value ||
-    (settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.HUGGING_FACE && settingModals.embedding.create.embeddingCreationFormGroup.get('model').value == null) ||
-    (settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.OPEN_AI && (settingModals.embedding.create.embeddingCreationFormGroup.get('model').value == null || settingModals.embedding.create.embeddingCreationFormGroup.get('apiToken').value === null)) ||
-    (settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.COHERE && settingModals.embedding.create.embeddingCreationFormGroup.get('apiToken').value === null) ||
-    (settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.PYTHON && settingModals.embedding.create.embeddingCreationFormGroup.get('model').value == null),
+    disabled: isCreationOfEmbeddingDisabled,
     emitObject: this, emitFunction:addEmbedding
 }" (optionClicked)="settingModals.embedding.create.open = false">
     <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
@@ -242,7 +236,7 @@
                             </span>
                         </div>
                         <input formControlName="apiToken" class="input input-bordered input-sm placeholder-italic"
-                            placeholder="Enter api token..." />
+                            placeholder="Enter api token..." (input)="checkIfCreateEmbeddingIsDisabled()" />
                     </ng-template>
                     <ng-template [ngSwitchCase]="PlatformType.COHERE">
                         <div class="tooltip tooltip-right" data-tip="Enter your API token">
@@ -253,7 +247,7 @@
                             </span>
                         </div>
                         <input formControlName="apiToken" class="input input-bordered input-sm placeholder-italic"
-                            placeholder="Enter api token..." />
+                            placeholder="Enter api token..." (input)="checkIfCreateEmbeddingIsDisabled()" />
                     </ng-template>
                     <ng-template [ngSwitchCase]="PlatformType.PYTHON">
                         <ng-container *ngTemplateOutlet="suggestions"></ng-container>
@@ -261,32 +255,36 @@
                 </ng-container>
             </div>
             <div class="flex flex-row items-center my-2 mx-auto justify-center">
-                <div class="tooltip tooltip-bottom text-left flex"
-                    [attr.data-tip]="selectedPlatform.gdprCompliant ?'GDPR Compliant':'Not GDPR Compliant'">
-                    <button
-                        [ngClass]="selectedPlatform.gdprCompliant ?'bg-green-100 border border-green-400 text-green-700':'bg-red-100 border border-red-400 text-red-700'"
-                        class="rounded-lg text-xs px-2.5 py-0.5 cursor-default border">GDPR</button>
-                </div>
+                <ng-template
+                    [ngIf]="settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.OPEN_AI"
+                    [ngIfElse]="gdprCompliantCheck">
+                    <div class="tooltip tooltip-bottom" data-tip="Can be GDPR compliant, it depends on your token">
+                        <button
+                            class="rounded-lg text-xs px-2.5 py-0.5 cursor-default bg-yellow-100 border border-yellow-400 text-yellow-700">GDPR</button>
+                    </div>
+                </ng-template>
+                <ng-template #gdprCompliantCheck>
+                    <div class="tooltip tooltip-bottom text-left flex"
+                        [attr.data-tip]="selectedPlatform.gdprCompliant ?'GDPR Compliant':'Not GDPR Compliant'">
+                        <button
+                            [ngClass]="selectedPlatform.gdprCompliant ?'bg-green-100 border border-green-400 text-green-700':'bg-red-100 border border-red-400 text-red-700'"
+                            class="rounded-lg text-xs px-2.5 py-0.5 cursor-default">GDPR</button>
+                    </div>
+                </ng-template>
                 <label #gdprText class="text-gray-700 italic text-sm ml-3">
                     {{selectedPlatform.terms }}
                 </label>
             </div>
-            <div className='mt-2 flex flex-row items-center' style="text-align: center;">
-                <input type="checkbox" id="termsAccepted" className="cursor-pointer" formControlName="termsAccepted" />
+            <div *ngIf="settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.COHERE || settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.OPEN_AI"
+                className='mt-2 flex flex-row items-center' style="text-align: center;">
+                <input type="checkbox" id="termsAccepted" className="cursor-pointer" formControlName="termsAccepted"
+                    (change)="checkIfCreateEmbeddingIsDisabled()" />
                 <label for="termsAccepted" className="text-gray-700 text-xs font-medium cursor-pointer ml-1">
-                    I have read the
-                    <ng-template
-                        [ngIf]="settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.COHERE || settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.OPEN_AI"
-                        [ngIfElse]="gdprCompliantPlatforms">
-                        <a class="cursor-pointer underline" target="_blank"
-                            [href]="settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.COHERE ? 'https://cohere.com/terms-of-use' :settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.OPEN_AI ? 'https://openai.com/policies/terms-of-use':''">terms
-                            and
-                            conditions</a>
-                    </ng-template>
-                    <ng-template #gdprCompliantPlatforms>
-                        <span>terms and conditions</span>
-                    </ng-template>
-                    and accept them.
+                    I accept the consequences by using this service and have read the
+                    <a class="cursor-pointer underline" target="_blank"
+                        [href]="settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.COHERE ? 'https://cohere.com/terms-of-use' :settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.OPEN_AI ? 'https://openai.com/policies/terms-of-use':''">terms
+                        and
+                        conditions</a>.
                 </label>
             </div>
         </form>

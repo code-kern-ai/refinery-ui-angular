@@ -251,6 +251,7 @@ export const queries = {
       description
       tokenizers
       applicability
+      platform
     }
   } 
   `,

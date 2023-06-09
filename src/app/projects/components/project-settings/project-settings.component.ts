@@ -145,7 +145,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
 
     // prepare embedding suggestions
     const onlyTextAttributes = this.attributes.filter(a => a.dataType == 'TEXT');
-    this.embeddingPlatforms = this.combineLatestResultBackup[3].reverse();
+    this.embeddingPlatforms = this.combineLatestResultBackup[3];
     this.dataHandlerHelper.prepareEmbeddingFormGroup(onlyTextAttributes, this.settingModals, this.embeddings, this.embeddingPlatforms);
     this.embeddingHandles = this.dataHandlerHelper.prepareEmbeddingHandles(projectId, onlyTextAttributes, this.project.tokenizer, this.combineLatestResultBackup[2]);
   }
@@ -194,7 +194,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
         this.prepareCombineLatestResults(this.project.id);
         return;
       }
-      if (msgParts[4] == "INITIALIZING") {
+      if (msgParts[4] == "INITIALIZING" || msgParts[4] == "WAITING") {
         timer(100).subscribe(() => this.embeddingQuery$.refetch());
         return;
       }

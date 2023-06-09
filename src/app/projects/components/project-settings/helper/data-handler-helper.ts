@@ -154,7 +154,7 @@ export class DataHandlerHelper {
                     id: task.id,
                     name: task.taskInfo["embedding_name"],
                     custom: false,
-                    type: task.taskInfo["type"] == "attribute" ? EmbeddingType.ON_ATTRIBUTE : EmbeddingType.ON_TOKEN,
+                    type: task.taskInfo["type"] == EmbeddingType.ON_ATTRIBUTE ? EmbeddingType.ON_ATTRIBUTE : EmbeddingType.ON_TOKEN,
                     state: "QUEUED",
                     progress: 0,
                     dimension: 0,
