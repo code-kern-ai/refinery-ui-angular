@@ -10,9 +10,9 @@ import { Embedding, EmbeddingPlatform } from '../../entities/embedding.type';
 import { DataHandlerHelper } from '../../helper/data-handler-helper';
 import { SettingModals } from '../../helper/modal-helper';
 import { EmbeddingType, PlatformType, platformNamesDict } from '../../helper/project-settings-helper';
-import { jsonCopy } from 'src/app/util/helper-functions';
 import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
 import { Organization } from 'src/app/base/entities/organization';
+import { jsonCopy } from 'submodules/javascript-functions/general';
 
 @Component({
   selector: 'kern-embeddings',
