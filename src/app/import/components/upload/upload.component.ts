@@ -1,6 +1,6 @@
 import { Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { timer } from 'rxjs';
+import { Subscription, timer } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { PreparationStep } from 'src/app/base/components/upload-assistant/label-studio/label-studio-assistant-helper';
 import { LabelStudioAssistantComponent } from 'src/app/base/components/upload-assistant/label-studio/label-studio-assistant.component';
@@ -12,6 +12,7 @@ import { S3Service } from '../../services/s3.service';
 import { UploadHelper } from '../helpers/upload-helper';
 import { ExistingProjectUploadHelper, LookupListsUploadHelper, RecordAddUploadHelper, RecordNewUploadHelper } from '../helpers/upload-specific';
 import { UploadFileType, UploadOptions, UploadTask, UploadType } from '../helpers/upload-types';
+import { PlatformType } from 'src/app/projects/components/project-settings/helper/project-settings-helper';
 
 @Component({
   selector: 'kern-upload',
@@ -55,6 +56,7 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
   disableInput: boolean = false;
   tokenizerValuesDisabled: boolean[] = [];
   doingSomething: boolean = false;
+  subscriptions$: Subscription[] = [];
 
   constructor(private projectApolloService: ProjectApolloService, private router: Router, private s3Service: S3Service) {
     this.uploadHelper = new UploadHelper(this, this.projectApolloService);
@@ -69,6 +71,7 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
     if (changes.uploadOptions) {
       if (this.uploadFileType == UploadFileType.RECORDS_ADD && this.uploadSpecificHelper) {
         this.uploadSpecificHelper.projectName = this.uploadOptions.projectName;
+        this.prepareEmbeddings();
       }
       const tokenizerValuesDisplay = [];
       this.uploadOptions.tokenizerValues?.forEach((tokenizer: any, index: number) => {
@@ -83,6 +86,7 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnDestroy(): void {
     if (this.uploadTask$) this.uploadTask$.unsubscribe();
+    this.subscriptions$.forEach((sub) => sub.unsubscribe());
     NotificationService.unsubscribeFromNotification(this, this.projectId);
     if (this.uploadType == UploadType.LABEL_STUDIO && this.uploadFileType == UploadFileType.RECORDS_NEW) {
       if (this.labelStudioUploadAssistant?.states.preparation != PreparationStep.MAPPING_TRANSFERRED) {
@@ -298,6 +302,15 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
   setTokenizer(tokenizer: string): void {
     const findName: any = this.uploadOptions.tokenizerValues.find((tok: any) => tok.configString === tokenizer);
     this.uploadSpecificHelper.selectedTokenizer = findName.name;
+  }
+
+  prepareEmbeddings(): void {
+    let q, vc;
+    [q, vc] = this.projectApolloService.getEmbeddingSchema(this.projectId);
+    this.subscriptions$.push(vc.pipe(first()).subscribe(embeddings => {
+      const hasGdpr = embeddings.filter((e: any) => e.name.split("-")[2] == PlatformType.COHERE || e.name.split("-")[2] == PlatformType.OPEN_AI).length > 0;
+      this.uploadSpecificHelper.hasGdpr = hasGdpr;
+    }));
   }
 
 }

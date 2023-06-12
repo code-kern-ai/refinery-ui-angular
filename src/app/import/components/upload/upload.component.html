@@ -262,7 +262,8 @@
 <ng-template #cautionMessage>
     <div class="text-sm text-gray-500 font-normal">
         <strong class="text-sm text-gray-700 font-medium">CAUTION:</strong> Submitting new records will automatically
-        run attribute calculation and embeddings for the newly
-        uploaded records
+        run attribute calculation and embeddings <span *ngIf="uploadSpecificHelper.hasGdpr">(recreation of the
+            embeddings will calculate them one more time)</span>
+        for the newly uploaded records
     </div>
 </ng-template>

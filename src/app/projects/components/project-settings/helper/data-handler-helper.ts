@@ -89,22 +89,22 @@ export class DataHandlerHelper {
         toReturn += "-" + (values.granularity == 'ON_ATTRIBUTE' ? 'classification' : 'extraction');
         const platform = settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value
         if (platform == PlatformType.HUGGING_FACE || platform == PlatformType.PYTHON) {
-            toReturn += "-" + values.model;
+            toReturn += "-" + platform + "-" + values.model;
         } else if (platform == PlatformType.OPEN_AI) {
             if (values.apiToken == null || values.apiToken.length == 0) {
-                toReturn += "-" + values.model;
+                toReturn += "-" + platform + "-" + values.model;
             } else if (values.apiToken.length > 8) {
-                toReturn += "-" + values.model + "-" + values.apiToken?.substring(0, 8) + "...";
+                toReturn += "-" + platform + "-" + values.model + "-" + values.apiToken?.substring(0, 8) + "...";
             } else {
-                toReturn += "-" + values.model + "-" + values.apiToken?.substring(0, values.apiToken.length);
+                toReturn += "-" + platform + "-" + values.model + "-" + values.apiToken?.substring(0, values.apiToken.length);
             }
         } else if (platform == PlatformType.COHERE) {
             if (values.apiToken == null || values.apiToken.length == 0) {
-                toReturn += "-" + values.model;
+                toReturn += "-" + platform + "-" + values.apiToken;
             } else if (values.apiToken.length > 8) {
-                toReturn += "-" + values.apiToken?.substring(0, 8) + "...";
+                toReturn += "-" + platform + "-" + values.apiToken?.substring(0, 8) + "...";
             } else {
-                toReturn += "-" + values.apiToken?.substring(0, values.apiToken.length);
+                toReturn += "-" + platform + "-" + values.apiToken?.substring(0, values.apiToken.length);
             }
         }
         return toReturn;
@@ -119,6 +119,7 @@ export class DataHandlerHelper {
                 if (embedding.name == currentName) return false;
             }
         }
+        settingModals.embedding.create.blocked = false;
         return true;
     }
 

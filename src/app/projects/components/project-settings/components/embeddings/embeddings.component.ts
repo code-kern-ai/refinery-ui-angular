@@ -264,8 +264,9 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
     } else if (platform == PlatformType.COHERE) {
       checkFormFields = apiToken == null || apiToken == "" || !termsAccepted;
     }
+    const checkDuplicates = this.dataHandlerHelper.canCreateEmbedding(this.settingModals, this.embeddings, this.attributes);
     this.isCreationOfEmbeddingDisabled = this.settingModals.embedding.create.blocked ||
-      !(this.useableTextAttributes && this.settingModals.embedding.create.embeddingCreationFormGroup) || checkFormFields;
+      !(this.useableTextAttributes && this.settingModals.embedding.create.embeddingCreationFormGroup) || checkFormFields || !checkDuplicates;
   }
 
   initEmbeddingModal(fullInit: boolean = false, defaultPlatform: PlatformType = PlatformType.HUGGING_FACE) {
