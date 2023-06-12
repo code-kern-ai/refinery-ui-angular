@@ -16,6 +16,7 @@ export class DataSchemaComponent implements OnInit, OnChanges {
   @Input() project: Project;
   @Input() attributes: Attribute[];
   @Input() pKeyValid: boolean;
+  @Input() isAcOrTokenizationRunning: boolean
 
   tooltipsArray: string[];
   attributeVisibilityStates = attributeVisibilityStates;

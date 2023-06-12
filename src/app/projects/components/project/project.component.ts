@@ -76,7 +76,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
   }
 
   handleWebsocketGlobalNotification(msgParts) {
-    if ('project_update' == msgParts[1]) {
+    if ('project_update' == msgParts[1] && this.projectId == msgParts[2]) {
       this.projectQuery$.refetch();
     }
   }
