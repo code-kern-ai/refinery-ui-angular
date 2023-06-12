@@ -1,6 +1,6 @@
 import { Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subscription, timer } from 'rxjs';
+import { timer } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { PreparationStep } from 'src/app/base/components/upload-assistant/label-studio/label-studio-assistant-helper';
 import { LabelStudioAssistantComponent } from 'src/app/base/components/upload-assistant/label-studio/label-studio-assistant.component';
@@ -56,7 +56,6 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
   disableInput: boolean = false;
   tokenizerValuesDisabled: boolean[] = [];
   doingSomething: boolean = false;
-  subscriptions$: Subscription[] = [];
 
   constructor(private projectApolloService: ProjectApolloService, private router: Router, private s3Service: S3Service) {
     this.uploadHelper = new UploadHelper(this, this.projectApolloService);
@@ -86,7 +85,6 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnDestroy(): void {
     if (this.uploadTask$) this.uploadTask$.unsubscribe();
-    this.subscriptions$.forEach((sub) => sub.unsubscribe());
     NotificationService.unsubscribeFromNotification(this, this.projectId);
     if (this.uploadType == UploadType.LABEL_STUDIO && this.uploadFileType == UploadFileType.RECORDS_NEW) {
       if (this.labelStudioUploadAssistant?.states.preparation != PreparationStep.MAPPING_TRANSFERRED) {
@@ -307,10 +305,10 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
   prepareEmbeddings(): void {
     let q, vc;
     [q, vc] = this.projectApolloService.getEmbeddingSchema(this.projectId);
-    this.subscriptions$.push(vc.pipe(first()).subscribe(embeddings => {
+    vc.pipe(first()).subscribe(embeddings => {
       const hasGdpr = embeddings.filter((e: any) => e.name.split("-")[2] == PlatformType.COHERE || e.name.split("-")[2] == PlatformType.OPEN_AI).length > 0;
       this.uploadSpecificHelper.hasGdpr = hasGdpr;
-    }));
+    });
   }
 
 }

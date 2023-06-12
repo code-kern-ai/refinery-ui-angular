@@ -43,6 +43,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
   organization: Organization;
   isCreationOfEmbeddingDisabled: boolean = false;
   granularityArray = granularityTypesArray;
+  embeddingPlatformsCopy: EmbeddingPlatform[];
 
   get PlatformType(): typeof PlatformType {
     return PlatformType;
@@ -57,7 +58,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
     });
 
     NotificationService.subscribeToNotification(this, {
-      whitelist: ['model_provider_download'],
+      whitelist: ['model_provider_download', 'gdpr_compliant'],
       func: this.handleWebsocketNotification
     });
   }
@@ -95,6 +96,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
     if (this.organization.gdprCompliant) {
       this.embeddingPlatforms = this.embeddingPlatforms.filter((platform) => platform.gdprCompliant === true);
     }
+    this.embeddingPlatformsCopy = jsonCopy(this.embeddingPlatforms);
     this.embeddingPlatforms.forEach((platform: EmbeddingPlatform) => {
       platform.name = platformNamesDict[platform.platform];
     });
@@ -246,6 +248,18 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
   handleWebsocketNotification(msgParts) {
     if (msgParts[1] === 'model_provider_download' && msgParts[2] === 'finished') {
       timer(2500).subscribe(() => this.downloadedModelsQuery$.refetch());
+    } else if (msgParts[1] === 'gdpr_compliant') {
+      if (msgParts[2].toLowerCase() === 'true') {
+        this.embeddingPlatforms = this.embeddingPlatforms.filter(platform => platform.gdprCompliant === true);
+      } else {
+        this.embeddingPlatforms = this.embeddingPlatformsCopy;
+        this.embeddingPlatforms.forEach((platform: EmbeddingPlatform) => {
+          platform.name = platformNamesDict[platform.platform];
+        });
+      }
+      this.initEmbeddingModal();
+      this.selectedPlatform = this.embeddingPlatforms[0];
+      this.checkIfPlatformHasToken();
     }
   }
 

@@ -10,6 +10,7 @@ export const granularityTypesArray = [
     { name: 'Token', value: EmbeddingType.ON_TOKEN }
 ];
 
+// A string enum with different values from our standard is used because of its usage in the embedder service
 export enum PlatformType {
     HUGGING_FACE = "huggingface",
     OPEN_AI = "openai",
