@@ -189,7 +189,8 @@
                             style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Target
                             Attribute</span></span>
                 </div>
-                <select formControlName="targetAttribute" class="select select-bordered select-sm max-w-xs">
+                <select formControlName="targetAttribute" class="select select-bordered select-sm max-w-xs"
+                    (change)="checkIfCreateEmbeddingIsDisabled()">
                     <option *ngFor="let attribute of useableTextAttributes" [value]="attribute.id">
                         {{attribute.name}}
                     </option>
