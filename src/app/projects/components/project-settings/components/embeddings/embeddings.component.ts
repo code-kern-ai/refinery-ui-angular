@@ -105,9 +105,9 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
   checkForceHiddenHandles() {
     const form = this.settingModals.embedding.create.embeddingCreationFormGroup;
     this.prepareSuggestions(form);
+    this.initEmbeddingModal(false, form.get('platform').value);
     this.selectedPlatform = this.embeddingPlatforms.find((p: EmbeddingPlatform) => p.platform == form.get('platform').value);
     this.checkIfPlatformHasToken();
-    this.initEmbeddingModal(false, form.get('platform').value);
   }
 
   prepareSuggestions(form: FormGroup) {
@@ -176,9 +176,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
       attributeId,
       JSON.stringify(config)
     ).pipe(first()).subscribe(() => {
-      this.initEmbeddingModal();
-      this.selectedPlatform = this.embeddingPlatforms[0];
-      this.checkIfPlatformHasToken();
+      this.resetEmbeddingCreationAndPlatform();
     });
   }
 
@@ -257,9 +255,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
           platform.name = platformNamesDict[platform.platform];
         });
       }
-      this.initEmbeddingModal();
-      this.selectedPlatform = this.embeddingPlatforms[0];
-      this.checkIfPlatformHasToken();
+      this.resetEmbeddingCreationAndPlatform();
     }
   }
 
@@ -306,5 +302,11 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
     } else {
       this.granularityArray = this.dataHandlerHelper.granularityTypesArray;
     }
+  }
+
+  resetEmbeddingCreationAndPlatform() {
+    this.initEmbeddingModal(true);
+    this.selectedPlatform = this.embeddingPlatforms[0];
+    this.checkIfPlatformHasToken();
   }
 }
