@@ -93,10 +93,10 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   prepareEmbeddingPlatforms() {
+    this.embeddingPlatformsCopy = jsonCopy(this.embeddingPlatforms);
     if (this.organization.gdprCompliant) {
       this.embeddingPlatforms = this.embeddingPlatforms.filter((platform) => platform.gdprCompliant === true);
     }
-    this.embeddingPlatformsCopy = jsonCopy(this.embeddingPlatforms);
     this.embeddingPlatforms.forEach((platform: EmbeddingPlatform) => {
       platform.name = platformNamesDict[platform.platform];
     });
@@ -108,6 +108,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
     this.initEmbeddingModal(false, form.get('platform').value);
     this.selectedPlatform = this.embeddingPlatforms.find((p: EmbeddingPlatform) => p.platform == form.get('platform').value);
     this.checkIfPlatformHasToken();
+    this.checkModelDownloaded();
   }
 
   prepareSuggestions(form: FormGroup) {
@@ -305,7 +306,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   resetEmbeddingCreationAndPlatform() {
-    this.initEmbeddingModal(true);
+    this.initEmbeddingModal();
     this.selectedPlatform = this.embeddingPlatforms[0];
     this.checkIfPlatformHasToken();
   }

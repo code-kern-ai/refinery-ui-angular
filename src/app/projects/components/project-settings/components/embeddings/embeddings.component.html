@@ -190,7 +190,7 @@
                             Attribute</span></span>
                 </div>
                 <select formControlName="targetAttribute" class="select select-bordered select-sm max-w-xs"
-                    (change)="checkIfCreateEmbeddingIsDisabled()">
+                    (change)="checkForceHiddenHandles()">
                     <option *ngFor="let attribute of useableTextAttributes" [value]="attribute.id">
                         {{attribute.name}}
                     </option>
