@@ -172,7 +172,7 @@
     buttonCaption: 'Add embedding',
     disabled: isCreationOfEmbeddingDisabled,
     emitObject: this, emitFunction:addEmbedding
-}" (optionClicked)="settingModals.embedding.create.open = false">
+}" (optionClicked)="closeModal()">
     <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
         Add an embedding </div>
     <div class="mb-2 flex flex-grow justify-center text-sm text-gray-500"
@@ -203,8 +203,7 @@
                 </div>
                 <select formControlName="granularity" class="select select-bordered select-sm max-w-xs"
                     (change)="checkForceHiddenHandles()">
-                    <option *ngFor="let granularity of dataHandlerHelper.granularityTypesArray"
-                        [value]="granularity.value">
+                    <option *ngFor="let granularity of granularityArray" [value]="granularity.value">
                         {{granularity.name}}
                     </option>
                 </select>

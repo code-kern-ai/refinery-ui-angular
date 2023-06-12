@@ -19,7 +19,7 @@ import { Project } from 'src/app/base/entities/project';
 import { Embedding, EmbeddingPlatform } from './entities/embedding.type';
 import { Attribute } from './entities/attribute.type';
 import { downloadBlob, downloadText } from 'src/app/util/download-helper-functions';
-import { findFreeAttributeName, getMoveRight } from './helper/project-settings-helper';
+import { PlatformType, findFreeAttributeName, getMoveRight } from './helper/project-settings-helper';
 import { LabelHelper } from './helper/label-helper';
 import { AttributeCalculationState } from '../create-new-attribute/create-new-attribute-helper';
 import { formatBytes, jsonCopy } from 'submodules/javascript-functions/general';
@@ -324,11 +324,15 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
     this.projectApolloService.getProjectSize(projectId).pipe(first()).subscribe((size) => {
       this.settingModals.projectExport.projectSize = size;
       size.forEach((element) => {
+        let hasGdpr = false;
+        if (element.table == 'embedding tensors') {
+          hasGdpr = this.embeddings.filter((e: any) => e.name.split("-")[2] == PlatformType.COHERE || e.name.split("-")[2] == PlatformType.OPEN_AI).length > 0;
+        }
         let group = this.formBuilder.group({
           export: element.default,
           moveRight: getMoveRight(element.table),
           name: element.table,
-          desc: element.description,
+          desc: hasGdpr ? null : element.description,
           sizeNumber: element.byteSize,
           sizeReadable: element.byteReadable
         });

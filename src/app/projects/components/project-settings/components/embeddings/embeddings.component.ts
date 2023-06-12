@@ -9,7 +9,7 @@ import { DownloadedModel } from '../../entities/downloaded-model.type';
 import { Embedding, EmbeddingPlatform } from '../../entities/embedding.type';
 import { DataHandlerHelper } from '../../helper/data-handler-helper';
 import { SettingModals } from '../../helper/modal-helper';
-import { EmbeddingType, PlatformType, platformNamesDict } from '../../helper/project-settings-helper';
+import { EmbeddingType, PlatformType, granularityTypesArray, platformNamesDict } from '../../helper/project-settings-helper';
 import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
 import { Organization } from 'src/app/base/entities/organization';
 import { FormGroup } from '@angular/forms';
@@ -42,6 +42,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
   selectedPlatform: EmbeddingPlatform;
   organization: Organization;
   isCreationOfEmbeddingDisabled: boolean = false;
+  granularityArray = granularityTypesArray;
 
   get PlatformType(): typeof PlatformType {
     return PlatformType;
@@ -76,6 +77,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
     if (changes.embeddingPlatforms && this.embeddingPlatforms) {
       this.prepareEmbeddingPlatforms();
       this.selectedPlatform = this.embeddingPlatforms[0];
+      this.checkIfPlatformHasToken();
     }
   }
 
@@ -102,6 +104,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
     const form = this.settingModals.embedding.create.embeddingCreationFormGroup;
     this.prepareSuggestions(form);
     this.selectedPlatform = this.embeddingPlatforms.find((p: EmbeddingPlatform) => p.platform == form.get('platform').value);
+    this.checkIfPlatformHasToken();
     this.initEmbeddingModal(false, form.get('platform').value);
   }
 
@@ -173,6 +176,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
     ).pipe(first()).subscribe(() => {
       this.initEmbeddingModal();
       this.selectedPlatform = this.embeddingPlatforms[0];
+      this.checkIfPlatformHasToken();
     });
   }
 
@@ -273,6 +277,19 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
       form.get("model").setValue(null);
       form.get("apiToken").setValue(null);
       form.get("termsAccepted").setValue(false);
+    }
+  }
+
+  closeModal() {
+    this.settingModals.embedding.create.open = false;
+    this.settingModals.embedding.create.embeddingCreationFormGroup.get('termsAccepted').setValue(null);
+  }
+
+  checkIfPlatformHasToken() {
+    if (this.selectedPlatform.platform == PlatformType.COHERE || this.selectedPlatform.platform == PlatformType.OPEN_AI) {
+      this.granularityArray = this.granularityArray.filter((g) => g.value != EmbeddingType.ON_TOKEN);
+    } else {
+      this.granularityArray = this.dataHandlerHelper.granularityTypesArray;
     }
   }
 }
