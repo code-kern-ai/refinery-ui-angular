@@ -279,11 +279,13 @@
                 <label #gdprText for="termsAccepted" className="text-gray-700 text-xs font-medium cursor-pointer ml-1">
                     Please be aware that the Cohere API policies may conflict with your internal data and GDPR policies.
                     For more information please check:
-                    <a *ngIf="settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.COHERE"
+                    <a #anchorGdpr
+                        *ngIf="settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.COHERE"
                         href="https://cohere.com/terms-of-use" class="cursor-pointer underline" target="_blank">
                         cohere-terms-of-use
                     </a>
-                    <a *ngIf="settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.OPEN_AI"
+                    <a #anchorGdpr
+                        *ngIf="settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.OPEN_AI"
                         href="https://openai.com/policies/api-data-usage-policies" class="cursor-pointer underline"
                         target="_blank">
                         openai-terms-of-use
