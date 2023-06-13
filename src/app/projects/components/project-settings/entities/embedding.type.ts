@@ -13,6 +13,5 @@ export type Embedding = {
 export type EmbeddingPlatform = {
     platform: string;
     gdprCompliant: boolean;
-    terms: string;
     name: string;
 }
