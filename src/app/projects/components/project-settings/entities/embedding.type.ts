@@ -8,6 +8,7 @@ export type Embedding = {
     forceHidden?: boolean;
     state?: string;
     progress?: number;
+    name?: string;
 };
 
 export type EmbeddingPlatform = {

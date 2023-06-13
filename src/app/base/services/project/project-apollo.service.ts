@@ -10,6 +10,7 @@ import { ApolloChecker } from '../base/apollo-checker';
 import { mutations } from './project-mutations';
 import { queries } from './project-queries';
 import { dateAsUTCDate } from 'submodules/javascript-functions/date-parser';
+import { EmbeddingPlatform } from 'src/app/projects/components/project-settings/entities/embedding.type';
 
 @Injectable({
   providedIn: 'root',
@@ -738,7 +739,7 @@ export class ProjectApolloService {
       );
   }
 
-  createEmbedding(projectId: string, attributeId: string, config: any) {
+  createEmbedding(projectId: string, attributeId: string, config: string) {
     return this.apollo.mutate({
       mutation: mutations.CREATE_EMBEDDING,
       variables: {
@@ -1490,7 +1491,7 @@ export class ProjectApolloService {
       );
   }
 
-  getEmbeddingPlatforms() {
+  getEmbeddingPlatforms(): Observable<EmbeddingPlatform> {
     return this.apollo
       .query({
         query: queries.GET_EMBEDDING_PLATFORMS,

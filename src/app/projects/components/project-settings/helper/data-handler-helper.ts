@@ -89,22 +89,22 @@ export class DataHandlerHelper {
         toReturn += "-" + (values.granularity == 'ON_ATTRIBUTE' ? 'classification' : 'extraction');
         const platform = settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value
         if (platform == PlatformType.HUGGING_FACE || platform == PlatformType.PYTHON) {
-            toReturn += "-" + platform + "-" + values.model;
+            toReturn += "-" + values.model;
         } else if (platform == PlatformType.OPEN_AI) {
             if (values.apiToken == null || values.apiToken.length == 0) {
-                toReturn += "-" + platform + "-" + values.model;
+                toReturn += "-" + values.model;
             } else if (values.apiToken.length > 8) {
-                toReturn += "-" + platform + "-" + values.model + "-" + values.apiToken?.substring(0, 8) + "...";
+                toReturn += "-" + values.model + "-" + values.apiToken?.substring(0, 8) + "...";
             } else {
-                toReturn += "-" + platform + "-" + values.model + "-" + values.apiToken?.substring(0, values.apiToken.length);
+                toReturn += "-" + values.model + "-" + values.apiToken?.substring(0, values.apiToken.length);
             }
         } else if (platform == PlatformType.COHERE) {
             if (values.apiToken == null || values.apiToken.length == 0) {
-                toReturn += "-" + platform + "-" + values.apiToken;
+                toReturn += "-" + values.apiToken;
             } else if (values.apiToken.length > 8) {
-                toReturn += "-" + platform + "-" + values.apiToken?.substring(0, 8) + "...";
+                toReturn += "-" + values.apiToken?.substring(0, 8) + "...";
             } else {
-                toReturn += "-" + platform + "-" + values.apiToken?.substring(0, values.apiToken.length);
+                toReturn += "-" + values.apiToken?.substring(0, values.apiToken.length);
             }
         }
         return toReturn;
@@ -112,9 +112,9 @@ export class DataHandlerHelper {
 
     canCreateEmbedding(settingModals: SettingModals, embeddings: any, attributes: Attribute[]): boolean {
         const currentName = this.buildExpectedEmbeddingName(settingModals, attributes);
+        settingModals.embedding.create.blocked = true;
         if (currentName.slice(-1) == "-") return false;
         else {
-            settingModals.embedding.create.blocked = true;
             for (const embedding of embeddings) {
                 if (embedding.name == currentName) return false;
             }

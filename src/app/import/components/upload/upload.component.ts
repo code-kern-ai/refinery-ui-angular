@@ -13,6 +13,7 @@ import { UploadHelper } from '../helpers/upload-helper';
 import { ExistingProjectUploadHelper, LookupListsUploadHelper, RecordAddUploadHelper, RecordNewUploadHelper } from '../helpers/upload-specific';
 import { UploadFileType, UploadOptions, UploadTask, UploadType } from '../helpers/upload-types';
 import { PlatformType } from 'src/app/projects/components/project-settings/helper/project-settings-helper';
+import { Embedding } from 'src/app/projects/components/project-settings/entities/embedding.type';
 
 @Component({
   selector: 'kern-upload',
@@ -305,8 +306,11 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
   prepareEmbeddings(): void {
     let q, vc;
     [q, vc] = this.projectApolloService.getEmbeddingSchema(this.projectId);
-    vc.pipe(first()).subscribe(embeddings => {
-      const hasNotGdprEmbeddings = embeddings.filter((e: any) => e.name.split("-")[2] == PlatformType.COHERE || e.name.split("-")[2] == PlatformType.OPEN_AI).length > 0;
+    vc.pipe(first()).subscribe((embeddings: Embedding[]) => {
+      const hasNotGdprEmbeddings = embeddings.filter((e: Embedding) => {
+        const splitName = e.name.split("-")[2];
+        return splitName == PlatformType.COHERE || splitName == PlatformType.OPEN_AI;
+      });
       this.uploadSpecificHelper.hasNotGdprEmbeddings = hasNotGdprEmbeddings;
     });
   }
