@@ -9,6 +9,9 @@ export type Embedding = {
     state?: string;
     progress?: number;
     name?: string;
+    platform?: string;
+    model?: string;
+    apiToken?: string;
 };
 
 export type EmbeddingPlatform = {

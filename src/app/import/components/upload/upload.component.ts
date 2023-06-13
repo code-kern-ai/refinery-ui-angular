@@ -307,10 +307,7 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
     let q, vc;
     [q, vc] = this.projectApolloService.getEmbeddingSchema(this.projectId);
     vc.pipe(first()).subscribe((embeddings: Embedding[]) => {
-      const hasNotGdprEmbeddings = embeddings.filter((e: Embedding) => {
-        const splitName = e.name.split("-")[2];
-        return splitName == PlatformType.COHERE || splitName == PlatformType.OPEN_AI;
-      });
+      const hasNotGdprEmbeddings = embeddings.filter((e: Embedding) => e.platform == PlatformType.COHERE || e.platform == PlatformType.OPEN_AI).length > 0;
       this.uploadSpecificHelper.hasNotGdprEmbeddings = hasNotGdprEmbeddings;
     });
   }
