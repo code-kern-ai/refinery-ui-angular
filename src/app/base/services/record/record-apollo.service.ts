@@ -534,12 +534,17 @@ export class RecordApolloService {
 
   //private
   #tokenMapper(token) {
+    let countLineBreaks = 0;
+    if (token.value.includes("\n")) {
+      countLineBreaks = token.value.split("\n").length - 1;
+    }
     return {
       value: token.value,
       idx: token.idx,
       posStart: token.posStart,
       posEnd: token.posEnd,
       type: token.type,
+      countLineBreaks: countLineBreaks
     };
   }
   #addDiffToNext(tokenObj) {

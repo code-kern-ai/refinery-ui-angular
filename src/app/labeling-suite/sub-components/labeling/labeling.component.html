@@ -287,9 +287,8 @@
         <div *ngFor="let token of tokenLookup[attributeId].token" class="relative z-10" attr.tokenIdx="{{token.idx}}"
             attr.attributeId="{{attributeId}}"
             style.margin-bottom="{{tokenLookup[attributeId][token.idx]?.tokenMarginBottom}}"
-            [ngClass]="token.value == '\n' ? 'w-full' : null">
-            <ng-template [ngIf]="token.value != '\n'">
-
+            [ngClass]="token.countLineBreaks > 0 ? 'w-full' : null">
+            <ng-template [ngIf]="token.countLineBreaks == 0" [ngIfElse]="newLinesBlock">
                 <ng-template [ngIf]="token.type" [ngIfElse]="tokenValue">
                     <div [attr.data-tip]="'spaCy type: ' + token.type" class="tooltip">
                         <ng-template *ngTemplateOutlet="tokenValue;">
@@ -342,6 +341,15 @@
                     </div>
                 </ng-template>
             </ng-template>
+            <ng-template #newLinesBlock>
+                <ng-container *ngFor="let item of [].constructor(token.countLineBreaks-1); let i = index">
+                    <ng-container *ngTemplateOutlet="dummyElementNewLine"></ng-container>
+                </ng-container>
+            </ng-template>
         </div>
     </div>
+</ng-template>
+
+<ng-template #dummyElementNewLine>
+    <div><br></div>
 </ng-template>
