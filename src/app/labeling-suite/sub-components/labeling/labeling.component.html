@@ -284,10 +284,10 @@
 
 <ng-template #extractionDisplay let-attributeId="attributeId">
     <div *ngIf="tokenLookup" class="flex flex-row flex-wrap items-start" attr.tokenWrapper="{{attributeId}}">
-        <div *ngFor="let token of tokenLookup[attributeId].token" class="relative z-10" attr.tokenIdx="{{token.idx}}"
-            attr.attributeId="{{attributeId}}"
+        <div *ngFor="let token of tokenLookup[attributeId].token; let i = index" class="relative z-10"
+            attr.tokenIdx="{{token.idx}}" attr.attributeId="{{attributeId}}"
             style.margin-bottom="{{tokenLookup[attributeId][token.idx]?.tokenMarginBottom}}"
-            [ngClass]="token.countLineBreaks > 0 ? 'w-full' : null">
+            [ngClass]="[token.countLineBreaks > 0 ?'w-full':'',i == 0 || i == tokenLookup[attributeId].token.length - 1?'h-6':'']">
             <ng-template [ngIf]="token.countLineBreaks == 0" [ngIfElse]="newLinesBlock">
                 <ng-template [ngIf]="token.type" [ngIfElse]="tokenValue">
                     <div [attr.data-tip]="'spaCy type: ' + token.type" class="tooltip">
