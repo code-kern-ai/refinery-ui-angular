@@ -26,7 +26,7 @@ export class RecordNewUploadHelper {
 
 export class RecordAddUploadHelper {
     projectName: string = '';
-    hasNotGdprEmbeddings: boolean = false;
+    recalculationCosts: boolean = false;
 
     constructor(private baseComponent: UploadComponent) {
         this.baseComponent = baseComponent;

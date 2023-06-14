@@ -45,6 +45,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
   isCreationOfEmbeddingDisabled: boolean = false;
   granularityArray = granularityTypesArray;
   embeddingPlatformsCopy: EmbeddingPlatform[];
+  gdprTextHTML: string;
 
   get PlatformType(): typeof PlatformType {
     return PlatformType;
@@ -74,7 +75,6 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
     if (changes.embeddingHandles && this.settingModals.embedding.create.embeddingCreationFormGroup) {
       this.embeddingHandlesCopy = jsonCopy(this.embeddingHandles);
       this.prepareSuggestions(this.settingModals.embedding.create.embeddingCreationFormGroup);
-      this.checkModelDownloaded();
     }
     if (changes.embeddingPlatforms && this.embeddingPlatforms) {
       this.prepareEmbeddingPlatforms();
@@ -98,9 +98,12 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
     if (this.organization.gdprCompliant) {
       this.embeddingPlatforms = this.embeddingPlatforms.filter((platform) => platform.gdprCompliant === true);
     }
+    const embeddingPlatformsCopy = [];
     this.embeddingPlatforms.forEach((platform: EmbeddingPlatform) => {
-      platform.name = platformNamesDict[platform.platform];
+      platform = { ...platform, name: platformNamesDict[platform.platform] };
+      embeddingPlatformsCopy.push(platform);
     });
+    this.embeddingPlatforms = embeddingPlatformsCopy;
   }
 
   checkForceHiddenHandles() {
@@ -109,7 +112,6 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
     this.initEmbeddingModal(false, form.get('platform').value);
     this.selectedPlatform = this.embeddingPlatforms.find((p: EmbeddingPlatform) => p.platform == form.get('platform').value);
     this.checkIfPlatformHasToken();
-    this.checkModelDownloaded();
   }
 
   prepareSuggestions(form: FormGroup) {
@@ -127,6 +129,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
     }
     this.embeddingHandles[attId] = suggestionList;
     this.checkIfCreateEmbeddingIsDisabled();
+    this.checkModelDownloaded();
   }
 
   deleteEmbedding() {
@@ -158,12 +161,13 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
     const platform = embeddingForm.get("platform").value;
 
     if (this.gdprText) {
-      this.gdprText.nativeElement.innerHTML = this.gdprText.nativeElement.innerHTML.split(':')[0] + ":" + this.anchorGdpr.nativeElement.innerHTML;
+      this.gdprTextHTML = this.gdprText.nativeElement.innerHTML;
+      this.gdprTextHTML = this.gdprTextHTML.split(':')[0] + ":" + this.anchorGdpr.nativeElement.innerHTML;
     }
 
     const config: any = {
       platform: platform,
-      termsText: this.gdprText ? this.gdprText.nativeElement.innerHTML : null,
+      termsText: this.gdprText ? this.gdprTextHTML : null,
       termsAccepted: embeddingForm.get("termsAccepted").value,
       embeddingType: embeddingForm.get("granularity").value.substring(3) === "TOKEN" ? EmbeddingType.ON_TOKEN : EmbeddingType.ON_ATTRIBUTE
     }

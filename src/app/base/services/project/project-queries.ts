@@ -238,6 +238,8 @@ export const queries = {
             progress
             dimension
             count
+            platform
+            model
           }
         }
       }

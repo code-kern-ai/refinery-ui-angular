@@ -190,22 +190,9 @@
                             Attribute</span></span>
                 </div>
                 <select formControlName="targetAttribute" class="select select-bordered select-sm max-w-xs"
-                    (change)="checkForceHiddenHandles()">
+                    (change)="prepareSuggestions(settingModals.embedding.create.embeddingCreationFormGroup)">
                     <option *ngFor="let attribute of useableTextAttributes" [value]="attribute.id">
                         {{attribute.name}}
-                    </option>
-                </select>
-                <div class="tooltip tooltip-right" data-tip="One embedding per attribute vs. per token">
-                    <span class="card-title mb-0 label-text flex"><span class="cursor-help underline"
-                            style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">
-                            Granularity
-                        </span>
-                    </span>
-                </div>
-                <select formControlName="granularity" class="select select-bordered select-sm max-w-xs"
-                    (change)="checkForceHiddenHandles()">
-                    <option *ngFor="let granularity of granularityArray" [value]="granularity.value">
-                        {{granularity.name}}
                     </option>
                 </select>
                 <div class="tooltip tooltip-right" data-tip="Choose the platform to embed records">
@@ -219,6 +206,19 @@
                     (change)="checkForceHiddenHandles()">
                     <option *ngFor="let platform of embeddingPlatforms" [value]="platform.platform">
                         {{platform.name}}
+                    </option>
+                </select>
+                <div class="tooltip tooltip-right" data-tip="One embedding per attribute vs. per token">
+                    <span class="card-title mb-0 label-text flex"><span class="cursor-help underline"
+                            style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">
+                            Granularity
+                        </span>
+                    </span>
+                </div>
+                <select formControlName="granularity" class="select select-bordered select-sm max-w-xs"
+                    (change)="checkForceHiddenHandles()">
+                    <option *ngFor="let granularity of granularityArray" [value]="granularity.value">
+                        {{granularity.name}}
                     </option>
                 </select>
                 <ng-container

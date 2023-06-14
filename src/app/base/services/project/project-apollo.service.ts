@@ -1495,7 +1495,7 @@ export class ProjectApolloService {
     return this.apollo
       .query({
         query: queries.GET_EMBEDDING_PLATFORMS,
-        fetchPolicy: 'no-cache',
+        fetchPolicy: 'cache-first',
       })
       .pipe(
         map((result) => {

@@ -87,26 +87,20 @@ export class DataHandlerHelper {
         const values = settingModals.embedding.create.embeddingCreationFormGroup.getRawValue();
         let toReturn = this.getAttributeArrayAttribute(values.targetAttribute, 'name', attributes);
         toReturn += "-" + (values.granularity == 'ON_ATTRIBUTE' ? 'classification' : 'extraction');
-        const platform = settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value
+        const platform = settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value;
         if (platform == PlatformType.HUGGING_FACE || platform == PlatformType.PYTHON) {
             toReturn += "-" + platform + "-" + values.model;
-        } else if (platform == PlatformType.OPEN_AI) {
-            if (values.apiToken == null || values.apiToken.length == 0) {
-                toReturn += "-" + platform + "-" + values.model;
-            } else if (values.apiToken.length > 8) {
-                toReturn += "-" + values.model + "-" + values.apiToken?.substring(0, 8) + "...";
-            } else {
-                toReturn += "-" + platform + "-" + values.model + "-" + values.apiToken?.substring(0, values.apiToken.length);
-            }
-        } else if (platform == PlatformType.COHERE) {
-            if (values.apiToken == null || values.apiToken.length == 0) {
-                toReturn += "-" + platform + "-" + values.apiToken;
-            } else if (values.apiToken.length > 8) {
-                toReturn += "-" + platform + "-" + values.apiToken?.substring(0, 8) + "...";
-            } else {
-                toReturn += "-" + platform + "-" + values.apiToken?.substring(0, values.apiToken.length);
-            }
+        } else if (platform == PlatformType.OPEN_AI || platform == PlatformType.COHERE) {
+            toReturn += this.buildEmbeddingNameWithApiToken(values, platform);
         }
+        return toReturn;
+    }
+
+    buildEmbeddingNameWithApiToken(values: any, platform: string) {
+        if (values.apiToken == null) return "";
+        let toReturn = "";
+        const apiTokenCut = values.apiToken.substring(0, 3) + "..." + values.apiToken.substring(values.apiToken.length - 4, values.apiToken.length);
+        toReturn += `-${platform}-${platform == PlatformType.OPEN_AI ? values.model + "-" + apiTokenCut : apiTokenCut}`;
         return toReturn;
     }
 
