@@ -13,6 +13,7 @@
         </ng-template>
         <ng-template #noHighlight>
             <span
+                [ngClass]="recordDisplayOptions.dataBrowserModals.configuration.lineBreaks.normal ? recordDisplayOptions.dataBrowserModals.configuration.lineBreaks.isPreWrap? 'whitespace-pre-wrap':'whitespace-pre-line' :''"
                 *ngIf="record.data[attributes[attribute.key].name] != null && record.data[attributes[attribute.key].name] !== ''; else notPresent">
                 {{record.data[attributes[attribute.key].name]}}
             </span>

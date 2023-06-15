@@ -44,6 +44,10 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
   labelAddButtonDisabled: boolean = true;
 
   labelHotkeys: HotkeyLookup;
+  lineBreaks: {
+    normal: boolean,
+    isPreWrap: boolean,
+  }
 
 
   //list of prepared rla entries
@@ -78,7 +82,9 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
     }
   }
 
-  ngOnInit(): void { }
+  ngOnInit(): void {
+    this.lineBreaks = JSON.parse(localStorage.getItem('lineBreaks'));
+  }
 
   private displayUserChanged() {
     this.canEditLabels = this.lsm.userManager.canEditManualRlas;

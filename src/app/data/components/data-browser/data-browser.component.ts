@@ -266,6 +266,12 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       func: this.handleWebsocketNotification
     });
     this.setUpCommentRequests(this.projectId);
+    const checkIfLineBreaks = JSON.parse(localStorage.getItem('lineBreaks'));
+    if (checkIfLineBreaks) {
+      this.dataBrowserModals.configuration.lineBreaks = checkIfLineBreaks;
+    } else {
+      localStorage.setItem('lineBreaks', JSON.stringify(this.dataBrowserModals.configuration.lineBreaks));
+    }
   }
 
   private setUpCommentRequests(projectId: string) {
@@ -1330,6 +1336,16 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
 
   toggleWeakSupervisionRelated() {
     this.dataBrowserModals.configuration.weakSupervisionRelated = !this.dataBrowserModals.configuration.weakSupervisionRelated;
+  }
+
+  toggleLineBreaks() {
+    this.dataBrowserModals.configuration.lineBreaks.normal = !this.dataBrowserModals.configuration.lineBreaks.normal;
+    localStorage.setItem('lineBreaks', JSON.stringify(this.dataBrowserModals.configuration.lineBreaks));
+  }
+
+  toggleLineBreaksPreWrap() {
+    this.dataBrowserModals.configuration.lineBreaks.isPreWrap = !this.dataBrowserModals.configuration.lineBreaks.isPreWrap;
+    localStorage.setItem('lineBreaks', JSON.stringify(this.dataBrowserModals.configuration.lineBreaks));
   }
 
   setSortForControl(control: AbstractControl) {
