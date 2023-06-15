@@ -539,8 +539,8 @@ export class RecordApolloService {
       countLineBreaks = token.value.split("\n").length - 1;
     }
     if (countLineBreaks > 0) {
-      // If we are on the first or last token, the class full width cannot work because we don't have a previous or next token
-      // If we are not on the first or last token, the array of the countLineBreaks has to be one less than the actual countLineBreaks because we use the full width of the current line as one line break
+      // If we are on the first or last token and either/both of them is new lines, the class w-full cannot work because we don't have a previous or next token, that's why we need the original countLineBreaks
+      // If we are not on the first or last token, the array of the countLineBreaks has to be one less than the actual countLineBreaks because we use the class w-full of the current line as one line break
       // Adding a completely new line and having a text that needs a new line are different in terms of css classes
       const checkIfOrLastIdx = token.idx == 0 || token.idx == tokensLength;
       countLineBreaks = checkIfOrLastIdx ? countLineBreaks : countLineBreaks - 1;
