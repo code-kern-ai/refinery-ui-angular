@@ -533,7 +533,7 @@ export class RecordApolloService {
   }
 
   //private
-  #tokenMapper(token, tokensLength) {
+  #tokenMapper(token: any, tokensLength: number) {
     let countLineBreaks = 0;
     if (token.value.includes("\n")) {
       countLineBreaks = token.value.split("\n").length - 1;
