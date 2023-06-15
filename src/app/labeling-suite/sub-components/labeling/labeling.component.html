@@ -127,7 +127,7 @@
                             <ng-template
                                 [ngIf]="canEditLabels || lsm.userManager.currentRole == 'ANNOTATOR' || lsm.userManager.currentRole == 'EXPERT'">
                                 <div class="flex flex-row flex-wrap gap-2">
-                                    <div #labelDiv *ngFor="let label of task.task.displayLabels"
+                                    <div #labelDiv *ngFor="let label of task.task.displayLabels; let i = index"
                                         class="text-sm font-medium px-2 py-0.5 rounded-md border focus:outline-none cursor-pointer"
                                         [ngClass]="[labelLookup[label.id].color.backgroundColor,labelLookup[label.id].color.textColor, labelLookup[label.id].color.borderColor, labelLookup[label.id].color.hoverColor]"
                                         (click)="addRla(task.task,label.id)">
@@ -284,8 +284,8 @@
 
 <ng-template #extractionDisplay let-attributeId="attributeId">
     <div *ngIf="tokenLookup" class="flex flex-row flex-wrap items-start" attr.tokenWrapper="{{attributeId}}">
-        <div *ngFor="let token of tokenLookup[attributeId].token; let i = index" class="relative z-10"
-            attr.tokenIdx="{{token.idx}}" attr.attributeId="{{attributeId}}"
+        <div *ngFor="let token of tokenLookup[attributeId].token" class="relative z-10" attr.tokenIdx="{{token.idx}}"
+            attr.attributeId="{{attributeId}}"
             style.margin-bottom="{{tokenLookup[attributeId][token.idx]?.tokenMarginBottom}}"
             [ngClass]="[token.countLineBreaks > 0 ?'w-full':'']">
             <ng-template [ngIf]="token.countLineBreaks == 0" [ngIfElse]="newLinesBlock">
