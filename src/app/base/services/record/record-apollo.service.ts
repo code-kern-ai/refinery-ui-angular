@@ -524,7 +524,7 @@ export class RecordApolloService {
                 attributeName: attribute.attribute.name,
                 token: !attribute.tokens
                   ? null
-                  : attribute.tokens.map(this.#tokenMapper),
+                  : attribute.tokens.map(this.#tokenMapper, attribute.tokens.length),
               };
             }),
           });
@@ -533,10 +533,17 @@ export class RecordApolloService {
   }
 
   //private
-  #tokenMapper(token) {
+  #tokenMapper(token, tokensLength) {
     let countLineBreaks = 0;
     if (token.value.includes("\n")) {
       countLineBreaks = token.value.split("\n").length - 1;
+    }
+    if (countLineBreaks > 0) {
+      // If we are on the first or last token, the class full width cannot work because we don't have a previous or next token
+      // If we are not on the first or last token, the array of the countLineBreaks has to be one less than the actual countLineBreaks because we use the full width of the current line as one line break
+      // Adding a completely new line and having a text that needs a new line are different in terms of css classes
+      const checkIfOrLastIdx = token.idx == 0 || token.idx == tokensLength;
+      countLineBreaks = checkIfOrLastIdx ? countLineBreaks : countLineBreaks - 1;
     }
     return {
       value: token.value,
@@ -544,7 +551,8 @@ export class RecordApolloService {
       posStart: token.posStart,
       posEnd: token.posEnd,
       type: token.type,
-      countLineBreaks: countLineBreaks
+      countLineBreaks: countLineBreaks,
+      countLineBreaksArray: countLineBreaks != 0 ? Array(countLineBreaks - 1).fill(0) : null,
     };
   }
   #addDiffToNext(tokenObj) {

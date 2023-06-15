@@ -342,8 +342,7 @@
                 </ng-template>
             </ng-template>
             <ng-template #newLinesBlock>
-                <ng-container
-                    *ngFor="let item of (i === 0 || i === tokenLookup[attributeId].token.length - 1) ? [].constructor(token.countLineBreaks) : [].constructor(token.countLineBreaks - 1)">
+                <ng-container *ngFor="let item of token.countLineBreaksArray">
                     <ng-container *ngTemplateOutlet="dummyElementNewLine"></ng-container>
                 </ng-container>
             </ng-template>
