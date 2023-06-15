@@ -256,8 +256,8 @@
             </div>
             <div *ngIf="settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.COHERE || settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.OPEN_AI"
                 style="text-align: center; margin-top: 12px;">
-                <div style="border: 1px solid; padding: 10px; font-size: 14px;">
-                    <label className="text-gray-700">
+                <div class="border border-gray-300 text-xs text-gray-500 p-2.5 rounded-lg">
+                    <label #gdprText className="text-gray-700">
                         {{selectedPlatform.splitTerms[0]}}
                         <a [href]="selectedPlatform.link" class="underline" target="_blank">
                             {{settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value ==
@@ -269,8 +269,8 @@
                 <div class="flex flex-row items-center justify-center m-3">
                     <input type="checkbox" id="termsAccepted" style="cursor: pointer;" formControlName="termsAccepted"
                         (change)="checkIfCreateEmbeddingIsDisabled()" />
-                    <label for="termsAccepted" style="margin-left: 4px; cursor: pointer;">
-                        I have read and accept the above statement
+                    <label for="termsAccepted" class="text-gray-500 text-sm font-medium ml-1 cursor-pointer">
+                        I have read and accept the terms
                     </label>
                 </div>
             </div>

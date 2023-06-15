@@ -33,6 +33,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
   @Input() attributes: Attribute[];
   @Input() embeddingPlatforms: EmbeddingPlatform[];
 
+  @ViewChild('gdprText') gdprText: ElementRef;
   downloadedModels: DownloadedModel[];
   subscriptions$: Subscription[] = [];
   somethingLoading: boolean = false;
@@ -163,7 +164,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
 
     const config: any = {
       platform: platform,
-      termsText: this.selectedPlatform.terms,
+      termsText: this.gdprText.nativeElement.innerHTML,
       termsAccepted: embeddingForm.get("termsAccepted").value,
       embeddingType: embeddingForm.get("granularity").value.substring(3) === "TOKEN" ? EmbeddingType.ON_TOKEN : EmbeddingType.ON_ATTRIBUTE
     }
