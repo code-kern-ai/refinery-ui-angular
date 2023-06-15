@@ -94,14 +94,17 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
   prepareEmbeddingPlatforms() {
     this.embeddingPlatformsCopy = jsonCopy(this.embeddingPlatforms);
     if (this.organization.gdprCompliant) {
-      this.embeddingPlatforms = this.embeddingPlatforms.filter((platform) => platform.gdprCompliant === true);
+      this.embeddingPlatforms = this.embeddingPlatforms.filter((platform) => platform.terms == null);
     }
-    const embeddingPlatformsCopy = [];
+    const embeddingPlatformsNew = [];
     this.embeddingPlatforms.forEach((platform: EmbeddingPlatform) => {
       platform = { ...platform, name: platformNamesDict[platform.platform] };
-      embeddingPlatformsCopy.push(platform);
+      if (platform.terms != null) {
+        platform.splitTerms = platform.terms.split('@@PLACEHOLDER@@');
+      }
+      embeddingPlatformsNew.push(platform);
     });
-    this.embeddingPlatforms = embeddingPlatformsCopy;
+    this.embeddingPlatforms = embeddingPlatformsNew;
   }
 
   checkForceHiddenHandles() {
@@ -251,11 +254,14 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
       timer(2500).subscribe(() => this.downloadedModelsQuery$.refetch());
     } else if (msgParts[1] === 'gdpr_compliant') {
       if (msgParts[2].toLowerCase() === 'true') {
-        this.embeddingPlatforms = this.embeddingPlatforms.filter(platform => platform.gdprCompliant === true);
+        this.embeddingPlatforms = this.embeddingPlatforms.filter(platform => platform.terms == null);
       } else {
         this.embeddingPlatforms = this.embeddingPlatformsCopy;
         this.embeddingPlatforms.forEach((platform: EmbeddingPlatform) => {
           platform.name = platformNamesDict[platform.platform];
+          if (platform.terms != null) {
+            platform.splitTerms = platform.terms.split('@@PLACEHOLDER@@');
+          }
         });
       }
       this.resetEmbeddingCreationAndPlatform();
@@ -310,6 +316,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
   resetEmbeddingCreationAndPlatform() {
     this.initEmbeddingModal();
     this.selectedPlatform = this.embeddingPlatforms[0];
+    this.prepareSuggestions(this.settingModals.embedding.create.embeddingCreationFormGroup);
     this.checkIfPlatformHasToken();
   }
 }

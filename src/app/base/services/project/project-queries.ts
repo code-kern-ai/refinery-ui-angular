@@ -588,8 +588,8 @@ query ($projectId: ID!, $exportOptions: JSONString) {
   query {
     embeddingPlatforms {
       platform
-      gdprCompliant
       terms
+      link
     }
   }`,
 };
