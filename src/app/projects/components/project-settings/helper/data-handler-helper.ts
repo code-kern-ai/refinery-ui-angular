@@ -98,10 +98,10 @@ export class DataHandlerHelper {
 
     buildEmbeddingNameWithApiToken(values: any, platform: string) {
         if (values.apiToken == null) return "";
-        let toReturn = "";
+        const platformStr = "-" + platform + "-";
         const apiTokenCut = values.apiToken.substring(0, 3) + "..." + values.apiToken.substring(values.apiToken.length - 4, values.apiToken.length);
-        toReturn += `-${platform}-${platform == PlatformType.OPEN_AI ? values.model + "-" + apiTokenCut : apiTokenCut}`;
-        return toReturn;
+        if (platform == PlatformType.OPEN_AI) return platformStr + values.model + "-" + apiTokenCut;
+        else return platformStr + apiTokenCut;
     }
 
     canCreateEmbedding(settingModals: SettingModals, embeddings: any, attributes: Attribute[]): boolean {

@@ -164,7 +164,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
 
     const config: any = {
       platform: platform,
-      termsText: this.gdprText.nativeElement.innerHTML,
+      termsText: this.gdprText ? this.gdprText.nativeElement.innerHTML : null,
       termsAccepted: embeddingForm.get("termsAccepted").value,
       embeddingType: embeddingForm.get("granularity").value.substring(3) === "TOKEN" ? EmbeddingType.ON_TOKEN : EmbeddingType.ON_ATTRIBUTE
     }
