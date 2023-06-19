@@ -56,7 +56,7 @@ import { UserManager } from 'src/app/util/user-manager';
 import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
 import { UpdateSearchParameters } from './helper-classes/update-search-parameters';
 import { getAttributeType, getSearchOperatorTooltip, SearchOperator } from './helper-classes/search-operators';
-import { createDefaultDataBrowserModals, DataBrowserModals } from './helper-classes/modals-helper';
+import { createDefaultDataBrowserModals, DataBrowserModals, LineBreaksType } from './helper-classes/modals-helper';
 import { CommentsFilter } from './helper-classes/comments-filter';
 import { AttributeVisibility } from 'src/app/projects/components/create-new-attribute/attributes-visibility-helper';
 import { HighlightSearch } from 'src/app/base/components/highlight/helper';
@@ -114,6 +114,10 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   }
   get SliceTypes(): typeof Slice {
     return Slice;
+  }
+
+  get LineBreaksType(): typeof LineBreaksType {
+    return LineBreaksType;
   }
 
   @ViewChildren('searchGroup', { read: ElementRef }) searchGroupsHTML: QueryList<ElementRef>;
@@ -266,6 +270,12 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       func: this.handleWebsocketNotification
     });
     this.setUpCommentRequests(this.projectId);
+    const checkIfLineBreaks = JSON.parse(localStorage.getItem('lineBreaks'));
+    if (checkIfLineBreaks) {
+      this.dataBrowserModals.configuration.lineBreaks = checkIfLineBreaks;
+    } else {
+      localStorage.setItem('lineBreaks', JSON.stringify(this.dataBrowserModals.configuration.lineBreaks));
+    }
   }
 
   private setUpCommentRequests(projectId: string) {
@@ -1330,6 +1340,24 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
 
   toggleWeakSupervisionRelated() {
     this.dataBrowserModals.configuration.weakSupervisionRelated = !this.dataBrowserModals.configuration.weakSupervisionRelated;
+  }
+
+  toggleLineBreaks() {
+    if (this.dataBrowserModals.configuration.lineBreaks == LineBreaksType.IS_PRE_WRAP || this.dataBrowserModals.configuration.lineBreaks == LineBreaksType.IS_PRE_LINE) {
+      this.dataBrowserModals.configuration.lineBreaks = LineBreaksType.NORMAL;
+    } else {
+      this.dataBrowserModals.configuration.lineBreaks = LineBreaksType.IS_PRE_WRAP;
+    }
+    localStorage.setItem('lineBreaks', JSON.stringify(this.dataBrowserModals.configuration.lineBreaks));
+  }
+
+  toggleLineBreaksPreWrap() {
+    if (this.dataBrowserModals.configuration.lineBreaks == LineBreaksType.IS_PRE_WRAP) {
+      this.dataBrowserModals.configuration.lineBreaks = LineBreaksType.IS_PRE_LINE;
+    } else if (this.dataBrowserModals.configuration.lineBreaks == LineBreaksType.IS_PRE_LINE) {
+      this.dataBrowserModals.configuration.lineBreaks = LineBreaksType.IS_PRE_WRAP;
+    }
+    localStorage.setItem('lineBreaks', JSON.stringify(this.dataBrowserModals.configuration.lineBreaks));
   }
 
   setSortForControl(control: AbstractControl) {

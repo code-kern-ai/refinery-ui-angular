@@ -6,6 +6,7 @@ import { ComponentType, LabelingSuiteLabelingSettings, LabelingSuiteSettings, La
 import { ALL_USERS_USER_ID, GOLD_STAR_USER_ID } from '../../helper/manager/user';
 import { getDefaultLabelingVars, LabelingVars, FULL_RECORD_ID, TokenLookup, HotkeyLookup } from './helper';
 import { copyToClipboard, enumToArray, jsonCopy } from 'submodules/javascript-functions/general';
+import { LineBreaksType } from 'src/app/data/components/data-browser/helper-classes/modals-helper';
 
 const SWIM_LANE_SIZE_PX = 12;
 @Component({
@@ -44,7 +45,7 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
   labelAddButtonDisabled: boolean = true;
 
   labelHotkeys: HotkeyLookup;
-
+  lineBreaks: LineBreaksType;
 
   //list of prepared rla entries
   private fullRlaData: any[];
@@ -53,6 +54,9 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
     [taskId: string]: any
   };
 
+  get LineBreaksType(): typeof LineBreaksType {
+    return LineBreaksType;
+  }
 
   constructor() { }
 
@@ -78,7 +82,9 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
     }
   }
 
-  ngOnInit(): void { }
+  ngOnInit(): void {
+    this.lineBreaks = JSON.parse(localStorage.getItem('lineBreaks'));
+  }
 
   private displayUserChanged() {
     this.canEditLabels = this.lsm.userManager.canEditManualRlas;
