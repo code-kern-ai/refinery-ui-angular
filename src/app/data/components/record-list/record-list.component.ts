@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Attributes } from 'src/app/base/components/record-display/record-display.helper';
 import { DATA_BROWSER_TABLE_COLUMN_HEADERS, RecordListOptions } from './record-list-helper';
 
@@ -19,12 +19,6 @@ export class RecordListComponent {
   columnsData = DATA_BROWSER_TABLE_COLUMN_HEADERS;
 
   constructor() { }
-
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes.recordListOptions) {
-      this.recordListOptions = changes.recordListOptions.currentValue;
-    }
-  }
 
   storePreliminaryRecordIds(index: number) {
     this.recordClicked.emit(index);
