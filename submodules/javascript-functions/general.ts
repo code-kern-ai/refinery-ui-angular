@@ -165,7 +165,7 @@ export function replaceStringEscapeCharacters(str: string, toEscaped: boolean = 
     return str;
 }
 
-export function countOcc(str: string, search: string): number {
+export function countOccurrences(str: string, search: string): number {
     let c = 0, p = -1;
     while (true) {
         p = str.indexOf(search, p + 1)
