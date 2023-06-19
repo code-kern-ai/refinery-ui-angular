@@ -87,7 +87,8 @@ import { CryptedFieldComponent } from './components/crypted-field/crypted-field.
     DefaultOrderKeyvaluePipe,
     NotificationCenterComponent,
     RecordDisplayComponent,
-    RecordTableComponent
+    RecordTableComponent,
+    CryptedFieldComponent
   ]
 })
 export class BaseModule { }

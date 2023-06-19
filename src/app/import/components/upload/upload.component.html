@@ -50,6 +50,7 @@
 
     <ng-template [ngIf]="uploadFileType == UploadFileType.PROJECT">
         <ng-container *ngTemplateOutlet="upload"></ng-container>
+        <ng-container *ngTemplateOutlet="cryptedField"></ng-container>
     </ng-template>
 
     <ng-template [ngIf]="uploadFileType == UploadFileType.KNOWLEDGE_BASE">
@@ -265,4 +266,8 @@
         run attribute calculation and embeddings for the newly
         uploaded records
     </div>
+</ng-template>
+
+<ng-template #cryptedField>
+    <kern-crypted-field></kern-crypted-field>
 </ng-template>
