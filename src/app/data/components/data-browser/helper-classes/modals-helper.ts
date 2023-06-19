@@ -32,10 +32,7 @@ export type ConfigurationModal = {
     highlightText: boolean;
     weakSupervisionRelated: boolean;
     separator: string;
-    lineBreaks: {
-        normal: boolean;
-        isPreWrap: boolean;
-    };
+    lineBreaks: LineBreaksType;
 };
 
 export type FindOutliersModal = {
@@ -85,10 +82,7 @@ export function createDefaultDataBrowserModals(): DataBrowserModals {
             highlightText: true,
             weakSupervisionRelated: false,
             separator: ',',
-            lineBreaks: {
-                normal: false,
-                isPreWrap: true
-            }
+            lineBreaks: LineBreaksType.NORMAL
         },
         findOutliers: {
             open: false,
@@ -112,4 +106,10 @@ export function createDefaultDataBrowserModals(): DataBrowserModals {
             extendedRecordsSql: null
         }
     };
+}
+
+export enum LineBreaksType {
+    NORMAL = 'NORMAL',
+    IS_PRE_WRAP = 'IS_PRE_WRAP',
+    IS_PRE_LINE = 'IS_PRE_LINE',
 }

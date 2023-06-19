@@ -1077,7 +1077,8 @@
                 <div class="flex items-center h-5">
                     <input type="checkbox"
                         class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded cursor-pointer"
-                        (change)="toggleLineBreaks()" [checked]="dataBrowserModals.configuration.lineBreaks.normal">
+                        (change)="toggleLineBreaks()"
+                        [checked]="dataBrowserModals.configuration.lineBreaks != LineBreaksType.NORMAL">
                 </div>
                 <div class="ml-3 text-sm cursor-pointer" (click)="toggleLineBreaks()">
                     <label class="font-medium text-gray-700 cursor-pointer">Visible line breaks</label>
@@ -1085,11 +1086,11 @@
                         will be shown with line breaks</p>
                 </div>
             </div>
-            <div *ngIf="dataBrowserModals.configuration.lineBreaks.normal" class="px-10">
+            <div *ngIf="dataBrowserModals.configuration.lineBreaks != LineBreaksType.NORMAL" class="px-10">
                 <div class="flex flex-row items-start mt-2">
-                    <input type="radio" [checked]="dataBrowserModals.configuration.lineBreaks.isPreWrap"
-                        (change)="toggleLineBreaksPreWrap(!dataBrowserModals.configuration.lineBreaks.isPreWrap)"
-                        name="lineBreaks" id="preWrap"
+                    <input type="radio"
+                        [checked]="dataBrowserModals.configuration.lineBreaks == LineBreaksType.IS_PRE_WRAP"
+                        (change)="toggleLineBreaksPreWrap(LineBreaksType.IS_PRE_LINE)" name="lineBreaks" id="preWrap"
                         class="focus:ring-blue-500 h-6 w-4 text-blue-600 border-gray-200 cursor-pointer">
                     <label for="preWrap" class="ml-1 block text-sm font-medium text-gray-700 cursor-pointer">
                         <span>Pre-wrap</span>
@@ -1097,9 +1098,9 @@
                     </label>
                 </div>
                 <div class="flex flex-row items-start mt-2">
-                    <input type="radio" [checked]="!dataBrowserModals.configuration.lineBreaks.isPreWrap"
-                        (change)="toggleLineBreaksPreWrap(dataBrowserModals.configuration.lineBreaks.isPreWrap)"
-                        name="lineBreaks" id="preLine"
+                    <input type="radio"
+                        [checked]="dataBrowserModals.configuration.lineBreaks == LineBreaksType.IS_PRE_LINE"
+                        (change)="toggleLineBreaksPreWrap(LineBreaksType.IS_PRE_WRAP)" name="lineBreaks" id="preLine"
                         class="focus:ring-blue-500 h-6 w-4 text-blue-600 border-gray-200 cursor-pointer">
                     <label for="preLine" class="ml-1 block text-sm font-medium text-gray-700 cursor-pointer">
                         <span>Pre-line</span>
