@@ -29,6 +29,7 @@ import { DefaultOrderKeyvaluePipe } from './pipes/default-order-key-value.pipe';
 import { NotificationCenterComponent } from './components/notification-center/notification-center.component';
 import { RecordDisplayComponent } from './components/record-display/record-display.component';
 import { RecordTableComponent } from './components/record-table/record-table.component';
+import { CryptedFieldComponent } from './components/crypted-field/crypted-field.component';
 
 @NgModule({
   declarations: [
@@ -53,7 +54,8 @@ import { RecordTableComponent } from './components/record-table/record-table.com
     NotificationCenterComponent,
     RecordDisplayComponent,
     RecordTableComponent,
-    VarDirective
+    VarDirective,
+    CryptedFieldComponent
   ],
   imports: [CommonModule, AppRoutingModule],
   exports: [
