@@ -164,3 +164,13 @@ export function replaceStringEscapeCharacters(str: string, toEscaped: boolean = 
     }
     return str;
 }
+
+export function countOcc(str: string, search: string): number {
+    let c = 0, p = -1;
+    while (true) {
+        p = str.indexOf(search, p + 1)
+        if (p != -1) c++;
+        else break;
+    }
+    return c;
+} 
