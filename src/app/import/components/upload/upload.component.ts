@@ -55,6 +55,7 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
   disableInput: boolean = false;
   tokenizerValuesDisabled: boolean[] = [];
   doingSomething: boolean = false;
+  cryptedValue: string;
 
   constructor(private projectApolloService: ProjectApolloService, private router: Router, private s3Service: S3Service) {
     this.uploadHelper = new UploadHelper(this, this.projectApolloService);
@@ -144,7 +145,7 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
 
   finishUpUpload(filename: string, importOptions: string): void {
     this.projectApolloService
-      .getUploadCredentialsAndId(this.projectId, filename, this.uploadFileType, importOptions, this.uploadType)
+      .getUploadCredentialsAndId(this.projectId, filename, this.uploadFileType, importOptions, this.uploadType, this.cryptedValue)
       .pipe(first()).subscribe((results) => {
         this.uploadFileToMinIO(results, filename)
       });
@@ -298,6 +299,10 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
   setTokenizer(tokenizer: string): void {
     const findName: any = this.uploadOptions.tokenizerValues.find((tok: any) => tok.configString === tokenizer);
     this.uploadSpecificHelper.selectedTokenizer = findName.name;
+  }
+
+  setCryptedValue(cryptedValue: string) {
+    this.cryptedValue = cryptedValue;
   }
 
 }

@@ -269,5 +269,5 @@
 </ng-template>
 
 <ng-template #cryptedField>
-    <kern-crypted-field></kern-crypted-field>
+    <kern-crypted-field (cryptedValueChange)="setCryptedValue($event)"></kern-crypted-field>
 </ng-template>

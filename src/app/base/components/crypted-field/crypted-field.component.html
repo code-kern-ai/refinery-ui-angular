@@ -1,2 +1,10 @@
-<input type="password" class="form-control" placeholder="Enter password" [value]="cryptedValue"
-    class="input input-sm input-bordered w-full placeholder-italic" class="placeholder-italic" />
+<div class="form-control">
+    <label class="text-gray-900 text-sm font-medium m-1">
+        Use crypted key for this project
+    </label>
+    <div class="flex flex-row">
+        <input name="cryptedValue" [value]="cryptedValue" type="password" required autocomplete="off"
+            class="input input-sm input-bordered w-full placeholder-italic"
+            (input)="setCryptedValue($event.target.value)">
+    </div>
+</div>

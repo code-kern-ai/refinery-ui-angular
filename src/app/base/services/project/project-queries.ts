@@ -295,8 +295,8 @@ export const queries = {
     }
   `,
   GET_UPLOAD_CREDENTIALS_AND_ID: gql`
-    query ($projectId: ID!, $fileName: String!, $fileType: String!,$fileImportOptions:String!,$uploadType:String) {
-      uploadCredentialsAndId(projectId: $projectId, fileName: $fileName, fileType: $fileType,fileImportOptions:$fileImportOptions,uploadType:$uploadType)
+    query ($projectId: ID!, $fileName: String!, $fileType: String!,$fileImportOptions:String!,$uploadType:String, $key: String) {
+      uploadCredentialsAndId(projectId: $projectId, fileName: $fileName, fileType: $fileType,fileImportOptions:$fileImportOptions,uploadType:$uploadType, key: $key)
     }
   `,
   GET_ALL_TOKENIZER_OPTIONS: gql`
