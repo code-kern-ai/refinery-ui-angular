@@ -258,7 +258,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
     if (this.settingModals.projectExport.downloadPrepareMessage == DownloadState.PREPARATION || this.settingModals.projectExport.downloadPrepareMessage == DownloadState.DOWNLOAD) return;
     this.settingModals.projectExport.downloadPrepareMessage = DownloadState.PREPARATION;
     const exportOptions = this.buildJsonExportOptions();
-    this.projectApolloService.prepareProjectExport(projectId, exportOptions).pipe(first()).subscribe();
+    this.projectApolloService.prepareProjectExport(projectId, exportOptions, this.key).pipe(first()).subscribe();
     this.settingModals.projectExport.projectExportCredentials = null;
   }
 
@@ -300,7 +300,6 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
     for (const element of values) {
       if (element.export) toReturn[element.name] = true;
     }
-    toReturn = { ...toReturn, 'key': this.key ? this.key : null }
     return JSON.stringify(toReturn)
   }
 

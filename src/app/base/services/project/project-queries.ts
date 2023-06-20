@@ -277,8 +277,8 @@ export const queries = {
   }  
 `,
   PREPARE_PROJECT_EXPORT: gql`
-  query ($projectId: ID!, $exportOptions: JSONString) {
-    prepareProjectExport(projectId: $projectId, exportOptions: $exportOptions)
+  query ($projectId: ID!, $exportOptions: JSONString, $key: String) {
+    prepareProjectExport(projectId: $projectId, exportOptions: $exportOptions, key: $key)
   }`,
   LAST_PROJECT_EXPORT_CREDENTIALS: gql`
   query ($projectId: ID!) {
@@ -506,8 +506,8 @@ export const queries = {
 
 `,
   PREPARE_RECORD_EXPORT: gql`
-query ($projectId: ID!, $exportOptions: JSONString) {
-  prepareRecordExport(projectId: $projectId, exportOptions: $exportOptions)
+query ($projectId: ID!, $exportOptions: JSONString, $key: String) {
+  prepareRecordExport(projectId: $projectId, exportOptions: $exportOptions, key: $key)
 }
 `,
   GET_LABELSTUDIO_TEMPLATE: gql`
