@@ -55,7 +55,7 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
   disableInput: boolean = false;
   tokenizerValuesDisabled: boolean[] = [];
   doingSomething: boolean = false;
-  cryptedValue: string;
+  key: string;
 
   constructor(private projectApolloService: ProjectApolloService, private router: Router, private s3Service: S3Service) {
     this.uploadHelper = new UploadHelper(this, this.projectApolloService);
@@ -145,7 +145,7 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
 
   finishUpUpload(filename: string, importOptions: string): void {
     this.projectApolloService
-      .getUploadCredentialsAndId(this.projectId, filename, this.uploadFileType, importOptions, this.uploadType, this.cryptedValue)
+      .getUploadCredentialsAndId(this.projectId, filename, this.uploadFileType, importOptions, this.uploadType, this.key)
       .pipe(first()).subscribe((results) => {
         this.uploadFileToMinIO(results, filename)
       });
@@ -197,6 +197,7 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
     this.uploadTaskQuery$ = null;
     this.progressState = null;
     this.doingSomething = false;
+    this.key = null;
   }
 
   deleteExistingProject(): void {
@@ -292,7 +293,7 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
 
   navigateToSettings(): void {
     timer(200).subscribe(() => {
-      this.router.navigate(['projects', this.projectId, 'settings'])
+      this.router.navigate(['projects', this.projectId, 'settings']);
     });
   }
 
@@ -301,8 +302,8 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
     this.uploadSpecificHelper.selectedTokenizer = findName.name;
   }
 
-  setCryptedValue(cryptedValue: string) {
-    this.cryptedValue = cryptedValue;
+  setKey(key: string) {
+    this.key = key;
   }
 
 }

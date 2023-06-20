@@ -6,17 +6,22 @@ import { Component, EventEmitter, OnInit, Output } from '@angular/core';
   styleUrls: ['./crypted-field.component.scss']
 })
 export class CryptedFieldComponent implements OnInit {
-  cryptedValue: string;
-  @Output() cryptedValueChange = new EventEmitter<string>();
+  @Output() keyChange = new EventEmitter<string>();
+  key: string = '';
+  show: boolean = false;
 
   constructor() { }
 
   ngOnInit(): void {
   }
 
-  setCryptedValue(cryptedValue: string) {
-    this.cryptedValue = cryptedValue;
-    this.cryptedValueChange.emit(cryptedValue);
+  setKey(key: string) {
+    this.key = key;
+    this.keyChange.emit(key);
+  }
+
+  toggleKey() {
+    this.show = !this.show;
   }
 
 }
