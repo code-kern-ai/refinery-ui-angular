@@ -3,7 +3,7 @@
         Use crypted key for this project
     </label>
     <div class="relative">
-        <input name="key" [value]="key" autocomplete="off" [type]="show ? 'type' : 'password'"
+        <input [value]="key" autocomplete="off" [type]="show ? 'type' : 'password'"
             class="input input-sm input-bordered w-full placeholder-italic" placeholder="Enter key"
             (input)="setKey($event.target.value)" required>
         <button *ngIf="show" (click)="toggleKey()" [disabled]="!key">
