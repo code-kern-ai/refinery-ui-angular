@@ -48,6 +48,7 @@ export class ExportComponent implements OnInit, OnChanges {
     open: false,
     copied: false,
   }
+  key: string;
 
   constructor(
     private projectApolloService: ProjectApolloService,
@@ -425,5 +426,9 @@ export class ExportComponent implements OnInit, OnChanges {
     );
 
     document.body.removeChild(link);
+  }
+
+  setKey(key: string) {
+    this.key = key;
   }
 }

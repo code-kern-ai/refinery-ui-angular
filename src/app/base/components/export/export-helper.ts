@@ -89,6 +89,7 @@ export class ExportHelper {
             columns: this.buildExportDataColumns(),
             file_type: this.firstActiveInGroup(ExportEnums.ExportFileType, 'value'),
             format: this.firstActiveInGroup(ExportEnums.ExportFormat, 'value'),
+            key: this.baseComponent.key ? this.baseComponent.key : null
         };
         if (exportData.format == ExportFormat.LABEL_STUDIO && exportData.file_type != ExportFileType.JSON) {
             this.error.push("Label Studio export only supports JSON");

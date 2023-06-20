@@ -151,6 +151,8 @@
         </div>
     </ng-template>
 
+    <kern-crypted-field (keyChange)="setKey($event)"></kern-crypted-field>
+
     <div class="mt-2 flex flex-row justify-between">
         <div class="h-9">
             <div class="tooltip relative z-10" data-tip="Latest prepared export file"

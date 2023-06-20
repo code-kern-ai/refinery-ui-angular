@@ -213,11 +213,12 @@
             </div>
         </ng-template>
     </div>
-    <div *ngIf="settingModals.projectExport.projectSize" class="mt-4 flex flex-row justify-between "
+    <div *ngIf="settingModals.projectExport.projectSize" class="mt-4 flex flex-row "
         style="border-top: 1px solid #ddd;">
         <!-- Final size-->
         <div></div>
-        <div class="mt-4 mr-2 flex flex-row flex-nowrap">
+        <kern-crypted-field (keyChange)="setKey($event)"></kern-crypted-field>
+        <div class="mt-4 mr-2 ml-auto flex flex-row flex-nowrap">
             <div class="flex">
                 <span class="card-title mb-0 label-text">Final size estimate:</span>
             </div>

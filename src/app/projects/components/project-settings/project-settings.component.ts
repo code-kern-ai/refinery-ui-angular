@@ -60,6 +60,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
   lh: LabelHelper;
   checkIfAcUploadedRecords: boolean = false;
   isAcRunning: boolean = false;
+  key: string;
 
   get projectExportArray() {
     return this.settingModals.projectExport.projectExportSchema.get('attributes') as FormArray;
@@ -299,6 +300,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
     for (const element of values) {
       if (element.export) toReturn[element.name] = true;
     }
+    toReturn = { ...toReturn, 'key': this.key ? this.key : null }
     return JSON.stringify(toReturn)
   }
 
@@ -374,5 +376,9 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
 
   checkIfAcIsRunning() {
     return this.attributes.some(a => a.state == AttributeCalculationState.RUNNING) || this.checkIfAcUploadedRecords;
+  }
+
+  setKey(key: string) {
+    this.key = key;
   }
 }
