@@ -8,4 +8,16 @@ export type Embedding = {
     forceHidden?: boolean;
     state?: string;
     progress?: number;
+    name?: string;
+    platform?: string;
+    model?: string;
+    apiToken?: string;
 };
+
+export type EmbeddingPlatform = {
+    platform: string;
+    name: string;
+    terms: string;
+    splitTerms: string[];
+    link: string;
+}

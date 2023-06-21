@@ -1,9 +1,29 @@
 import { Attribute } from "../entities/attribute.type";
 
+export enum EmbeddingType {
+    ON_ATTRIBUTE = "ON_ATTRIBUTE",
+    ON_TOKEN = "ON_TOKEN"
+};
+
 export const granularityTypesArray = [
-    { name: 'Attribute', value: 'ON_ATTRIBUTE' },
-    { name: 'Token', value: 'ON_TOKEN' }
+    { name: 'Attribute', value: EmbeddingType.ON_ATTRIBUTE },
+    { name: 'Token', value: EmbeddingType.ON_TOKEN }
 ];
+
+// A string enum with different values from our standard is used because of its usage in the embedder service
+export enum PlatformType {
+    HUGGING_FACE = "huggingface",
+    OPEN_AI = "openai",
+    COHERE = "cohere",
+    PYTHON = "python"
+}
+
+export const platformNamesDict = {
+    [PlatformType.HUGGING_FACE]: "Hugging Face",
+    [PlatformType.OPEN_AI]: "Open AI",
+    [PlatformType.COHERE]: "Cohere",
+    [PlatformType.PYTHON]: "Python"
+}
 
 export function getMoveRight(tblName: string): boolean {
     //at some point a better grouping would be useful

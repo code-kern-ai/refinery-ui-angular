@@ -43,11 +43,6 @@ export class ProjectComponent implements OnInit, OnDestroy {
     this.projectId = this.activatedRoute.snapshot.paramMap.get('projectId');
     [this.projectQuery$, this.project$] = this.projectApolloService.getProjectByIdQuery(this.projectId);
     this.activatedRoute$ = this.routeService.getActivatedRoute();
-    NotificationService.subscribeToNotification(this, {
-      projectId: this.projectId,
-      whitelist: ['project_update', 'file_upload'],
-      func: this.handleWebsocketNotification
-    });
     this.organizationService.getUserInfo().pipe(first())
       .subscribe((user) => {
         this.user = user;
@@ -55,6 +50,16 @@ export class ProjectComponent implements OnInit, OnDestroy {
       });
 
     this.collectHasRecords(this.projectId);
+
+    NotificationService.subscribeToNotification(this, {
+      projectId: this.projectId,
+      whitelist: ['file_upload'],
+      func: this.handleWebsocketNotification
+    });
+    NotificationService.subscribeToNotification(this, {
+      whitelist: ['project_update'],
+      func: this.handleWebsocketGlobalNotification
+    });
   }
 
   collectHasRecords(projectId: string) {
@@ -65,12 +70,15 @@ export class ProjectComponent implements OnInit, OnDestroy {
 
 
   handleWebsocketNotification(msgParts) {
-    if ('project_update' == msgParts[1]) {
-      this.projectQuery$.refetch();
-    } else if (msgParts[1] == 'file_upload' && msgParts[3] == 'state' && msgParts[4] == 'DONE') {
+    if (msgParts[1] == 'file_upload' && msgParts[3] == 'state' && msgParts[4] == 'DONE') {
       this.collectHasRecords(this.projectId);
     }
+  }
 
+  handleWebsocketGlobalNotification(msgParts) {
+    if ('project_update' == msgParts[1] && this.projectId == msgParts[2]) {
+      this.projectQuery$.refetch();
+    }
   }
 
   getFirstName(userName) {

@@ -238,6 +238,8 @@ export const queries = {
             progress
             dimension
             count
+            platform
+            model
           }
         }
       }
@@ -251,6 +253,7 @@ export const queries = {
       description
       tokenizers
       applicability
+      platform
     }
   } 
   `,
@@ -578,6 +581,15 @@ query ($projectId: ID!, $exportOptions: JSONString) {
       level
       archiveDate
       createdAt
+    }
+  }`,
+
+  GET_EMBEDDING_PLATFORMS: gql`
+  query {
+    embeddingPlatforms {
+      platform
+      terms
+      link
     }
   }`,
 };
