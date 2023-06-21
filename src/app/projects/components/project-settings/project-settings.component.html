@@ -213,19 +213,15 @@
             </div>
         </ng-template>
     </div>
-    <div *ngIf="settingModals.projectExport.projectSize" class="mt-4 flex flex-row "
+    <div *ngIf="settingModals.projectExport.projectSize" class="mt-4 justify-between"
         style="border-top: 1px solid #ddd;">
         <!-- Final size-->
         <div></div>
-        <kern-crypted-field (keyChange)="setKey($event)"></kern-crypted-field>
-        <div class="mr-2 ml-auto flex flex-row flex-nowrap items-center">
-            <div class="flex">
-                <span class="card-title mb-0 label-text">Final size estimate:</span>
-            </div>
-            <div class="flex ml-2">
-                <span class="card-title mb-0 label-text">{{settingModals.projectExport.downloadSizeText}}</span>
-            </div>
+        <div class="my-2 mr-2 flex flex-row flex-nowrap justify-end">
+            <span class="card-title mb-0 label-text">Final size estimate:</span>
+            <span class="card-title mb-0 label-text ml-2">{{settingModals.projectExport.downloadSizeText}}</span>
         </div>
+        <kern-crypted-field (keyChange)="setKey($event)"></kern-crypted-field>
     </div>
     <div class="modal-action">
         <label *ngIf="settingModals.projectExport.projectExportCredentials?.downloadFileName as fileName"
