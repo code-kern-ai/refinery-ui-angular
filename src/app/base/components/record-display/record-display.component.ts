@@ -1,5 +1,6 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { Attributes, RecordDisplay, RecordDisplayOptions } from './record-display.helper';
+import { LineBreaksType } from 'src/app/data/components/data-browser/helper-classes/modals-helper';
 
 @Component({
   selector: 'kern-record-display',
@@ -11,6 +12,10 @@ export class RecordDisplayComponent implements OnChanges {
   @Input() record: RecordDisplay;
   @Input() attributes: Attributes;
   @Input() recordDisplayOptions: RecordDisplayOptions;
+
+  get LineBreaksType(): typeof LineBreaksType {
+    return LineBreaksType;
+  }
 
   constructor() { }
 
