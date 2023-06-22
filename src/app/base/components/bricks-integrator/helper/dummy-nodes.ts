@@ -216,3 +216,6 @@ def vader_sentiment(record):
             return "negative"
     elif MODE == "scores": 
         return vs`;
+
+
+export const REMOVE_GROUP_NODES = ['gdpr_compliant', 'not_gdpr_compliant'];

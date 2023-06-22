@@ -10,7 +10,7 @@ import { ProjectApolloService } from '../../services/project/project-apollo.serv
 import { BricksCodeParser } from './helper/code-parser';
 import { BricksDataRequestor } from './helper/data-requestor';
 import { BricksAPIData, BricksIntegratorConfig, BricksSearchData, BricksVariable, BricksVariableType, getEmptyBricksIntegratorConfig, IntegratorPage } from './helper/type-helper';
-import { extendDummyElements, getDummyNodeByIdForApi } from './helper/dummy-nodes';
+import { REMOVE_GROUP_NODES, extendDummyElements, getDummyNodeByIdForApi } from './helper/dummy-nodes';
 import { caesarCipher } from 'src/app/util/cipher';
 import { PASS_ME } from 'src/app/util/cipher';
 import { copyToClipboard, filterArrayMinusExcluded, isStringTrue, jsonCopy } from 'submodules/javascript-functions/general';
@@ -174,7 +174,7 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
             const c = jsonCopy(e);
             if (e.attributes.partOfGroup) {
               c.attributes.partOfGroup = JSON.parse(c.attributes.partOfGroup);
-              c.attributes.partOfGroup = filterArrayMinusExcluded(c.attributes.partOfGroup, ['gdpr_compliant', 'not_gdpr_compliant']);
+              c.attributes.partOfGroup = filterArrayMinusExcluded(c.attributes.partOfGroup, REMOVE_GROUP_NODES);
             }
             if (e.attributes.availableFor) c.attributes.availableFor = JSON.parse(c.attributes.availableFor);
             if (e.attributes.integratorInputs) c.attributes.integratorInputs = JSON.parse(c.attributes.integratorInputs);
@@ -364,7 +364,7 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
         else {
           this.config.api.data = c;
           this.config.api.data.data.attributes.partOfGroup = JSON.parse(c.data.attributes.partOfGroup);
-          this.config.api.data.data.attributes.partOfGroup = filterArrayMinusExcluded(this.config.api.data.data.attributes.partOfGroup, ['gdpr_compliant', 'not_gdpr_compliant']);
+          this.config.api.data.data.attributes.partOfGroup = filterArrayMinusExcluded(this.config.api.data.data.attributes.partOfGroup, REMOVE_GROUP_NODES);
           this.config.api.data.data.attributes.partOfGroupText = this.config.api.data.data.attributes.partOfGroup.map(x => this.getGroupName(x)).join(", ");
           this.config.api.data.data.attributes.availableFor = JSON.parse(c.data.attributes.availableFor);
           this.config.api.data.data.attributes.integratorInputs = JSON.parse(c.data.attributes.integratorInputs);
