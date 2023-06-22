@@ -13,7 +13,7 @@ import { BricksAPIData, BricksIntegratorConfig, BricksSearchData, BricksVariable
 import { extendDummyElements, getDummyNodeByIdForApi } from './helper/dummy-nodes';
 import { caesarCipher } from 'src/app/util/cipher';
 import { PASS_ME } from 'src/app/util/cipher';
-import { copyToClipboard, isStringTrue, jsonCopy } from 'submodules/javascript-functions/general';
+import { copyToClipboard, filterArrayMinusExcluded, isStringTrue, jsonCopy } from 'submodules/javascript-functions/general';
 import { capitalizeFirst } from 'submodules/javascript-functions/case-types-parser';
 
 @Component({
@@ -172,7 +172,10 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
         if (this.config.extendedIntegrator) {
           finalData = data.data.map(e => {
             const c = jsonCopy(e);
-            if (e.attributes.partOfGroup) c.attributes.partOfGroup = JSON.parse(c.attributes.partOfGroup);
+            if (e.attributes.partOfGroup) {
+              c.attributes.partOfGroup = JSON.parse(c.attributes.partOfGroup);
+              c.attributes.partOfGroup = filterArrayMinusExcluded(c.attributes.partOfGroup, ['gdpr_compliant', 'not_gdpr_compliant']);
+            }
             if (e.attributes.availableFor) c.attributes.availableFor = JSON.parse(c.attributes.availableFor);
             if (e.attributes.integratorInputs) c.attributes.integratorInputs = JSON.parse(c.attributes.integratorInputs);
             return c;
@@ -262,8 +265,6 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
 
   private getGroupName(groupKey: string): string {
     switch (groupKey) {
-      case "gdpr_compliant": return "GDPR Compliant";
-      case "not_gdpr_compliant": return "Not GDPR Compliant";
       case "no_api_key": return "No API Key";
       default: return capitalizeFirst(groupKey);
     }
@@ -363,6 +364,7 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
         else {
           this.config.api.data = c;
           this.config.api.data.data.attributes.partOfGroup = JSON.parse(c.data.attributes.partOfGroup);
+          this.config.api.data.data.attributes.partOfGroup = filterArrayMinusExcluded(this.config.api.data.data.attributes.partOfGroup, ['gdpr_compliant', 'not_gdpr_compliant']);
           this.config.api.data.data.attributes.partOfGroupText = this.config.api.data.data.attributes.partOfGroup.map(x => this.getGroupName(x)).join(", ");
           this.config.api.data.data.attributes.availableFor = JSON.parse(c.data.attributes.availableFor);
           this.config.api.data.data.attributes.integratorInputs = JSON.parse(c.data.attributes.integratorInputs);

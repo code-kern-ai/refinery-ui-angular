@@ -39,7 +39,7 @@ export function getDummyNodeByIdForApi(id: DummyNodes): any {
             baseNode.data.attributes.description = "Lets you test the new structure with dummy data from vader sentiment (only available for kern admins)";
             baseNode.data.attributes.availableFor = ["refinery"];
             baseNode.data.attributes.sourceCode = DUMMY_CODE_VADER;
-            baseNode.data.attributes.partOfGroup = ["sentiment", "gdpr_compliant"];
+            baseNode.data.attributes.partOfGroup = ["sentiment"];
             baseNode.data.attributes.integratorInputs = {
                 "name": "vader_sentiment",
                 "refineryDataType": "text",
@@ -110,7 +110,7 @@ function getDummyNodeByIdForSelection(id: DummyNodes, extendedIntegrator: boolea
             baseNode.attributes.description = "Lets you test the new structure with dummy data from vader sentiment (only available for kern admins)";
             // baseNode.attributes.sourceCode = DUMMY_CODE_VADER;
             baseNode.attributes.availableFor = ["refinery"];
-            baseNode.attributes.partOfGroup = ["sentiment", "gdpr_compliant"];
+            baseNode.attributes.partOfGroup = ["sentiment"];
 
             return baseNode;
 

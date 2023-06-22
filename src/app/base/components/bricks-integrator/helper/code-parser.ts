@@ -36,7 +36,9 @@ export class BricksCodeParser {
 
         this.globalComments = this.collectGlobalComment();
         this.functionName = this.getFunctionName();
-        this.checkFunctionNameAndSet(this.functionName);
+        if (this.functionName != undefined) {
+            this.checkFunctionNameAndSet(this.functionName);
+        }
         this.checkVariableLines();
         if (this.base.labelingTaskId) {
             this.labelingTaskName = this.base.dataRequestor.getLabelingTaskAttribute(this.base.labelingTaskId, 'name');
