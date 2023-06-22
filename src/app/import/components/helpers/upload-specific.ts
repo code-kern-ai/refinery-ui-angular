@@ -26,6 +26,7 @@ export class RecordNewUploadHelper {
 
 export class RecordAddUploadHelper {
     projectName: string = '';
+    recalculationCosts: boolean = false;
 
     constructor(private baseComponent: UploadComponent) {
         this.baseComponent = baseComponent;

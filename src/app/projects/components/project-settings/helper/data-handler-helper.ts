@@ -3,9 +3,9 @@ import { interval, timer } from "rxjs";
 import { debounceTime, first } from "rxjs/operators";
 import { ProjectApolloService } from "src/app/base/services/project/project-apollo.service";
 import { Attribute } from "../entities/attribute.type";
-import { Embedding } from "../entities/embedding.type";
+import { Embedding, EmbeddingPlatform } from "../entities/embedding.type";
 import { SettingModals } from "./modal-helper";
-import { granularityTypesArray } from "./project-settings-helper";
+import { EmbeddingType, PlatformType, granularityTypesArray } from "./project-settings-helper";
 
 export class DataHandlerHelper {
 
@@ -67,12 +67,15 @@ export class DataHandlerHelper {
         return false;
     }
 
-    prepareEmbeddingFormGroup(attributes: Attribute[], settingModals: SettingModals, embeddings: Embedding[]) {
+    prepareEmbeddingFormGroup(attributes: Attribute[], settingModals: SettingModals, embeddings: Embedding[], embeddingPlatforms: EmbeddingPlatform[]) {
         if (attributes.length > 0) {
             settingModals.embedding.create.embeddingCreationFormGroup = this.formBuilder.group({
                 targetAttribute: attributes[0].id,
-                embeddingHandle: "",
-                granularity: this.granularityTypesArray[0].value
+                model: null,
+                platform: embeddingPlatforms[0].platform,
+                granularity: this.granularityTypesArray[0].value,
+                apiToken: null,
+                termsAccepted: false
             });
             settingModals.embedding.create.embeddingCreationFormGroup.valueChanges.pipe(debounceTime(200)).subscribe(() =>
                 settingModals.embedding.create.blocked = !this.canCreateEmbedding(settingModals, embeddings, attributes)
@@ -84,13 +87,26 @@ export class DataHandlerHelper {
         const values = settingModals.embedding.create.embeddingCreationFormGroup.getRawValue();
         let toReturn = this.getAttributeArrayAttribute(values.targetAttribute, 'name', attributes);
         toReturn += "-" + (values.granularity == 'ON_ATTRIBUTE' ? 'classification' : 'extraction');
-        toReturn += "-" + values.embeddingHandle;
-
+        const platform = settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value;
+        if (platform == PlatformType.HUGGING_FACE || platform == PlatformType.PYTHON) {
+            toReturn += "-" + platform + "-" + values.model;
+        } else if (platform == PlatformType.OPEN_AI || platform == PlatformType.COHERE) {
+            toReturn += this.buildEmbeddingNameWithApiToken(values, platform);
+        }
         return toReturn;
+    }
+
+    buildEmbeddingNameWithApiToken(values: any, platform: string) {
+        if (values.apiToken == null) return "";
+        const platformStr = "-" + platform + "-";
+        const apiTokenCut = values.apiToken.substring(0, 3) + "..." + values.apiToken.substring(values.apiToken.length - 4, values.apiToken.length);
+        if (platform == PlatformType.OPEN_AI) return platformStr + values.model + "-" + apiTokenCut;
+        else return platformStr + apiTokenCut;
     }
 
     canCreateEmbedding(settingModals: SettingModals, embeddings: any, attributes: Attribute[]): boolean {
         const currentName = this.buildExpectedEmbeddingName(settingModals, attributes);
+        settingModals.embedding.create.blocked = true;
         if (currentName.slice(-1) == "-") return false;
         else {
             settingModals.embedding.create.blocked = true;
@@ -98,6 +114,7 @@ export class DataHandlerHelper {
                 if (embedding.name == currentName) return false;
             }
         }
+        settingModals.embedding.create.blocked = false;
         return true;
     }
 
@@ -145,7 +162,7 @@ export class DataHandlerHelper {
                     id: task.id,
                     name: task.taskInfo["embedding_name"],
                     custom: false,
-                    type: task.taskInfo["type"] == "attribute" ? "ON_ATTRIBUTE" : "ON_TOKEN",
+                    type: task.taskInfo["type"] == EmbeddingType.ON_ATTRIBUTE ? EmbeddingType.ON_ATTRIBUTE : EmbeddingType.ON_TOKEN,
                     state: "QUEUED",
                     progress: 0,
                     dimension: 0,

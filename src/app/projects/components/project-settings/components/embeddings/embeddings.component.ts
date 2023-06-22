@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { Subscription, timer } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { Project } from 'src/app/base/entities/project';
@@ -6,9 +6,14 @@ import { NotificationService } from 'src/app/base/services/notification.service'
 import { ProjectApolloService } from 'src/app/base/services/project/project-apollo.service';
 import { Attribute } from '../../entities/attribute.type';
 import { DownloadedModel } from '../../entities/downloaded-model.type';
-import { Embedding } from '../../entities/embedding.type';
+import { Embedding, EmbeddingPlatform } from '../../entities/embedding.type';
 import { DataHandlerHelper } from '../../helper/data-handler-helper';
 import { SettingModals } from '../../helper/modal-helper';
+import { EmbeddingType, PlatformType, granularityTypesArray, platformNamesDict } from '../../helper/project-settings-helper';
+import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
+import { Organization } from 'src/app/base/entities/organization';
+import { FormGroup } from '@angular/forms';
+import { jsonCopy } from 'submodules/javascript-functions/general';
 
 @Component({
   selector: 'kern-embeddings',
@@ -26,19 +31,35 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
   @Input() embeddingHandles: { [embeddingId: string]: any };
   @Input() dataHandlerHelper: DataHandlerHelper;
   @Input() attributes: Attribute[];
+  @Input() embeddingPlatforms: EmbeddingPlatform[];
 
+  @ViewChild('gdprText') gdprText: ElementRef;
   downloadedModels: DownloadedModel[];
   subscriptions$: Subscription[] = [];
   somethingLoading: boolean = false;
   downloadedModelsQuery$: any;
+  embeddingHandlesCopy: { [embeddingId: string]: any };;
+  selectedPlatform: EmbeddingPlatform;
+  organization: Organization;
+  isCreationOfEmbeddingDisabled: boolean = false;
+  granularityArray = granularityTypesArray;
+  embeddingPlatformsCopy: EmbeddingPlatform[];
+  gdprTextHTML: string;
 
-  constructor(private projectApolloService: ProjectApolloService) { }
+  get PlatformType(): typeof PlatformType {
+    return PlatformType;
+  }
+
+  constructor(private projectApolloService: ProjectApolloService, private organizationApolloService: OrganizationApolloService) { }
 
   ngOnInit(): void {
     this.prepareDownloadedModels();
+    this.organizationApolloService.getUserOrganization().pipe(first()).subscribe((organization) => {
+      this.organization = organization;
+    });
 
     NotificationService.subscribeToNotification(this, {
-      whitelist: ['model_provider_download'],
+      whitelist: ['model_provider_download', 'gdpr_compliant'],
       func: this.handleWebsocketNotification
     });
   }
@@ -50,8 +71,14 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     this.checkStillLoading();
-    if (changes.embeddingHandles) {
-      this.checkModelDownloaded();
+    if (changes.embeddingHandles && this.settingModals.embedding.create.embeddingCreationFormGroup) {
+      this.embeddingHandlesCopy = jsonCopy(this.embeddingHandles);
+      this.prepareSuggestions(this.settingModals.embedding.create.embeddingCreationFormGroup);
+    }
+    if (changes.embeddingPlatforms && this.embeddingPlatforms) {
+      this.prepareEmbeddingPlatforms();
+      this.selectedPlatform = this.embeddingPlatforms[0];
+      this.checkIfPlatformHasToken();
     }
   }
 
@@ -65,18 +92,46 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
       }));
   }
 
+  prepareEmbeddingPlatforms() {
+    this.embeddingPlatformsCopy = jsonCopy(this.embeddingPlatforms);
+    if (this.organization.gdprCompliant) {
+      this.embeddingPlatforms = this.embeddingPlatforms.filter((platform) => platform.terms == null);
+    }
+    const embeddingPlatformsNew = [];
+    this.embeddingPlatforms.forEach((platform: EmbeddingPlatform) => {
+      platform = { ...platform, name: platformNamesDict[platform.platform] };
+      if (platform.terms != null) {
+        platform.splitTerms = platform.terms.split('@@PLACEHOLDER@@');
+      }
+      embeddingPlatformsNew.push(platform);
+    });
+    this.embeddingPlatforms = embeddingPlatformsNew;
+  }
+
   checkForceHiddenHandles() {
-    const granularity = this.settingModals.embedding.create.embeddingCreationFormGroup.get('granularity').value;
-    const attId = this.settingModals.embedding.create.embeddingCreationFormGroup.get('targetAttribute').value;
-    const suggestionList = this.embeddingHandles[attId];
+    const form = this.settingModals.embedding.create.embeddingCreationFormGroup;
+    this.prepareSuggestions(form);
+    this.initEmbeddingModal(false, form.get('platform').value);
+    this.selectedPlatform = this.embeddingPlatforms.find((p: EmbeddingPlatform) => p.platform == form.get('platform').value);
+    this.checkIfPlatformHasToken();
+  }
+
+  prepareSuggestions(form: FormGroup) {
+    const granularity = form.get('granularity').value;
+    const attId = form.get('targetAttribute').value;
+    const platform = form.get('platform').value;
+    const suggestionList = this.embeddingHandlesCopy[attId].filter((e) => e.platform == platform);
     for (let element of suggestionList) {
       element.forceHidden = true;
       const parseEl = JSON.parse(element.applicability);
-      if ((granularity == 'ON_ATTRIBUTE' && parseEl.attribute)
-        || (granularity == 'ON_TOKEN' && parseEl.token)) {
+      if ((granularity == EmbeddingType.ON_ATTRIBUTE && parseEl.attribute)
+        || (granularity == EmbeddingType.ON_TOKEN && parseEl.token)) {
         element.forceHidden = false;
       }
     }
+    this.embeddingHandles[attId] = suggestionList;
+    this.checkIfCreateEmbeddingIsDisabled();
+    this.checkModelDownloaded();
   }
 
   deleteEmbedding() {
@@ -104,25 +159,46 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
   addEmbedding() {
     if (!this.dataHandlerHelper.canCreateEmbedding(this.settingModals, this.embeddings, this.attributes)) return;
     const embeddingForm = this.settingModals.embedding.create.embeddingCreationFormGroup;
-    const embeddingHandle = embeddingForm.get("embeddingHandle").value;
     const attributeId = embeddingForm.get("targetAttribute").value;
-    const granularity = embeddingForm.get("granularity").value;
+    const platform = embeddingForm.get("platform").value;
 
-    this.projectApolloService.createEmbedding(this.project.id, attributeId, embeddingHandle, granularity.substring(3)).pipe(first()).subscribe();
+    const config: any = {
+      platform: platform,
+      termsText: this.gdprText ? this.gdprText.nativeElement.innerHTML : null,
+      termsAccepted: embeddingForm.get("termsAccepted").value,
+      embeddingType: embeddingForm.get("granularity").value.substring(3) === "TOKEN" ? EmbeddingType.ON_TOKEN : EmbeddingType.ON_ATTRIBUTE
+    }
+
+    if (platform == PlatformType.HUGGING_FACE || platform == PlatformType.PYTHON) {
+      config.model = embeddingForm.get("model").value;
+    } else if (platform == PlatformType.OPEN_AI) {
+      config.model = embeddingForm.get("model").value;
+      config.apiToken = embeddingForm.get("apiToken").value;
+    } else if (platform == PlatformType.COHERE) {
+      config.apiToken = embeddingForm.get("apiToken").value;
+    }
+
+    this.projectApolloService.createEmbedding(
+      this.project.id,
+      attributeId,
+      JSON.stringify(config)
+    ).pipe(first()).subscribe(() => {
+      this.resetEmbeddingCreationAndPlatform();
+    });
   }
 
   selectFirstUnhiddenEmbeddingHandle(inputElement: HTMLInputElement) {
     const suggestionList = this.embeddingHandles[this.settingModals.embedding.create.embeddingCreationFormGroup.get("targetAttribute").value];
-    for (let embeddingHandle of suggestionList) {
-      if (!embeddingHandle.hidden && !embeddingHandle.forceHidden) {
-        this.selectEmbeddingHandle(embeddingHandle, inputElement);
+    for (let model of suggestionList) {
+      if (!model.hidden && !model.forceHidden) {
+        this.selectEmbeddingHandle(model, inputElement);
         return;
       }
     }
   }
 
-  selectEmbeddingHandle(embeddingHandle: Embedding, inputElement: HTMLInputElement, hoverBox?: any) {
-    inputElement.value = embeddingHandle.configString;
+  selectEmbeddingHandle(model: Embedding, inputElement: HTMLInputElement, hoverBox?: any) {
+    inputElement.value = model.configString;
     if (hoverBox) hoverBox.style.display = 'none';
     if (document.activeElement instanceof HTMLElement) {
       document.activeElement.blur();
@@ -132,22 +208,23 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
 
   checkEmbeddingHandles(eventTarget: HTMLInputElement) {
     const embeddingForm = this.settingModals.embedding.create.embeddingCreationFormGroup;
-    embeddingForm.get('embeddingHandle').setValue(eventTarget.value);
+    embeddingForm.get('model').setValue(eventTarget.value);
     const suggestionList = this.embeddingHandles[embeddingForm.get("targetAttribute").value];
     if (!suggestionList || suggestionList.length == 0) return;
     const lowerEventValue = eventTarget.value.toLowerCase();
     let suggestionsSave = [];
-    for (let embeddingHandle of suggestionList) {
-      embeddingHandle = { ...embeddingHandle, hidden: !embeddingHandle.configString.toLowerCase().includes(lowerEventValue) };
-      suggestionsSave.push(embeddingHandle)
+    for (let model of suggestionList) {
+      model = { ...model, hidden: !model.configString.toLowerCase().includes(lowerEventValue) };
+      suggestionsSave.push(model)
     }
     this.embeddingHandles[embeddingForm.get("targetAttribute").value] = suggestionsSave;
+    this.checkIfCreateEmbeddingIsDisabled();
   }
 
-  setCurrentEmbeddingHandle(embeddingHandle: any, hoverBox: HTMLElement, listElement: HTMLElement) {
+  setCurrentEmbeddingHandle(model: any, hoverBox: HTMLElement, listElement: HTMLElement) {
     if (hoverBox != null) hoverBox.style.display = 'block';
-    this.settingModals.embedding.create.currentEmbeddingHandle = embeddingHandle;
-    if (embeddingHandle) {
+    this.settingModals.embedding.create.currentEmbeddingHandle = model;
+    if (model) {
       const dataBoundingBox: DOMRect = listElement.getBoundingClientRect();
       hoverBox.style.top = (dataBoundingBox.top - 60) + "px"
       hoverBox.style.left = (dataBoundingBox.left + dataBoundingBox.width) + "px"
@@ -176,6 +253,71 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
   handleWebsocketNotification(msgParts) {
     if (msgParts[1] === 'model_provider_download' && msgParts[2] === 'finished') {
       timer(2500).subscribe(() => this.downloadedModelsQuery$.refetch());
+    } else if (msgParts[1] === 'gdpr_compliant') {
+      if (msgParts[2].toLowerCase() === 'true') {
+        this.embeddingPlatforms = this.embeddingPlatforms.filter(platform => platform.terms == null);
+      } else {
+        this.embeddingPlatforms = this.embeddingPlatformsCopy;
+        this.embeddingPlatforms.forEach((platform: EmbeddingPlatform) => {
+          platform.name = platformNamesDict[platform.platform];
+          if (platform.terms != null) {
+            platform.splitTerms = platform.terms.split('@@PLACEHOLDER@@');
+          }
+        });
+      }
+      this.resetEmbeddingCreationAndPlatform();
     }
+  }
+
+  checkIfCreateEmbeddingIsDisabled() {
+    const embeddingForm = this.settingModals.embedding.create.embeddingCreationFormGroup;
+    const platform = embeddingForm.get("platform").value;
+    const model = embeddingForm.get("model").value;
+    const apiToken = embeddingForm.get("apiToken").value;
+    const termsAccepted = embeddingForm.get("termsAccepted").value;
+    let checkFormFields: boolean = false;
+
+    if (platform == PlatformType.HUGGING_FACE || platform == PlatformType.PYTHON) {
+      checkFormFields = model == null;
+    } else if (platform == PlatformType.OPEN_AI) {
+      checkFormFields = model == null || apiToken == null || apiToken == "" || !termsAccepted;
+    } else if (platform == PlatformType.COHERE) {
+      checkFormFields = apiToken == null || apiToken == "" || !termsAccepted;
+    }
+    const checkDuplicates = this.dataHandlerHelper.canCreateEmbedding(this.settingModals, this.embeddings, this.attributes);
+    this.isCreationOfEmbeddingDisabled = this.settingModals.embedding.create.blocked ||
+      !(this.useableTextAttributes && this.settingModals.embedding.create.embeddingCreationFormGroup) || checkFormFields || !checkDuplicates;
+  }
+
+  initEmbeddingModal(fullInit: boolean = false, defaultPlatform: PlatformType = PlatformType.HUGGING_FACE) {
+    if (fullInit) {
+      this.settingModals.embedding.create.embeddingCreationFormGroup.reset();
+    } else {
+      const form = this.settingModals.embedding.create.embeddingCreationFormGroup;
+      form.get("platform").setValue(defaultPlatform);
+      form.get("model").setValue(null);
+      form.get("apiToken").setValue(null);
+      form.get("termsAccepted").setValue(false);
+    }
+  }
+
+  closeModal() {
+    this.settingModals.embedding.create.open = false;
+    this.settingModals.embedding.create.embeddingCreationFormGroup.get('termsAccepted').setValue(null);
+  }
+
+  checkIfPlatformHasToken() {
+    if (this.selectedPlatform.platform == PlatformType.COHERE || this.selectedPlatform.platform == PlatformType.OPEN_AI) {
+      this.granularityArray = this.granularityArray.filter((g) => g.value != EmbeddingType.ON_TOKEN);
+    } else {
+      this.granularityArray = this.dataHandlerHelper.granularityTypesArray;
+    }
+  }
+
+  resetEmbeddingCreationAndPlatform() {
+    this.initEmbeddingModal();
+    this.selectedPlatform = this.embeddingPlatforms[0];
+    this.prepareSuggestions(this.settingModals.embedding.create.embeddingCreationFormGroup);
+    this.checkIfPlatformHasToken();
   }
 }

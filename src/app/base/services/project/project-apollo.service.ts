@@ -10,6 +10,7 @@ import { ApolloChecker } from '../base/apollo-checker';
 import { mutations } from './project-mutations';
 import { queries } from './project-queries';
 import { dateAsUTCDate } from 'submodules/javascript-functions/date-parser';
+import { EmbeddingPlatform } from 'src/app/projects/components/project-settings/entities/embedding.type';
 
 @Injectable({
   providedIn: 'root',
@@ -738,13 +739,13 @@ export class ProjectApolloService {
       );
   }
 
-  createEmbedding(projectId: string, attributeId: string, embeddingHandle: string, granularity: string) {
+  createEmbedding(projectId: string, attributeId: string, config: string) {
     return this.apollo.mutate({
-      mutation: granularity == "TOKEN" ? mutations.CREATE_TOKEN_LEVEL_EMBEDDING : mutations.CREATE_ATTRIBUTE_LEVEL_EMBEDDING,
+      mutation: mutations.CREATE_EMBEDDING,
       variables: {
         projectId: projectId,
         attributeId: attributeId,
-        embeddingHandle: embeddingHandle,
+        config: config,
       },
       refetchQueries: [
         {
@@ -1490,6 +1491,19 @@ export class ProjectApolloService {
             copy.taskInfo = JSON.parse(task.taskInfo);
             return copy;
           });
+        })
+      );
+  }
+
+  getEmbeddingPlatforms(): Observable<EmbeddingPlatform> {
+    return this.apollo
+      .query({
+        query: queries.GET_EMBEDDING_PLATFORMS,
+        fetchPolicy: 'cache-first',
+      })
+      .pipe(
+        map((result) => {
+          return result['data']['embeddingPlatforms'];
         })
       );
   }

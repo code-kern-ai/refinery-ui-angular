@@ -12,6 +12,8 @@ import { S3Service } from '../../services/s3.service';
 import { UploadHelper } from '../helpers/upload-helper';
 import { ExistingProjectUploadHelper, LookupListsUploadHelper, RecordAddUploadHelper, RecordNewUploadHelper } from '../helpers/upload-specific';
 import { UploadFileType, UploadOptions, UploadTask, UploadType } from '../helpers/upload-types';
+import { PlatformType } from 'src/app/projects/components/project-settings/helper/project-settings-helper';
+import { Embedding } from 'src/app/projects/components/project-settings/entities/embedding.type';
 
 @Component({
   selector: 'kern-upload',
@@ -70,6 +72,7 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
     if (changes.uploadOptions) {
       if (this.uploadFileType == UploadFileType.RECORDS_ADD && this.uploadSpecificHelper) {
         this.uploadSpecificHelper.projectName = this.uploadOptions.projectName;
+        this.prepareEmbeddings();
       }
       const tokenizerValuesDisplay = [];
       this.uploadOptions.tokenizerValues?.forEach((tokenizer: any, index: number) => {
@@ -300,6 +303,15 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
   setTokenizer(tokenizer: string): void {
     const findName: any = this.uploadOptions.tokenizerValues.find((tok: any) => tok.configString === tokenizer);
     this.uploadSpecificHelper.selectedTokenizer = findName.name;
+  }
+
+  prepareEmbeddings(): void {
+    let q, vc;
+    [q, vc] = this.projectApolloService.getEmbeddingSchema(this.projectId);
+    vc.pipe(first()).subscribe((embeddings: Embedding[]) => {
+      const recalculationCosts = embeddings.some((e: Embedding) => e.platform == PlatformType.COHERE || e.platform == PlatformType.OPEN_AI);
+      this.uploadSpecificHelper.recalculationCosts = recalculationCosts;
+    });
   }
 
   setKey(key: string) {
