@@ -1,16 +1,21 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, Output } from '@angular/core';
 
 @Component({
   selector: 'kern-crypted-field',
   templateUrl: './crypted-field.component.html',
   styleUrls: ['./crypted-field.component.scss']
 })
-export class CryptedFieldComponent {
+export class CryptedFieldComponent implements OnDestroy {
   @Output() keyChange = new EventEmitter<string>();
   key: string = '';
   show: boolean = false;
 
   constructor() { }
+
+  ngOnDestroy(): void {
+    this.key = '';
+    this.keyChange.emit(this.key);
+  }
 
   setKey(key: string) {
     this.key = key;
