@@ -134,9 +134,6 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
     let filter = "?pagination[pageSize]=99999";
     filter += this.extendUrl(this.moduleTypeFilter, "moduleType");
     filter += this.extendUrl(this.executionTypeFilter, "executionType");
-    if (this.moduleTypeFilter != undefined && this.moduleTypeFilter.includes('generator') && this.executionTypeFilter != "activeLearner") {
-      filter += "&filters[executionType][$ne]=activeLearner"
-    }
     return this.HttpBaseLink + filter;
   }
 
@@ -146,6 +143,9 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
     const splitVal: string[] = value.split(',');
     for (let i = 0; i < splitVal.length; i++) {
       filter += "&filters[" + attribute + "][$eq]=" + splitVal[i].trim();
+      if (splitVal[i].trim() == 'generator' && this.executionTypeFilter != "activeLearner") {
+        filter += "&filters[executionType][$ne]=activeLearner";
+      }
     }
     return filter;
   }
