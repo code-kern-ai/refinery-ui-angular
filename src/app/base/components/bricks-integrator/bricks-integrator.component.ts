@@ -143,6 +143,7 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
     const splitVal: string[] = value.split(',');
     for (let i = 0; i < splitVal.length; i++) {
       filter += "&filters[" + attribute + "][$eq]=" + splitVal[i].trim();
+      // Remove active learners from generators (on ac page we have generators and classifiers but we want to exclude active learners there)
       if (splitVal[i].trim() == 'generator' && this.executionTypeFilter != "activeLearner") {
         filter += "&filters[executionType][$ne]=activeLearner";
       }
