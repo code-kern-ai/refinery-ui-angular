@@ -133,7 +133,10 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
   private buildSearchUrl(): string {
     let filter = "?pagination[pageSize]=99999";
     filter += this.extendUrl(this.moduleTypeFilter, "moduleType");
-    filter += this.extendUrl(this.executionTypeFilter, "executionType")
+    filter += this.extendUrl(this.executionTypeFilter, "executionType");
+    if (this.moduleTypeFilter != undefined && this.moduleTypeFilter.includes('generator') && this.executionTypeFilter != "activeLearner") {
+      filter += "&filters[executionType][$ne]=activeLearner"
+    }
     return this.HttpBaseLink + filter;
   }
 
