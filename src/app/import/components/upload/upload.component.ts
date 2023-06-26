@@ -234,7 +234,6 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
           this.deleteExistingProject();
           this.submitted = false;
           this.doingSomething = false;
-          this.refetchProjects.emit(true);
         }
         if (this.uploadFileType == UploadFileType.RECORDS) {
           this.isProjectTitleDuplicate = this.checkIfProjectTitleExist();
