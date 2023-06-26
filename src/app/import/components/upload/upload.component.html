@@ -50,7 +50,7 @@
 
     <ng-template [ngIf]="uploadFileType == UploadFileType.PROJECT">
         <ng-container *ngTemplateOutlet="upload"></ng-container>
-        <ng-container *ngTemplateOutlet="cryptedField"></ng-container>
+        <ng-template *ngTemplateOutlet="cryptedField"></ng-template>
     </ng-template>
 
     <ng-template [ngIf]="uploadFileType == UploadFileType.KNOWLEDGE_BASE">
@@ -64,7 +64,7 @@
     <ng-container *ngTemplateOutlet="dataSourcesUpload"></ng-container>
     <ng-container *ngTemplateOutlet="upload"></ng-container>
     <ng-container *ngTemplateOutlet="fileValidation"></ng-container>
-    <ng-container *ngTemplateOutlet="cryptedField"></ng-container>
+    <ng-template *ngTemplateOutlet="cryptedField"></ng-template>
     <ng-container *ngTemplateOutlet="importOptionsTextarea"></ng-container>
     <ng-template [ngIf]="uploadFileType == UploadFileType.RECORDS_ADD">
         <ng-container *ngTemplateOutlet="cautionMessage"></ng-container>
@@ -272,5 +272,6 @@
 </ng-template>
 
 <ng-template #cryptedField>
-    <kern-crypted-field (keyChange)="setKey($event)"></kern-crypted-field>
+    <kern-crypted-field *ngIf="file && file.type == 'application/zip'"
+        (keyChange)="setKey($event)"></kern-crypted-field>
 </ng-template>

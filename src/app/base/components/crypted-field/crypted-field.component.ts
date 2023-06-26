@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnDestroy, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
 
 @Component({
   selector: 'kern-crypted-field',
@@ -6,6 +6,7 @@ import { Component, EventEmitter, OnDestroy, Output } from '@angular/core';
   styleUrls: ['./crypted-field.component.scss']
 })
 export class CryptedFieldComponent implements OnDestroy {
+  @Input() label: string = 'Password';
   @Output() keyChange = new EventEmitter<string>();
   key: string = '';
   show: boolean = false;

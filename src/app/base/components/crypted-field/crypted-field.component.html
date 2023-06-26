@@ -1,9 +1,9 @@
 <div class="form-control">
     <label class="text-gray-500 text-sm font-medium m-1">
-        Use crypted key for this project <em>- optional</em>
+        {{label}} <em>- optional</em>
     </label>
     <div class="relative">
-        <input [value]="key" autocomplete="new-password" [type]="show ? 'type' : 'password'"
+        <input [value]="key" autocomplete="off" [type]="show ? 'type' : 'password'"
             class="input input-sm input-bordered w-full placeholder-italic" placeholder="Enter some key here..."
             (input)="setKey($event.target.value)">
         <button (click)="toggleKey()" [disabled]="!key">

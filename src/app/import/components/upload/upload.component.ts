@@ -147,6 +147,7 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   finishUpUpload(filename: string, importOptions: string): void {
+    if (this.key == '') this.key = null;
     this.projectApolloService
       .getUploadCredentialsAndId(this.projectId, filename, this.uploadFileType, importOptions, this.uploadType, this.key)
       .pipe(first()).subscribe((results) => {
@@ -228,12 +229,16 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
       if (msgParts[4] == UploadStates.DONE) this.uploadTaskQuery$.refetch();
       else if (msgParts[4] == UploadStates.ERROR) {
         this.resetUpload();
+        console.log("error in upload, deleting project", this.uploadOptions.deleteProjectOnFail);
         if (this.uploadOptions.deleteProjectOnFail) {
           this.deleteExistingProject();
           this.submitted = false;
           this.doingSomething = false;
+          this.refetchProjects.emit(true);
         }
-        this.isProjectTitleDuplicate = this.checkIfProjectTitleExist();
+        if (this.uploadFileType == UploadFileType.RECORDS) {
+          this.isProjectTitleDuplicate = this.checkIfProjectTitleExist();
+        }
       }
       else {
         this.uploadTask = { ...this.uploadTask };
