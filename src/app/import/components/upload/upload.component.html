@@ -272,6 +272,5 @@
 </ng-template>
 
 <ng-template #cryptedField>
-    <kern-crypted-field *ngIf="file && file.type == 'application/zip'"
-        (keyChange)="setKey($event)"></kern-crypted-field>
+    <kern-crypted-field *ngIf="file && file.type == zipType" (keyChange)="setKey($event)"></kern-crypted-field>
 </ng-template>

@@ -58,6 +58,7 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
   tokenizerValuesDisabled: boolean[] = [];
   doingSomething: boolean = false;
   key: string;
+  zipType: string = 'application/zip';
 
   constructor(private projectApolloService: ProjectApolloService, private router: Router, private s3Service: S3Service) {
     this.uploadHelper = new UploadHelper(this, this.projectApolloService);
@@ -229,7 +230,6 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
       if (msgParts[4] == UploadStates.DONE) this.uploadTaskQuery$.refetch();
       else if (msgParts[4] == UploadStates.ERROR) {
         this.resetUpload();
-        console.log("error in upload, deleting project", this.uploadOptions.deleteProjectOnFail);
         if (this.uploadOptions.deleteProjectOnFail) {
           this.deleteExistingProject();
           this.submitted = false;
