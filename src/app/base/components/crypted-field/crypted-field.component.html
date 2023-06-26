@@ -1,6 +1,6 @@
 <div class="form-control">
     <label class="text-gray-500 text-sm font-medium m-1">
-        {{label}} <em>- optional</em>
+        {{label}} <em *ngIf="displayOptionalAsText">- optional</em>
     </label>
     <div class="relative">
         <input [value]="key" autocomplete="off" [type]="show ? 'type' : 'password'"

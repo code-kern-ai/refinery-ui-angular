@@ -7,6 +7,7 @@ import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core
 })
 export class CryptedFieldComponent implements OnDestroy {
   @Input() label: string = 'Password';
+  @Input() displayOptionalAsText: boolean = false;
   @Output() keyChange = new EventEmitter<string>();
   key: string = '';
   show: boolean = false;
