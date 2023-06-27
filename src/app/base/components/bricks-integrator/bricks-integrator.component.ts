@@ -13,7 +13,7 @@ import { BricksAPIData, BricksIntegratorConfig, BricksSearchData, BricksVariable
 import { REMOVE_GROUP_NODES, extendDummyElements, getDummyNodeByIdForApi } from './helper/dummy-nodes';
 import { caesarCipher } from 'src/app/util/cipher';
 import { PASS_ME } from 'src/app/util/cipher';
-import { copyToClipboard, filterArrayMinusExcluded, isStringTrue, jsonCopy } from 'submodules/javascript-functions/general';
+import { copyToClipboard, removeArrayFromArray, isStringTrue, jsonCopy } from 'submodules/javascript-functions/general';
 import { capitalizeFirst } from 'submodules/javascript-functions/case-types-parser';
 
 @Component({
@@ -143,10 +143,15 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
     const splitVal: string[] = value.split(',');
     for (let i = 0; i < splitVal.length; i++) {
       filter += "&filters[" + attribute + "][$eq]=" + splitVal[i].trim();
-      // Remove active learners from generators (on ac page we have generators and classifiers but we want to exclude active learners there)
-      if (splitVal[i].trim() == 'generator' && this.executionTypeFilter != "activeLearner") {
-        filter += "&filters[executionType][$ne]=activeLearner";
-      }
+      filter += this.filterActiveLearnersFromGenerators(splitVal, i, filter);
+    }
+    return filter;
+  }
+
+  private filterActiveLearnersFromGenerators(splitVal: string[], index: number, filter: string) {
+    // Remove active learners from generators (on ac page we have generators and classifiers but we want to exclude active learners there)
+    if (splitVal[index].trim() == 'generator' && this.executionTypeFilter != "activeLearner") {
+      filter += "&filters[executionType][$ne]=activeLearner";
     }
     return filter;
   }
@@ -174,15 +179,15 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
         this.config.search.currentRequest = null;
         let finalData;
         if (this.config.extendedIntegrator) {
-          finalData = data.data.map(e => {
-            const c = jsonCopy(e);
-            if (e.attributes.partOfGroup) {
-              c.attributes.partOfGroup = JSON.parse(c.attributes.partOfGroup);
-              c.attributes.partOfGroup = filterArrayMinusExcluded(c.attributes.partOfGroup, REMOVE_GROUP_NODES);
+          finalData = data.data.map(integratorData => {
+            const integratorDataCopy = jsonCopy(integratorData);
+            if (integratorData.attributes.partOfGroup) {
+              integratorDataCopy.attributes.partOfGroup = JSON.parse(integratorDataCopy.attributes.partOfGroup);
+              integratorDataCopy.attributes.partOfGroup = removeArrayFromArray(integratorDataCopy.attributes.partOfGroup, REMOVE_GROUP_NODES);
             }
-            if (e.attributes.availableFor) c.attributes.availableFor = JSON.parse(c.attributes.availableFor);
-            if (e.attributes.integratorInputs) c.attributes.integratorInputs = JSON.parse(c.attributes.integratorInputs);
-            return c;
+            if (integratorData.attributes.availableFor) integratorDataCopy.attributes.availableFor = JSON.parse(integratorDataCopy.attributes.availableFor);
+            if (integratorData.attributes.integratorInputs) integratorDataCopy.attributes.integratorInputs = JSON.parse(integratorDataCopy.attributes.integratorInputs);
+            return integratorDataCopy;
           });
         } else finalData = data.data;
         if (this.executionTypeFilter) {
@@ -366,9 +371,10 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
       next: (c: any) => {
         if (!c.data.attributes.integratorInputs) this.config.api.data = c;
         else {
+          // Additional parsing for integrator inputs used in the overview section in the bricks integrator
           this.config.api.data = c;
           this.config.api.data.data.attributes.partOfGroup = JSON.parse(c.data.attributes.partOfGroup);
-          this.config.api.data.data.attributes.partOfGroup = filterArrayMinusExcluded(this.config.api.data.data.attributes.partOfGroup, REMOVE_GROUP_NODES);
+          this.config.api.data.data.attributes.partOfGroup = removeArrayFromArray(this.config.api.data.data.attributes.partOfGroup, REMOVE_GROUP_NODES);
           this.config.api.data.data.attributes.partOfGroupText = this.config.api.data.data.attributes.partOfGroup.map(x => this.getGroupName(x)).join(", ");
           this.config.api.data.data.attributes.availableFor = JSON.parse(c.data.attributes.availableFor);
           this.config.api.data.data.attributes.integratorInputs = JSON.parse(c.data.attributes.integratorInputs);

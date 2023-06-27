@@ -218,4 +218,5 @@ def vader_sentiment(record):
         return vs`;
 
 
+// TODO: Remove this when grdp is removed from bricks
 export const REMOVE_GROUP_NODES = ['gdpr_compliant', 'not_gdpr_compliant'];

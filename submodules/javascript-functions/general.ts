@@ -175,6 +175,6 @@ export function countOccurrences(str: string, search: string): number {
     return c;
 }
 
-export function filterArrayMinusExcluded(array: any[], excludedArray: any[]) {
-    return array.filter((element) => !excludedArray.includes(element));
+export function removeArrayFromArray(mainArray: any[], arrayToRemove: any[]) {
+    return mainArray.filter((element) => !arrayToRemove.includes(element));
 }

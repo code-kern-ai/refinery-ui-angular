@@ -259,7 +259,8 @@
                         <div class="col-start-1 col-span-full">
                             <div class="flex flex-row justify-between cursor-pointer items-center"
                                 (click)="config.extendedIntegratorOverviewAddInfoOpen=!config.extendedIntegratorOverviewAddInfoOpen">
-                                <label class="text-base font-bold text-gray-900 cursor-pointer">Details</label>
+                                <label
+                                    class="text-base font-bold text-gray-900 cursor-pointer underline">Details</label>
                                 <div [ngClass]="config.extendedIntegratorOverviewAddInfoOpen?'rotate-transform':null">
                                     <svg xmlns="http://www.w3.org/2000/svg"
                                         class="icon icon-tabler icon-tabler-chevrons-down" width="24" height="24"
@@ -290,8 +291,9 @@
                         <div class="col-start-1 col-span-full">
                             <div class="flex flex-row justify-between cursor-pointer items-center"
                                 (click)="config.overviewCodeOpen=!config.overviewCodeOpen">
-                                <label class="text-base font-bold text-gray-900 cursor-pointer">Source Code<span
-                                        class="text-sm font-normal">(guided integration through tab
+                                <label class="text-base font-bold text-gray-900 cursor-pointer"><span
+                                        class="underline">Source Code</span>
+                                    <span class="text-sm font-normal">&nbsp;(guided integration through tab
                                         integration)</span></label>
                                 <div [ngClass]="config.overviewCodeOpen?'rotate-transform':null">
                                     <svg xmlns="http://www.w3.org/2000/svg"
@@ -307,9 +309,9 @@
                             <div [ngClass]="config.overviewCodeOpen?'':'hidden'"
                                 class="flex flex-col mt-1 items-center">
 
-                                <div class="overflow-y-auto"
-                                    style="max-height:15rem;max-width: 35rem; overflow-x:hidden">
-                                    <pre class="editor-pre">{{codeParser.baseCode}}</pre>
+                                <div class="overflow-y-auto" style="max-height:15rem;max-width: 35rem;">
+                                    <pre class="editor-pre"
+                                        [ngStyle]="{'overflow-x':config.overviewCodeOpen? 'auto': 'hidden'}">{{codeParser.baseCode}}</pre>
                                 </div>
                                 <div class="mt-2 tooltip"
                                     [attr.data-tip]="config.copied?'Copied':'Click to copy raw code'">
@@ -341,8 +343,9 @@
                         <div class="col-start-1 col-span-full">
                             <div class="flex flex-row justify-between cursor-pointer items-center"
                                 (click)="config.overviewCodeOpen=!config.overviewCodeOpen">
-                                <label class="text-base font-bold text-gray-900 cursor-pointer">Source Code<span
-                                        class="text-sm font-normal">(guided integration through tab
+                                <label class="text-base font-bold text-gray-900 cursor-pointer"><span
+                                        class="underline">Source Code</span>
+                                    <span class="text-sm font-normal">&nbsp;(guided integration through tab
                                         integration)</span></label>
                                 <div [ngClass]="config.overviewCodeOpen?'rotate-transform':null">
                                     <svg xmlns="http://www.w3.org/2000/svg"
@@ -358,9 +361,9 @@
                             <div [ngClass]="config.overviewCodeOpen?'':'hidden'"
                                 class="flex flex-col mt-1 items-center">
 
-                                <div class="overflow-y-auto"
-                                    style="max-height:15rem;max-width: 35rem; overflow-x:hidden">
-                                    <pre class="editor-pre">{{codeParser.baseCode}}</pre>
+                                <div class="overflow-y-auto" style="max-height:15rem;max-width: 35rem;">
+                                    <pre class="editor-pre"
+                                        [ngStyle]="{'overflow-x':config.overviewCodeOpen? 'auto': 'hidden'}">{{codeParser.baseCode}}</pre>
                                 </div>
                                 <div class="mt-2 tooltip"
                                     [attr.data-tip]="config.copied?'Copied':'Click to copy raw code'">
@@ -650,8 +653,9 @@
                 </div>
             </div>
             <div [ngClass]="config.integratorCodeOpen?'':'hidden'" class="flex flex-col mt-1 items-center">
-                <div class="overflow-y-auto" style="max-height:15rem;max-width: 35rem; overflow-x:hidden">
-                    <pre class="editor-pre">{{config.preparedCode}}</pre>
+                <div class="overflow-y-auto" style="max-height:15rem;max-width: 35rem;">
+                    <pre class="editor-pre"
+                        [ngStyle]="{'overflow-x':config.overviewCodeOpen? 'auto': 'hidden'}">{{config.preparedCode}}</pre>
                 </div>
             </div>
         </div>
@@ -673,8 +677,9 @@
                 </div>
 
                 <div [ngClass]="config.integratorParseOpen?'':'hidden'" class="flex flex-col mt-1 items-center">
-                    <div class="overflow-y-auto" style="max-height:15rem;max-width: 35rem; overflow-x:hidden">
-                        <pre class="editor-pre">{{config.preparedJson}}</pre>
+                    <div class="overflow-y-auto" style="max-height:15rem;max-width: 35rem;">
+                        <pre class="editor-pre"
+                            [ngStyle]="{'overflow-x':config.overviewCodeOpen? 'auto': 'hidden'}">{{config.preparedJson}}</pre>
                     </div>
                     <div class="flex flex-row flex-wrap gap-2">
                         <div class="flex flex-row flex-nowrap cursor-pointer"
