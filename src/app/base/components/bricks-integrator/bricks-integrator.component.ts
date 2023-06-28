@@ -10,7 +10,7 @@ import { ProjectApolloService } from '../../services/project/project-apollo.serv
 import { BricksCodeParser } from './helper/code-parser';
 import { BricksDataRequestor } from './helper/data-requestor';
 import { BricksAPIData, BricksIntegratorConfig, BricksSearchData, BricksVariable, BricksVariableType, getEmptyBricksIntegratorConfig, IntegratorPage } from './helper/type-helper';
-import { REMOVE_GROUP_NODES, extendDummyElements, getDummyNodeByIdForApi } from './helper/dummy-nodes';
+import { GROUPS_TO_REMOVE, extendDummyElements, getDummyNodeByIdForApi } from './helper/dummy-nodes';
 import { caesarCipher } from 'src/app/util/cipher';
 import { PASS_ME } from 'src/app/util/cipher';
 import { copyToClipboard, removeArrayFromArray, isStringTrue, jsonCopy } from 'submodules/javascript-functions/general';
@@ -138,8 +138,8 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
   }
 
   private extendUrl(value: string, attribute: string): string {
-    if (!value) return "";
     let filter = "";
+    if (!value) return filter += "&filters[executionType][$ne]=activeLearner";
     const splitVal: string[] = value.split(',');
     for (let i = 0; i < splitVal.length; i++) {
       filter += "&filters[" + attribute + "][$eq]=" + splitVal[i].trim();
@@ -183,7 +183,7 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
             const integratorDataCopy = jsonCopy(integratorData);
             if (integratorData.attributes.partOfGroup) {
               integratorDataCopy.attributes.partOfGroup = JSON.parse(integratorDataCopy.attributes.partOfGroup);
-              integratorDataCopy.attributes.partOfGroup = removeArrayFromArray(integratorDataCopy.attributes.partOfGroup, REMOVE_GROUP_NODES);
+              integratorDataCopy.attributes.partOfGroup = removeArrayFromArray(integratorDataCopy.attributes.partOfGroup, GROUPS_TO_REMOVE);
             }
             if (integratorData.attributes.availableFor) integratorDataCopy.attributes.availableFor = JSON.parse(integratorDataCopy.attributes.availableFor);
             if (integratorData.attributes.integratorInputs) integratorDataCopy.attributes.integratorInputs = JSON.parse(integratorDataCopy.attributes.integratorInputs);
@@ -374,7 +374,7 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
           // Additional parsing for integrator inputs used in the overview section in the bricks integrator
           this.config.api.data = c;
           this.config.api.data.data.attributes.partOfGroup = JSON.parse(c.data.attributes.partOfGroup);
-          this.config.api.data.data.attributes.partOfGroup = removeArrayFromArray(this.config.api.data.data.attributes.partOfGroup, REMOVE_GROUP_NODES);
+          this.config.api.data.data.attributes.partOfGroup = removeArrayFromArray(this.config.api.data.data.attributes.partOfGroup, GROUPS_TO_REMOVE);
           this.config.api.data.data.attributes.partOfGroupText = this.config.api.data.data.attributes.partOfGroup.map(x => this.getGroupName(x)).join(", ");
           this.config.api.data.data.attributes.availableFor = JSON.parse(c.data.attributes.availableFor);
           this.config.api.data.data.attributes.integratorInputs = JSON.parse(c.data.attributes.integratorInputs);
