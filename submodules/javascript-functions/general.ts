@@ -173,4 +173,8 @@ export function countOccurrences(str: string, search: string): number {
         else break;
     }
     return c;
-} 
+}
+
+export function removeArrayFromArray(mainArray: any[], arrayToRemove: any[]) {
+    return mainArray.filter((element) => !arrayToRemove.includes(element));
+}

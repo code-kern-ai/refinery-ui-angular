@@ -10,10 +10,10 @@ import { ProjectApolloService } from '../../services/project/project-apollo.serv
 import { BricksCodeParser } from './helper/code-parser';
 import { BricksDataRequestor } from './helper/data-requestor';
 import { BricksAPIData, BricksIntegratorConfig, BricksSearchData, BricksVariable, BricksVariableType, getEmptyBricksIntegratorConfig, IntegratorPage } from './helper/type-helper';
-import { extendDummyElements, getDummyNodeByIdForApi } from './helper/dummy-nodes';
+import { GROUPS_TO_REMOVE, extendDummyElements, getDummyNodeByIdForApi } from './helper/dummy-nodes';
 import { caesarCipher } from 'src/app/util/cipher';
 import { PASS_ME } from 'src/app/util/cipher';
-import { copyToClipboard, isStringTrue, jsonCopy } from 'submodules/javascript-functions/general';
+import { copyToClipboard, removeArrayFromArray, isStringTrue, jsonCopy } from 'submodules/javascript-functions/general';
 import { capitalizeFirst } from 'submodules/javascript-functions/case-types-parser';
 
 @Component({
@@ -133,16 +133,25 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
   private buildSearchUrl(): string {
     let filter = "?pagination[pageSize]=99999";
     filter += this.extendUrl(this.moduleTypeFilter, "moduleType");
-    filter += this.extendUrl(this.executionTypeFilter, "executionType")
+    filter += this.extendUrl(this.executionTypeFilter, "executionType");
     return this.HttpBaseLink + filter;
   }
 
   private extendUrl(value: string, attribute: string): string {
-    if (!value) return "";
     let filter = "";
+    if (!value) return filter += "&filters[executionType][$ne]=activeLearner";
     const splitVal: string[] = value.split(',');
     for (let i = 0; i < splitVal.length; i++) {
       filter += "&filters[" + attribute + "][$eq]=" + splitVal[i].trim();
+      filter += this.filterActiveLearnersFromGenerators(splitVal, i, filter);
+    }
+    return filter;
+  }
+
+  private filterActiveLearnersFromGenerators(splitVal: string[], index: number, filter: string) {
+    // Remove active learners from generators (on ac page we have generators and classifiers but we want to exclude active learners there)
+    if (splitVal[index].trim() == 'generator' && this.executionTypeFilter != "activeLearner") {
+      filter += "&filters[executionType][$ne]=activeLearner";
     }
     return filter;
   }
@@ -170,12 +179,15 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
         this.config.search.currentRequest = null;
         let finalData;
         if (this.config.extendedIntegrator) {
-          finalData = data.data.map(e => {
-            const c = jsonCopy(e);
-            if (e.attributes.partOfGroup) c.attributes.partOfGroup = JSON.parse(c.attributes.partOfGroup);
-            if (e.attributes.availableFor) c.attributes.availableFor = JSON.parse(c.attributes.availableFor);
-            if (e.attributes.integratorInputs) c.attributes.integratorInputs = JSON.parse(c.attributes.integratorInputs);
-            return c;
+          finalData = data.data.map(integratorData => {
+            const integratorDataCopy = jsonCopy(integratorData);
+            if (integratorData.attributes.partOfGroup) {
+              integratorDataCopy.attributes.partOfGroup = JSON.parse(integratorDataCopy.attributes.partOfGroup);
+              integratorDataCopy.attributes.partOfGroup = removeArrayFromArray(integratorDataCopy.attributes.partOfGroup, GROUPS_TO_REMOVE);
+            }
+            if (integratorData.attributes.availableFor) integratorDataCopy.attributes.availableFor = JSON.parse(integratorDataCopy.attributes.availableFor);
+            if (integratorData.attributes.integratorInputs) integratorDataCopy.attributes.integratorInputs = JSON.parse(integratorDataCopy.attributes.integratorInputs);
+            return integratorDataCopy;
           });
         } else finalData = data.data;
         if (this.executionTypeFilter) {
@@ -262,8 +274,6 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
 
   private getGroupName(groupKey: string): string {
     switch (groupKey) {
-      case "gdpr_compliant": return "GDPR Compliant";
-      case "not_gdpr_compliant": return "Not GDPR Compliant";
       case "no_api_key": return "No API Key";
       default: return capitalizeFirst(groupKey);
     }
@@ -361,8 +371,10 @@ export class BricksIntegratorComponent implements OnInit, OnDestroy {
       next: (c: any) => {
         if (!c.data.attributes.integratorInputs) this.config.api.data = c;
         else {
+          // Additional parsing for integrator inputs used in the overview section in the bricks integrator
           this.config.api.data = c;
           this.config.api.data.data.attributes.partOfGroup = JSON.parse(c.data.attributes.partOfGroup);
+          this.config.api.data.data.attributes.partOfGroup = removeArrayFromArray(this.config.api.data.data.attributes.partOfGroup, GROUPS_TO_REMOVE);
           this.config.api.data.data.attributes.partOfGroupText = this.config.api.data.data.attributes.partOfGroup.map(x => this.getGroupName(x)).join(", ");
           this.config.api.data.data.attributes.availableFor = JSON.parse(c.data.attributes.availableFor);
           this.config.api.data.data.attributes.integratorInputs = JSON.parse(c.data.attributes.integratorInputs);
