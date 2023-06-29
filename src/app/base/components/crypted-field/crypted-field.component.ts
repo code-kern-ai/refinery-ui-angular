@@ -38,15 +38,15 @@ export class CryptedFieldComponent implements OnDestroy {
 
 
   onBackspace(event) {
+    if (this.inputElement.nativeElement.selectionStart === 0) {
+      this.inputElement.nativeElement.value = '';
+      this.key = '';
+      this.saveKey = '';
+      this.hiddenKey = '';
+      this.keyChange.emit(this.saveKey);
+      return;
+    }
     if (event.key === 'Backspace') {
-      if (this.inputElement.nativeElement.selectionStart === 0) {
-        this.inputElement.nativeElement.value = '';
-        this.key = '';
-        this.saveKey = '';
-        this.hiddenKey = '';
-        this.keyChange.emit(this.saveKey);
-        return;
-      }
       event.preventDefault();
       this.saveKey = this.saveKey.substring(0, this.saveKey.length - 1);
       this.key = this.key.substring(0, this.key.length - 1);
