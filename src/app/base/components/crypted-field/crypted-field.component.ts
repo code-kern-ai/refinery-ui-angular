@@ -38,7 +38,10 @@ export class CryptedFieldComponent implements OnDestroy {
 
 
   onBackspace(event) {
-    if (this.inputElement.nativeElement.selectionStart === 0) {
+    if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+      return;
+    }
+    if (this.inputElement.nativeElement.selectionStart === 0 && !(event.ctrlKey || event.metaKey)) {
       this.inputElement.nativeElement.value = '';
       this.key = '';
       this.saveKey = '';
