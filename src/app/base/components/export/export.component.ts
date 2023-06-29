@@ -354,8 +354,9 @@ export class ExportComponent implements OnInit, OnChanges {
     const jsonString = this.exportHelper.buildExportData();
     if (this.exportHelper.error.length != 0) return
     this.downloadState = DownloadState.PREPARATION;
-    if (this.key == '') this.key = null;
-    this.projectApolloService.prepareRecordExport(this.projectId, jsonString, this.key).pipe(first()).subscribe((x) => {
+    let keyToSend = this.key;
+    if (!keyToSend) keyToSend = null;
+    this.projectApolloService.prepareRecordExport(this.projectId, jsonString, keyToSend).pipe(first()).subscribe((x) => {
       if (x) {
         this.exportHelper.error.push("Something went wrong in the backend:");
         this.exportHelper.error.push(x);

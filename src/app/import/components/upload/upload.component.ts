@@ -59,6 +59,7 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
   doingSomething: boolean = false;
   key: string;
   zipType: string = 'application/zip';
+  fileEndsWithZip: boolean = false;
 
   constructor(private projectApolloService: ProjectApolloService, private router: Router, private s3Service: S3Service) {
     this.uploadHelper = new UploadHelper(this, this.projectApolloService);
@@ -132,6 +133,7 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
 
   onFileDropped(files: File[]): void {
     this.file = files.length > 0 ? files[0] : null;
+    this.fileEndsWithZip = this.file?.name.endsWith('.zip');
     this.fileAttached.emit(this.file);
   }
 
@@ -148,9 +150,10 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   finishUpUpload(filename: string, importOptions: string): void {
-    if (this.key == '') this.key = null;
+    let keyToSend = this.key;
+    if (!keyToSend) keyToSend = null;
     this.projectApolloService
-      .getUploadCredentialsAndId(this.projectId, filename, this.uploadFileType, importOptions, this.uploadType, this.key)
+      .getUploadCredentialsAndId(this.projectId, filename, this.uploadFileType, importOptions, this.uploadType, keyToSend)
       .pipe(first()).subscribe((results) => {
         this.uploadFileToMinIO(results, filename)
       });

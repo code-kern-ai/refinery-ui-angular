@@ -3,9 +3,9 @@
         {{label}} <em *ngIf="displayOptionalAsText">- optional</em>
     </label>
     <div class="relative">
-        <input [value]="key" autocomplete="off" [type]="show ? 'type' : 'password'"
+        <input #inputElement [value]="show ? saveKey : hiddenKey" autocomplete="off" type="text"
             class="input input-sm input-bordered w-full placeholder-italic" placeholder="Enter some key here..."
-            (input)="setKey($event.target.value)">
+            (input)="setKey($event.target.value)" (keydown)="onBackspace($event)">
         <button (click)="toggleKey()" [disabled]="!key">
             <ng-template [ngIf]="!show" [ngIfElse]="eyeOff">
                 <svg xmlns="http://www.w3.org/2000/svg"
