@@ -811,14 +811,15 @@ export class ProjectApolloService {
       .pipe(map((result) => result['data']['exportProject']));
   }
 
-  prepareProjectExport(projectId: string, exportOptions: string) {
+  prepareProjectExport(projectId: string, exportOptions: string, key: string = null) {
     return this.apollo
       .query({
         query: queries.PREPARE_PROJECT_EXPORT,
         fetchPolicy: 'network-only',
         variables: {
           projectId: projectId,
-          exportOptions: exportOptions
+          exportOptions: exportOptions,
+          key: key
         },
       })
       .pipe(map((result) => result['data']['prepareProjectExport']));
@@ -870,7 +871,8 @@ export class ProjectApolloService {
     fileName: string,
     fileType: string,
     fileImportOptions: string,
-    uploadType: string = null
+    uploadType: string = null,
+    key: string = null
 
   ): Observable<string> {
     return this.apollo
@@ -882,7 +884,8 @@ export class ProjectApolloService {
           fileName: fileName,
           fileType: fileType,
           fileImportOptions: fileImportOptions,
-          uploadType: uploadType
+          uploadType: uploadType,
+          key: key
         },
       })
       .pipe(map((result) => result['data']['uploadCredentialsAndId']));
@@ -1300,13 +1303,14 @@ export class ProjectApolloService {
           return x;
         }));
   }
-  prepareRecordExport(projectId: string, exportOptions: string) {
+  prepareRecordExport(projectId: string, exportOptions: string, key: string = null) {
     return this.apollo
       .query({
         query: queries.PREPARE_RECORD_EXPORT,
         variables: {
           projectId: projectId,
-          exportOptions: exportOptions
+          exportOptions: exportOptions,
+          key: key
         },
         fetchPolicy: 'no-cache'
       }).pipe(

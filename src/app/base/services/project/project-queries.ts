@@ -280,8 +280,8 @@ export const queries = {
   }  
 `,
   PREPARE_PROJECT_EXPORT: gql`
-  query ($projectId: ID!, $exportOptions: JSONString) {
-    prepareProjectExport(projectId: $projectId, exportOptions: $exportOptions)
+  query ($projectId: ID!, $exportOptions: JSONString, $key: String) {
+    prepareProjectExport(projectId: $projectId, exportOptions: $exportOptions, key: $key)
   }`,
   LAST_PROJECT_EXPORT_CREDENTIALS: gql`
   query ($projectId: ID!) {
@@ -298,8 +298,8 @@ export const queries = {
     }
   `,
   GET_UPLOAD_CREDENTIALS_AND_ID: gql`
-    query ($projectId: ID!, $fileName: String!, $fileType: String!,$fileImportOptions:String!,$uploadType:String) {
-      uploadCredentialsAndId(projectId: $projectId, fileName: $fileName, fileType: $fileType,fileImportOptions:$fileImportOptions,uploadType:$uploadType)
+    query ($projectId: ID!, $fileName: String!, $fileType: String!,$fileImportOptions:String!,$uploadType:String, $key: String) {
+      uploadCredentialsAndId(projectId: $projectId, fileName: $fileName, fileType: $fileType,fileImportOptions:$fileImportOptions,uploadType:$uploadType, key: $key)
     }
   `,
   GET_ALL_TOKENIZER_OPTIONS: gql`
@@ -509,8 +509,8 @@ export const queries = {
 
 `,
   PREPARE_RECORD_EXPORT: gql`
-query ($projectId: ID!, $exportOptions: JSONString) {
-  prepareRecordExport(projectId: $projectId, exportOptions: $exportOptions)
+query ($projectId: ID!, $exportOptions: JSONString, $key: String) {
+  prepareRecordExport(projectId: $projectId, exportOptions: $exportOptions, key: $key)
 }
 `,
   GET_LABELSTUDIO_TEMPLATE: gql`

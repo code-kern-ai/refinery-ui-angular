@@ -214,18 +214,15 @@
             </div>
         </ng-template>
     </div>
-    <div *ngIf="settingModals.projectExport.projectSize" class="mt-4 flex flex-row justify-between "
-        style="border-top: 1px solid #ddd;">
+    <div *ngIf="settingModals.projectExport.projectSize" class="mt-4" style="border-top: 1px solid #ddd;">
         <!-- Final size-->
         <div></div>
-        <div class="mt-4 mr-2 flex flex-row flex-nowrap">
-            <div class="flex">
-                <span class="card-title mb-0 label-text">Final size estimate:</span>
-            </div>
-            <div class="flex ml-2">
-                <span class="card-title mb-0 label-text">{{settingModals.projectExport.downloadSizeText}}</span>
-            </div>
+        <div class="my-2 mr-2 flex flex-row flex-nowrap justify-end">
+            <span class="card-title mb-0 label-text">Final size estimate:</span>
+            <span class="card-title mb-0 label-text ml-2">{{settingModals.projectExport.downloadSizeText}}</span>
         </div>
+        <kern-crypted-field label="Encrypt zip file with password" displayOptionalAsText="true"
+            (keyChange)="setKey($event)"></kern-crypted-field>
     </div>
     <div class="modal-action">
         <label *ngIf="settingModals.projectExport.projectExportCredentials?.downloadFileName as fileName"

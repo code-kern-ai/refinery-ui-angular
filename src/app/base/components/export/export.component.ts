@@ -48,6 +48,7 @@ export class ExportComponent implements OnInit, OnChanges {
     open: false,
     copied: false,
   }
+  key: string;
 
   constructor(
     private projectApolloService: ProjectApolloService,
@@ -353,7 +354,9 @@ export class ExportComponent implements OnInit, OnChanges {
     const jsonString = this.exportHelper.buildExportData();
     if (this.exportHelper.error.length != 0) return
     this.downloadState = DownloadState.PREPARATION;
-    this.projectApolloService.prepareRecordExport(this.projectId, jsonString).pipe(first()).subscribe((x) => {
+    let keyToSend = this.key;
+    if (!keyToSend) keyToSend = null;
+    this.projectApolloService.prepareRecordExport(this.projectId, jsonString, keyToSend).pipe(first()).subscribe((x) => {
       if (x) {
         this.exportHelper.error.push("Something went wrong in the backend:");
         this.exportHelper.error.push(x);
@@ -425,5 +428,9 @@ export class ExportComponent implements OnInit, OnChanges {
     );
 
     document.body.removeChild(link);
+  }
+
+  setKey(key: string) {
+    this.key = key;
   }
 }

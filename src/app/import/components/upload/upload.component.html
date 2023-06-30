@@ -50,6 +50,7 @@
 
     <ng-template [ngIf]="uploadFileType == UploadFileType.PROJECT">
         <ng-container *ngTemplateOutlet="upload"></ng-container>
+        <ng-template *ngTemplateOutlet="cryptedField"></ng-template>
     </ng-template>
 
     <ng-template [ngIf]="uploadFileType == UploadFileType.KNOWLEDGE_BASE">
@@ -63,6 +64,7 @@
     <ng-container *ngTemplateOutlet="dataSourcesUpload"></ng-container>
     <ng-container *ngTemplateOutlet="upload"></ng-container>
     <ng-container *ngTemplateOutlet="fileValidation"></ng-container>
+    <ng-template *ngTemplateOutlet="cryptedField"></ng-template>
     <ng-container *ngTemplateOutlet="importOptionsTextarea"></ng-container>
     <ng-template [ngIf]="uploadFileType == UploadFileType.RECORDS_ADD">
         <ng-container *ngTemplateOutlet="cautionMessage"></ng-container>
@@ -171,7 +173,7 @@
             it blank, we'll use default settings
         </label>
         <div>
-            <textarea #importOptions class="shadow mt-1 p-4 text-sm w-full placeholder-indigo" rows="3"
+            <textarea #importOptions class="shadow mt-1 p-4 text-sm w-full placeholder-indigo rounded-md" rows="3"
                 placeholder="E.g. for uncommon CSV&#10;sep=\t&#10;lineterminator=\r"></textarea>
         </div>
     </div>
@@ -267,4 +269,9 @@
             embeddings will calculate them one more time and could cause additional fees)</span>
         for all records
     </div>
+</ng-template>
+
+<ng-template #cryptedField>
+    <kern-crypted-field *ngIf="file && (file.type == zipType || fileEndsWithZip)"
+        (keyChange)="setKey($event)"></kern-crypted-field>
 </ng-template>

@@ -60,6 +60,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
   lh: LabelHelper;
   checkIfAcUploadedRecords: boolean = false;
   isAcRunning: boolean = false;
+  key: string;
   embeddingPlatforms$: any;
   embeddingPlatforms: EmbeddingPlatform[]
 
@@ -262,7 +263,9 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
     if (this.settingModals.projectExport.downloadPrepareMessage == DownloadState.PREPARATION || this.settingModals.projectExport.downloadPrepareMessage == DownloadState.DOWNLOAD) return;
     this.settingModals.projectExport.downloadPrepareMessage = DownloadState.PREPARATION;
     const exportOptions = this.buildJsonExportOptions();
-    this.projectApolloService.prepareProjectExport(projectId, exportOptions).pipe(first()).subscribe();
+    let keyToSend = this.key;
+    if (!keyToSend) keyToSend = null;
+    this.projectApolloService.prepareProjectExport(projectId, exportOptions, keyToSend).pipe(first()).subscribe();
     this.settingModals.projectExport.projectExportCredentials = null;
   }
 
@@ -383,5 +386,9 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
 
   checkIfAcIsRunning() {
     return this.attributes.some(a => a.state == AttributeCalculationState.RUNNING) || this.checkIfAcUploadedRecords;
+  }
+
+  setKey(key: string) {
+    this.key = key;
   }
 }

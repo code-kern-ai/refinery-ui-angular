@@ -57,6 +57,9 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
   disableInput: boolean = false;
   tokenizerValuesDisabled: boolean[] = [];
   doingSomething: boolean = false;
+  key: string;
+  zipType: string = 'application/zip';
+  fileEndsWithZip: boolean = false;
 
   constructor(private projectApolloService: ProjectApolloService, private router: Router, private s3Service: S3Service) {
     this.uploadHelper = new UploadHelper(this, this.projectApolloService);
@@ -130,6 +133,7 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
 
   onFileDropped(files: File[]): void {
     this.file = files.length > 0 ? files[0] : null;
+    this.fileEndsWithZip = this.file?.name.endsWith('.zip');
     this.fileAttached.emit(this.file);
   }
 
@@ -146,8 +150,10 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   finishUpUpload(filename: string, importOptions: string): void {
+    let keyToSend = this.key;
+    if (!keyToSend) keyToSend = null;
     this.projectApolloService
-      .getUploadCredentialsAndId(this.projectId, filename, this.uploadFileType, importOptions, this.uploadType)
+      .getUploadCredentialsAndId(this.projectId, filename, this.uploadFileType, importOptions, this.uploadType, keyToSend)
       .pipe(first()).subscribe((results) => {
         this.uploadFileToMinIO(results, filename)
       });
@@ -199,6 +205,7 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
     this.uploadTaskQuery$ = null;
     this.progressState = null;
     this.doingSomething = false;
+    this.key = null;
   }
 
   deleteExistingProject(): void {
@@ -230,6 +237,9 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
           this.deleteExistingProject();
           this.submitted = false;
           this.doingSomething = false;
+        }
+        if (this.uploadFileType == UploadFileType.RECORDS) {
+          this.isProjectTitleDuplicate = this.checkIfProjectTitleExist();
         }
       }
       else {
@@ -294,7 +304,7 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
 
   navigateToSettings(): void {
     timer(200).subscribe(() => {
-      this.router.navigate(['projects', this.projectId, 'settings'])
+      this.router.navigate(['projects', this.projectId, 'settings']);
     });
   }
 
@@ -310,6 +320,10 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
       const recalculationCosts = embeddings.some((e: Embedding) => e.platform == PlatformType.COHERE || e.platform == PlatformType.OPEN_AI);
       this.uploadSpecificHelper.recalculationCosts = recalculationCosts;
     });
+  }
+
+  setKey(key: string) {
+    this.key = key;
   }
 
 }
