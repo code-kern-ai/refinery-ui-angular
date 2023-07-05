@@ -184,7 +184,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
       }
     }));
     NotificationService.subscribeToNotification(this, {
-      whitelist: ['project_created', 'project_deleted', 'project_update', 'file_upload'],
+      whitelist: ['project_created', 'project_deleted', 'project_update', 'file_upload', 'bad_password'],
       func: this.handleWebsocketNotification
     });
   }
@@ -206,6 +206,9 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     if (['project_created', 'project_deleted', 'project_update'].includes(msgParts[1])) {
       this.projectListQuery$.refetch();
       this.projectStatQuery$.refetch();
+    }
+    if (msgParts[1] == 'bad_password') {
+      this.projectsModals.uploadProject.open = false;
     }
   }
 
