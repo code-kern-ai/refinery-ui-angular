@@ -115,8 +115,8 @@
                                 <div
                                     *ngVar="lsm.recordManager.recordData.baseRecord.data[lVars.taskLookup[attribute.id].attribute.name] as attributeTextData">
                                     <p class="break-words text-sm leading-5 font-normal text-gray-500"
-                                        [ngClass]="lineBreaks != LineBreaksType.NORMAL ? 
-                                        (lineBreaks == LineBreaksType.IS_PRE_WRAP ? 'whitespace-pre-wrap' : 'whitespace-pre-line') : '' "
+                                        [ngClass]="lsm.settingManager.settings.main.lineBreaks != LineBreaksType.NORMAL ? 
+                                        (lsm.settingManager.settings.main.lineBreaks == LineBreaksType.IS_PRE_WRAP ? 'whitespace-pre-wrap' : 'whitespace-pre-line') : '' "
                                         *ngIf="attributeTextData != null && attributeTextData !== '';else notPresentInRecord">
                                         {{attributeTextData}}
                                     </p>

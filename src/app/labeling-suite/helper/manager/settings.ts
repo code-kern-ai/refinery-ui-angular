@@ -1,4 +1,5 @@
 import { LabelSource } from "src/app/base/enum/graphql-enums";
+import { LineBreaksType } from "src/app/data/components/data-browser/helper-classes/modals-helper";
 import { DoBeforeDestroy } from "src/app/util/interfaces";
 import { enumToArray, transferNestedDict } from "submodules/javascript-functions/general";
 
@@ -19,6 +20,7 @@ export type LabelingSuiteMainSettings = {
     autoNextRecord: boolean;
     hoverGroupBackgroundColor: string;
     hoverGroupBackgroundColorClass: string;
+    lineBreaks: LineBreaksType;
 }
 export type LabelingSuiteLabelingSettings = {
     showNLabelButton: number;
@@ -173,6 +175,7 @@ export class LabelingSuiteSettingManager implements DoBeforeDestroy {
                 autoNextRecord: false,
                 hoverGroupBackgroundColor: "green",
                 hoverGroupBackgroundColorClass: "bg-green-100",
+                lineBreaks: LineBreaksType.NORMAL
             },
             overviewTable: {
                 show: true,
