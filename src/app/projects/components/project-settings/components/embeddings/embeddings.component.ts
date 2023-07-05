@@ -102,6 +102,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
       platform = { ...platform, name: platformNamesDict[platform.platform] };
       if (platform.terms != null) {
         platform.splitTerms = platform.terms.split('@@PLACEHOLDER@@');
+        platform.splitTerms[1] = platform.splitTerms[1].substring(1);
       }
       embeddingPlatformsNew.push(platform);
     });
@@ -266,6 +267,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
           platform.name = platformNamesDict[platform.platform];
           if (platform.terms != null) {
             platform.splitTerms = platform.terms.split('@@PLACEHOLDER@@');
+            platform.splitTerms[1] = platform.splitTerms[1].substring(1);
           }
         });
       }

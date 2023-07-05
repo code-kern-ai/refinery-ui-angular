@@ -256,13 +256,13 @@
             </div>
             <div *ngIf="settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.COHERE || settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.OPEN_AI"
                 style="text-align: center; margin-top: 12px;">
-                <div class="border border-gray-300 text-xs text-gray-500 p-2.5 rounded-lg">
+                <div class="border border-gray-300 text-xs text-gray-500 p-2.5 rounded-lg text-justify">
                     <label #gdprText className="text-gray-700">
                         {{selectedPlatform.splitTerms[0]}}
                         <a [href]="selectedPlatform.link" class="underline" target="_blank">
                             {{settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value ==
-                            PlatformType.COHERE ? 'cohere terms of service' : 'openai terms of service'}}
-                        </a>{{selectedPlatform.splitTerms[1]}}
+                            PlatformType.COHERE ? 'cohere terms of service.' : 'openai terms of service.'}}</a>
+                        <div>{{selectedPlatform.splitTerms[1]}}</div>
                     </label>
                 </div>
 
