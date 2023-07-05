@@ -5,7 +5,7 @@
     <div class="relative">
         <input #pw [type]="show || key.length == 0 ? 'text':'password'" autocomplete="new-password" [value]="key"
             (input)="setKey($event.target.value)" name="something"
-            class="input input-sm input-bordered w-full placeholder-italic" placeholder="Enter some key here..."
+            class="input input-sm input-bordered w-full placeholder-italic" [placeholder]="placeholder"
             (click)="show?null:pw.type='password'" />
         <button (click)="toggleKey()" [disabled]="!key">
             <ng-template [ngIf]="!show" [ngIfElse]="eyeOff">

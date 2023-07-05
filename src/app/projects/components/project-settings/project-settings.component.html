@@ -221,8 +221,7 @@
             <span class="card-title mb-0 label-text">Final size estimate:</span>
             <span class="card-title mb-0 label-text ml-2">{{settingModals.projectExport.downloadSizeText}}</span>
         </div>
-        <kern-crypted-field label="Encrypt zip file with password" displayOptionalAsText="true"
-            (keyChange)="setKey($event)"></kern-crypted-field>
+        <kern-crypted-field label="Encrypt zip file with password" (keyChange)="setKey($event)"></kern-crypted-field>
     </div>
     <div class="modal-action">
         <label *ngIf="settingModals.projectExport.projectExportCredentials?.downloadFileName as fileName"
