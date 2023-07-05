@@ -56,10 +56,12 @@ export class LabelingSuiteComponent implements OnInit, OnDestroy {
     this.lsm = new LabelingSuiteManager(projectId, this, this.activatedRoute, this.router, this.projectApolloService, this.recordApolloService);
     this.setUpCommentRequests(projectId);
     const checkIfLineBreaks = JSON.parse(localStorage.getItem('lineBreaks'));
-    if (checkIfLineBreaks) {
-      this.lsm.settingManager.settings.main.lineBreaks = checkIfLineBreaks;
-    } else {
-      localStorage.setItem('lineBreaks', JSON.stringify(this.lsm.settingManager.settings.main.lineBreaks));
+    if (this.lsm.settingManager) {
+      if (checkIfLineBreaks) {
+        this.lsm.settingManager.settings.main.lineBreaks = checkIfLineBreaks;
+      } else {
+        localStorage.setItem('lineBreaks', JSON.stringify(this.lsm.settingManager.settings.main.lineBreaks));
+      }
     }
   }
 
