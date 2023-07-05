@@ -387,7 +387,8 @@
                                     <div class="text-sm leading-5 font-normal text-gray-500">
                                         run#{{task.iteration}}
                                     </div>
-                                    <progress class="progress progress-info w-full m-2" [value]="task.progress"
+                                    <progress *ngIf="informationSource.informationSourceType == 'LABELING_FUNCTION'"
+                                        class="progress progress-info w-full m-2" [value]="task.progress"
                                         max="1"></progress>
                                 </ng-template>
                                 <ng-template #notRunning>
