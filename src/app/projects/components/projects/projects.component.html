@@ -347,13 +347,13 @@
     </kern-modal>
 
 </ng-template>
-
 <kern-modal-upload [uploadFileType]="UploadFileType.PROJECT" [isModalOpen]="projectsModals.uploadProject.open"
     [uploadOptions]="{
     reloadOnFinish: false,
     deleteProjectOnFail: true,
     closeModalOnClick: true,
     isModal: true,
-    navigateToProject: true
+    navigateToProject: true,
+    showBadPasswordMsg: showBadPasswordMsg
 }" (closeModalEvent)="projectsModals.uploadProject.open = false;" (refetchProjects)="refetchProjects($event)">
 </kern-modal-upload>

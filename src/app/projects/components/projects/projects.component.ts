@@ -83,6 +83,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   }
   projectsModals: ProjectsModals = createDefaultProjectsModals();
   unknownUser: string = '<unknown user>';
+  showBadPasswordMsg: boolean = false;
 
   constructor(
     private projectApolloService: ProjectApolloService,
@@ -204,11 +205,13 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   handleWebsocketNotification(msgParts) {
     if (!this.projectListQuery$) return;
     if (['project_created', 'project_deleted', 'project_update'].includes(msgParts[1])) {
-      this.projectListQuery$.refetch();
-      this.projectStatQuery$.refetch();
+      timer(500).subscribe(() => {
+        this.projectListQuery$.refetch();
+        this.projectStatQuery$.refetch();
+      });
     }
     if (msgParts[1] == 'bad_password') {
-      this.projectsModals.uploadProject.open = false;
+      this.showBadPasswordMsg = true;
     }
   }
 
