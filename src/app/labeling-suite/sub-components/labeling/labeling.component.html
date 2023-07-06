@@ -289,7 +289,7 @@
         <div *ngFor="let token of tokenLookup[attributeId].token" class="relative z-10" attr.tokenIdx="{{token.idx}}"
             attr.attributeId="{{attributeId}}"
             style.margin-bottom="{{tokenLookup[attributeId][token.idx]?.tokenMarginBottom}}"
-            [ngClass]="[token.countLineBreaks > 0 ?'w-full':'']">
+            [ngClass]="[token.countLineBreaks > 0 && lsm.settingManager.settings.main.lineBreaks != LineBreaksType.NORMAL ?'w-full':'']">
             <ng-template [ngIf]="token.countLineBreaks == 0" [ngIfElse]="newLinesBlock">
                 <ng-template [ngIf]="token.type" [ngIfElse]="tokenValue">
                     <div [attr.data-tip]="'spaCy type: ' + token.type" class="tooltip">
@@ -344,9 +344,13 @@
                 </ng-template>
             </ng-template>
             <ng-template #newLinesBlock>
-                <ng-container *ngFor="let item of token.countLineBreaksArray">
-                    <ng-container *ngTemplateOutlet="dummyElementNewLine"></ng-container>
-                </ng-container>
+                <ng-template [ngIf]="lsm.settingManager.settings.main.lineBreaks != LineBreaksType.NORMAL"
+                    [ngIfElse]="spaceBlock">
+                    <ng-container *ngFor="let item of token.countLineBreaksArray">
+                        <ng-container *ngTemplateOutlet="dummyElementNewLine"></ng-container>
+                    </ng-container>
+                </ng-template>
+
             </ng-template>
         </div>
     </div>
@@ -354,4 +358,8 @@
 
 <ng-template #dummyElementNewLine>
     <div><br></div>
+</ng-template>
+
+<ng-template #spaceBlock>
+    &nbsp;
 </ng-template>

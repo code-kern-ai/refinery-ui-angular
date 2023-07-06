@@ -20,6 +20,7 @@ export type LabelingSuiteMainSettings = {
     autoNextRecord: boolean;
     hoverGroupBackgroundColor: string;
     hoverGroupBackgroundColorClass: string;
+    // Special case - line breaks get synchronized with the data browser
     lineBreaks: LineBreaksType;
 }
 export type LabelingSuiteLabelingSettings = {
@@ -112,11 +113,20 @@ export class LabelingSuiteSettingManager implements DoBeforeDestroy {
             }
         }
         if (!this.settings.task[this.projectId]) this.settings.task[this.projectId] = {};
+        this.settings.main.lineBreaks = this.getLineBreakValue();
         this.runSettingListeners(ComponentType.ALL);
+    }
+
+    private getLineBreakValue(): LineBreaksType {
+        // Special case - line breaks get synchronized with the data browser
+        let lineBreaks = localStorage.getItem("lineBreaks");
+        if (lineBreaks) return JSON.parse(lineBreaks);
+        else return LineBreaksType.NORMAL;
     }
 
     public saveSettings() {
         localStorage.setItem(LabelingSuiteSettingManager.localStorageKey, JSON.stringify(this.settings));
+        localStorage.setItem("lineBreaks", JSON.stringify(this.settings.main.lineBreaks));
     }
 
     public setDefaultSettings() {
@@ -175,7 +185,7 @@ export class LabelingSuiteSettingManager implements DoBeforeDestroy {
                 autoNextRecord: false,
                 hoverGroupBackgroundColor: "green",
                 hoverGroupBackgroundColorClass: "bg-green-100",
-                lineBreaks: LineBreaksType.NORMAL
+                lineBreaks: this.getLineBreakValue()
             },
             overviewTable: {
                 show: true,

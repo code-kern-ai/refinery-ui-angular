@@ -5,7 +5,6 @@ import { map } from 'rxjs/operators';
 import { queries } from './record-queries';
 import { mutations } from './record-mutations';
 import { queries as projectQueries } from '../project/project-queries';
-import { labelSourceToString } from '../../enum/graphql-enums';
 import { ApolloChecker } from '../base/apollo-checker';
 import { countOccurrences } from 'submodules/javascript-functions/general';
 
