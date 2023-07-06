@@ -15,5 +15,5 @@
             isModal: uploadOptions.isModal,
             tokenizer: uploadOptions.tokenizer,
             showBadPasswordMsg: uploadOptions.showBadPasswordMsg
-        }" (fileAttached)="setFile($event)"></kern-upload>
+        }" (fileAttached)="setFile($event)" (badPasswordMsg)="setBadPasswordMsg($event)"></kern-upload>
 </kern-modal>

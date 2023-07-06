@@ -28,6 +28,7 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
 
   @Output() fileAttached = new EventEmitter<File>();
   @Output() refetchProjects = new EventEmitter<boolean>();
+  @Output() badPasswordMsg = new EventEmitter<boolean>();
 
   get UploadFileType(): typeof UploadFileType {
     return UploadFileType;
@@ -134,8 +135,9 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
   onFileDropped(files: File[]): void {
     this.file = files.length > 0 ? files[0] : null;
     this.fileEndsWithZip = this.file?.name.endsWith('.zip');
-    this.uploadOptions.showBadPasswordMsg = false;
     this.fileAttached.emit(this.file);
+    this.badPasswordMsg.emit(false);
+
   }
 
   onFileInput(event: any): void {

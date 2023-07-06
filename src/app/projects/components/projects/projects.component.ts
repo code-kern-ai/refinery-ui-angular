@@ -268,4 +268,8 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     if (!refetch) return;
     this.projectListQuery$.refetch();
   }
+
+  setBadPasswordMsg(showBadPassMgs: boolean) {
+    this.showBadPasswordMsg = showBadPassMgs;
+  }
 }
