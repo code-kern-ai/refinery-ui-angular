@@ -26,6 +26,7 @@ export type UploadOptions = {
  * @closeModalOnClick {boolean, optional} - If true, the modal will be closed after the upload is finished
  * @tokenizer {string, optional} - Tokenizer used for the upload
  * @navigateToProject {boolean, optional} - If true, the user will be redirected to the project after the upload is finished
+ * @showBadPasswordMsg {boolean, optional} - If true, the user will be shown a message that the password is incorrect
  */
     deleteProjectOnFail?: boolean;
     reloadOnFinish?: boolean;
@@ -37,6 +38,7 @@ export type UploadOptions = {
     closeModalOnClick?: boolean;
     tokenizer?: string;
     navigateToProject: boolean;
+    showBadPasswordMsg?: boolean;
 };
 
 export type UploadTask = {

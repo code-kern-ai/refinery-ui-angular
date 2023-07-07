@@ -19,6 +19,7 @@ export class ModalUploadComponent implements OnInit, OnChanges {
 
   @Output() closeModalEvent = new EventEmitter();
   @Output() fileAttached = new EventEmitter<File>();
+  @Output() badPasswordMsg = new EventEmitter<boolean>();
 
   get UploadFileType(): typeof UploadFileType {
     return UploadFileType;
@@ -79,5 +80,9 @@ export class ModalUploadComponent implements OnInit, OnChanges {
         });
       }
     }
+  }
+
+  setBadPasswordMsg(showBadPassMgs: boolean): void {
+    this.badPasswordMsg.emit(showBadPassMgs);
   }
 }

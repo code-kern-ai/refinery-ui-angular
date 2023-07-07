@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, Input, OnChanges, OnDestroy, SimpleChanges, ViewChild } from '@angular/core';
 import { getLabelSourceOrder, getTaskTypeOrder, InformationSourceReturnType, LabelingTask, LabelSource, UserRole } from 'src/app/base/enum/graphql-enums';
 import { LabelingSuiteManager, UpdateType } from '../../helper/manager/manager';
 import { LabelingSuiteRlaPreparator } from '../../helper/manager/recordRla';
@@ -14,7 +14,7 @@ const SWIM_LANE_SIZE_PX = 12;
   templateUrl: './labeling.component.html',
   styleUrls: ['./labeling.component.scss', '../../main-component/labeling-suite.component.scss'],
 })
-export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDestroy {
+export class LabelingSuiteLabelingComponent implements OnChanges, OnDestroy {
 
   @Input() lsm: LabelingSuiteManager;
   userRoleEnum: typeof UserRole = UserRole;
@@ -45,7 +45,6 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
   labelAddButtonDisabled: boolean = true;
 
   labelHotkeys: HotkeyLookup;
-  lineBreaks: LineBreaksType;
 
   //list of prepared rla entries
   private fullRlaData: any[];
@@ -80,10 +79,6 @@ export class LabelingSuiteLabelingComponent implements OnInit, OnChanges, OnDest
       this.lsm.settingManager.unregisterSettingListener(ComponentType.TASK_HEADER, this);
       this.lsm.settingManager.unregisterSettingListener(ComponentType.LABELING, this);
     }
-  }
-
-  ngOnInit(): void {
-    this.lineBreaks = JSON.parse(localStorage.getItem('lineBreaks'));
   }
 
   private displayUserChanged() {

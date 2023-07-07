@@ -8,7 +8,8 @@ import { Component, ElementRef, EventEmitter, Input, OnDestroy, Output, ViewChil
 })
 export class CryptedFieldComponent implements OnDestroy {
   @Input() label: string = 'Password';
-  @Input() displayOptionalAsText: boolean = false;
+  @Input() placeholder: string = 'Enter some password here...';
+  @Input() displayOptionalAsText: boolean = true;
   @Output() keyChange = new EventEmitter<string>();
 
   @ViewChild('inputElement') inputElement: ElementRef;

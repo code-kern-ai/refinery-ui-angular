@@ -102,6 +102,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
       platform = { ...platform, name: platformNamesDict[platform.platform] };
       if (platform.terms != null) {
         platform.splitTerms = platform.terms.split('@@PLACEHOLDER@@');
+        platform.splitTerms[1] = platform.splitTerms[1].substring(1);
       }
       embeddingPlatformsNew.push(platform);
     });
@@ -110,9 +111,13 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
 
   checkForceHiddenHandles() {
     const form = this.settingModals.embedding.create.embeddingCreationFormGroup;
+    const platformValue = form.get('platform').value;
     this.prepareSuggestions(form);
-    this.initEmbeddingModal(false, form.get('platform').value);
-    this.selectedPlatform = this.embeddingPlatforms.find((p: EmbeddingPlatform) => p.platform == form.get('platform').value);
+    this.initEmbeddingModal(false, platformValue);
+    this.selectedPlatform = this.embeddingPlatforms.find((p: EmbeddingPlatform) => p.platform == platformValue);
+    if (platformValue == PlatformType.OPEN_AI || platformValue == PlatformType.COHERE) {
+      form.get('granularity').setValue(EmbeddingType.ON_ATTRIBUTE);
+    }
     this.checkIfPlatformHasToken();
   }
 
@@ -262,6 +267,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
           platform.name = platformNamesDict[platform.platform];
           if (platform.terms != null) {
             platform.splitTerms = platform.terms.split('@@PLACEHOLDER@@');
+            platform.splitTerms[1] = platform.splitTerms[1].substring(1);
           }
         });
       }

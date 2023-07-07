@@ -51,6 +51,7 @@
     <ng-template [ngIf]="uploadFileType == UploadFileType.PROJECT">
         <ng-container *ngTemplateOutlet="upload"></ng-container>
         <ng-template *ngTemplateOutlet="cryptedField"></ng-template>
+        <div *ngIf="uploadOptions.showBadPasswordMsg" class="text-red-700 text-xs mt-2 text-center">Wrong password</div>
     </ng-template>
 
     <ng-template [ngIf]="uploadFileType == UploadFileType.KNOWLEDGE_BASE">
@@ -272,6 +273,6 @@
 </ng-template>
 
 <ng-template #cryptedField>
-    <kern-crypted-field *ngIf="file && (file.type == zipType || fileEndsWithZip)"
-        (keyChange)="setKey($event)"></kern-crypted-field>
+    <kern-crypted-field *ngIf="file && (file.type == zipType || fileEndsWithZip)" (keyChange)="setKey($event)"
+        placeholder="Enter password if zip file is protected..."></kern-crypted-field>
 </ng-template>

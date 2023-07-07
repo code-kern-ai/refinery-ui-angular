@@ -345,7 +345,7 @@
             </div>
             <kern-logs [logs]="lastTaskLogs"></kern-logs>
 
-            <div class="mt-8">
+            <div class="mt-8" *ngIf="informationSource.informationSourceType == 'LABELING_FUNCTION'">
                 <div class="text-sm leading-5 font-medium text-gray-700 inline-block">Last execution</div>
                 <div *ngIf="!informationSource.lastTask" class="bg-white">
                     <div class="py-6 text-sm leading-5 font-normal text-gray-500">This

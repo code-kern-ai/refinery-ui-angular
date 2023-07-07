@@ -11,6 +11,7 @@ import { findProjectIdFromRoute } from 'src/app/util/helper-functions';
 import { LabelingSuiteManager } from '../helper/manager/manager';
 import { ComponentType } from '../helper/manager/settings';
 import { UserType } from '../helper/manager/user';
+import { LineBreaksType } from 'src/app/data/components/data-browser/helper-classes/modals-helper';
 
 @Component({
   selector: 'kern-labeling-suite',
@@ -29,6 +30,9 @@ export class LabelingSuiteComponent implements OnInit, OnDestroy {
   //manager
   lsm: LabelingSuiteManager;
 
+  get LineBreaksType(): typeof LineBreaksType {
+    return LineBreaksType;
+  }
 
   constructor(
     private router: Router,
@@ -51,6 +55,14 @@ export class LabelingSuiteComponent implements OnInit, OnDestroy {
     }
     this.lsm = new LabelingSuiteManager(projectId, this, this.activatedRoute, this.router, this.projectApolloService, this.recordApolloService);
     this.setUpCommentRequests(projectId);
+    const checkIfLineBreaks = JSON.parse(localStorage.getItem('lineBreaks'));
+    if (this.lsm.settingManager) {
+      if (checkIfLineBreaks) {
+        this.lsm.settingManager.settings.main.lineBreaks = checkIfLineBreaks;
+      } else {
+        localStorage.setItem('lineBreaks', JSON.stringify(this.lsm.settingManager.settings.main.lineBreaks));
+      }
+    }
   }
 
 
@@ -110,6 +122,24 @@ export class LabelingSuiteComponent implements OnInit, OnDestroy {
       this.lsm.userManager.selectUserByIdx(selectedPos);
     }
 
+  }
+
+  toggleLineBreaks() {
+    if (this.lsm.settingManager.settings.main.lineBreaks == LineBreaksType.IS_PRE_WRAP || this.lsm.settingManager.settings.main.lineBreaks == LineBreaksType.IS_PRE_LINE) {
+      this.lsm.settingManager.settings.main.lineBreaks = LineBreaksType.NORMAL;
+    } else {
+      this.lsm.settingManager.settings.main.lineBreaks = LineBreaksType.IS_PRE_WRAP;
+    }
+    localStorage.setItem('lineBreaks', JSON.stringify(this.lsm.settingManager.settings.main.lineBreaks));
+  }
+
+  toggleLineBreaksPreWrap() {
+    if (this.lsm.settingManager.settings.main.lineBreaks == LineBreaksType.IS_PRE_WRAP) {
+      this.lsm.settingManager.settings.main.lineBreaks = LineBreaksType.IS_PRE_LINE;
+    } else if (this.lsm.settingManager.settings.main.lineBreaks == LineBreaksType.IS_PRE_LINE) {
+      this.lsm.settingManager.settings.main.lineBreaks = LineBreaksType.IS_PRE_WRAP;
+    }
+    localStorage.setItem('lineBreaks', JSON.stringify(this.lsm.settingManager.settings.main.lineBreaks));
   }
 
 

@@ -13,6 +13,7 @@
             reloadOnFinish: uploadOptions.reloadOnFinish,
             knowledgeBaseId: uploadFileType == UploadFileType.KNOWLEDGE_BASE ? uploadOptions.knowledgeBaseId : null,
             isModal: uploadOptions.isModal,
-            tokenizer: uploadOptions.tokenizer
-        }" (fileAttached)="setFile($event)"></kern-upload>
+            tokenizer: uploadOptions.tokenizer,
+            showBadPasswordMsg: uploadOptions.showBadPasswordMsg
+        }" (fileAttached)="setFile($event)" (badPasswordMsg)="setBadPasswordMsg($event)"></kern-upload>
 </kern-modal>

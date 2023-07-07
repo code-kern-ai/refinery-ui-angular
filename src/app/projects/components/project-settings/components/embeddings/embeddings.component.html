@@ -132,7 +132,7 @@
                 <button
                     class="ml-1 inline-block items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none cursor-pointer"
                     [routerLink]="['/model-download']" [disabled]="!isManaged"
-                    [ngClass]="!isManaged ? 'cursor-not-allowed' : 'opacity-100 cursor-pointer'">
+                    [ngClass]="!isManaged ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'">
                     <svg xmlns="http://www.w3.org/2000/svg"
                         class="inline-block icon icon-tabler icon-tabler-arrow-autofit-down" width="20" height="20"
                         viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
@@ -256,13 +256,13 @@
             </div>
             <div *ngIf="settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.COHERE || settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.OPEN_AI"
                 style="text-align: center; margin-top: 12px;">
-                <div class="border border-gray-300 text-xs text-gray-500 p-2.5 rounded-lg">
+                <div class="border border-gray-300 text-xs text-gray-500 p-2.5 rounded-lg text-justify">
                     <label #gdprText className="text-gray-700">
                         {{selectedPlatform.splitTerms[0]}}
                         <a [href]="selectedPlatform.link" class="underline" target="_blank">
                             {{settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value ==
-                            PlatformType.COHERE ? 'cohere terms of service' : 'openai terms of service'}}
-                        </a>{{selectedPlatform.splitTerms[1]}}
+                            PlatformType.COHERE ? 'cohere terms of service.' : 'openai terms of service.'}}</a>
+                        <div>{{selectedPlatform.splitTerms[1]}}</div>
                     </label>
                 </div>
 

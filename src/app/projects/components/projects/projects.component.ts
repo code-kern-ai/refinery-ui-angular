@@ -83,6 +83,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   }
   projectsModals: ProjectsModals = createDefaultProjectsModals();
   unknownUser: string = '<unknown user>';
+  showBadPasswordMsg: boolean = false;
 
   constructor(
     private projectApolloService: ProjectApolloService,
@@ -184,7 +185,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
       }
     }));
     NotificationService.subscribeToNotification(this, {
-      whitelist: ['project_created', 'project_deleted', 'project_update', 'file_upload'],
+      whitelist: ['project_created', 'project_deleted', 'project_update', 'file_upload', 'bad_password'],
       func: this.handleWebsocketNotification
     });
   }
@@ -204,8 +205,13 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   handleWebsocketNotification(msgParts) {
     if (!this.projectListQuery$) return;
     if (['project_created', 'project_deleted', 'project_update'].includes(msgParts[1])) {
-      this.projectListQuery$.refetch();
-      this.projectStatQuery$.refetch();
+      timer(500).subscribe(() => {
+        this.projectListQuery$.refetch();
+        this.projectStatQuery$.refetch();
+      });
+    }
+    if (msgParts[1] == 'bad_password') {
+      this.showBadPasswordMsg = true;
     }
   }
 
@@ -261,5 +267,9 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   refetchProjects(refetch: boolean) {
     if (!refetch) return;
     this.projectListQuery$.refetch();
+  }
+
+  setBadPasswordMsg(showBadPassMgs: boolean) {
+    this.showBadPasswordMsg = showBadPassMgs;
   }
 }
