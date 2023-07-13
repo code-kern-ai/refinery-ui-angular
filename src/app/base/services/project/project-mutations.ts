@@ -11,8 +11,8 @@ export const mutations = {
     }
   `,
   CREATE_SAMPLE_PROJECT: gql`
-  mutation($name:String){
-    createSampleProject(name:$name){
+  mutation($name:String, $projectType: String){
+    createSampleProject(name:$name, projectType:$projectType){
       ok
       project{
         id

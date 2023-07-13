@@ -358,3 +358,24 @@
 }" (closeModalEvent)="projectsModals.uploadProject.open = false;" (refetchProjects)="refetchProjects($event)"
     (badPasswordMsg)="setBadPasswordMsg($event)">
 </kern-modal-upload>
+
+<kern-modal [isOpen]="projectsModals.projectNameSampleProject.open" closeButton="X" [modalBoxStyle]="{'width':'35rem'}"
+    [acceptButton]="{
+    buttonCaption: 'Create',
+    closeAfterClick:false,
+    emitObject: this, emitFunction: importSampleProject,
+    disabled: projectName == '' || projectsModals.projectNameSampleProject.projectNameExists == true
+}" (optionClicked)="projectsModals.projectNameSampleProject.open = false;">
+    <h1 class="flex flex-grow justify-center text-lg text-gray-900 font-bold">Enter project name</h1>
+    <div class="form-control">
+        <label class="text-gray-500 text-sm font-normal">Project title</label>
+
+        <div class="flex flex-row">
+            <input [value]="projectName" (input)="checkIfProjectNameExists($event.target.value)" type="text"
+                placeholder="Enter some title here ..." required autocomplete="off"
+                class="input input-sm input-bordered w-full placeholder-italic">
+        </div>
+        <div *ngIf="projectsModals.projectNameSampleProject.projectNameExists" class="text-red-700 text-xs mt-2">Project
+            title exists</div>
+    </div>
+</kern-modal>

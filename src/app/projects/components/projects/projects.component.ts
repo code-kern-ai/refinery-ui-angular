@@ -84,6 +84,8 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   projectsModals: ProjectsModals = createDefaultProjectsModals();
   unknownUser: string = '<unknown user>';
   showBadPasswordMsg: boolean = false;
+  projectName: string = '';
+  projectType: string = '';
 
   constructor(
     private projectApolloService: ProjectApolloService,
@@ -227,12 +229,20 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     if (value == 'Further sample projects') {
       window.open("https://github.com/code-kern-ai/refinery-sample-projects", "_blank");
     } else {
-      this.importSampleProject(this.isProjectInitial ? this.previousValue + ' - initial' : value)
+      this.projectName = this.isProjectInitial ? this.previousValue + ' - initial' : value;
+      this.projectType = this.isProjectInitial ? this.previousValue + ' - initial' : value;
+      this.importSampleProject()
     }
   }
 
-  importSampleProject(projectName) {
-    this.projectApolloService.createSampleProject(projectName).pipe(first()).subscribe((p: Project) => {
+  importSampleProject() {
+    const checkIfProjectExists = this.projectList.some(project => project.name == this.projectName);
+    if (checkIfProjectExists) {
+      this.projectsModals.projectNameSampleProject.open = true;
+      this.projectsModals.projectNameSampleProject.projectNameExists = true;
+      return;
+    }
+    this.projectApolloService.createSampleProject(this.projectName, this.projectType).pipe(first()).subscribe((p: Project) => {
       if (this.router.url == "/projects") {
         this.router.navigate(['projects', p.id, 'overview']);
       }
@@ -271,5 +281,10 @@ export class ProjectsComponent implements OnInit, OnDestroy {
 
   setBadPasswordMsg(showBadPassMgs: boolean) {
     this.showBadPasswordMsg = showBadPassMgs;
+  }
+
+  checkIfProjectNameExists(value: string) {
+    this.projectName = value;
+    this.projectsModals.projectNameSampleProject.projectNameExists = this.projectList.some(project => project.name == this.projectName);
   }
 }

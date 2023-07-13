@@ -31,12 +31,13 @@ export class ProjectApolloService {
       .pipe(map((result) => result['data']['createProject']['project']));
   }
 
-  createSampleProject(projectName: string) {
+  createSampleProject(projectName: string, projectType: string) {
     return this.apollo
       .mutate({
         mutation: mutations.CREATE_SAMPLE_PROJECT,
         variables: {
           name: projectName,
+          projectType: projectType
         },
       })
       .pipe(map((result) => result['data']['createSampleProject']['project']));
