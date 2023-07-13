@@ -8,12 +8,20 @@
     <div class="text-sm text-gray-500 mb-4 text-center">
         {{subTitle}}
     </div>
+    <div *ngIf="file" class="form-control">
+        <label class="text-gray-500 text-sm font-normal">Project title</label>
+        <input [value]="projectName" (input)="setProjectName($event.target.value)" type="text"
+            placeholder="Enter some title here ..." required autocomplete="off"
+            class="input input-sm input-bordered w-full placeholder-italic">
+    </div>
+
     <kern-upload [uploadFileType]="uploadFileType" [uploadOptions]="{
             deleteProjectOnFail: uploadOptions.deleteProjectOnFail,
             reloadOnFinish: uploadOptions.reloadOnFinish,
             knowledgeBaseId: uploadFileType == UploadFileType.KNOWLEDGE_BASE ? uploadOptions.knowledgeBaseId : null,
             isModal: uploadOptions.isModal,
             tokenizer: uploadOptions.tokenizer,
-            showBadPasswordMsg: uploadOptions.showBadPasswordMsg
+            showBadPasswordMsg: uploadOptions.showBadPasswordMsg,
+            projectName: projectName
         }" (fileAttached)="setFile($event)" (badPasswordMsg)="setBadPasswordMsg($event)"></kern-upload>
 </kern-modal>

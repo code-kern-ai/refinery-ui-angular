@@ -47,7 +47,7 @@ export class ExistingProjectUploadHelper {
 
     doUpload(): void {
         this.projectApolloService
-            .createProject("Imported Project", "Created during file upload " + this.baseComponent.file.name)
+            .createProject(this.baseComponent.uploadOptions.projectName, "Created during file upload " + this.baseComponent.file.name)
             .pipe(first()).subscribe((p: Project) => {
                 this.baseComponent.uploadHelper.setProjectId(p.id);
                 this.baseComponent.uploadOptions.tokenizer = this.selectedTokenizer;

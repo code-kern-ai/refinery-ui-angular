@@ -35,6 +35,7 @@ export class ModalUploadComponent implements OnInit, OnChanges {
   file: File | null = null;
   title: string;
   subTitle: string;
+  projectName: string = '';
 
   constructor() { }
 
@@ -84,5 +85,10 @@ export class ModalUploadComponent implements OnInit, OnChanges {
 
   setBadPasswordMsg(showBadPassMgs: boolean): void {
     this.badPasswordMsg.emit(showBadPassMgs);
+  }
+
+  setProjectName(projectName: string): void {
+    this.projectName = projectName;
+    this.uploadOptions.projectName = projectName;
   }
 }

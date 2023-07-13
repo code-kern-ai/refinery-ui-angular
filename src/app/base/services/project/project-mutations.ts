@@ -2,7 +2,7 @@ import { gql } from 'apollo-angular';
 
 export const mutations = {
   CREATE_PROJECT: gql`
-    mutation ($name: String!, $description: String!) {
+    mutation ($name: String, $description: String!) {
       createProject(name: $name, description: $description) {
         project {
           id
