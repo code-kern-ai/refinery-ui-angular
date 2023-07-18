@@ -21,7 +21,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { createDefaultProjectsModals, ProjectsModals } from './projects-helper';
 import { UploadFileType } from 'src/app/import/components/helpers/upload-types';
 import { parseUTC } from 'submodules/javascript-functions/date-parser';
-import { isStringTrue } from 'submodules/javascript-functions/general';
+import { isStringTrue, jsonCopy } from 'submodules/javascript-functions/general';
 
 @Component({
   selector: 'kern-projects',
@@ -170,10 +170,12 @@ export class ProjectsComponent implements OnInit, OnDestroy {
       projectList.sort((a, b) => a.name.localeCompare(b.name));
       projectList.forEach(projectItem => {
         if (projectItem.createdAt) {
-          projectItem.timeStamp = parseUTC(projectItem.createdAt);
-          const splitDateTime = projectItem.timeStamp.split(',');
-          projectItem.date = splitDateTime[0].trim();
-          projectItem.time = splitDateTime[1];
+          const projectItemCopy = jsonCopy(projectItem);
+          projectItemCopy.timeStamp = parseUTC(projectItemCopy.createdAt);
+          const splitDateTime = projectItemCopy.timeStamp.split(',');
+          projectItemCopy.date = splitDateTime[0].trim();
+          projectItemCopy.time = splitDateTime[1];
+          projectItem = projectItemCopy;
         };
       });
       this.projectList = projectList.filter(a => a.status != ProjectStatus.IN_DELETION);

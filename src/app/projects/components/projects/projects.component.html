@@ -354,7 +354,8 @@
     closeModalOnClick: true,
     isModal: true,
     navigateToProject: true,
-    showBadPasswordMsg: showBadPasswordMsg
+    showBadPasswordMsg: showBadPasswordMsg,
+    projectNameList: projectList
 }" (closeModalEvent)="projectsModals.uploadProject.open = false;" (refetchProjects)="refetchProjects($event)"
     (badPasswordMsg)="setBadPasswordMsg($event)">
 </kern-modal-upload>
