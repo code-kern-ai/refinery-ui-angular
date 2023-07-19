@@ -166,19 +166,16 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     let tmp;
     [this.projectListQuery$, tmp] = this.projectApolloService.getProjects();
     this.subscriptions$.push(tmp.subscribe((projectList) => {
-
       projectList.sort((a, b) => a.name.localeCompare(b.name));
-      projectList.forEach(projectItem => {
-        if (projectItem.createdAt) {
-          const projectItemCopy = jsonCopy(projectItem);
-          projectItemCopy.timeStamp = parseUTC(projectItemCopy.createdAt);
-          const splitDateTime = projectItemCopy.timeStamp.split(',');
-          projectItemCopy.date = splitDateTime[0].trim();
-          projectItemCopy.time = splitDateTime[1];
-          projectItem = projectItemCopy;
-        };
-      });
-      this.projectList = projectList.filter(a => a.status != ProjectStatus.IN_DELETION);
+      this.projectList = projectList.map((project) => {
+        const projectItemCopy = jsonCopy(project);
+        projectItemCopy.timeStamp = parseUTC(projectItemCopy.createdAt);
+        const splitDateTime = projectItemCopy.timeStamp.split(',');
+        projectItemCopy.date = splitDateTime[0].trim();
+        projectItemCopy.time = splitDateTime[1];
+        return projectItemCopy;
+      })
+      this.projectList = this.projectList.filter(a => a.status != ProjectStatus.IN_DELETION);
     }));
     [this.projectStatQuery$, tmp] = this.organizationApolloService.getOverviewStats();
     this.subscriptions$.push(tmp.subscribe((stats) => {
@@ -240,8 +237,8 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   importSampleProject() {
     const checkIfProjectExists = this.projectList.some(project => project.name == this.projectName);
     if (checkIfProjectExists) {
-      this.projectsModals.projectNameSampleProject.open = true;
-      this.projectsModals.projectNameSampleProject.projectNameExists = true;
+      this.projectsModals.sampleProjectName.open = true;
+      this.projectsModals.sampleProjectName.projectNameExists = true;
       return;
     }
     this.projectApolloService.createSampleProject(this.projectName, this.projectType).pipe(first()).subscribe((p: Project) => {
@@ -285,8 +282,8 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     this.showBadPasswordMsg = showBadPassMgs;
   }
 
-  checkIfProjectNameExists(value: string) {
+  checkAndSetIfProjectNameExists(value: string) {
     this.projectName = value;
-    this.projectsModals.projectNameSampleProject.projectNameExists = this.projectList.some(project => project.name == this.projectName);
+    this.projectsModals.sampleProjectName.projectNameExists = this.projectList.some(project => project.name == this.projectName.trim());
   }
 }

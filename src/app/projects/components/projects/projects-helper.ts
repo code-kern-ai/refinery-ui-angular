@@ -1,6 +1,6 @@
 export type ProjectsModals = {
     uploadProject: UploadProjectModal;
-    projectNameSampleProject: ProjectNameSampleProjectModal;
+    sampleProjectName: SampleProjectNameModal;
 };
 
 export type UploadProjectModal = {
@@ -8,7 +8,7 @@ export type UploadProjectModal = {
     doingSomething: boolean;
 };
 
-export type ProjectNameSampleProjectModal = {
+export type SampleProjectNameModal = {
     open: boolean;
     projectNameExists: boolean;
 }
@@ -19,7 +19,7 @@ export function createDefaultProjectsModals(): ProjectsModals {
             open: false,
             doingSomething: false,
         },
-        projectNameSampleProject: {
+        sampleProjectName: {
             open: false,
             projectNameExists: false
         },

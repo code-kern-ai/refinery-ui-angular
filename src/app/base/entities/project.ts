@@ -8,4 +8,5 @@ export interface Project {
   description?: string;
   numDataScaleUploaded?: number;
   tokenizer?: string;
+  status?: string;
 }

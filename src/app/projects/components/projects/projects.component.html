@@ -360,23 +360,39 @@
     (badPasswordMsg)="setBadPasswordMsg($event)">
 </kern-modal-upload>
 
-<kern-modal [isOpen]="projectsModals.projectNameSampleProject.open" closeButton="X" [modalBoxStyle]="{'width':'35rem'}"
+<kern-modal [isOpen]="projectsModals.sampleProjectName.open" closeButton="X" [modalBoxStyle]="{'width':'35rem'}"
     [acceptButton]="{
     buttonCaption: 'Create',
-    closeAfterClick:false,
+    closeAfterClick: false,
     emitObject: this, emitFunction: importSampleProject,
-    disabled: projectName == '' || projectsModals.projectNameSampleProject.projectNameExists == true
-}" (optionClicked)="projectsModals.projectNameSampleProject.open = false;">
-    <h1 class="flex flex-grow justify-center text-lg text-gray-900 font-bold">Enter project name</h1>
+    disabled: projectName == '' || projectsModals.sampleProjectName.projectNameExists == true
+}" (optionClicked)="projectsModals.sampleProjectName.open = false;">
+    <h1 class="flex flex-grow justify-center text-lg text-gray-900 font-bold">Enter project title</h1>
+    <div class="text-sm text-gray-500 mb-4 text-center">
+        Please enter a custom title for the sample project
+    </div>
     <div class="form-control">
         <label class="text-gray-500 text-sm font-normal">Project title</label>
 
         <div class="flex flex-row">
-            <input [value]="projectName" (input)="checkIfProjectNameExists($event.target.value)" type="text"
+            <input [value]="projectName" (input)="checkAndSetIfProjectNameExists($event.target.value)" type="text"
                 placeholder="Enter some title here ..." required autocomplete="off"
                 class="input input-sm input-bordered w-full placeholder-italic">
         </div>
-        <div *ngIf="projectsModals.projectNameSampleProject.projectNameExists" class="text-red-700 text-xs mt-2">Project
+        <div *ngIf="projectsModals.sampleProjectName.projectNameExists" class="text-red-700 text-xs mt-2">Project
             title exists</div>
+        <div class="flex flex-row mt-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-alert-triangle text-yellow-700"
+                width="20" height="20" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <path
+                    d="M10.24 3.957l-8.422 14.06a1.989 1.989 0 0 0 1.7 2.983h16.845a1.989 1.989 0 0 0 1.7 -2.983l-8.423 -14.06a1.989 1.989 0 0 0 -3.4 0z" />
+                <path d="M12 9v4" />
+                <path d="M12 17h.01" />
+            </svg>
+            <label class="text-yellow-700 text-xs italic ml-2">The first sample project of a specific type can use the
+                default name, but after the name is taken, the user needs a custom name.</label>
+        </div>
     </div>
 </kern-modal>

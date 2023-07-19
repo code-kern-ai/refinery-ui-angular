@@ -9,7 +9,7 @@
         {{subTitle}}
     </div>
     <div class="form-control" *ngIf="uploadFileType == UploadFileType.PROJECT">
-        <label class="text-gray-500 text-sm font-normal">Project title<em>- optional</em></label>
+        <label class="text-gray-500 text-sm font-normal">Project title<em> - optional</em></label>
         <input [value]="projectName" (input)="setProjectName($event.target.value)" type="text"
             placeholder="Enter some title here ..." required autocomplete="off"
             class="input input-sm input-bordered w-full placeholder-italic">
@@ -24,11 +24,8 @@
                 <path d="M12 9v4" />
                 <path d="M12 17h.01" />
             </svg>
-            <label class="text-yellow-700 text-xs italic ml-2">If a project title is not specified, the project title
-                from
-                the
-                file
-                will be used, potentially leading to duplicate project names.</label>
+            <label class="text-yellow-700 text-xs italic ml-2">If no project title is specified, the title mentioned in
+                the uploaded data will be used, potentially leading to a duplication of project titles.</label>
         </div>
     </div>
 
