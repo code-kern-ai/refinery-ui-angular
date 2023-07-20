@@ -35,6 +35,8 @@ export class ModalUploadComponent implements OnInit, OnChanges {
   file: File | null = null;
   title: string;
   subTitle: string;
+  projectName: string = '';
+  isProjectTitleDuplicate: boolean = false;
 
   constructor() { }
 
@@ -65,6 +67,13 @@ export class ModalUploadComponent implements OnInit, OnChanges {
 
   setFile(file: File): void {
     this.file = file;
+    if (this.file) {
+      if (this.projectName === '') this.projectName = this.file.name.split('.')[0];
+    } else {
+      this.projectName = '';
+    }
+    this.uploadOptions.projectName = this.projectName;
+    this.checkIfProjectNameDuplicate();
   }
 
   optionClicked(button: string): void {
@@ -84,5 +93,15 @@ export class ModalUploadComponent implements OnInit, OnChanges {
 
   setBadPasswordMsg(showBadPassMgs: boolean): void {
     this.badPasswordMsg.emit(showBadPassMgs);
+  }
+
+  setProjectName(projectName: string): void {
+    this.projectName = projectName;
+    this.uploadOptions.projectName = projectName;
+    this.checkIfProjectNameDuplicate();
+  }
+
+  checkIfProjectNameDuplicate(): void {
+    this.isProjectTitleDuplicate = this.uploadOptions.projectNameList.some(project => project.name === this.projectName);
   }
 }

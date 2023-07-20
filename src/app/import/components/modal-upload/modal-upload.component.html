@@ -8,12 +8,34 @@
     <div class="text-sm text-gray-500 mb-4 text-center">
         {{subTitle}}
     </div>
+    <div class="form-control" *ngIf="uploadFileType == UploadFileType.PROJECT">
+        <label class="text-gray-500 text-sm font-normal">Project title<em> - optional</em></label>
+        <input [value]="projectName" (input)="setProjectName($event.target.value)" type="text"
+            placeholder="Enter some title here ..." required autocomplete="off"
+            class="input input-sm input-bordered w-full placeholder-italic">
+        <div *ngIf="isProjectTitleDuplicate" class="text-red-700 text-xs mt-2">Project title exists</div>
+        <div class="flex flex-row mt-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-alert-triangle text-yellow-700"
+                width="20" height="20" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <path
+                    d="M10.24 3.957l-8.422 14.06a1.989 1.989 0 0 0 1.7 2.983h16.845a1.989 1.989 0 0 0 1.7 -2.983l-8.423 -14.06a1.989 1.989 0 0 0 -3.4 0z" />
+                <path d="M12 9v4" />
+                <path d="M12 17h.01" />
+            </svg>
+            <label class="text-yellow-700 text-xs italic ml-2">If no project title is specified, the title mentioned in
+                the uploaded data will be used, potentially leading to a duplication of project titles.</label>
+        </div>
+    </div>
+
     <kern-upload [uploadFileType]="uploadFileType" [uploadOptions]="{
             deleteProjectOnFail: uploadOptions.deleteProjectOnFail,
             reloadOnFinish: uploadOptions.reloadOnFinish,
             knowledgeBaseId: uploadFileType == UploadFileType.KNOWLEDGE_BASE ? uploadOptions.knowledgeBaseId : null,
             isModal: uploadOptions.isModal,
             tokenizer: uploadOptions.tokenizer,
-            showBadPasswordMsg: uploadOptions.showBadPasswordMsg
+            showBadPasswordMsg: uploadOptions.showBadPasswordMsg,
+            projectName: projectName
         }" (fileAttached)="setFile($event)" (badPasswordMsg)="setBadPasswordMsg($event)"></kern-upload>
 </kern-modal>

@@ -21,7 +21,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { createDefaultProjectsModals, ProjectsModals } from './projects-helper';
 import { UploadFileType } from 'src/app/import/components/helpers/upload-types';
 import { parseUTC } from 'submodules/javascript-functions/date-parser';
-import { isStringTrue } from 'submodules/javascript-functions/general';
+import { isStringTrue, jsonCopy } from 'submodules/javascript-functions/general';
 
 @Component({
   selector: 'kern-projects',
@@ -84,6 +84,8 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   projectsModals: ProjectsModals = createDefaultProjectsModals();
   unknownUser: string = '<unknown user>';
   showBadPasswordMsg: boolean = false;
+  projectName: string = '';
+  projectType: string = '';
 
   constructor(
     private projectApolloService: ProjectApolloService,
@@ -164,17 +166,17 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     let tmp;
     [this.projectListQuery$, tmp] = this.projectApolloService.getProjects();
     this.subscriptions$.push(tmp.subscribe((projectList) => {
-
-      projectList.sort((a, b) => a.name.localeCompare(b.name));
-      projectList.forEach(projectItem => {
-        if (projectItem.createdAt) {
-          projectItem.timeStamp = parseUTC(projectItem.createdAt);
-          const splitDateTime = projectItem.timeStamp.split(',');
-          projectItem.date = splitDateTime[0].trim();
-          projectItem.time = splitDateTime[1];
-        };
-      });
-      this.projectList = projectList.filter(a => a.status != ProjectStatus.IN_DELETION);
+      this.projectList = projectList;
+      this.projectList.sort((a, b) => a.name.localeCompare(b.name));
+      this.projectList = this.projectList.filter(a => a.status != ProjectStatus.IN_DELETION);
+      this.projectList = this.projectList.map((project) => {
+        const projectItemCopy = jsonCopy(project);
+        projectItemCopy.timeStamp = parseUTC(projectItemCopy.createdAt);
+        const splitDateTime = projectItemCopy.timeStamp.split(',');
+        projectItemCopy.date = splitDateTime[0].trim();
+        projectItemCopy.time = splitDateTime[1];
+        return projectItemCopy;
+      })
     }));
     [this.projectStatQuery$, tmp] = this.organizationApolloService.getOverviewStats();
     this.subscriptions$.push(tmp.subscribe((stats) => {
@@ -227,13 +229,21 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     if (value == 'Further sample projects') {
       window.open("https://github.com/code-kern-ai/refinery-sample-projects", "_blank");
     } else {
-      this.importSampleProject(this.isProjectInitial ? this.previousValue + ' - initial' : value)
+      this.projectName = this.isProjectInitial ? this.previousValue + ' - initial' : value;
+      this.projectType = this.projectName;
+      this.importSampleProject()
     }
   }
 
-  importSampleProject(projectName) {
-    this.projectApolloService.createSampleProject(projectName).pipe(first()).subscribe((p: Project) => {
-      if (this.router.url == "/projects") {
+  importSampleProject() {
+    const checkIfProjectExists = this.projectList.some(project => project.name == this.projectName);
+    if (checkIfProjectExists) {
+      this.projectsModals.sampleProjectName.open = true;
+      this.projectsModals.sampleProjectName.projectNameExists = true;
+      return;
+    }
+    this.projectApolloService.createSampleProject(this.projectName, this.projectType).pipe(first()).subscribe((p: Project) => {
+      if (this.router.url == "/projects" && !(this.projectsModals.sampleProjectName.open || this.projectsModals.uploadProject.open)) {
         this.router.navigate(['projects', p.id, 'overview']);
       }
     });
@@ -271,5 +281,11 @@ export class ProjectsComponent implements OnInit, OnDestroy {
 
   setBadPasswordMsg(showBadPassMgs: boolean) {
     this.showBadPasswordMsg = showBadPassMgs;
+  }
+
+  checkAndSetIfProjectNameExists(value: string) {
+    this.projectName = value;
+    const checkName = value.trim();
+    this.projectsModals.sampleProjectName.projectNameExists = this.projectList.some(project => project.name == checkName);
   }
 }
