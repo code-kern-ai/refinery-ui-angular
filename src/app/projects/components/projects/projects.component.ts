@@ -166,8 +166,10 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     let tmp;
     [this.projectListQuery$, tmp] = this.projectApolloService.getProjects();
     this.subscriptions$.push(tmp.subscribe((projectList) => {
-      projectList.sort((a, b) => a.name.localeCompare(b.name));
-      this.projectList = projectList.map((project) => {
+      this.projectList = projectList;
+      this.projectList.sort((a, b) => a.name.localeCompare(b.name));
+      this.projectList = this.projectList.filter(a => a.status != ProjectStatus.IN_DELETION);
+      this.projectList = this.projectList.map((project) => {
         const projectItemCopy = jsonCopy(project);
         projectItemCopy.timeStamp = parseUTC(projectItemCopy.createdAt);
         const splitDateTime = projectItemCopy.timeStamp.split(',');
@@ -175,7 +177,6 @@ export class ProjectsComponent implements OnInit, OnDestroy {
         projectItemCopy.time = splitDateTime[1];
         return projectItemCopy;
       })
-      this.projectList = this.projectList.filter(a => a.status != ProjectStatus.IN_DELETION);
     }));
     [this.projectStatQuery$, tmp] = this.organizationApolloService.getOverviewStats();
     this.subscriptions$.push(tmp.subscribe((stats) => {
@@ -229,7 +230,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
       window.open("https://github.com/code-kern-ai/refinery-sample-projects", "_blank");
     } else {
       this.projectName = this.isProjectInitial ? this.previousValue + ' - initial' : value;
-      this.projectType = this.isProjectInitial ? this.previousValue + ' - initial' : value;
+      this.projectType = this.projectName;
       this.importSampleProject()
     }
   }
@@ -242,7 +243,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
       return;
     }
     this.projectApolloService.createSampleProject(this.projectName, this.projectType).pipe(first()).subscribe((p: Project) => {
-      if (this.router.url == "/projects") {
+      if (this.router.url == "/projects" && !(this.projectsModals.sampleProjectName.open || this.projectsModals.uploadProject.open)) {
         this.router.navigate(['projects', p.id, 'overview']);
       }
     });
@@ -284,6 +285,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
 
   checkAndSetIfProjectNameExists(value: string) {
     this.projectName = value;
-    this.projectsModals.sampleProjectName.projectNameExists = this.projectList.some(project => project.name == this.projectName.trim());
+    const checkName = value.trim();
+    this.projectsModals.sampleProjectName.projectNameExists = this.projectList.some(project => project.name == checkName);
   }
 }
