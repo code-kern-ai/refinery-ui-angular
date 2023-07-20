@@ -12,6 +12,7 @@ export type Embedding = {
     platform?: string;
     model?: string;
     apiToken?: string;
+    filterAttributes: string[];
 };
 
 export type EmbeddingPlatform = {

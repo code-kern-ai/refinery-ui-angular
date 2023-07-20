@@ -82,4 +82,13 @@ export class SimilarSearch {
       this.dataBrowser.dataSlicesQuery$.refetch();
     });
   }
+
+  prepareFilterAttributes(embeddingId?: string) {
+    if (!this.embeddings) return [];
+    if (!embeddingId) embeddingId = this.embeddings[0].id;
+    const embedding = this.embeddings.find(e => e.id == embeddingId);
+    if (!embedding) return [];
+    return embedding.filterAttributes;
+  }
+
 }

@@ -65,6 +65,7 @@ import { LabelingLinkType } from 'src/app/labeling-suite/helper/manager/session'
 import { ConfigManager } from 'src/app/base/services/config-service';
 import { dateAsUTCDate } from 'submodules/javascript-functions/date-parser';
 import { copyToClipboard } from 'submodules/javascript-functions/general';
+import { Attribute } from 'src/app/projects/components/project-settings/entities/attribute.type';
 
 
 type DataSlice = {
@@ -207,6 +208,8 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   isManaged: boolean = true;
   saveAttributeType: string = "";
   calledOnce: boolean = false;
+  filterAttributesSSForm: FormGroup;
+  filterAttributesSS: Attribute[];
 
   getSearchFormArray(groupKey: string): FormArray {
     return this.fullSearch.get(groupKey).get('groupElements') as FormArray;
@@ -242,6 +245,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     this.project$ = this.projectApolloService.getProjectById(this.projectId);
     this.similarSearchHelper = new SimilarSearch(this, this.recordApolloService, this.projectApolloService);
     this.similarSearchHelper.refreshEmbeddings();
+    this.filterAttributesSS = this.similarSearchHelper.prepareFilterAttributes();
     this.refreshAnyRecordManuallyLabeled(this.projectId);
     this.filterParser = new DataBrowserFilterParser(this);
     this.userFilter = new UserFilter(this, this.organizationApolloService);
@@ -263,6 +267,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       });
     this.prepareDataSlicesRequest();
     this.checkIfManagedVersion();
+    this.initFilterForm();
 
     NotificationService.subscribeToNotification(this, {
       projectId: this.projectId,
@@ -2133,6 +2138,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
 
   setEmbeddingIdSimilaritySearch(selectedIndex: string) {
     this.dataBrowserModals.similaritySearch.embeddingId = this.similarSearchHelper.embeddings[selectedIndex].id;
+    this.filterAttributesSS = this.similarSearchHelper.prepareFilterAttributes(this.dataBrowserModals.similaritySearch.embeddingId);
   }
 
   requestSimilarSearch() {
@@ -2176,5 +2182,32 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
 
   setSliceName(sliceName: string) {
     this.dataBrowserModals.filter.name = sliceName;
+  }
+
+  initFilterForm() {
+    this.filterAttributesSSForm = this.formBuilder.group({
+      filterAttributes: this.formBuilder.array([]) as FormArray
+    });
+    this.getFilterAttributesSS().push(this.formBuilder.group({
+      name: '',
+      operator: '',
+      searchValue: ''
+    }));
+  }
+
+  getFilterAttributesSS() {
+    return this.filterAttributesSSForm.get('filterAttributes') as FormArray;
+  }
+
+  removeFilterAttributesSS(i: number) {
+    this.getFilterAttributesSS().removeAt(i);
+  }
+
+  addFilterAttributesSS() {
+    this.getFilterAttributesSS().push(this.formBuilder.group({
+      name: '',
+      operator: '',
+      searchValue: ''
+    }));
   }
 }

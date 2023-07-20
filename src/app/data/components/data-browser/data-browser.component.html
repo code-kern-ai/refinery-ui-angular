@@ -1174,26 +1174,118 @@
         style="white-space: pre-wrap; overflow: auto; max-height: 700px; ">{{dataBrowserModals.displaySql.extendedRecordsSql}}</pre>
 </kern-modal>
 
-<ng-template [ngIf]="similarSearchHelper.embeddings?.length>1">
-    <kern-modal [isOpen]="dataBrowserModals.similaritySearch.open" closeButton="X" [acceptButton]="{
-        buttonCaption: 'Search',
-        emitObject: this, emitFunction:requestSimilarSearch
-    }" (optionClicked)="dataBrowserModals.similaritySearch.open = false">
-        <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium"
-            *ngIf="similarSearchHelper.embeddings?.length>1">
-            Select embedding for similarity search </div>
-        <div *ngIf="activeSearchParams.length > 0 || similarSearchHelper.recordsInDisplay">
-            <div class="text-red-500 mb-2 flex flex-grow justify-center text-sm">
-                Warning: your current filter selection will be removed!</div>
+<kern-modal [isOpen]="dataBrowserModals.similaritySearch.open" closeButton="X" [acceptButton]="{
+    buttonCaption: 'Search',
+    emitObject: this, emitFunction:requestSimilarSearch
+}" (optionClicked)="dataBrowserModals.similaritySearch.open = false">
+    <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
+        Select embedding for similarity search </div>
+    <div *ngIf="activeSearchParams.length > 0 || similarSearchHelper.recordsInDisplay">
+        <div class="text-red-500 mb-2 flex flex-grow justify-center text-sm">
+            Warning: your current filter selection will be removed!</div>
+    </div>
+    <select #embeddingSelectSS class="select select-bordered select-sm w-full mt-4"
+        (change)="setEmbeddingIdSimilaritySearch(embeddingSelectSS.selectedIndex)">
+        <option *ngFor="let embedding of similarSearchHelper.embeddings" [value]="embedding.id">
+            {{embedding.name }}
+        </option>
+    </select>
+
+    <ng-template [ngIf]="filterAttributesSS && filterAttributesSS.length > 0">
+        <div class="flex flex-col justify-start mt-4">
+            <div class="pr-2 bg-white text-md font-medium text-gray-900">Filter attributes</div>
+            <div class="text-sm text-gray-400">You can filter similarity search based on the attributes selected when
+                creating the embedding</div>
         </div>
-        <select #embeddingSelectSS class="select select-bordered select-sm w-full mt-4"
-            (change)="setEmbeddingIdSimilaritySearch(embeddingSelectSS.selectedIndex)">
-            <option *ngFor="let embedding of similarSearchHelper.embeddings" [value]="embedding.id">
-                {{embedding.name }}
-            </option>
-        </select>
-    </kern-modal>
-</ng-template>
+
+        <form [formGroup]="filterAttributesSSForm">
+            <div formArrayName="filterAttributes">
+                <ng-container *ngFor="let groupItem of getFilterAttributesSS().controls; let i = index">
+                    <div [formGroupName]="i" class="contents mx-2">
+                        <div class="flex flex-row items-center rounded-md hover:bg-gray-50 mt-2">
+                            <div class="flex flex-col">
+                                <div *ngIf="getFilterAttributesSS().controls.length > 1"
+                                    (click)="removeFilterAttributesSS(i)"
+                                    class="cursor-pointer btn hover:border-transparent hover:bg-transparent border-transparent bg-transparent btn-xs px-0"
+                                    style="margin-top:.2rem">
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                        class="text-black inline-block w-4 h-4 stroke-current" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="flex-grow mr-2.5 flex flex-col  mt-2 ">
+                                <div class="flex-grow flex flex-row flex-wrap gap-1">
+                                    <div style="width: 50%;">
+                                        <kern-dropdown [dropdownOptions]="{
+                                            optionArray: filterAttributesSS
+                                        }"></kern-dropdown>
+                                        <!-- <kern-dropdown [dropdownOptions]="{
+                                            optionArray: filterAttributesSS,
+                                            buttonCaption: groupItem.get('name').value,
+                                            fontClass: 'font-dmMono',
+                                            backgroundColors: colorsAttributes,
+                                            hasFullWidth: true
+                                        }" (optionClicked)="selectValueDropdown($event, i, 'name', group.key)">
+                                        </kern-dropdown> -->
+                                    </div>
+
+                                    <div style="width: 49%;">
+                                        test2
+                                        <!-- <kern-dropdown *ngIf="groupItem.get('operator').value != ''" [dropdownOptions]="{
+                                            optionArray: searchOperatorDropdownArray,
+                                            buttonCaption: groupItem.get('operator').value,
+                                            optionTooltips: tooltipsArray,
+                                            fontClass: 'font-dmMono',
+                                            hasFullWidth: true,
+                                            buttonTooltipPosition: 'left',
+                                            tooltipMaxWidthClass: 'tooltip_max_width_200'
+                                        }" (optionClicked)="selectValueDropdown($event, i, 'operator', group.key)">
+                                        </kern-dropdown> -->
+                                    </div>
+                                </div>
+
+                                <div class="my-2 flex-grow flex flex-row items-center">
+                                    <!-- <input *ngIf="groupItem.get('operator').value != ''" formControlName="searchValue"
+                                        (keydown)="checkIfDecimals($event, i, group.key)"
+                                        [placeholder]="groupItem.get('addText').value"
+                                        class="w-full input input-sm input-bordered">
+    
+                                    <span class="text-sm text-gray-500 mx-1"
+                                        *ngIf="groupItem.get('operator').value == 'BETWEEN'">AND</span>
+    
+                                    <input *ngIf="groupItem.get('operator').value == 'BETWEEN'"
+                                        formControlName="searchValueBetween"
+                                        (keydown)="checkIfDecimals($event, i, group.key)"
+                                        [placeholder]="groupItem.get('addText').value"
+                                        class="w-full input input-sm input-bordered"> -->
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="w-full flex justify-center">
+                            <ng-template [ngIf]="i == getFilterAttributesSS().controls.length-1">
+                                <label
+                                    class="inline-flex items-center px-0.5 py-0.5 border border-gray-200 shadow-sm text-xs font-medium rounded text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer"
+                                    (click)="addFilterAttributesSS()">
+                                    <div>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 4v16m8-8H4" />
+                                        </svg>
+                                    </div>
+                                </label>
+                            </ng-template>
+                        </div>
+                    </div>
+                </ng-container>
+            </div>
+        </form>
+    </ng-template>
+</kern-modal>
 
 <kern-modal [isOpen]="dataBrowserModals.recordComments.open" closeButton="X"
     [modalBoxStyle]="{'min-width':'25rem', 'max-width':'40rem'}"

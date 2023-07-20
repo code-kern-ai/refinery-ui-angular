@@ -373,7 +373,7 @@
     <div class="mb-2 flex flex-grow justify-center text-sm text-gray-500">
         List of attributes selected when creating an embedding</div>
 
-    <div class="flex flex-wrap justify-center my-2">
+    <div class="flex flex-wrap justify-center my-4">
         <span *ngFor="let attribute of settingModals.embedding.filteredAttributes.attributes"
             [attr.data-tip]="attribute.dataTypeName" class="tooltip">
             <div [ngClass]="'bg-'+attribute.color+'-100 text-'+attribute.color+'-700 border border-'+attribute.color+'-400 hover:bg-'+attribute.color+'-200'"
