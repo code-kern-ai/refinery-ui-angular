@@ -13,6 +13,8 @@ export type Attribute = {
     relativePosition: number;
     dataTypeName?: string;
     visibilityIndex?: number;
+    active?: boolean;
+    negate?: boolean;
 }
 
 export type AttributeVisibilityStates = {

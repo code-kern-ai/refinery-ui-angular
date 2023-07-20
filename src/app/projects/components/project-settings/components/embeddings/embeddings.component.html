@@ -195,6 +195,19 @@
                         {{attribute.name}}
                     </option>
                 </select>
+                <div class="tooltip tooltip-right" data-tip="Filter attributes that will be encoded">
+                    <span class="card-title mb-0 label-text flex"><span class="cursor-help underline"
+                            style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Filter
+                            Attributes</span></span>
+                </div>
+                <kern-dropdown [dropdownOptions]="{
+                    optionArray: settingModals.embedding.create.embeddingCreationFormGroup.get('filterAttributes').controls,
+                    hasFullWidth: true,
+                    hasCheckboxes: true,
+                    keepDropdownOpen: true,
+                    hasSelectAllOption: true
+                }" (optionClicked)="toggleActiveGroup($event)">
+                </kern-dropdown>
                 <div class="tooltip tooltip-right" data-tip="Choose the platform to embed records">
                     <span class="card-title mb-0 label-text flex"><span class="cursor-help underline"
                             style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">

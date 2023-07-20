@@ -1,4 +1,4 @@
-import { FormBuilder } from "@angular/forms";
+import { FormArray, FormBuilder } from "@angular/forms";
 import { interval, timer } from "rxjs";
 import { debounceTime, first } from "rxjs/operators";
 import { ProjectApolloService } from "src/app/base/services/project/project-apollo.service";
@@ -67,7 +67,7 @@ export class DataHandlerHelper {
         return false;
     }
 
-    prepareEmbeddingFormGroup(attributes: Attribute[], settingModals: SettingModals, embeddings: Embedding[], embeddingPlatforms: EmbeddingPlatform[]) {
+    prepareEmbeddingFormGroup(attributes: Attribute[], settingModals: SettingModals, embeddings: Embedding[], embeddingPlatforms: EmbeddingPlatform[], useableNonTextAttributes: Attribute[]) {
         if (attributes.length > 0) {
             settingModals.embedding.create.embeddingCreationFormGroup = this.formBuilder.group({
                 targetAttribute: attributes[0].id,
@@ -75,7 +75,8 @@ export class DataHandlerHelper {
                 platform: embeddingPlatforms[0].platform,
                 granularity: this.granularityTypesArray[0].value,
                 apiToken: null,
-                termsAccepted: false
+                termsAccepted: false,
+                filterAttributes: this._filterAttributesFormArray(useableNonTextAttributes)
             });
             settingModals.embedding.create.embeddingCreationFormGroup.valueChanges.pipe(debounceTime(200)).subscribe(() =>
                 settingModals.embedding.create.blocked = !this.canCreateEmbedding(settingModals, embeddings, attributes)
@@ -172,4 +173,24 @@ export class DataHandlerHelper {
         })
     }
 
+    _filterAttributesFormArray(useableNonTextAttributes: Attribute[]): FormArray {
+        let array = this.formBuilder.array([]);
+        for (let a of useableNonTextAttributes) {
+            array.push(
+                this.formBuilder.group({
+                    id: a.id,
+                    name: a.name,
+                    active: a.active === undefined ? false : a.active,
+                })
+            );
+        }
+        array.push(
+            this.formBuilder.group({
+                id: 'SELECT_ALL',
+                name: 'Select all',
+                active: false,
+            })
+        );
+        return array;
+    }
 }

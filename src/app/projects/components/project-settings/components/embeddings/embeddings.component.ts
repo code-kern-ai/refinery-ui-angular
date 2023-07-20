@@ -32,6 +32,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
   @Input() dataHandlerHelper: DataHandlerHelper;
   @Input() attributes: Attribute[];
   @Input() embeddingPlatforms: EmbeddingPlatform[];
+  @Input() useableNonTextAttributes: Attribute[];
 
   @ViewChild('gdprText') gdprText: ElementRef;
   downloadedModels: DownloadedModel[];
@@ -171,7 +172,8 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
       platform: platform,
       termsText: this.gdprText ? this.gdprText.nativeElement.innerHTML : null,
       termsAccepted: embeddingForm.get("termsAccepted").value,
-      embeddingType: embeddingForm.get("granularity").value.substring(3) === "TOKEN" ? EmbeddingType.ON_TOKEN : EmbeddingType.ON_ATTRIBUTE
+      embeddingType: embeddingForm.get("granularity").value.substring(3) === "TOKEN" ? EmbeddingType.ON_TOKEN : EmbeddingType.ON_ATTRIBUTE,
+      filterAttributes: embeddingForm.get("filterAttributes").value.filter((a) => a.active).map((a) => a.id)
     }
 
     if (platform == PlatformType.HUGGING_FACE || platform == PlatformType.PYTHON) {
@@ -325,5 +327,17 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
     this.selectedPlatform = this.embeddingPlatforms[0];
     this.prepareSuggestions(this.settingModals.embedding.create.embeddingCreationFormGroup);
     this.checkIfPlatformHasToken();
+  }
+
+  toggleActiveGroup(group: FormGroup) {
+    if (group.disabled) return;
+    if (group.get('id').value == 'SELECT_ALL') {
+      const formControls = this.settingModals.embedding.create.embeddingCreationFormGroup.get('filterAttributes');
+      for (let control of formControls['controls']) {
+        control.get('active').setValue(!group.get('active').value);
+      }
+    } else {
+      group.get('active').setValue(!group.get('active').value);
+    }
   }
 }
