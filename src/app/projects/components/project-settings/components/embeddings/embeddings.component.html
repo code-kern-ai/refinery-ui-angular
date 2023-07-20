@@ -15,6 +15,9 @@
                                     Name</th>
                                 <th scope="col"
                                     class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                                    Filtered attributes</th>
+                                <th scope="col"
+                                    class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
                                     Type</th>
                                 <th scope="col"
                                     class="px-3 py-2 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
@@ -36,6 +39,25 @@
                                     [ngClass]="j%2!=0 ? 'bg-gray-50':'bg-white'">
                                     <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
                                         {{embeddingContainer.name}}
+                                    </td>
+                                    <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                                        <div class="tooltip tooltip-top pointer-events-auto"
+                                            *ngVar="embeddingContainer.filterAttributes as filteredAttributes"
+                                            [attr.data-tip]="filteredAttributes && filteredAttributes.length > 0 ? 'Has filtered attributes': 'No filtered attributes'"
+                                            (click)="settingModals.embedding.filteredAttributes.open = true; settingModals.embedding.filteredAttributes.attributesIds = prepareAttributeDataByIds(filteredAttributes);">
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="icon icon-tabler icon-tabler-notes w-6 h-6 m-auto"
+                                                [ngClass]="filteredAttributes && filteredAttributes.length > 0 ? 'text-gray-700 cursor-pointer' : 'text-gray-300 cursor-not-allowed'"
+                                                viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none"
+                                                stroke-linecap="round" stroke-linejoin="round">
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                                <path
+                                                    d="M5 3m0 2a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2z" />
+                                                <path d="M9 7l6 0" />
+                                                <path d="M9 11l6 0" />
+                                                <path d="M9 15l4 0" />
+                                            </svg>
+                                        </div>
                                     </td>
                                     <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
                                         <div
@@ -343,3 +365,22 @@
         </div>
     </ng-template>
 </ng-template>
+
+<kern-modal [isOpen]="settingModals.embedding.filteredAttributes.open" closeButton="X"
+    (optionClicked)="settingModals.embedding.filteredAttributes.open = false">
+    <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
+        Selected filtered attributes</div>
+    <div class="mb-2 flex flex-grow justify-center text-sm text-gray-500">
+        List of attributes selected when creating an embedding</div>
+
+    <div class="flex flex-wrap justify-center my-2">
+        <span *ngFor="let attribute of settingModals.embedding.filteredAttributes.attributes"
+            [attr.data-tip]="attribute.dataTypeName" class="tooltip">
+            <div [ngClass]="'bg-'+attribute.color+'-100 text-'+attribute.color+'-700 border border-'+attribute.color+'-400 hover:bg-'+attribute.color+'-200'"
+                class="cursor-pointer border items-center px-2 py-0.5 rounded text-xs font-medium text-center mr-2">
+                {{attribute.name}}
+            </div>
+        </span>
+    </div>
+
+</kern-modal>

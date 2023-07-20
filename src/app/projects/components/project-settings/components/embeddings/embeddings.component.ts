@@ -14,6 +14,8 @@ import { OrganizationApolloService } from 'src/app/base/services/organization/or
 import { Organization } from 'src/app/base/entities/organization';
 import { FormGroup } from '@angular/forms';
 import { jsonCopy } from 'submodules/javascript-functions/general';
+import { getColorForDataType } from 'src/app/util/helper-functions';
+import { dataTypes } from 'src/app/util/data-types';
 
 @Component({
   selector: 'kern-embeddings',
@@ -46,6 +48,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
   granularityArray = granularityTypesArray;
   embeddingPlatformsCopy: EmbeddingPlatform[];
   gdprTextHTML: string;
+  dataTypesArray = dataTypes;
 
   get PlatformType(): typeof PlatformType {
     return PlatformType;
@@ -173,7 +176,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
       termsText: this.gdprText ? this.gdprText.nativeElement.innerHTML : null,
       termsAccepted: embeddingForm.get("termsAccepted").value,
       embeddingType: embeddingForm.get("granularity").value.substring(3) === "TOKEN" ? EmbeddingType.ON_TOKEN : EmbeddingType.ON_ATTRIBUTE,
-      filterAttributes: embeddingForm.get("filterAttributes").value.filter((a) => a.active).map((a) => a.id)
+      filterAttributes: embeddingForm.get("filterAttributes").value.filter((a) => a.active && a.id !== 'SELECT_ALL').map((a) => a.id)
     }
 
     if (platform == PlatformType.HUGGING_FACE || platform == PlatformType.PYTHON) {
@@ -339,5 +342,16 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
     } else {
       group.get('active').setValue(!group.get('active').value);
     }
+  }
+
+  prepareAttributeDataByIds(attributeIds: string[]) {
+    const attributes = [];
+    for (let id of attributeIds) {
+      const attribute = this.attributes.find((a) => a.id == id);
+      attribute.color = getColorForDataType(attribute.dataType);
+      attribute.dataTypeName = this.dataTypesArray.find((type) => type.value === attribute.dataType).name;
+      attributes.push(attribute);
+    }
+    this.settingModals.embedding.filteredAttributes.attributes = attributes;
   }
 }

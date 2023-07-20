@@ -240,6 +240,7 @@ export const queries = {
             count
             platform
             model
+            filterAttributes
           }
         }
       }

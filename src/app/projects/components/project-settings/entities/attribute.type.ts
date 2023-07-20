@@ -15,6 +15,7 @@ export type Attribute = {
     visibilityIndex?: number;
     active?: boolean;
     negate?: boolean;
+    color?: string;
 }
 
 export type AttributeVisibilityStates = {
