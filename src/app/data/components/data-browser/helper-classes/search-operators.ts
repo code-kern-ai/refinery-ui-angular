@@ -107,3 +107,21 @@ export function prepareOperator(searchElement: any, attributeType: string): stri
         return searchElement.values.operator;
     }
 }
+
+export enum FilterIntegrationOperator {
+    EQUAL = 'EQUAL',
+    BETWEEN = 'BETWEEN',
+    IN = 'IN'
+}
+
+export function getFilterIntegrationOperatorTooltip(operator: FilterIntegrationOperator): string {
+    switch (operator) {
+        case FilterIntegrationOperator.EQUAL:
+            return '= {value}';
+        case FilterIntegrationOperator.BETWEEN:
+            return '>= {a} and <= {b}';
+        case FilterIntegrationOperator.IN:
+            return 'Included in separated list of values';
+    }
+    return 'UNKNOWN';
+}

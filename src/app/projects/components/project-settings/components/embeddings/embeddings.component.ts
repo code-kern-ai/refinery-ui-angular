@@ -176,7 +176,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
       termsText: this.gdprText ? this.gdprText.nativeElement.innerHTML : null,
       termsAccepted: embeddingForm.get("termsAccepted").value,
       embeddingType: embeddingForm.get("granularity").value.substring(3) === "TOKEN" ? EmbeddingType.ON_TOKEN : EmbeddingType.ON_ATTRIBUTE,
-      filterAttributes: embeddingForm.get("filterAttributes").value.filter((a) => a.active && a.id !== 'SELECT_ALL').map((a) => a.id)
+      filterAttributes: embeddingForm.get("filterAttributes").value.filter((a) => a.active && a.id !== 'SELECT_ALL').map((a) => a.name)
     }
 
     if (platform == PlatformType.HUGGING_FACE || platform == PlatformType.PYTHON) {
@@ -344,14 +344,15 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
     }
   }
 
-  prepareAttributeDataByIds(attributeIds: string[]) {
+  prepareAttributeDataByNames(attributesNames: string[]) {
+    if (!attributesNames) return [];
     const attributes = [];
-    for (let id of attributeIds) {
-      const attribute = this.attributes.find((a) => a.id == id);
+    for (let name of attributesNames) {
+      const attribute = this.attributes.find((a) => a.name == name);
       attribute.color = getColorForDataType(attribute.dataType);
       attribute.dataTypeName = this.dataTypesArray.find((type) => type.value === attribute.dataType).name;
       attributes.push(attribute);
     }
-    this.settingModals.embedding.filteredAttributes.attributes = attributes;
+    return attributes;
   }
 }

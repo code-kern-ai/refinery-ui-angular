@@ -173,8 +173,8 @@ export const queries = {
 `,
 
   SEARCH_SIMILAR_RECORDS: gql`
-  query ($projectId: ID!, $embeddingId: ID!, $recordId: ID!) {
-    searchRecordsBySimilarity(projectId: $projectId, embeddingId: $embeddingId, recordId: $recordId) {
+  query ($projectId: ID!, $embeddingId: ID!, $recordId: ID!, $attFilter: JSONString) {
+    searchRecordsBySimilarity(projectId: $projectId, embeddingId: $embeddingId, recordId: $recordId, attFilter: $attFilter) {
       queryLimit
       queryOffset
       fullCount

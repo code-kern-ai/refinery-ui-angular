@@ -78,7 +78,7 @@ export type DeleteLabelingTaskModal = {
 
 export type FilteredAttributesModal = {
     open: boolean;
-    attributes: Attribute[];
+    attributeNames: Attribute[];
 };
 
 export function createDefaultSettingModals(): SettingModals {
@@ -103,7 +103,7 @@ export function createDefaultSettingModals(): SettingModals {
             },
             filteredAttributes: {
                 open: false,
-                attributes: []
+                attributeNames: []
             }
         },
         projectExport: {

@@ -38,7 +38,11 @@ export class SimilarSearch {
     const projectId = this.dataBrowser.projectId;
     let q$, vc$;
     [q$, vc$] = this.projectApolloService.getEmbeddingSchema(projectId);
-    vc$.pipe(first()).subscribe((embeddings) => this.embeddings = embeddings.filter((e) => e.state == "FINISHED" && e.type == "ON_ATTRIBUTE"));
+    vc$.pipe(first()).subscribe((embeddings) => {
+      this.embeddings = embeddings.filter((e) => e.state == "FINISHED" && e.type == "ON_ATTRIBUTE");
+      this.dataBrowser.filterIntegration.filterAttributesSS = this.prepareFilterAttributes();
+      this.dataBrowser.filterIntegration.initFilterForm();
+    });
   }
 
   requestSimilarSearch(embeddingId: string, recordId: string) {
@@ -57,6 +61,7 @@ export class SimilarSearch {
         projectId: this.dataBrowser.projectId,
         embeddingId: embeddingId,
         recordId: recordId,
+        attFilter: this.dataBrowser.filterIntegration.prepareAttFilter()
       },
 
       func: this.recordApolloService.getSimilarRecords

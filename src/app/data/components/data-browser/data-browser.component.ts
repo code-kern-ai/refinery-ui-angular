@@ -65,7 +65,7 @@ import { LabelingLinkType } from 'src/app/labeling-suite/helper/manager/session'
 import { ConfigManager } from 'src/app/base/services/config-service';
 import { dateAsUTCDate } from 'submodules/javascript-functions/date-parser';
 import { copyToClipboard } from 'submodules/javascript-functions/general';
-import { Attribute } from 'src/app/projects/components/project-settings/entities/attribute.type';
+import { FilterIntegration } from './helper-classes/filter-integration';
 
 
 type DataSlice = {
@@ -93,6 +93,7 @@ type CurrentSearchRequest = {
     recordId?: string,
     offset?: number,
     limit?: number,
+    attFilter?: string
   }
   func: (variables) => any
 };
@@ -208,8 +209,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   isManaged: boolean = true;
   saveAttributeType: string = "";
   calledOnce: boolean = false;
-  filterAttributesSSForm: FormGroup;
-  filterAttributesSS: Attribute[];
+  filterIntegration: FilterIntegration;
 
   getSearchFormArray(groupKey: string): FormArray {
     return this.fullSearch.get(groupKey).get('groupElements') as FormArray;
@@ -245,12 +245,12 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     this.project$ = this.projectApolloService.getProjectById(this.projectId);
     this.similarSearchHelper = new SimilarSearch(this, this.recordApolloService, this.projectApolloService);
     this.similarSearchHelper.refreshEmbeddings();
-    this.filterAttributesSS = this.similarSearchHelper.prepareFilterAttributes();
     this.refreshAnyRecordManuallyLabeled(this.projectId);
     this.filterParser = new DataBrowserFilterParser(this);
     this.userFilter = new UserFilter(this, this.organizationApolloService);
     this.updateSearchParameters = new UpdateSearchParameters(this);
     this.commentsFilter = new CommentsFilter(this, this.projectApolloService);
+    this.filterIntegration = new FilterIntegration(this, this.projectApolloService, this.formBuilder);
 
     let preparationTasks$ = [];
     preparationTasks$.push(this.userFilter.prepareUserRequest());
@@ -267,7 +267,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       });
     this.prepareDataSlicesRequest();
     this.checkIfManagedVersion();
-    this.initFilterForm();
+    this.filterIntegration.prepareTooltipsArray();
 
     NotificationService.subscribeToNotification(this, {
       projectId: this.projectId,
@@ -2102,8 +2102,12 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
 
   checkIfDecimals(event: any, i: number, key: string) {
     const attributeType = getAttributeType(this.attributesSortOrder, this.getSearchFormArray(key).controls[i].get("name").value);
+    const operatorValue = this.getSearchFormArray(key).controls[i].get("operator").value;
+    this.checkDecimalPatterns(attributeType, event, operatorValue);
+  }
+
+  checkDecimalPatterns(attributeType: string, event: any, operatorValue: string) {
     if (attributeType == "INTEGER" || attributeType == "FLOAT") {
-      const operatorValue = this.getSearchFormArray(key).controls[i].get("operator").value;
       let pattern;
       if (attributeType == "INTEGER") {
         if (this.dataBrowserModals.configuration.separator == '-') {
@@ -2138,7 +2142,8 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
 
   setEmbeddingIdSimilaritySearch(selectedIndex: string) {
     this.dataBrowserModals.similaritySearch.embeddingId = this.similarSearchHelper.embeddings[selectedIndex].id;
-    this.filterAttributesSS = this.similarSearchHelper.prepareFilterAttributes(this.dataBrowserModals.similaritySearch.embeddingId);
+    this.filterIntegration.filterAttributesSS = this.similarSearchHelper.prepareFilterAttributes(this.dataBrowserModals.similaritySearch.embeddingId);
+    this.filterIntegration.initFilterForm();
   }
 
   requestSimilarSearch() {
@@ -2182,32 +2187,5 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
 
   setSliceName(sliceName: string) {
     this.dataBrowserModals.filter.name = sliceName;
-  }
-
-  initFilterForm() {
-    this.filterAttributesSSForm = this.formBuilder.group({
-      filterAttributes: this.formBuilder.array([]) as FormArray
-    });
-    this.getFilterAttributesSS().push(this.formBuilder.group({
-      name: '',
-      operator: '',
-      searchValue: ''
-    }));
-  }
-
-  getFilterAttributesSS() {
-    return this.filterAttributesSSForm.get('filterAttributes') as FormArray;
-  }
-
-  removeFilterAttributesSS(i: number) {
-    this.getFilterAttributesSS().removeAt(i);
-  }
-
-  addFilterAttributesSS() {
-    this.getFilterAttributesSS().push(this.formBuilder.group({
-      name: '',
-      operator: '',
-      searchValue: ''
-    }));
   }
 }

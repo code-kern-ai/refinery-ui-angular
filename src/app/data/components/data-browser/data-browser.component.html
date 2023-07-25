@@ -1174,7 +1174,8 @@
         style="white-space: pre-wrap; overflow: auto; max-height: 700px; ">{{dataBrowserModals.displaySql.extendedRecordsSql}}</pre>
 </kern-modal>
 
-<kern-modal [isOpen]="dataBrowserModals.similaritySearch.open" closeButton="X" [acceptButton]="{
+<kern-modal [isOpen]="dataBrowserModals.similaritySearch.open" [modalBoxStyle]="{'width':'50%'}" closeButton="X"
+    [acceptButton]="{
     buttonCaption: 'Search',
     emitObject: this, emitFunction:requestSimilarSearch
 }" (optionClicked)="dataBrowserModals.similaritySearch.open = false">
@@ -1191,21 +1192,22 @@
         </option>
     </select>
 
-    <ng-template [ngIf]="filterAttributesSS && filterAttributesSS.length > 0">
+    <ng-template [ngIf]="filterIntegration.filterAttributesSS && filterIntegration.filterAttributesSS.length > 0">
         <div class="flex flex-col justify-start mt-4">
             <div class="pr-2 bg-white text-md font-medium text-gray-900">Filter attributes</div>
             <div class="text-sm text-gray-400">You can filter similarity search based on the attributes selected when
                 creating the embedding</div>
         </div>
 
-        <form [formGroup]="filterAttributesSSForm">
+        <form [formGroup]="filterIntegration.filterAttributesSSForm">
             <div formArrayName="filterAttributes">
-                <ng-container *ngFor="let groupItem of getFilterAttributesSS().controls; let i = index">
+                <ng-container
+                    *ngFor="let groupItem of filterIntegration.getFilterAttributesSS().controls; let i = index">
                     <div [formGroupName]="i" class="contents mx-2">
                         <div class="flex flex-row items-center rounded-md hover:bg-gray-50 mt-2">
                             <div class="flex flex-col">
-                                <div *ngIf="getFilterAttributesSS().controls.length > 1"
-                                    (click)="removeFilterAttributesSS(i)"
+                                <div *ngIf="filterIntegration.getFilterAttributesSS().controls.length > 1"
+                                    (click)="filterIntegration.removeFilterAttributesSS(i)"
                                     class="cursor-pointer btn hover:border-transparent hover:bg-transparent border-transparent bg-transparent btn-xs px-0"
                                     style="margin-top:.2rem">
                                     <svg xmlns="http://www.w3.org/2000/svg"
@@ -1216,60 +1218,54 @@
                                     </svg>
                                 </div>
                             </div>
-                            <div class="flex-grow mr-2.5 flex flex-col  mt-2 ">
+                            <div class="flex-grow flex flex-col  mt-2 ">
                                 <div class="flex-grow flex flex-row flex-wrap gap-1">
                                     <div style="width: 50%;">
                                         <kern-dropdown [dropdownOptions]="{
-                                            optionArray: filterAttributesSS
-                                        }"></kern-dropdown>
-                                        <!-- <kern-dropdown [dropdownOptions]="{
-                                            optionArray: filterAttributesSS,
+                                            optionArray: filterIntegration.filterAttributesSS,
                                             buttonCaption: groupItem.get('name').value,
                                             fontClass: 'font-dmMono',
-                                            backgroundColors: colorsAttributes,
+                                            backgroundColors: filterIntegration.colorsAttributes,
                                             hasFullWidth: true
-                                        }" (optionClicked)="selectValueDropdown($event, i, 'name', group.key)">
-                                        </kern-dropdown> -->
+                                        }"
+                                            (optionClicked)="filterIntegration.setFilterDropdownVal($event, i, 'name')"></kern-dropdown>
                                     </div>
-
                                     <div style="width: 49%;">
-                                        test2
-                                        <!-- <kern-dropdown *ngIf="groupItem.get('operator').value != ''" [dropdownOptions]="{
-                                            optionArray: searchOperatorDropdownArray,
+                                        <kern-dropdown [dropdownOptions]="{
+                                            optionArray: filterIntegration.operatorDropdownArray,
                                             buttonCaption: groupItem.get('operator').value,
-                                            optionTooltips: tooltipsArray,
                                             fontClass: 'font-dmMono',
                                             hasFullWidth: true,
+                                            optionTooltips: filterIntegration.tooltipsArray,
                                             buttonTooltipPosition: 'left',
                                             tooltipMaxWidthClass: 'tooltip_max_width_200'
-                                        }" (optionClicked)="selectValueDropdown($event, i, 'operator', group.key)">
-                                        </kern-dropdown> -->
+                                        }"
+                                            (optionClicked)="filterIntegration.setFilterDropdownVal($event, i, 'operator')"></kern-dropdown>
                                     </div>
                                 </div>
 
                                 <div class="my-2 flex-grow flex flex-row items-center">
-                                    <!-- <input *ngIf="groupItem.get('operator').value != ''" formControlName="searchValue"
-                                        (keydown)="checkIfDecimals($event, i, group.key)"
-                                        [placeholder]="groupItem.get('addText').value"
-                                        class="w-full input input-sm input-bordered">
-    
+                                    <input *ngIf="groupItem.get('operator').value != ''" formControlName="searchValue"
+                                        (keydown)="filterIntegration.checkDecimalValue($event, i)"
+                                        placeholder="Enter value..."
+                                        class="w-full input input-sm input-bordered placeholder-italic">
+
                                     <span class="text-sm text-gray-500 mx-1"
                                         *ngIf="groupItem.get('operator').value == 'BETWEEN'">AND</span>
-    
+
                                     <input *ngIf="groupItem.get('operator').value == 'BETWEEN'"
-                                        formControlName="searchValueBetween"
-                                        (keydown)="checkIfDecimals($event, i, group.key)"
-                                        [placeholder]="groupItem.get('addText').value"
-                                        class="w-full input input-sm input-bordered"> -->
+                                        formControlName="searchValueBetween" placeholder="Enter value..."
+                                        (keydown)="filterIntegration.checkDecimalValue($event, i)"
+                                        class="w-full input input-sm input-bordered placeholder-italic">
                                 </div>
                             </div>
 
                         </div>
                         <div class="w-full flex justify-center">
-                            <ng-template [ngIf]="i == getFilterAttributesSS().controls.length-1">
+                            <ng-template [ngIf]="i == filterIntegration.getFilterAttributesSS().controls.length-1">
                                 <label
                                     class="inline-flex items-center px-0.5 py-0.5 border border-gray-200 shadow-sm text-xs font-medium rounded text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer"
-                                    (click)="addFilterAttributesSS()">
+                                    (click)="filterIntegration.addFilterAttributesSS()">
                                     <div>
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
                                             viewBox="0 0 24 24" stroke="currentColor">
