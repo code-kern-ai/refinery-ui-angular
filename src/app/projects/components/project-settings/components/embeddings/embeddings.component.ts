@@ -334,13 +334,21 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
 
   toggleActiveGroup(group: FormGroup) {
     if (group.disabled) return;
+    const formControls = this.settingModals.embedding.create.embeddingCreationFormGroup.get('filterAttributes')['controls'];
     if (group.get('id').value == 'SELECT_ALL') {
-      const formControls = this.settingModals.embedding.create.embeddingCreationFormGroup.get('filterAttributes');
-      for (let control of formControls['controls']) {
+      for (let control of formControls) {
         control.get('active').setValue(!group.get('active').value);
       }
     } else {
       group.get('active').setValue(!group.get('active').value);
+      let atLeastOneActive = false;
+      for (let control of formControls) {
+        if (control.get('active').value) {
+          atLeastOneActive = true;
+          break;
+        }
+      }
+      if (atLeastOneActive) formControls[formControls.length - 1].get('active').setValue(false);
     }
   }
 

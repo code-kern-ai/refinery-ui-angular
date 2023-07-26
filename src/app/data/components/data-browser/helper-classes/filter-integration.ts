@@ -81,16 +81,33 @@ export class FilterIntegration {
     prepareAttFilter() {
         const filter = [];
         const filterAttributes = this.getFilterAttributesSS().getRawValue();
+        if (!filterAttributes[0].name) return JSON.stringify(filter);
         for (let i = 0; i < filterAttributes.length; i++) {
             const attribute = filterAttributes[i];
+            if (attribute.operator !== FilterIntegrationOperator.IN) {
+                attribute.searchValue = this.parseSearchValue(attribute);
+            }
             if (attribute.operator === FilterIntegrationOperator.IN) {
                 filter.push({ "key": attribute.name, "value": attribute.searchValue.split(",") });
             } else if (attribute.operator === FilterIntegrationOperator.EQUAL) {
                 filter.push({ "key": attribute.name, "value": attribute.searchValue });
             } else if (attribute.operator === FilterIntegrationOperator.BETWEEN) {
-                filter.push({ "key": attribute.name, "value": attribute.searchValueBetween, "type": "between" });
+                const values = [attribute.searchValue, attribute.searchValueBetween];
+                filter.push({ "key": attribute.name, "value": values, "type": "between" });
             }
         }
         return JSON.stringify(filter);
+    }
+
+    parseSearchValue(attribute: any) {
+        const attributeType = getAttributeType(this.dataBrowser.attributesSortOrder, attribute.name);
+        if (attributeType == "INTEGER") {
+            attribute.searchValue = parseInt(attribute.searchValue);
+        } else if (attributeType == "FLOAT") {
+            attribute.searchValue = parseFloat(attribute.searchValue);
+        } else if (attributeType == "BOOLEAN") {
+            attribute.searchValue = attribute.searchValue == "true" ? true : false;
+        }
+        return attribute.searchValue;
     }
 }

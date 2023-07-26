@@ -1508,4 +1508,19 @@ export class ProjectApolloService {
         })
       );
   }
+
+  getUniqueValuesByAttributeId(projectId: string, attributeId: string) {
+    return this.apollo.query({
+      query: queries.GET_UNIQUE_VALUES_BY_ATTRIBUTE_ID,
+      variables: {
+        projectId: projectId,
+        attributeId: attributeId,
+      },
+      fetchPolicy: 'no-cache',
+    }).pipe(
+      map((result) => {
+        return result['data']['uniqueValuesByAttributeId'];
+      }
+      ));
+  }
 }

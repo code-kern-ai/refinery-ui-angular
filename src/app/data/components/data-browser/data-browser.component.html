@@ -198,23 +198,41 @@
                                                                     </div>
                                                                 </div>
 
-                                                                <div class="my-2 flex-grow flex flex-row items-center">
-                                                                    <input *ngIf="groupItem.get('operator').value != ''"
-                                                                        formControlName="searchValue"
-                                                                        (keydown)="checkIfDecimals($event, i, group.key)"
-                                                                        [placeholder]="groupItem.get('addText').value"
-                                                                        class="w-full input input-sm input-bordered">
+                                                                <ng-template
+                                                                    [ngIf]="uniqueValuesDict[groupItem.get('name').value] && groupItem.get('operator').value != ''"
+                                                                    [ngIfElse]="searchInputs">
+                                                                    <div class="my-2">
+                                                                        <kern-dropdown [dropdownOptions]="{
+                                                                            optionArray: uniqueValuesDict[groupItem.get('name').value],
+                                                                            buttonCaption: groupItem.get('searchValue').value,
+                                                                            fontClass: 'font-dmMono',
+                                                                            hasFullWidth: true
+                                                                        }"
+                                                                            (optionClicked)="selectValueDropdown($event, i, 'searchValue', group.key)"></kern-dropdown>
+                                                                    </div>
+                                                                </ng-template>
 
-                                                                    <span class="text-sm text-gray-500 mx-1"
-                                                                        *ngIf="groupItem.get('operator').value == 'BETWEEN'">AND</span>
+                                                                <ng-template #searchInputs>
+                                                                    <div
+                                                                        class="my-2 flex-grow flex flex-row items-center">
+                                                                        <input
+                                                                            *ngIf="groupItem.get('operator').value != ''"
+                                                                            formControlName="searchValue"
+                                                                            (keydown)="checkIfDecimals($event, i, group.key)"
+                                                                            [placeholder]="groupItem.get('addText').value"
+                                                                            class="w-full input input-sm input-bordered">
 
-                                                                    <input
-                                                                        *ngIf="groupItem.get('operator').value == 'BETWEEN'"
-                                                                        formControlName="searchValueBetween"
-                                                                        (keydown)="checkIfDecimals($event, i, group.key)"
-                                                                        [placeholder]="groupItem.get('addText').value"
-                                                                        class="w-full input input-sm input-bordered">
-                                                                </div>
+                                                                        <span class="text-sm text-gray-500 mx-1"
+                                                                            *ngIf="groupItem.get('operator').value == 'BETWEEN'">AND</span>
+
+                                                                        <input
+                                                                            *ngIf="groupItem.get('operator').value == 'BETWEEN'"
+                                                                            formControlName="searchValueBetween"
+                                                                            (keydown)="checkIfDecimals($event, i, group.key)"
+                                                                            [placeholder]="groupItem.get('addText').value"
+                                                                            class="w-full input input-sm input-bordered">
+                                                                    </div>
+                                                                </ng-template>
 
                                                                 <label
                                                                     class="text-xs text-gray-500 cursor-pointer flex items-center pb-2"

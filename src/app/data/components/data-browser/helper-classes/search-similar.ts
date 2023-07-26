@@ -89,7 +89,7 @@ export class SimilarSearch {
   }
 
   prepareFilterAttributes(embeddingId?: string) {
-    if (!this.embeddings) return [];
+    if (!this.embeddings || this.embeddings.length == 0) return [];
     if (!embeddingId) embeddingId = this.embeddings[0].id;
     const embedding = this.embeddings.find(e => e.id == embeddingId);
     if (!embedding) return [];
