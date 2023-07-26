@@ -199,7 +199,7 @@
                                                                 </div>
 
                                                                 <ng-template
-                                                                    [ngIf]="uniqueValuesDict[groupItem.get('name').value] && groupItem.get('operator').value != ''"
+                                                                    [ngIf]="uniqueValuesDict[groupItem.get('name').value] && groupItem.get('operator').value != '' && groupItem.get('operator').value != 'BETWEEN'"
                                                                     [ngIfElse]="searchInputs">
                                                                     <div class="my-2">
                                                                         <kern-dropdown [dropdownOptions]="{
@@ -1192,7 +1192,7 @@
         style="white-space: pre-wrap; overflow: auto; max-height: 700px; ">{{dataBrowserModals.displaySql.extendedRecordsSql}}</pre>
 </kern-modal>
 
-<kern-modal [isOpen]="dataBrowserModals.similaritySearch.open" [modalBoxStyle]="{'width':'50%'}" closeButton="X"
+<kern-modal [isOpen]="dataBrowserModals.similaritySearch.open" [modalBoxStyle]="{'width':'30%'}" closeButton="X"
     [acceptButton]="{
     buttonCaption: 'Search',
     emitObject: this, emitFunction:requestSimilarSearch
@@ -1237,7 +1237,7 @@
                                 </div>
                             </div>
                             <div class="flex-grow flex flex-col  mt-2 ">
-                                <div class="flex-grow flex flex-row flex-wrap gap-1">
+                                <div class="flex-grow flex flex-row gap-2">
                                     <div style="width: 50%;">
                                         <kern-dropdown [dropdownOptions]="{
                                             optionArray: filterIntegration.filterAttributesSS,
@@ -1263,18 +1263,34 @@
                                 </div>
 
                                 <div class="my-2 flex-grow flex flex-row items-center">
-                                    <input *ngIf="groupItem.get('operator').value != ''" formControlName="searchValue"
-                                        (keydown)="filterIntegration.checkDecimalValue($event, i)"
-                                        placeholder="Enter value..."
-                                        class="w-full input input-sm input-bordered placeholder-italic">
+                                    <ng-template
+                                        [ngIf]="filterIntegration.uniqueValuesDict[groupItem.get('name').value] && groupItem.get('operator').value != '' && groupItem.get('operator').value != 'BETWEEN'"
+                                        [ngIfElse]="searchInputs">
+                                        <div class="my-2 w-full">
+                                            <kern-dropdown [dropdownOptions]="{
+                                            optionArray: filterIntegration.uniqueValuesDict[groupItem.get('name').value],
+                                            buttonCaption: groupItem.get('searchValue').value,
+                                            fontClass: 'font-dmMono',
+                                            hasFullWidth: true
+                                        }" (optionClicked)="filterIntegration.setFilterDropdownVal($event, i, 'searchValue')"></kern-dropdown>
+                                        </div>
+                                    </ng-template>
+                                    <ng-template #searchInputs>
+                                        <input *ngIf="groupItem.get('operator').value != ''"
+                                            formControlName="searchValue"
+                                            (keydown)="filterIntegration.checkDecimalValue($event, i)"
+                                            [placeholder]="groupItem.get('addText').value"
+                                            class="w-full input input-sm input-bordered placeholder-italic">
 
-                                    <span class="text-sm text-gray-500 mx-1"
-                                        *ngIf="groupItem.get('operator').value == 'BETWEEN'">AND</span>
+                                        <span class="text-sm text-gray-500 mx-1"
+                                            *ngIf="groupItem.get('operator').value == 'BETWEEN'">AND</span>
 
-                                    <input *ngIf="groupItem.get('operator').value == 'BETWEEN'"
-                                        formControlName="searchValueBetween" placeholder="Enter value..."
-                                        (keydown)="filterIntegration.checkDecimalValue($event, i)"
-                                        class="w-full input input-sm input-bordered placeholder-italic">
+                                        <input *ngIf="groupItem.get('operator').value == 'BETWEEN'"
+                                            formControlName="searchValueBetween"
+                                            [placeholder]="groupItem.get('addText').value"
+                                            (keydown)="filterIntegration.checkDecimalValue($event, i)"
+                                            class="w-full input input-sm input-bordered placeholder-italic">
+                                    </ng-template>
                                 </div>
                             </div>
 

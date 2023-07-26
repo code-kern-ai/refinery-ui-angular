@@ -1,19 +1,20 @@
 import { ProjectApolloService } from "src/app/base/services/project/project-apollo.service";
 import { DataBrowserComponent } from "../data-browser.component";
 import { FormArray, FormBuilder, FormGroup } from "@angular/forms";
-import { Attribute } from "src/app/projects/components/project-settings/entities/attribute.type";
-import { FilterIntegrationOperator, getAttributeType, getFilterIntegrationOperatorTooltip } from "./search-operators";
+import { FilterIntegrationOperator, getAttributeType, getFilterIntegrationOperatorTooltip, getPlaceholderText } from "./search-operators";
 import { getColorForDataType } from "src/app/util/helper-functions";
+import { first } from "rxjs/operators";
 
 export class FilterIntegration {
     private dataBrowser: DataBrowserComponent;
     private projectApolloService: ProjectApolloService;
 
     filterAttributesSSForm: FormGroup;
-    filterAttributesSS: Attribute[];
+    filterAttributesSS: string[];
     operatorDropdownArray = [];
     colorsAttributes: string[] = [];
     tooltipsArray: string[] = [];
+    uniqueValuesDict: { [key: string]: string[] } = {};
 
     constructor(dataBrowser: DataBrowserComponent, projectApolloService: ProjectApolloService, private formBuilder: FormBuilder) {
         this.dataBrowser = dataBrowser;
@@ -28,9 +29,13 @@ export class FilterIntegration {
             name: this.filterAttributesSS ? this.filterAttributesSS[0] : '',
             operator: this.operatorDropdownArray[0],
             searchValue: '',
-            searchValueBetween: ''
+            searchValueBetween: '',
+            addText: this.filterAttributesSS ? getPlaceholderText(getAttributeType(this.dataBrowser.attributesSortOrder, this.filterAttributesSS[0])) : ''
         }));
         this.prepareColorAttributes();
+        if (this.filterAttributesSS) {
+            this.setFilterDropdownVal(this.filterAttributesSS[0], 0, "name");
+        }
     }
 
     getFilterAttributesSS() {
@@ -42,17 +47,36 @@ export class FilterIntegration {
     }
 
     addFilterAttributesSS() {
+        const attributeType = getAttributeType(this.dataBrowser.attributesSortOrder, this.filterAttributesSS[0]);
         this.getFilterAttributesSS().push(this.formBuilder.group({
             name: this.filterAttributesSS[0],
             operator: this.operatorDropdownArray[0],
             searchValue: '',
-            searchValueBetween: ''
+            searchValueBetween: '',
+            addText: getPlaceholderText(attributeType)
         }));
     }
 
     setFilterDropdownVal(value: string, index: number, key: string) {
-        const getIdxForm = this.getFilterAttributesSS().controls[index].get(key);
-        getIdxForm.setValue(value);
+        const getIdxForm = this.getFilterAttributesSS().controls[index];
+        if (key == "name") {
+            const attributeType = getAttributeType(this.dataBrowser.attributesSortOrder, value);
+            if (attributeType != "TEXT" && attributeType != "BOOLEAN") {
+                const attributeId = this.dataBrowser.attributesSortOrder.find((attribute) => attribute.name == value).key;
+                this.projectApolloService.getUniqueValuesByAttributeId(this.dataBrowser.projectId, attributeId).pipe(first()).subscribe((uniqueValues: string[]) => {
+                    if (uniqueValues.length < 20) {
+                        if (this.uniqueValuesDict[value] == undefined) {
+                            this.uniqueValuesDict[value] = uniqueValues;
+                        }
+                        getIdxForm.get('searchValue').setValue(uniqueValues[0]);
+                    } else {
+                        getIdxForm.get('searchValue').setValue('');
+                        getIdxForm.get('addText').setValue(getPlaceholderText(attributeType));
+                    }
+                });
+            }
+        }
+        getIdxForm.get(key).setValue(value);
     }
 
     prepareColorAttributes() {

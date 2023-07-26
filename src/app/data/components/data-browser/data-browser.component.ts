@@ -2090,8 +2090,8 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
           if (uniqueValues.length < 20) {
             if (this.uniqueValuesDict[value] == undefined) {
               this.uniqueValuesDict[value] = uniqueValues;
-              formControlsIdx.get("searchValue").setValue(uniqueValues[0]);
             }
+            formControlsIdx.get("searchValue").setValue(uniqueValues[0]);
           }
         });
       }

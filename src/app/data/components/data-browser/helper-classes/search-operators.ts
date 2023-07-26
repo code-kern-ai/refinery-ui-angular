@@ -125,3 +125,14 @@ export function getFilterIntegrationOperatorTooltip(operator: FilterIntegrationO
     }
     return 'UNKNOWN';
 }
+
+export function getPlaceholderText(attributeType: string) {
+    switch (attributeType) {
+        case "INTEGER":
+            return "Enter integer value";
+        case "FLOAT":
+            return "Enter float value";
+        default:
+            return "Enter value";
+    }
+}
