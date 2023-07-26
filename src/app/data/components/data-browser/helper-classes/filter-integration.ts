@@ -134,4 +134,11 @@ export class FilterIntegration {
         }
         return attribute.searchValue;
     }
+
+    clearForm() {
+        this.dataBrowser.embeddingSelectSS.nativeElement.value = this.dataBrowser.similarSearchHelper.embeddings[0].id;
+        this.dataBrowser.embeddingSelectSS.nativeElement.dispatchEvent(new Event('change'));
+        this.dataBrowser.similarSearchHelper.setRecordsHelper(false);
+        this.filterAttributesSSForm.reset();
+    }
 }

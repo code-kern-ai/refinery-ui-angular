@@ -1,7 +1,7 @@
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
-  Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChildren,
+  Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren,
 } from '@angular/core';
 import {
   AbstractControl,
@@ -211,6 +211,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   calledOnce: boolean = false;
   filterIntegration: FilterIntegration;
   uniqueValuesDict: { [key: string]: string[] } = {};
+  @ViewChild('embeddingSelectSS') embeddingSelectSS: ElementRef;
 
   getSearchFormArray(groupKey: string): FormArray {
     return this.fullSearch.get(groupKey).get('groupElements') as FormArray;

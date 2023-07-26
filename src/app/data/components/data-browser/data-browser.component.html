@@ -824,7 +824,7 @@
                 </ng-template>
                 <button *ngIf="activeSlice || activeSearchParams.length > 0 || similarSearchHelper.recordsInDisplay"
                     class="mr-1 inline-flex items-center px-2.5 py-2 border border-gray-300 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none cursor-pointer"
-                    (click)="clearFilters()">
+                    (click)="clearFilters();filterIntegration.clearForm()">
                     <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 icon icon-tabler icon-tabler-filter-off"
                         width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
                         stroke-linecap="round" stroke-linejoin="round">
