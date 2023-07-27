@@ -44,7 +44,7 @@
                                         <div class="tooltip tooltip-top"
                                             *ngVar="embeddingContainer.filterAttributes as filteredAttributes"
                                             [attr.data-tip]="filteredAttributes && filteredAttributes.length > 0 ? 'Has filtered attributes': 'No filtered attributes'">
-                                            <div (click)="settingModals.embedding.filteredAttributes.open = true; settingModals.embedding.filteredAttributes.attributeNames = prepareAttributeDataByNames(filteredAttributes);"
+                                            <div (click)="settingModals.embedding.filteredAttributes.open = true; settingModals.embedding.filteredAttributes.attributeNames = prepareAttributeDataByNames(filteredAttributes);settingModals.embedding.filteredAttributes.saveEmbeddingId=embeddingContainer.id"
                                                 [ngClass]="filteredAttributes && filteredAttributes.length > 0? 'pointer-events-auto' :'pointer-events-none'">
                                                 <svg xmlns="http://www.w3.org/2000/svg"
                                                     class="icon icon-tabler icon-tabler-notes w-6 h-6 m-auto"
@@ -369,8 +369,15 @@
     </ng-template>
 </ng-template>
 
-<kern-modal [isOpen]="settingModals.embedding.filteredAttributes.open" closeButton="X"
-    (optionClicked)="settingModals.embedding.filteredAttributes.open = false">
+<kern-modal [isOpen]="settingModals.embedding.filteredAttributes.open" [acceptButton]="{
+    buttonCaption:'Save',
+    useButton: !showEditOption,
+    closeAfterClick: false
+}" [editButton]="{
+    buttonCaption:'Edit',
+    useButton: showEditOption,
+    closeAfterClick: false
+}" closeButton="X" (optionClicked)="optionClicked($event)">
     <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
         Selected filtered attributes</div>
     <div class="mb-2 flex flex-grow justify-center text-sm text-gray-500">
@@ -385,5 +392,15 @@
             </div>
         </span>
     </div>
+    <ng-template [ngIf]="!showEditOption">
+        <kern-dropdown [dropdownOptions]="{
+            optionArray: settingModals.embedding.create.embeddingCreationFormGroup.get('filterAttributes').controls,
+            hasFullWidth: true,
+            hasCheckboxes: true,
+            keepDropdownOpen: true,
+            hasSelectAllOption: true,
+            useRelativePosOptions: true
+        }" (optionClicked)="toggleActiveGroup($event)"></kern-dropdown>
+    </ng-template>
 
 </kern-modal>

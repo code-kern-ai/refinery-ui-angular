@@ -38,6 +38,7 @@ import { FormArray } from "@angular/forms";
  * @width {string, optional} - sets the width of the dropdown options
  * @tooltipMaxWidthClass {string, optional} - sets the max width of the tooltip - needs to be a class already existing in the css (eg 'tooltip_max_width_200)
  * @hasSelectAllOption {boolean, optional} - adds a select all option to the dropdown
+ * @useRelativePosOptions {boolean, optional} - uses relative position for the dropdown options
 */
 export type DropdownOptions = {
     optionArray: string[] | FormArray[] | any[];
@@ -76,5 +77,6 @@ export type DropdownOptions = {
     width?: string;
     tooltipMaxWidthClass?: string;
     hasSelectAllOption?: boolean;
+    useRelativePosOptions?: boolean;
 };
 

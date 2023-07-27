@@ -49,6 +49,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
   embeddingPlatformsCopy: EmbeddingPlatform[];
   gdprTextHTML: string;
   dataTypesArray = dataTypes;
+  showEditOption: boolean = true;
 
   get PlatformType(): typeof PlatformType {
     return PlatformType;
@@ -362,5 +363,40 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
       attributes.push(attribute);
     }
     return attributes;
+  }
+
+  toggleEditOption() {
+    if (this.showEditOption) {
+      const formControls = this.settingModals.embedding.create.embeddingCreationFormGroup.get('filterAttributes')['controls'];
+      for (let attribute of this.settingModals.embedding.filteredAttributes.attributeNames) {
+        const control = formControls.find((c) => c.get('name').value == attribute.name);
+        if (control) control.get('active').setValue(true);
+      }
+    }
+    this.showEditOption = !this.showEditOption;
+  }
+
+  saveFilteredAttributes() {
+    const form = this.settingModals.embedding.create.embeddingCreationFormGroup.get("filterAttributes").value;
+    const filterAttributes = form.filter((a) => a.active && a.id !== 'SELECT_ALL').map((a) => a.name)
+    this.projectApolloService.updateEmbeddingPayload(
+      this.project.id,
+      this.settingModals.embedding.filteredAttributes.saveEmbeddingId,
+      JSON.stringify(filterAttributes)
+    ).pipe(first()).subscribe(() => { });
+  }
+
+  optionClicked(button: string) {
+    if (button == 'CLOSE') {
+      this.settingModals.embedding.filteredAttributes.open = false;
+      this.showEditOption = true;
+    }
+    else if (button == 'ACCEPT') {
+      this.saveFilteredAttributes();
+      this.settingModals.embedding.filteredAttributes.open = false;
+      this.showEditOption = true;
+    } else if (button === 'EDIT') {
+      this.toggleEditOption();
+    }
   }
 }

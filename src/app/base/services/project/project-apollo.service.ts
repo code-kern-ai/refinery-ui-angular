@@ -777,6 +777,25 @@ export class ProjectApolloService {
     });
   }
 
+  updateEmbeddingPayload(projectId: string, embeddingId: string, filterAttributes: string) {
+    return this.apollo.mutate({
+      mutation: mutations.UPDATE_EMBEDDING_PAYLOAD,
+      variables: {
+        projectId: projectId,
+        embeddingId: embeddingId,
+        filterAttributes: filterAttributes,
+      },
+      refetchQueries: [
+        {
+          query: queries.GET_EMBEDDING_SCHEMA_BY_PROJECT_ID,
+          variables: {
+            projectId: projectId,
+          },
+        },
+      ],
+    });
+  }
+
   deleteFromTaskQueue(projectId: string, taskId: string) {
     return this.apollo.mutate({
       mutation: mutations.DELETE_FROM_TASK_QUEUE,

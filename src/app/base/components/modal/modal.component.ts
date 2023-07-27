@@ -21,6 +21,7 @@ export class ModalComponent implements OnInit, OnChanges {
   @Input() acceptButton: ModalButton;
   @Input() abortButton: ModalButton;
   @Input() backButton: ModalButton;
+  @Input() editButton: ModalButton;
   @Input() modalBoxStyle: {};
 
   @Output() optionClicked = new EventEmitter<string | any>();
@@ -66,6 +67,12 @@ export class ModalComponent implements OnInit, OnChanges {
       if (typeof this.backButton == "string") this.backButton = { useButton: isStringTrue(this.backButton as string) };
       else if (typeof this.backButton == "boolean") this.backButton = { useButton: this.backButton };
       if (this.backButton) this.initButton(this.backButton, ModalButtonType.BACK);
+    }
+    if (this.editButton == undefined) this.editButton = { useButton: false };
+    else {
+      if (typeof this.editButton == "string") this.editButton = { useButton: isStringTrue(this.editButton as string) };
+      else if (typeof this.editButton == "boolean") this.editButton = { useButton: this.editButton };
+      if (this.editButton) this.initButton(this.editButton, ModalButtonType.EDIT);
     }
   }
   private initButton(button: ModalButton, buttonType: ModalButtonType) {

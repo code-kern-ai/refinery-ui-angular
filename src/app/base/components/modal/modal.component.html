@@ -8,7 +8,7 @@
                 [ngStyle]="modalBoxStyle">
                 <div>
                     <ng-content></ng-content>
-                    <div *ngIf="closeButton?.useButton || acceptButton?.useButton|| abortButton?.useButton || backButton?.useButton"
+                    <div *ngIf="closeButton?.useButton || acceptButton?.useButton|| abortButton?.useButton || backButton?.useButton || editButton?.useButton"
                         class="mt-2 flex flex-row-reverse justify-start">
                         <!--close button-->
                         <button *ngIf="closeButton.useButton" (click)="clickButton(closeButton)"
@@ -30,6 +30,11 @@
                             [attr.disabled]="backButton.disabled?true:null"
                             [ngClass]="backButton.disabled ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
                             class="ml-2 bg-white text-gray-700 border border-gray-300 text-xs font-semibold px-4 py-2 rounded cursor-pointer hover:bg-gray-50 focus:outline-none">{{backButton.buttonCaption}}</button>
+                        <!--edit button-->
+                        <button *ngIf="editButton.useButton" (click)="clickButton(editButton)"
+                            [attr.disabled]="editButton.disabled?true:null"
+                            [ngClass]="editButton.disabled ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
+                            class="ml-2 bg-white text-gray-700 border border-gray-300 text-xs font-semibold px-4 py-2 rounded cursor-pointer hover:bg-gray-50 focus:outline-none">{{editButton.buttonCaption}}</button>
                     </div>
                 </div>
             </div>

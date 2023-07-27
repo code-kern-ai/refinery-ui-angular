@@ -184,6 +184,13 @@ export const mutations = {
   }
   
   `,
+  UPDATE_EMBEDDING_PAYLOAD: gql`
+  mutation($projectId: ID!, $embeddingId: ID!, $filterAttributes: JSONString!) {
+    updateEmbeddingPayload(projectId: $projectId, embeddingId: $embeddingId, filterAttributes: $filterAttributes) {
+      ok
+    }
+  }
+  `,
   DELETE_FROM_TASK_QUEUE: gql`
   mutation ($projectId: ID!, $taskId: ID!) {
     deleteFromTaskQueue(projectId: $projectId, taskId: $taskId) {

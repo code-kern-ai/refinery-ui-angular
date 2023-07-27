@@ -13,7 +13,8 @@ export enum ModalButtonType {
     CLOSE = "CLOSE",
     ACCEPT = "ACCEPT",
     ABORT = "ABORT",
-    BACK = "BACK"
+    BACK = "BACK",
+    EDIT = "EDIT"
 }
 export function modalButtonCaption(type: ModalButtonType): string {
     switch (type) {
@@ -21,5 +22,6 @@ export function modalButtonCaption(type: ModalButtonType): string {
         case ModalButtonType.ACCEPT: return "Accept";
         case ModalButtonType.ABORT: return "Abort";
         case ModalButtonType.BACK: return "Back";
+        case ModalButtonType.EDIT: return "Edit";
     }
 }
