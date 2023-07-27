@@ -61,7 +61,7 @@ export class FilterIntegration {
         const getIdxForm = this.getFilterAttributesSS().controls[index];
         if (key == "name") {
             const attributeType = getAttributeType(this.dataBrowser.attributesSortOrder, value);
-            if (attributeType != "TEXT" && attributeType != "BOOLEAN") {
+            if (attributeType != "TEXT") {
                 const attributeId = this.dataBrowser.attributesSortOrder.find((attribute) => attribute.name == value).key;
                 this.projectApolloService.getUniqueValuesByAttributeId(this.dataBrowser.projectId, attributeId).pipe(first()).subscribe((uniqueValues: string[]) => {
                     if (uniqueValues.length < 20) {

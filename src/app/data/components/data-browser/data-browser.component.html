@@ -199,7 +199,7 @@
                                                                 </div>
 
                                                                 <ng-template
-                                                                    [ngIf]="uniqueValuesDict[groupItem.get('name').value] && groupItem.get('operator').value != '' && groupItem.get('operator').value != 'BETWEEN'"
+                                                                    [ngIf]="uniqueValuesDict[groupItem.get('name').value] && groupItem.get('operator').value != '' && groupItem.get('operator').value != 'BETWEEN' && groupItem.get('operator').value != 'IN' && groupItem.get('operator').value != 'IN WC'"
                                                                     [ngIfElse]="searchInputs">
                                                                     <div class="my-2">
                                                                         <kern-dropdown [dropdownOptions]="{
@@ -1227,7 +1227,7 @@
                                 <div *ngIf="filterIntegration.getFilterAttributesSS().controls.length > 1"
                                     (click)="filterIntegration.removeFilterAttributesSS(i)"
                                     class="cursor-pointer btn hover:border-transparent hover:bg-transparent border-transparent bg-transparent btn-xs px-0"
-                                    style="margin-top:.2rem">
+                                    style="margin-top:-8px">
                                     <svg xmlns="http://www.w3.org/2000/svg"
                                         class="text-black inline-block w-4 h-4 stroke-current" fill="none"
                                         viewBox="0 0 24 24" stroke="currentColor">
@@ -1236,7 +1236,7 @@
                                     </svg>
                                 </div>
                             </div>
-                            <div class="flex-grow flex flex-col  mt-2 ">
+                            <div class="flex-grow flex flex-col mt-2 ml-2">
                                 <div class="flex-grow flex flex-row gap-2">
                                     <div style="width: 50%;">
                                         <kern-dropdown [dropdownOptions]="{
@@ -1264,7 +1264,7 @@
 
                                 <div class="my-2 flex-grow flex flex-row items-center">
                                     <ng-template
-                                        [ngIf]="filterIntegration.uniqueValuesDict[groupItem.get('name').value] && groupItem.get('operator').value != '' && groupItem.get('operator').value != 'BETWEEN'"
+                                        [ngIf]="filterIntegration.uniqueValuesDict[groupItem.get('name').value] && groupItem.get('operator').value != '' && groupItem.get('operator').value == 'EQUAL'"
                                         [ngIfElse]="searchInputs">
                                         <div class="my-2 w-full">
                                             <kern-dropdown [dropdownOptions]="{
