@@ -594,8 +594,8 @@ query ($projectId: ID!, $exportOptions: JSONString, $key: String) {
     }
   }`,
 
-  GET_UNIQUE_VALUES_BY_ATTRIBUTE_ID: gql`
-  query ($projectId: ID!, $attributeId: ID!) {
-    uniqueValuesByAttributeId(projectId: $projectId, attributeId: $attributeId)
+  GET_UNIQUE_VALUES_BY_ATTRIBUTES: gql`
+  query ($projectId: ID!) {
+    uniqueValuesByAttributes(projectId: $projectId)
   }`,
 };

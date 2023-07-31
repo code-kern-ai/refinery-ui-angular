@@ -35,7 +35,6 @@ export class FilterIntegration {
         this.prepareColorAttributes();
         if (this.filterAttributesSS) {
             this.setFilterDropdownVal(this.filterAttributesSS[0], 0, "name");
-            this.checkIfAtLeastOneEmptyField();
         }
     }
 
@@ -62,24 +61,14 @@ export class FilterIntegration {
 
     setFilterDropdownVal(value: string, index: number, key: string) {
         const getIdxForm = this.getFilterAttributesSS().controls[index];
-        if (key == "name") {
+        if (key === "name") {
             const attributeType = getAttributeType(this.dataBrowser.attributesSortOrder, value);
-            if (attributeType != "TEXT") {
-                const attributeId = this.dataBrowser.attributesSortOrder.find((attribute) => attribute.name == value).key;
-                this.projectApolloService.getUniqueValuesByAttributeId(this.dataBrowser.projectId, attributeId).pipe(first()).subscribe((uniqueValues: string[]) => {
-                    if (uniqueValues.length < 20) {
-                        if (this.uniqueValuesDict[value] == undefined) {
-                            this.uniqueValuesDict[value] = uniqueValues;
-                        }
-                        getIdxForm.get('searchValue').setValue(uniqueValues[0]);
-                    } else {
-                        getIdxForm.get('searchValue').setValue('');
-                        getIdxForm.get('addText').setValue(getPlaceholderText(attributeType));
-                    }
-                });
-            }
+            getIdxForm.get("addText").setValue(getPlaceholderText(attributeType));
+            getIdxForm.get("searchValue").setValue("");
+            getIdxForm.get("searchValueBetween").setValue("");
         }
         getIdxForm.get(key).setValue(value);
+        this.checkIfAtLeastOneEmptyField();
     }
 
     prepareColorAttributes() {
@@ -113,13 +102,20 @@ export class FilterIntegration {
         for (let i = 0; i < filterAttributes.length; i++) {
             const attribute = filterAttributes[i];
             if (attribute.operator !== FilterIntegrationOperator.IN) {
-                attribute.searchValue = this.parseSearchValue(attribute);
+                attribute.searchValue = this.parseSearchValue(attribute.name, attribute.searchValue);
             }
             if (attribute.operator === FilterIntegrationOperator.IN) {
-                filter.push({ "key": attribute.name, "value": attribute.searchValue.split(",") });
+                const split = attribute.searchValue.split(",");
+                split.forEach((value, index) => {
+                    split[index] = this.parseSearchValue(attribute.name, value);
+
+                });
+                attribute.searchValue = split;
+                filter.push({ "key": attribute.name, "value": attribute.searchValue });
             } else if (attribute.operator === FilterIntegrationOperator.EQUAL) {
                 filter.push({ "key": attribute.name, "value": attribute.searchValue });
             } else if (attribute.operator === FilterIntegrationOperator.BETWEEN) {
+                attribute.searchValueBetween = this.parseSearchValue(attribute.name, attribute.searchValueBetween);
                 const values = [attribute.searchValue, attribute.searchValueBetween];
                 filter.push({ "key": attribute.name, "value": values, "type": "between" });
             }
@@ -127,16 +123,16 @@ export class FilterIntegration {
         return JSON.stringify(filter);
     }
 
-    parseSearchValue(attribute: any) {
-        const attributeType = getAttributeType(this.dataBrowser.attributesSortOrder, attribute.name);
+    parseSearchValue(attributeName: any, value: any) {
+        const attributeType = getAttributeType(this.dataBrowser.attributesSortOrder, attributeName);
         if (attributeType == "INTEGER") {
-            attribute.searchValue = parseInt(attribute.searchValue);
+            value = parseInt(value);
         } else if (attributeType == "FLOAT") {
-            attribute.searchValue = parseFloat(attribute.searchValue);
+            value = parseFloat(value);
         } else if (attributeType == "BOOLEAN") {
-            attribute.searchValue = attribute.searchValue == "true" ? true : false;
+            value = value == "true" ? true : false;
         }
-        return attribute.searchValue;
+        return value;
     }
 
     clearForm() {

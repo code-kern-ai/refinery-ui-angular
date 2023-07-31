@@ -204,7 +204,7 @@
                                                                     <div class="my-2">
                                                                         <kern-dropdown [dropdownOptions]="{
                                                                             optionArray: uniqueValuesDict[groupItem.get('name').value],
-                                                                            buttonCaption: groupItem.get('searchValue').value,
+                                                                            buttonCaption: groupItem.get('searchValue').value ? groupItem.get('searchValue').value : 'Select value',
                                                                             fontClass: 'font-dmMono',
                                                                             hasFullWidth: true
                                                                         }"
@@ -1267,10 +1267,10 @@
                                     <ng-template
                                         [ngIf]="filterIntegration.uniqueValuesDict[groupItem.get('name').value] && groupItem.get('operator').value != '' && groupItem.get('operator').value == 'EQUAL'"
                                         [ngIfElse]="searchInputs">
-                                        <div class="my-2 w-full">
+                                        <div class="w-full">
                                             <kern-dropdown [dropdownOptions]="{
                                             optionArray: filterIntegration.uniqueValuesDict[groupItem.get('name').value],
-                                            buttonCaption: groupItem.get('searchValue').value,
+                                            buttonCaption: groupItem.get('searchValue').value ? groupItem.get('searchValue').value: 'Select value',
                                             fontClass: 'font-dmMono',
                                             hasFullWidth: true
                                         }" (optionClicked)="filterIntegration.setFilterDropdownVal($event, i, 'searchValue')"></kern-dropdown>

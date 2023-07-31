@@ -271,6 +271,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     this.prepareDataSlicesRequest();
     this.checkIfManagedVersion();
     this.filterIntegration.prepareTooltipsArray();
+    this.getUniqueValues();
 
     NotificationService.subscribeToNotification(this, {
       projectId: this.projectId,
@@ -2086,17 +2087,6 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     formControlsIdx.get(field).setValue(value);
     if (field == 'name') {
       const attributeType = getAttributeType(this.attributesSortOrder, value);
-      if (attributeType != "TEXT" && attributeType != "BOOLEAN") {
-        const attributeId = this.attributesSortOrder.find((attribute) => attribute.name == value).key;
-        this.projectApolloService.getUniqueValuesByAttributeId(this.projectId, attributeId).pipe(first()).subscribe((uniqueValues: string[]) => {
-          if (uniqueValues.length < 20) {
-            if (this.uniqueValuesDict[value] == undefined) {
-              this.uniqueValuesDict[value] = uniqueValues;
-            }
-            formControlsIdx.get("searchValue").setValue(uniqueValues[0]);
-          }
-        });
-      }
       this.saveDropdownAttribute = value;
       this.saveAttributeType = attributeType;
       if (attributeType == "BOOLEAN" && formControlsIdx.get("searchValue").value != "") {
@@ -2201,5 +2191,12 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
 
   setSliceName(sliceName: string) {
     this.dataBrowserModals.filter.name = sliceName;
+  }
+
+  getUniqueValues() {
+    this.projectApolloService.getUniqueValuesByAttributes(this.projectId).pipe(first()).subscribe((uniqueValues: string) => {
+      this.uniqueValuesDict = JSON.parse(uniqueValues);
+      this.filterIntegration.uniqueValuesDict = this.uniqueValuesDict;
+    });
   }
 }
