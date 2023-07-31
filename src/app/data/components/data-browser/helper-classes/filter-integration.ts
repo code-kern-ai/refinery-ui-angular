@@ -35,6 +35,7 @@ export class FilterIntegration {
         this.prepareColorAttributes();
         if (this.filterAttributesSS) {
             this.setFilterDropdownVal(this.filterAttributesSS[0], 0, "name");
+            this.checkIfAtLeastOneEmptyField();
         }
     }
 
@@ -44,6 +45,7 @@ export class FilterIntegration {
 
     removeFilterAttributesSS(i: number) {
         this.getFilterAttributesSS().removeAt(i);
+        this.checkIfAtLeastOneEmptyField();
     }
 
     addFilterAttributesSS() {
@@ -55,6 +57,7 @@ export class FilterIntegration {
             searchValueBetween: '',
             addText: getPlaceholderText(attributeType)
         }));
+        this.checkIfAtLeastOneEmptyField();
     }
 
     setFilterDropdownVal(value: string, index: number, key: string) {
@@ -100,6 +103,7 @@ export class FilterIntegration {
         const attributeType = getAttributeType(this.dataBrowser.attributesSortOrder, formControlIdx.get("name").value);
         const operatorValue = formControlIdx.get("operator").value;
         this.dataBrowser.checkDecimalPatterns(attributeType, event, operatorValue);
+        this.checkIfAtLeastOneEmptyField();
     }
 
     prepareAttFilter() {
@@ -138,7 +142,19 @@ export class FilterIntegration {
     clearForm() {
         this.dataBrowser.embeddingSelectSS.nativeElement.value = this.dataBrowser.similarSearchHelper.embeddings[0].id;
         this.dataBrowser.embeddingSelectSS.nativeElement.dispatchEvent(new Event('change'));
-        this.dataBrowser.similarSearchHelper.setRecordsHelper(false);
         this.filterAttributesSSForm.reset();
     }
+
+    checkIfAtLeastOneEmptyField() {
+        const searchValues = [];
+        this.getFilterAttributesSS().controls.forEach((control) => {
+            if (control.get("operator").value == FilterIntegrationOperator.BETWEEN) {
+                searchValues.push(control.get("searchValue").value == "" || control.get("searchValueBetween").value == "");
+            } else {
+                searchValues.push(control.get("searchValue").value == "");
+            }
+        });
+        this.dataBrowser.atLeastOneEmptyField = searchValues.includes(true);
+    }
+
 }

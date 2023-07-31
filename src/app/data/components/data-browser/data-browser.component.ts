@@ -212,6 +212,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   filterIntegration: FilterIntegration;
   uniqueValuesDict: { [key: string]: string[] } = {};
   @ViewChild('embeddingSelectSS') embeddingSelectSS: ElementRef;
+  atLeastOneEmptyField: boolean = false;
 
   getSearchFormArray(groupKey: string): FormArray {
     return this.fullSearch.get(groupKey).get('groupElements') as FormArray;

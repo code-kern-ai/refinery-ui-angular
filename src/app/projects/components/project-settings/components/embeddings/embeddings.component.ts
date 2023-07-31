@@ -35,6 +35,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
   @Input() attributes: Attribute[];
   @Input() embeddingPlatforms: EmbeddingPlatform[];
   @Input() useableNonTextAttributes: Attribute[];
+  @Input() loadingEmbeddingsDict: boolean;
 
   @ViewChild('gdprText') gdprText: ElementRef;
   downloadedModels: DownloadedModel[];

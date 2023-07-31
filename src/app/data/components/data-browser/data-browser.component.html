@@ -1195,7 +1195,8 @@
 <kern-modal [isOpen]="dataBrowserModals.similaritySearch.open" [modalBoxStyle]="{'width':'30%'}" closeButton="X"
     [acceptButton]="{
     buttonCaption: 'Search',
-    emitObject: this, emitFunction:requestSimilarSearch
+    emitObject: this, emitFunction:requestSimilarSearch,
+    disabled: atLeastOneEmptyField
 }" (optionClicked)="dataBrowserModals.similaritySearch.open = false">
     <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
         Select embedding for similarity search </div>
@@ -1256,7 +1257,7 @@
                                             hasFullWidth: true,
                                             optionTooltips: filterIntegration.tooltipsArray,
                                             buttonTooltipPosition: 'left',
-                                            tooltipMaxWidthClass: 'tooltip_max_width_200'
+                                            tooltipMaxWidthClass: 'tooltip_max_width_150'
                                         }"
                                             (optionClicked)="filterIntegration.setFilterDropdownVal($event, i, 'operator')"></kern-dropdown>
                                     </div>
@@ -1279,6 +1280,7 @@
                                         <input *ngIf="groupItem.get('operator').value != ''"
                                             formControlName="searchValue"
                                             (keydown)="filterIntegration.checkDecimalValue($event, i)"
+                                            (input)="filterIntegration.checkIfAtLeastOneEmptyField()"
                                             [placeholder]="groupItem.get('addText').value"
                                             class="w-full input input-sm input-bordered placeholder-italic">
 
@@ -1288,6 +1290,7 @@
                                         <input *ngIf="groupItem.get('operator').value == 'BETWEEN'"
                                             formControlName="searchValueBetween"
                                             [placeholder]="groupItem.get('addText').value"
+                                            (input)="filterIntegration.checkIfAtLeastOneEmptyField()"
                                             (keydown)="filterIntegration.checkDecimalValue($event, i)"
                                             class="w-full input input-sm input-bordered placeholder-italic">
                                     </ng-template>

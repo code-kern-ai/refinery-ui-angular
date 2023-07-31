@@ -6,6 +6,10 @@
     width: 384px !important;
 }
 
+.tooltip_max_width_150::before {
+    max-width: 150px;
+}
+
 .tooltip_max_width_200::before {
     max-width: 200px;
 }
