@@ -253,7 +253,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     this.userFilter = new UserFilter(this, this.organizationApolloService);
     this.updateSearchParameters = new UpdateSearchParameters(this);
     this.commentsFilter = new CommentsFilter(this, this.projectApolloService);
-    this.filterIntegration = new FilterIntegration(this, this.projectApolloService, this.formBuilder);
+    this.filterIntegration = new FilterIntegration(this, this.formBuilder);
 
     let preparationTasks$ = [];
     preparationTasks$.push(this.userFilter.prepareUserRequest());
@@ -270,7 +270,6 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       });
     this.prepareDataSlicesRequest();
     this.checkIfManagedVersion();
-    this.filterIntegration.prepareTooltipsArray();
     this.getUniqueValues();
 
     NotificationService.subscribeToNotification(this, {
@@ -2146,7 +2145,12 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
 
   setEmbeddingIdSimilaritySearch(selectedIndex: string) {
     this.dataBrowserModals.similaritySearch.embeddingId = this.similarSearchHelper.embeddings[selectedIndex].id;
-    this.filterIntegration.filterAttributesSS = this.similarSearchHelper.prepareFilterAttributes(this.dataBrowserModals.similaritySearch.embeddingId);
+    this.initFilterAttributeData(this.dataBrowserModals.similaritySearch.embeddingId);
+  }
+
+  initFilterAttributeData(embeddingId?: string) {
+    this.filterIntegration.filterAttributesSS = this.similarSearchHelper.prepareFilterAttributes(embeddingId);
+    this.filterIntegration.prepareOperatorsAndTooltips();
     this.filterIntegration.initFilterForm();
   }
 

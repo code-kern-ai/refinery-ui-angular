@@ -40,8 +40,7 @@ export class SimilarSearch {
     [q$, vc$] = this.projectApolloService.getEmbeddingSchema(projectId);
     vc$.pipe(first()).subscribe((embeddings) => {
       this.embeddings = embeddings.filter((e) => e.state == "FINISHED" && e.type == "ON_ATTRIBUTE");
-      this.dataBrowser.filterIntegration.filterAttributesSS = this.prepareFilterAttributes();
-      this.dataBrowser.filterIntegration.initFilterForm();
+      this.dataBrowser.initFilterAttributeData();
     });
   }
 
@@ -95,5 +94,4 @@ export class SimilarSearch {
     if (!embedding) return [];
     return embedding.filterAttributes;
   }
-
 }

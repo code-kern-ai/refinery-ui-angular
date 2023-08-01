@@ -44,7 +44,7 @@
                 </ng-template>
                 <ng-template #similaritySearchModal>
                     <label
-                        (click)="recordListOptions.dataBrowserModals.similaritySearch.open = true; recordListOptions.similarSearchHelper.rememberedRecordId = record.id; recordListOptions.dataBrowserModals.similaritySearch.recordId = record.id"
+                        (click)="recordListOptions.dataBrowserModals.similaritySearch.open = true; recordListOptions.similarSearchHelper.rememberedRecordId = record.id; recordListOptions.dataBrowserModals.similaritySearch.recordId = record.id;setInitFilterAttributeData()"
                         class="text-green-700 hover:text-green-500 text-sm font-medium cursor-pointer">
                         <span class="leading-5">Find similar
                             records

@@ -15,6 +15,8 @@ export class RecordListComponent {
 
   @Output() recordClicked = new EventEmitter<number>();
   @Output() similaritySearchRequested = new EventEmitter();
+  @Output() initFilterAttributeData = new EventEmitter();
+
 
   columnsData = DATA_BROWSER_TABLE_COLUMN_HEADERS;
 
@@ -28,4 +30,7 @@ export class RecordListComponent {
     this.similaritySearchRequested.emit();
   }
 
+  setInitFilterAttributeData() {
+    this.initFilterAttributeData.emit();
+  }
 }

@@ -1,24 +1,21 @@
-import { ProjectApolloService } from "src/app/base/services/project/project-apollo.service";
 import { DataBrowserComponent } from "../data-browser.component";
 import { FormArray, FormBuilder, FormGroup } from "@angular/forms";
 import { FilterIntegrationOperator, getAttributeType, getFilterIntegrationOperatorTooltip, getPlaceholderText } from "./search-operators";
 import { getColorForDataType } from "src/app/util/helper-functions";
-import { first } from "rxjs/operators";
 
 export class FilterIntegration {
     private dataBrowser: DataBrowserComponent;
-    private projectApolloService: ProjectApolloService;
 
     filterAttributesSSForm: FormGroup;
     filterAttributesSS: string[];
-    operatorDropdownArray = [];
     colorsAttributes: string[] = [];
-    tooltipsArray: string[] = [];
     uniqueValuesDict: { [key: string]: string[] } = {};
+    operatorsDict: { [key: string]: string[] } = {};
+    tooltipsDict: { [key: string]: string[] } = {};
 
-    constructor(dataBrowser: DataBrowserComponent, projectApolloService: ProjectApolloService, private formBuilder: FormBuilder) {
+    constructor(dataBrowser: DataBrowserComponent, private formBuilder: FormBuilder) {
         this.dataBrowser = dataBrowser;
-        this.projectApolloService = projectApolloService;
+        this.formBuilder = formBuilder;
     }
 
     initFilterForm() {
@@ -27,14 +24,14 @@ export class FilterIntegration {
         });
         this.getFilterAttributesSS().push(this.formBuilder.group({
             name: this.filterAttributesSS ? this.filterAttributesSS[0] : '',
-            operator: this.operatorDropdownArray[0],
+            operator: this.filterAttributesSS ? this.operatorsDict[this.filterAttributesSS[0]][0] : '',
             searchValue: '',
             searchValueBetween: '',
             addText: this.filterAttributesSS ? getPlaceholderText(getAttributeType(this.dataBrowser.attributesSortOrder, this.filterAttributesSS[0])) : ''
         }));
-        this.prepareColorAttributes();
         if (this.filterAttributesSS) {
             this.setFilterDropdownVal(this.filterAttributesSS[0], 0, "name");
+            this.setFilterDropdownVal(this.operatorsDict[this.filterAttributesSS[0]][0], 0, "operator");
         }
     }
 
@@ -51,7 +48,7 @@ export class FilterIntegration {
         const attributeType = getAttributeType(this.dataBrowser.attributesSortOrder, this.filterAttributesSS[0]);
         this.getFilterAttributesSS().push(this.formBuilder.group({
             name: this.filterAttributesSS[0],
-            operator: this.operatorDropdownArray[0],
+            operator: this.operatorsDict[this.filterAttributesSS[0]][0],
             searchValue: '',
             searchValueBetween: '',
             addText: getPlaceholderText(attributeType)
@@ -66,25 +63,33 @@ export class FilterIntegration {
             getIdxForm.get("addText").setValue(getPlaceholderText(attributeType));
             getIdxForm.get("searchValue").setValue("");
             getIdxForm.get("searchValueBetween").setValue("");
+            getIdxForm.get("operator").setValue(this.operatorsDict[value][0]);
+            this.prepareOperatorsAndTooltips();
         }
         getIdxForm.get(key).setValue(value);
         this.checkIfAtLeastOneEmptyField();
     }
 
-    prepareColorAttributes() {
+    prepareOperatorsAndTooltips() {
         if (!this.filterAttributesSS) return;
-        this.filterAttributesSS.forEach((attribute) => {
-            const keyAtt = this.dataBrowser.attributesSortOrder.find(att => att.name === attribute).key;
-            const dataType = this.dataBrowser.attributes[keyAtt].dataType;
-            this.colorsAttributes.push(getColorForDataType(dataType));
-        });
-    }
-
-    prepareTooltipsArray() {
+        let operators = [];
+        let tooltips = [];
+        this.colorsAttributes = [];
         for (let t of Object.values(FilterIntegrationOperator)) {
-            this.operatorDropdownArray.push(t.split("_").join(" "));
-            this.tooltipsArray.push(getFilterIntegrationOperatorTooltip(t));
+            operators.push(t.split("_").join(" "));
+            tooltips.push(getFilterIntegrationOperatorTooltip(t));
         }
+        this.filterAttributesSS.forEach((attribute) => {
+            const attributeType = getAttributeType(this.dataBrowser.attributesSortOrder, attribute);
+            if (attributeType !== "INTEGER") {
+                operators = operators.filter(operator => operator !== FilterIntegrationOperator.BETWEEN);
+                tooltips = tooltips.filter(tooltip => tooltip !== getFilterIntegrationOperatorTooltip(FilterIntegrationOperator.BETWEEN));
+            }
+            this.operatorsDict[attribute] = operators;
+            this.tooltipsDict[attribute] = tooltips;
+            this.colorsAttributes.push(getColorForDataType(attributeType));
+
+        });
     }
 
     checkDecimalValue(event: Event, i: number) {

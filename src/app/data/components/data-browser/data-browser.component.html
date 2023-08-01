@@ -916,6 +916,7 @@
                     isTextHighlightNeeded: isTextHighlightNeeded,
                     similarSearchHelper: similarSearchHelper
                 }" (similaritySearchRequested)="requestSimilarSearch()"
+                    (initFilterAttributeData)="initFilterAttributeData()"
                     (recordClicked)="storePreliminaryRecordIds($event)">
                 </kern-record-list>
             </div>
@@ -1251,11 +1252,11 @@
                                     </div>
                                     <div style="width: 49%;">
                                         <kern-dropdown [dropdownOptions]="{
-                                            optionArray: filterIntegration.operatorDropdownArray,
+                                            optionArray: filterIntegration.operatorsDict[groupItem.get('name').value],
                                             buttonCaption: groupItem.get('operator').value,
                                             fontClass: 'font-dmMono',
                                             hasFullWidth: true,
-                                            optionTooltips: filterIntegration.tooltipsArray,
+                                            optionTooltips: filterIntegration.tooltipsDict[groupItem.get('name').value],
                                             buttonTooltipPosition: 'left',
                                             tooltipMaxWidthClass: 'tooltip_max_width_150'
                                         }"

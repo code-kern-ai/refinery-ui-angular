@@ -199,7 +199,7 @@
         tensors!</p>
 </kern-modal>
 <kern-modal [isOpen]="settingModals.embedding.create.open"
-    [modalBoxStyle]="{'overflow-x':'visible', 'max-width':'40%', 'width': 'fit-content'}" closeButton="X"
+    [modalBoxStyle]="{'overflow-x':'visible', 'max-width':'400px', 'width': 'fit-content'}" closeButton="X"
     [acceptButton]="{
     buttonCaption: 'Add embedding',
     disabled: isCreationOfEmbeddingDisabled,
@@ -237,7 +237,8 @@
                     hasFullWidth: true,
                     hasCheckboxes: true,
                     keepDropdownOpen: true,
-                    hasSelectAllOption: true
+                    hasSelectAllOption: true,
+                    width: '240px'
                 }" (optionClicked)="toggleActiveGroup($event)">
                 </kern-dropdown>
                 <div class="tooltip tooltip-right" data-tip="Choose the platform to embed records">
@@ -384,7 +385,8 @@
     buttonCaption:'Edit',
     useButton: showEditOption,
     closeAfterClick: false
-}" closeButton="X" (optionClicked)="optionClicked($event)">
+}" closeButton="X" [modalBoxStyle]="{'overflow-x':'visible', 'max-width':'400px', 'width': 'fit-content'}"
+    (optionClicked)="optionClicked($event)">
     <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
         Selected filtered attributes</div>
     <div class="mb-2 flex flex-grow justify-center text-sm text-gray-500">
@@ -406,7 +408,8 @@
             hasCheckboxes: true,
             keepDropdownOpen: true,
             hasSelectAllOption: true,
-            useRelativePosOptions: true
+            useRelativePosOptions: true,
+            width: '353px'
         }" (optionClicked)="toggleActiveGroup($event)"></kern-dropdown>
     </ng-template>
 
