@@ -252,16 +252,71 @@
                     <ng-template [ngSwitchCase]="PlatformType.PYTHON">
                         <ng-container *ngTemplateOutlet="suggestions"></ng-container>
                     </ng-template>
+                    <ng-template [ngSwitchCase]="PlatformType.AZURE">
+                        <ng-container *ngTemplateOutlet="suggestions"></ng-container>
+                        <div class="tooltip tooltip-right" data-tip="Enter your API token">
+                            <span class="card-title mb-0 label-text flex"><span class="cursor-help underline"
+                                    style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">
+                                    API token
+                                </span>
+                            </span>
+                        </div>
+                        <input formControlName="apiToken" class="input input-bordered input-sm placeholder-italic"
+                            placeholder="Enter api token..." (input)="checkIfCreateEmbeddingIsDisabled()" />
+                        <div class="tooltip tooltip-right"
+                            data-tip="If you use Azure, you need to provide the base URL of your Azure endpoint (e.g. 'https://azureopenkernai.openai.azure.com/'). Defaults to None.">
+                            <span class="card-title mb-0 label-text flex"><span class="cursor-help underline"
+                                    style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">
+                                    Base
+                                </span>
+                            </span>
+                        </div>
+                        <input formControlName="base" class="input input-bordered input-sm placeholder-italic"
+                            placeholder="Enter base..." (input)="checkIfCreateEmbeddingIsDisabled()" />
+                        <div class="tooltip tooltip-right"
+                            data-tip="If you use Azure, you need to provide the type of your Azure endpoint (e.g. 'azure'). Defaults to None.">
+                            <span class="card-title mb-0 label-text flex"><span class="cursor-help underline"
+                                    style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">
+                                    Type
+                                </span>
+                            </span>
+                        </div>
+                        <input formControlName="type" class="input input-bordered input-sm placeholder-italic"
+                            placeholder="Enter base..." (input)="checkIfCreateEmbeddingIsDisabled()" />
+                        <div class="tooltip tooltip-right"
+                            data-tip="If you use Azure, you need to provide the version of your Azure endpoint (e.g. '2023-05-15'). Defaults to None.">
+                            <span class="card-title mb-0 label-text flex"><span class="cursor-help underline"
+                                    style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">
+                                    Version
+                                </span>
+                            </span>
+                        </div>
+                        <input formControlName="version" class="input input-bordered input-sm placeholder-italic"
+                            placeholder="Enter version..." (input)="checkIfCreateEmbeddingIsDisabled()" />
+                    </ng-template>
                 </ng-container>
             </div>
-            <div *ngIf="settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.COHERE || settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.OPEN_AI"
+            <div *ngIf="settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.COHERE || settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.OPEN_AI || settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.AZURE"
                 style="text-align: center; margin-top: 12px;">
                 <div class="border border-gray-300 text-xs text-gray-500 p-2.5 rounded-lg text-justify">
                     <label #gdprText className="text-gray-700">
                         {{selectedPlatform.splitTerms[0]}}
-                        <a [href]="selectedPlatform.link" class="underline" target="_blank">
-                            {{settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value ==
-                            PlatformType.COHERE ? 'cohere terms of service.' : 'openai terms of service.'}}</a>
+
+                        <ng-container
+                            [ngSwitch]="settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value">
+                            <ng-template [ngSwitchCase]="PlatformType.COHERE">
+                                <a [href]="selectedPlatform.link" class="underline" target="_blank">cohere terms of
+                                    service.</a>
+                            </ng-template>
+                            <ng-template [ngSwitchCase]="PlatformType.OPEN_AI">
+                                <a [href]="selectedPlatform.link" class="underline" target="_blank">openai terms of
+                                    service.</a>
+                            </ng-template>
+                            <ng-template [ngSwitchCase]="PlatformType.AZURE">
+                                <a [href]="selectedPlatform.link" class="underline" target="_blank">azure terms of
+                                    service.</a>
+                            </ng-template>
+                        </ng-container>
                         <div>{{selectedPlatform.splitTerms[1]}}</div>
                     </label>
                 </div>

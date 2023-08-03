@@ -115,7 +115,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
     this.prepareSuggestions(form);
     this.initEmbeddingModal(false, platformValue);
     this.selectedPlatform = this.embeddingPlatforms.find((p: EmbeddingPlatform) => p.platform == platformValue);
-    if (platformValue == PlatformType.OPEN_AI || platformValue == PlatformType.COHERE) {
+    if (platformValue == PlatformType.OPEN_AI || platformValue == PlatformType.COHERE || platformValue == PlatformType.AZURE) {
       form.get('granularity').setValue(EmbeddingType.ON_ATTRIBUTE);
     }
     this.checkIfPlatformHasToken();
@@ -181,6 +181,12 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
       config.apiToken = embeddingForm.get("apiToken").value;
     } else if (platform == PlatformType.COHERE) {
       config.apiToken = embeddingForm.get("apiToken").value;
+    } else if (platform == PlatformType.AZURE) {
+      config.model = embeddingForm.get("model").value;
+      config.apiToken = embeddingForm.get("apiToken").value;
+      config.base = embeddingForm.get("base").value;
+      config.type = embeddingForm.get("type").value;
+      config.version = embeddingForm.get("version").value;
     }
 
     this.projectApolloService.createEmbedding(
@@ -281,6 +287,9 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
     const model = embeddingForm.get("model").value;
     const apiToken = embeddingForm.get("apiToken").value;
     const termsAccepted = embeddingForm.get("termsAccepted").value;
+    const base = embeddingForm.get("base").value;
+    const type = embeddingForm.get("type").value;
+    const version = embeddingForm.get("version").value;
     let checkFormFields: boolean = false;
 
     if (platform == PlatformType.HUGGING_FACE || platform == PlatformType.PYTHON) {
@@ -289,6 +298,8 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
       checkFormFields = model == null || apiToken == null || apiToken == "" || !termsAccepted;
     } else if (platform == PlatformType.COHERE) {
       checkFormFields = apiToken == null || apiToken == "" || !termsAccepted;
+    } else if (platform == PlatformType.AZURE) {
+      checkFormFields = model == null || apiToken == null || apiToken == "" || base == null || base == "" || type == null || type == "" || version == null || version == "" || !termsAccepted;
     }
     const checkDuplicates = this.dataHandlerHelper.canCreateEmbedding(this.settingModals, this.embeddings, this.attributes);
     this.isCreationOfEmbeddingDisabled = this.settingModals.embedding.create.blocked ||
@@ -304,6 +315,9 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
       form.get("model").setValue(null);
       form.get("apiToken").setValue(null);
       form.get("termsAccepted").setValue(false);
+      form.get("base").setValue(null);
+      form.get("type").setValue(null);
+      form.get("version").setValue(null);
     }
   }
 
@@ -313,7 +327,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   checkIfPlatformHasToken() {
-    if (this.selectedPlatform.platform == PlatformType.COHERE || this.selectedPlatform.platform == PlatformType.OPEN_AI) {
+    if (this.selectedPlatform.platform == PlatformType.COHERE || this.selectedPlatform.platform == PlatformType.OPEN_AI || this.selectedPlatform.platform == PlatformType.AZURE) {
       this.granularityArray = this.granularityArray.filter((g) => g.value != EmbeddingType.ON_TOKEN);
     } else {
       this.granularityArray = this.dataHandlerHelper.granularityTypesArray;

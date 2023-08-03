@@ -75,7 +75,10 @@ export class DataHandlerHelper {
                 platform: embeddingPlatforms[0].platform,
                 granularity: this.granularityTypesArray[0].value,
                 apiToken: null,
-                termsAccepted: false
+                termsAccepted: false,
+                base: null,
+                type: null,
+                version: null,
             });
             settingModals.embedding.create.embeddingCreationFormGroup.valueChanges.pipe(debounceTime(200)).subscribe(() =>
                 settingModals.embedding.create.blocked = !this.canCreateEmbedding(settingModals, embeddings, attributes)
@@ -90,7 +93,7 @@ export class DataHandlerHelper {
         const platform = settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value;
         if (platform == PlatformType.HUGGING_FACE || platform == PlatformType.PYTHON) {
             toReturn += "-" + platform + "-" + values.model;
-        } else if (platform == PlatformType.OPEN_AI || platform == PlatformType.COHERE) {
+        } else if (platform == PlatformType.OPEN_AI || platform == PlatformType.COHERE || platform == PlatformType.AZURE) {
             toReturn += this.buildEmbeddingNameWithApiToken(values, platform);
         }
         return toReturn;

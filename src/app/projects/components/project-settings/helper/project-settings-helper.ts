@@ -15,14 +15,16 @@ export enum PlatformType {
     HUGGING_FACE = "huggingface",
     OPEN_AI = "openai",
     COHERE = "cohere",
-    PYTHON = "python"
+    PYTHON = "python",
+    AZURE = "azure"
 }
 
 export const platformNamesDict = {
     [PlatformType.HUGGING_FACE]: "Hugging Face",
     [PlatformType.OPEN_AI]: "Open AI",
     [PlatformType.COHERE]: "Cohere",
-    [PlatformType.PYTHON]: "Python"
+    [PlatformType.PYTHON]: "Python",
+    [PlatformType.AZURE]: "Azure"
 }
 
 export function getMoveRight(tblName: string): boolean {
