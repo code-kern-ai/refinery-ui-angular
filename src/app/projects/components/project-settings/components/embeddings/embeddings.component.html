@@ -273,16 +273,7 @@
                         </div>
                         <input formControlName="base" class="input input-bordered input-sm placeholder-italic"
                             placeholder="Enter base..." (input)="checkIfCreateEmbeddingIsDisabled()" />
-                        <div class="tooltip tooltip-right"
-                            data-tip="If you use Azure, you need to provide the type of your Azure endpoint (e.g. 'azure'). Defaults to None.">
-                            <span class="card-title mb-0 label-text flex"><span class="cursor-help underline"
-                                    style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">
-                                    Type
-                                </span>
-                            </span>
-                        </div>
-                        <input formControlName="type" class="input input-bordered input-sm placeholder-italic"
-                            placeholder="Enter base..." (input)="checkIfCreateEmbeddingIsDisabled()" />
+                        <ng-container *ngTemplateOutlet="azureTypes"></ng-container>
                         <div class="tooltip tooltip-right"
                             data-tip="If you use Azure, you need to provide the version of your Azure endpoint (e.g. '2023-05-15'). Defaults to None.">
                             <span class="card-title mb-0 label-text flex"><span class="cursor-help underline"
@@ -385,3 +376,51 @@
         </div>
     </ng-template>
 </ng-template>
+
+<ng-template #azureTypes>
+    <div class="tooltip tooltip-right"
+        data-tip="If you use Azure, you need to provide the type of your Azure endpoint (e.g. 'azure'). Defaults to None.">
+        <span class="card-title mb-0 label-text flex"><span class="cursor-help underline"
+                style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">
+                Type
+            </span>
+        </span>
+    </div>
+    <div class="dropdown" *ngIf="azureTypesArray.length > 0;else noSuggestions">
+        <div tabindex="0" class="flex flex-row select select-bordered select-sm pl-0 pr-8">
+            <input #inputEmbeddingType type="text" placeholder="Type to search..."
+                class="w-full font-bold input input-sm" style="outline:none; box-shadow:none;height:1.9rem;"
+                [value]="settingModals.embedding.create.embeddingCreationFormGroup.get('type').value"
+                (focus)="$event.target.select()" (input)="checkEmbeddingType($event.target)">
+        </div>
+        <ul tabindex="0" class="p-2 w-full menu dropdown-content bg-base-100 shadow height-dropdown overflow-y-auto">
+            <li #me *ngFor="let type of azureTypesArray; let k = index"
+                (mouseenter)="setCurrentEmbeddingType(type,hoverBoxType,me)"
+                (mouseleave)="setCurrentEmbeddingType(null,null,null)">
+
+                <label class="cursor-pointer label" (click)="selectEmbeddingType(type,inputEmbeddingType,hoverBoxType)">
+                    {{type.value}}
+                </label>
+            </li>
+        </ul>
+    </div>
+    <ng-template #noSuggestions>
+        <div class="flex flex-row select select-bordered select-sm pl-0 pr-8">
+            <input #inputEmbeddingType type="text" placeholder="Enter type..." class="w-full font-bold input input-sm"
+                style="outline:none; box-shadow:none;height:1.9rem;"
+                [value]="settingModals.embedding.create.embeddingCreationFormGroup.get('type').value"
+                (focus)="$event.target.select()" (input)="checkEmbeddingType($event.target)">
+        </div>
+    </ng-template>
+</ng-template>
+<div #hoverBoxType class="absolute top-0 w-fit h-fit card shadow bg-white" style="z-index: 1000;"
+    [ngClass]="settingModals.embedding.create.currentEmbeddingType?null:'hidden'">
+    <ng-template [ngIf]="settingModals.embedding.create.currentEmbeddingType">
+        <div class="card-body p-6 flex flex-col w-64">
+            <div class="flex justify-center">
+                <span class="card-title mb-2 label-text">Info</span>
+            </div>
+            <span class="label-text text-sm">{{settingModals.embedding.create.currentEmbeddingType.description}}</span>
+        </div>
+    </ng-template>
+</div>

@@ -9,7 +9,7 @@ import { DownloadedModel } from '../../entities/downloaded-model.type';
 import { Embedding, EmbeddingPlatform } from '../../entities/embedding.type';
 import { DataHandlerHelper } from '../../helper/data-handler-helper';
 import { SettingModals } from '../../helper/modal-helper';
-import { EmbeddingType, PlatformType, granularityTypesArray, platformNamesDict } from '../../helper/project-settings-helper';
+import { EmbeddingType, PlatformType, azureTypesArray, granularityTypesArray, platformNamesDict } from '../../helper/project-settings-helper';
 import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
 import { Organization } from 'src/app/base/entities/organization';
 import { FormGroup } from '@angular/forms';
@@ -45,6 +45,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
   granularityArray = granularityTypesArray;
   embeddingPlatformsCopy: EmbeddingPlatform[];
   gdprTextHTML: string;
+  azureTypesArray = azureTypesArray;
 
   get PlatformType(): typeof PlatformType {
     return PlatformType;
@@ -113,12 +114,16 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
     const form = this.settingModals.embedding.create.embeddingCreationFormGroup;
     const platformValue = form.get('platform').value;
     this.prepareSuggestions(form);
+    if (form.get('model').value != null) {
+      form.get('model').setValue(null);
+    }
     this.initEmbeddingModal(false, platformValue);
     this.selectedPlatform = this.embeddingPlatforms.find((p: EmbeddingPlatform) => p.platform == platformValue);
     if (platformValue == PlatformType.OPEN_AI || platformValue == PlatformType.COHERE || platformValue == PlatformType.AZURE) {
       form.get('granularity').setValue(EmbeddingType.ON_ATTRIBUTE);
     }
     this.checkIfPlatformHasToken();
+    this.checkIfCreateEmbeddingIsDisabled();
   }
 
   prepareSuggestions(form: FormGroup) {
@@ -339,5 +344,30 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
     this.selectedPlatform = this.embeddingPlatforms[0];
     this.prepareSuggestions(this.settingModals.embedding.create.embeddingCreationFormGroup);
     this.checkIfPlatformHasToken();
+  }
+
+  checkEmbeddingType(eventTarget: HTMLInputElement) {
+    const embeddingForm = this.settingModals.embedding.create.embeddingCreationFormGroup;
+    embeddingForm.get('type').setValue(eventTarget.value);
+    this.checkIfCreateEmbeddingIsDisabled();
+  }
+
+  setCurrentEmbeddingType(type: any, hoverBox: HTMLElement, listElement: HTMLElement) {
+    if (hoverBox != null) hoverBox.style.display = 'block';
+    this.settingModals.embedding.create.currentEmbeddingType = type;
+    if (type) {
+      const dataBoundingBox: DOMRect = listElement.getBoundingClientRect();
+      hoverBox.style.top = (dataBoundingBox.top - 60) + "px"
+      hoverBox.style.left = (dataBoundingBox.left + dataBoundingBox.width) + "px"
+    }
+  }
+
+  selectEmbeddingType(type: any, inputElement: HTMLInputElement, hoverBox?: any) {
+    inputElement.value = type.value;
+    if (hoverBox) hoverBox.style.display = 'none';
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+    this.checkEmbeddingType(inputElement);
   }
 }
