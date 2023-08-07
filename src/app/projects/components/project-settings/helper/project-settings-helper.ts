@@ -48,6 +48,6 @@ export function findFreeAttributeName(attributes: Attribute[]): string {
     return "attribute_" + (counterList.length > 0 ? (Math.max(...counterList) + 1) : (attributes.length + 1));
 }
 
-export const azureTypesArray = [
-    { name: 'Azure', value: 'azure', description: 'Default type for Azure' },
-];
+export const DEFAULT_AZURE_TYPE = 'azure';
+export const DEFAULT_AZURE_MODEL = 'text-embedding-ada-002';
+export const DEFAULT_AZURE_VERSION = '2023-05-15';

@@ -253,8 +253,8 @@
                         <ng-container *ngTemplateOutlet="suggestions"></ng-container>
                     </ng-template>
                     <ng-template [ngSwitchCase]="PlatformType.AZURE">
-                        <ng-container *ngTemplateOutlet="suggestions"></ng-container>
-                        <div class="tooltip tooltip-right" data-tip="Enter your API token">
+                        <div class="tooltip tooltip-right"
+                            data-tip="You can find your key in the Azure OpenAI Resource under the section 'Resource Management'.">
                             <span class="card-title mb-0 label-text flex"><span class="cursor-help underline"
                                     style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">
                                     API token
@@ -264,7 +264,7 @@
                         <input formControlName="apiToken" class="input input-bordered input-sm placeholder-italic"
                             placeholder="Enter api token..." (input)="checkIfCreateEmbeddingIsDisabled()" />
                         <div class="tooltip tooltip-right"
-                            data-tip="If you use Azure, you need to provide the base URL of your Azure endpoint (e.g. 'https://azureopenkernai.openai.azure.com/'). Defaults to None.">
+                            data-tip="This will be your custom URL, which looks like this: https://<your-api-base>.openai.azure.com/">
                             <span class="card-title mb-0 label-text flex"><span class="cursor-help underline"
                                     style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">
                                     Base
@@ -273,14 +273,25 @@
                         </div>
                         <input formControlName="base" class="input input-bordered input-sm placeholder-italic"
                             placeholder="Enter base..." (input)="checkIfCreateEmbeddingIsDisabled()" />
-                        <ng-container *ngTemplateOutlet="azureTypes"></ng-container>
-                        <div class="tooltip tooltip-right"
-                            data-tip="If you use Azure, you need to provide the version of your Azure endpoint (e.g. '2023-05-15'). Defaults to None.">
-                            <span class="card-title mb-0 label-text flex"><span class="cursor-help underline"
+                        <div class="flex flex-row items-center">
+                            <span class="card-title mb-0 label-text flex"><span class="underline"
                                     style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">
                                     Version
                                 </span>
                             </span>
+                            <a class="tooltip tooltip-right cursor-help ml-1" target="_blank"
+                                href="https://learn.microsoft.com/en-us/rest/api/cognitiveservices/azureopenaistable/models/list?tabs=HTTP"
+                                data-tip="The latest version of the Azure OpenAI service can also be found here.">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="icon icon-tabler icon-tabler-external-link" width="16" height="16"
+                                    viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                    <path d="M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6" />
+                                    <path d="M11 13l9 -9" />
+                                    <path d="M15 4h5v5" />
+                                </svg>
+                            </a>
                         </div>
                         <input formControlName="version" class="input input-bordered input-sm placeholder-italic"
                             placeholder="Enter version..." (input)="checkIfCreateEmbeddingIsDisabled()" />
@@ -376,51 +387,3 @@
         </div>
     </ng-template>
 </ng-template>
-
-<ng-template #azureTypes>
-    <div class="tooltip tooltip-right"
-        data-tip="If you use Azure, you need to provide the type of your Azure endpoint (e.g. 'azure'). Defaults to None.">
-        <span class="card-title mb-0 label-text flex"><span class="cursor-help underline"
-                style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">
-                Type
-            </span>
-        </span>
-    </div>
-    <div class="dropdown" *ngIf="azureTypesArray.length > 0;else noSuggestions">
-        <div tabindex="0" class="flex flex-row select select-bordered select-sm pl-0 pr-8">
-            <input #inputEmbeddingType type="text" placeholder="Type to search..."
-                class="w-full font-bold input input-sm" style="outline:none; box-shadow:none;height:1.9rem;"
-                [value]="settingModals.embedding.create.embeddingCreationFormGroup.get('type').value"
-                (focus)="$event.target.select()" (input)="checkEmbeddingType($event.target)">
-        </div>
-        <ul tabindex="0" class="p-2 w-full menu dropdown-content bg-base-100 shadow height-dropdown overflow-y-auto">
-            <li #me *ngFor="let type of azureTypesArray; let k = index"
-                (mouseenter)="setCurrentEmbeddingType(type,hoverBoxType,me)"
-                (mouseleave)="setCurrentEmbeddingType(null,null,null)">
-
-                <label class="cursor-pointer label" (click)="selectEmbeddingType(type,inputEmbeddingType,hoverBoxType)">
-                    {{type.value}}
-                </label>
-            </li>
-        </ul>
-    </div>
-    <ng-template #noSuggestions>
-        <div class="flex flex-row select select-bordered select-sm pl-0 pr-8">
-            <input #inputEmbeddingType type="text" placeholder="Enter type..." class="w-full font-bold input input-sm"
-                style="outline:none; box-shadow:none;height:1.9rem;"
-                [value]="settingModals.embedding.create.embeddingCreationFormGroup.get('type').value"
-                (focus)="$event.target.select()" (input)="checkEmbeddingType($event.target)">
-        </div>
-    </ng-template>
-</ng-template>
-<div #hoverBoxType class="absolute top-0 w-fit h-fit card shadow bg-white" style="z-index: 1000;"
-    [ngClass]="settingModals.embedding.create.currentEmbeddingType?null:'hidden'">
-    <ng-template [ngIf]="settingModals.embedding.create.currentEmbeddingType">
-        <div class="card-body p-6 flex flex-col w-64">
-            <div class="flex justify-center">
-                <span class="card-title mb-2 label-text">Info</span>
-            </div>
-            <span class="label-text text-sm">{{settingModals.embedding.create.currentEmbeddingType.description}}</span>
-        </div>
-    </ng-template>
-</div>

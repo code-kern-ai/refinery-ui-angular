@@ -9,7 +9,7 @@ import { DownloadedModel } from '../../entities/downloaded-model.type';
 import { Embedding, EmbeddingPlatform } from '../../entities/embedding.type';
 import { DataHandlerHelper } from '../../helper/data-handler-helper';
 import { SettingModals } from '../../helper/modal-helper';
-import { EmbeddingType, PlatformType, azureTypesArray, granularityTypesArray, platformNamesDict } from '../../helper/project-settings-helper';
+import { DEFAULT_AZURE_MODEL, DEFAULT_AZURE_TYPE, DEFAULT_AZURE_VERSION, EmbeddingType, PlatformType, granularityTypesArray, platformNamesDict } from '../../helper/project-settings-helper';
 import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
 import { Organization } from 'src/app/base/entities/organization';
 import { FormGroup } from '@angular/forms';
@@ -45,7 +45,6 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
   granularityArray = granularityTypesArray;
   embeddingPlatformsCopy: EmbeddingPlatform[];
   gdprTextHTML: string;
-  azureTypesArray = azureTypesArray;
 
   get PlatformType(): typeof PlatformType {
     return PlatformType;
@@ -187,10 +186,10 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
     } else if (platform == PlatformType.COHERE) {
       config.apiToken = embeddingForm.get("apiToken").value;
     } else if (platform == PlatformType.AZURE) {
-      config.model = embeddingForm.get("model").value;
+      config.model = DEFAULT_AZURE_MODEL;
       config.apiToken = embeddingForm.get("apiToken").value;
       config.base = embeddingForm.get("base").value;
-      config.type = embeddingForm.get("type").value;
+      config.type = DEFAULT_AZURE_TYPE;
       config.version = embeddingForm.get("version").value;
     }
 
@@ -293,7 +292,6 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
     const apiToken = embeddingForm.get("apiToken").value;
     const termsAccepted = embeddingForm.get("termsAccepted").value;
     const base = embeddingForm.get("base").value;
-    const type = embeddingForm.get("type").value;
     const version = embeddingForm.get("version").value;
     let checkFormFields: boolean = false;
 
@@ -304,7 +302,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
     } else if (platform == PlatformType.COHERE) {
       checkFormFields = apiToken == null || apiToken == "" || !termsAccepted;
     } else if (platform == PlatformType.AZURE) {
-      checkFormFields = model == null || apiToken == null || apiToken == "" || base == null || base == "" || type == null || type == "" || version == null || version == "" || !termsAccepted;
+      checkFormFields = apiToken == null || apiToken == "" || base == null || base == "" || version == null || version == "" || !termsAccepted;
     }
     const checkDuplicates = this.dataHandlerHelper.canCreateEmbedding(this.settingModals, this.embeddings, this.attributes);
     this.isCreationOfEmbeddingDisabled = this.settingModals.embedding.create.blocked ||
@@ -321,7 +319,6 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
       form.get("apiToken").setValue(null);
       form.get("termsAccepted").setValue(false);
       form.get("base").setValue(null);
-      form.get("type").setValue(null);
       form.get("version").setValue(null);
     }
   }
@@ -334,6 +331,9 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
   checkIfPlatformHasToken() {
     if (this.selectedPlatform.platform == PlatformType.COHERE || this.selectedPlatform.platform == PlatformType.OPEN_AI || this.selectedPlatform.platform == PlatformType.AZURE) {
       this.granularityArray = this.granularityArray.filter((g) => g.value != EmbeddingType.ON_TOKEN);
+      if (this.selectedPlatform.platform == PlatformType.AZURE) {
+        this.settingModals.embedding.create.embeddingCreationFormGroup.get('version').setValue(DEFAULT_AZURE_VERSION);
+      }
     } else {
       this.granularityArray = this.dataHandlerHelper.granularityTypesArray;
     }
@@ -344,30 +344,5 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
     this.selectedPlatform = this.embeddingPlatforms[0];
     this.prepareSuggestions(this.settingModals.embedding.create.embeddingCreationFormGroup);
     this.checkIfPlatformHasToken();
-  }
-
-  checkEmbeddingType(eventTarget: HTMLInputElement) {
-    const embeddingForm = this.settingModals.embedding.create.embeddingCreationFormGroup;
-    embeddingForm.get('type').setValue(eventTarget.value);
-    this.checkIfCreateEmbeddingIsDisabled();
-  }
-
-  setCurrentEmbeddingType(type: any, hoverBox: HTMLElement, listElement: HTMLElement) {
-    if (hoverBox != null) hoverBox.style.display = 'block';
-    this.settingModals.embedding.create.currentEmbeddingType = type;
-    if (type) {
-      const dataBoundingBox: DOMRect = listElement.getBoundingClientRect();
-      hoverBox.style.top = (dataBoundingBox.top - 60) + "px"
-      hoverBox.style.left = (dataBoundingBox.left + dataBoundingBox.width) + "px"
-    }
-  }
-
-  selectEmbeddingType(type: any, inputElement: HTMLInputElement, hoverBox?: any) {
-    inputElement.value = type.value;
-    if (hoverBox) hoverBox.style.display = 'none';
-    if (document.activeElement instanceof HTMLElement) {
-      document.activeElement.blur();
-    }
-    this.checkEmbeddingType(inputElement);
   }
 }

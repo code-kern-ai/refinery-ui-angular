@@ -77,7 +77,6 @@ export class DataHandlerHelper {
                 apiToken: null,
                 termsAccepted: false,
                 base: null,
-                type: null,
                 version: null,
             });
             settingModals.embedding.create.embeddingCreationFormGroup.valueChanges.pipe(debounceTime(200)).subscribe(() =>
