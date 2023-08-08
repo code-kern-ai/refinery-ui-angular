@@ -34,7 +34,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
   @Input() embeddingPlatforms: EmbeddingPlatform[];
 
   @ViewChild('gdprText') gdprText: ElementRef;
-  downloadedModels: DownloadedModel[];
+  downloadedModels: DownloadedModel[] = [];
   subscriptions$: Subscription[] = [];
   somethingLoading: boolean = false;
   downloadedModelsQuery$: any;
@@ -275,7 +275,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   private checkStillLoading() {
-    this.somethingLoading = this.useableAttributes == undefined || this.useableAttributes?.length == 0 || this.embeddingHandles == undefined || (this.isManaged && this.downloadedModels?.length == 0);
+    this.somethingLoading = this.useableAttributes == undefined || this.useableAttributes?.length == 0 || this.embeddingHandles == undefined || (this.isManaged && !this.downloadedModels);
   }
 
   handleWebsocketNotification(msgParts) {
@@ -359,15 +359,15 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
   prepareAzureData(form: FormGroup) {
     const getAzureUrl = localStorage.getItem('azureUrls');
     const getAzureVersion = localStorage.getItem('azureVersions');
-    if (getAzureUrl == undefined) {
-      const azureUrls = [];
-      azureUrls.push(form.get('base').value);
-      localStorage.setItem('azureUrls', JSON.stringify(azureUrls));
+    const baseValue = form.get('base').value;
+    const versionValue = form.get('version').value;
+    if (getAzureUrl == undefined || !this.azureUrls.includes(baseValue)) {
+      this.azureUrls.push(baseValue);
+      localStorage.setItem('azureUrls', JSON.stringify(this.azureUrls));
     }
-    if (getAzureVersion == undefined) {
-      const azureVersions = [];
-      azureVersions.push(form.get('version').value);
-      localStorage.setItem('azureVersions', JSON.stringify(azureVersions));
+    if (getAzureVersion == undefined || !this.azureVersions.includes(versionValue)) {
+      this.azureVersions.push(versionValue);
+      localStorage.setItem('azureVersions', JSON.stringify(this.azureVersions));
     }
   }
 
