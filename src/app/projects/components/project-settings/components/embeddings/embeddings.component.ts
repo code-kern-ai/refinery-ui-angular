@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, PLATFORM_ID, SimpleChanges, ViewChild } from '@angular/core';
 import { Subscription, timer } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { Project } from 'src/app/base/entities/project';
@@ -9,7 +9,7 @@ import { DownloadedModel } from '../../entities/downloaded-model.type';
 import { Embedding, EmbeddingPlatform } from '../../entities/embedding.type';
 import { DataHandlerHelper } from '../../helper/data-handler-helper';
 import { SettingModals } from '../../helper/modal-helper';
-import { DEFAULT_AZURE_MODEL, DEFAULT_AZURE_TYPE, DEFAULT_AZURE_VERSION, EmbeddingType, PlatformType, granularityTypesArray, platformNamesDict } from '../../helper/project-settings-helper';
+import { DEFAULT_AZURE_MODEL, DEFAULT_AZURE_TYPE, EmbeddingType, PlatformType, granularityTypesArray, platformNamesDict } from '../../helper/project-settings-helper';
 import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
 import { Organization } from 'src/app/base/entities/organization';
 import { FormGroup } from '@angular/forms';
@@ -45,6 +45,8 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
   granularityArray = granularityTypesArray;
   embeddingPlatformsCopy: EmbeddingPlatform[];
   gdprTextHTML: string;
+  azureUrls: string[] = [];
+  azureVersions: string[] = [];
 
   get PlatformType(): typeof PlatformType {
     return PlatformType;
@@ -120,6 +122,16 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
     this.selectedPlatform = this.embeddingPlatforms.find((p: EmbeddingPlatform) => p.platform == platformValue);
     if (platformValue == PlatformType.OPEN_AI || platformValue == PlatformType.COHERE || platformValue == PlatformType.AZURE) {
       form.get('granularity').setValue(EmbeddingType.ON_ATTRIBUTE);
+      if (platformValue == PlatformType.AZURE) {
+        const azureUrls = localStorage.getItem('azureUrls');
+        if (azureUrls) {
+          this.azureUrls = JSON.parse(azureUrls);
+        }
+        const azureVersions = localStorage.getItem('azureVersions');
+        if (azureVersions) {
+          this.azureVersions = JSON.parse(azureVersions);
+        }
+      }
     }
     this.checkIfPlatformHasToken();
     this.checkIfCreateEmbeddingIsDisabled();
@@ -191,6 +203,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
       config.base = embeddingForm.get("base").value;
       config.type = DEFAULT_AZURE_TYPE;
       config.version = embeddingForm.get("version").value;
+      this.prepareAzureData(embeddingForm);
     }
 
     this.projectApolloService.createEmbedding(
@@ -331,9 +344,6 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
   checkIfPlatformHasToken() {
     if (this.selectedPlatform.platform == PlatformType.COHERE || this.selectedPlatform.platform == PlatformType.OPEN_AI || this.selectedPlatform.platform == PlatformType.AZURE) {
       this.granularityArray = this.granularityArray.filter((g) => g.value != EmbeddingType.ON_TOKEN);
-      if (this.selectedPlatform.platform == PlatformType.AZURE) {
-        this.settingModals.embedding.create.embeddingCreationFormGroup.get('version').setValue(DEFAULT_AZURE_VERSION);
-      }
     } else {
       this.granularityArray = this.dataHandlerHelper.granularityTypesArray;
     }
@@ -344,5 +354,34 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
     this.selectedPlatform = this.embeddingPlatforms[0];
     this.prepareSuggestions(this.settingModals.embedding.create.embeddingCreationFormGroup);
     this.checkIfPlatformHasToken();
+  }
+
+  prepareAzureData(form: FormGroup) {
+    const getAzureUrl = localStorage.getItem('azureUrls');
+    const getAzureVersion = localStorage.getItem('azureVersions');
+    if (getAzureUrl == undefined) {
+      const azureUrls = [];
+      azureUrls.push(form.get('base').value);
+      localStorage.setItem('azureUrls', JSON.stringify(azureUrls));
+    }
+    if (getAzureVersion == undefined) {
+      const azureVersions = [];
+      azureVersions.push(form.get('version').value);
+      localStorage.setItem('azureVersions', JSON.stringify(azureVersions));
+    }
+  }
+
+  checkEmbeddingProperty(eventTarget: HTMLInputElement, property: string) {
+    const embeddingForm = this.settingModals.embedding.create.embeddingCreationFormGroup;
+    embeddingForm.get(property).setValue(eventTarget.value);
+    this.checkIfCreateEmbeddingIsDisabled();
+  }
+
+  selectEmbeddingProperty(base: any, inputElement: HTMLInputElement, property: string) {
+    inputElement.value = base;
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+    this.checkEmbeddingProperty(inputElement, property);
   }
 }

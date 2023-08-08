@@ -263,38 +263,43 @@
                         </div>
                         <input formControlName="apiToken" class="input input-bordered input-sm placeholder-italic"
                             placeholder="Enter api token..." (input)="checkIfCreateEmbeddingIsDisabled()" />
-                        <div class="tooltip tooltip-right"
-                            data-tip="This will be your custom URL, which looks like this: https://<your-api-base>.openai.azure.com/">
-                            <span class="card-title mb-0 label-text flex"><span class="cursor-help underline"
-                                    style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">
-                                    Base
+                        <ng-template [ngIf]="azureUrls.length == 0" [ngIfElse]="azureUrlsSuggestions">
+                            <div class="tooltip tooltip-right"
+                                data-tip="This will be your custom URL, which looks like this: https://<your-api-base>.openai.azure.com/">
+                                <span class="card-title mb-0 label-text flex"><span class="cursor-help underline"
+                                        style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">
+                                        Azure URL
+                                    </span>
                                 </span>
-                            </span>
-                        </div>
-                        <input formControlName="base" class="input input-bordered input-sm placeholder-italic"
-                            placeholder="Enter base..." (input)="checkIfCreateEmbeddingIsDisabled()" />
-                        <div class="flex flex-row items-center">
-                            <span class="card-title mb-0 label-text flex"><span class="underline"
-                                    style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">
-                                    Version
+
+                            </div>
+                            <input formControlName="base" class="input input-bordered input-sm placeholder-italic"
+                                placeholder="Enter azure URL..." (input)="checkIfCreateEmbeddingIsDisabled()" />
+                        </ng-template>
+                        <ng-template [ngIf]="azureVersions.length == 0" [ngIfElse]="azureVersionsSuggestions">
+                            <div class="flex flex-row items-center">
+                                <span class="card-title mb-0 label-text flex"><span class="underline"
+                                        style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">
+                                        Version
+                                    </span>
                                 </span>
-                            </span>
-                            <a class="tooltip tooltip-right cursor-help ml-1" target="_blank"
-                                href="https://learn.microsoft.com/en-us/rest/api/cognitiveservices/azureopenaistable/models/list?tabs=HTTP"
-                                data-tip="The latest version of the Azure OpenAI service can also be found here.">
-                                <svg xmlns="http://www.w3.org/2000/svg"
-                                    class="icon icon-tabler icon-tabler-external-link" width="16" height="16"
-                                    viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none"
-                                    stroke-linecap="round" stroke-linejoin="round">
-                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                    <path d="M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6" />
-                                    <path d="M11 13l9 -9" />
-                                    <path d="M15 4h5v5" />
-                                </svg>
-                            </a>
-                        </div>
-                        <input formControlName="version" class="input input-bordered input-sm placeholder-italic"
-                            placeholder="Enter version..." (input)="checkIfCreateEmbeddingIsDisabled()" />
+                                <a class="tooltip tooltip-right cursor-help ml-1" target="_blank"
+                                    href="https://learn.microsoft.com/en-us/rest/api/cognitiveservices/azureopenaistable/models/list?tabs=HTTP"
+                                    data-tip="The latest version of the Azure OpenAI service can also be found here.">
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                        class="icon icon-tabler icon-tabler-external-link" width="16" height="16"
+                                        viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                        <path d="M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6" />
+                                        <path d="M11 13l9 -9" />
+                                        <path d="M15 4h5v5" />
+                                    </svg>
+                                </a>
+                            </div>
+                            <input formControlName="version" class="input input-bordered input-sm placeholder-italic"
+                                placeholder="Enter version..." (input)="checkIfCreateEmbeddingIsDisabled()" />
+                        </ng-template>
                     </ng-template>
                 </ng-container>
             </div>
@@ -386,4 +391,70 @@
                 (focus)="$event.target.select()" (input)="checkEmbeddingHandles($event.target)">
         </div>
     </ng-template>
+</ng-template>
+
+
+
+<ng-template #azureUrlsSuggestions>
+    <div class="tooltip tooltip-right"
+        data-tip="This will be your custom URL, which looks like this: https://<your-api-base>.openai.azure.com/">
+        <span class="card-title mb-0 label-text flex"><span class="cursor-help underline"
+                style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">
+                Azure URL
+            </span>
+        </span>
+    </div>
+    <div class="dropdown" *ngIf="azureUrls.length > 0">
+        <div tabindex="0" class="flex flex-row select select-bordered select-sm pl-0 pr-8">
+            <input #inputAzureUrl type="text" placeholder="Type to search..." class="w-full font-bold input input-sm"
+                style="outline:none; box-shadow:none;height:1.9rem;"
+                [value]="settingModals.embedding.create.embeddingCreationFormGroup.get('base').value"
+                (focus)="$event.target.select()" (input)="checkEmbeddingProperty($event.target, 'base')">
+        </div>
+        <ul tabindex="0" class="p-2 w-full menu dropdown-content bg-base-100 shadow height-dropdown overflow-y-auto">
+            <li #me *ngFor="let url of azureUrls; let k = index">
+                <label class="cursor-pointer label" (click)="selectEmbeddingProperty(url,inputAzureUrl, 'base')">
+                    {{url}}
+                </label>
+            </li>
+        </ul>
+    </div>
+</ng-template>
+
+<ng-template #azureVersionsSuggestions>
+    <div class="flex flex-row items-center">
+        <span class="card-title mb-0 label-text flex"><span class="underline"
+                style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">
+                Version
+            </span>
+        </span>
+        <a class="tooltip tooltip-right cursor-help ml-1" target="_blank"
+            href="https://learn.microsoft.com/en-us/rest/api/cognitiveservices/azureopenaistable/models/list?tabs=HTTP"
+            data-tip="The latest version of the Azure OpenAI service can also be found here.">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-external-link" width="16"
+                height="16" viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <path d="M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6" />
+                <path d="M11 13l9 -9" />
+                <path d="M15 4h5v5" />
+            </svg>
+        </a>
+    </div>
+    <div class="dropdown" *ngIf="azureVersions.length > 0">
+        <div tabindex="0" class="flex flex-row select select-bordered select-sm pl-0 pr-8">
+            <input #inputAzureVersion type="text" placeholder="Type to search..."
+                class="w-full font-bold input input-sm" style="outline:none; box-shadow:none;height:1.9rem;"
+                [value]="settingModals.embedding.create.embeddingCreationFormGroup.get('version').value"
+                (focus)="$event.target.select()" (input)="checkEmbeddingProperty($event.target, 'version')">
+        </div>
+        <ul tabindex="0" class="p-2 w-full menu dropdown-content bg-base-100 shadow height-dropdown overflow-y-auto">
+            <li #me *ngFor="let version of azureVersions; let k = index">
+                <label class="cursor-pointer label"
+                    (click)="selectEmbeddingProperty(version,inputAzureVersion, 'version')">
+                    {{version}}
+                </label>
+            </li>
+        </ul>
+    </div>
 </ng-template>
