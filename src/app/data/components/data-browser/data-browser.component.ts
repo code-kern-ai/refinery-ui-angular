@@ -2200,6 +2200,12 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   getUniqueValues() {
     this.projectApolloService.getUniqueValuesByAttributes(this.projectId).pipe(first()).subscribe((uniqueValues: string) => {
       this.uniqueValuesDict = JSON.parse(uniqueValues);
+      for (let key in this.uniqueValuesDict) {
+        const attributeType = getAttributeType(this.attributesSortOrder, key);
+        if (attributeType == 'TEXT') {
+          delete this.uniqueValuesDict[key];
+        }
+      }
       this.filterIntegration.uniqueValuesDict = this.uniqueValuesDict;
     });
   }

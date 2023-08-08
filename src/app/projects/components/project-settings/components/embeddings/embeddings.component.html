@@ -388,11 +388,11 @@
 }" closeButton="X" [modalBoxStyle]="{'overflow-x':'visible', 'max-width':'400px', 'width': 'fit-content'}"
     (optionClicked)="optionClicked($event)">
     <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
-        Selected filtered attributes</div>
-    <div class="mb-2 flex flex-grow justify-center text-sm text-gray-500">
-        List of attributes selected when creating an embedding</div>
+        Edit embedding with filter attributes</div>
+    <div class="my-2 flex flex-grow justify-center text-sm text-gray-500 text-center">
+        List of filter attributes selected when creating an embedding</div>
 
-    <div class="flex flex-wrap justify-center my-4">
+    <div class="flex flex-wrap justify-center my-4 gap-y-2">
         <span *ngFor="let attribute of settingModals.embedding.filteredAttributes.attributeNames"
             [attr.data-tip]="attribute.dataTypeName" class="tooltip">
             <div [ngClass]="'bg-'+attribute.color+'-100 text-'+attribute.color+'-700 border border-'+attribute.color+'-400 hover:bg-'+attribute.color+'-200'"
@@ -402,6 +402,8 @@
         </span>
     </div>
     <ng-template [ngIf]="!showEditOption">
+        <div class="text-xs text-gray-500 text-center italic">Add or remove filter attributes and recreate the embedding
+        </div>
         <kern-dropdown [dropdownOptions]="{
             optionArray: settingModals.embedding.create.embeddingCreationFormGroup.get('filterAttributes').controls,
             hasFullWidth: true,

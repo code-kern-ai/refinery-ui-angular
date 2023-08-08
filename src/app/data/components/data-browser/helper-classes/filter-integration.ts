@@ -6,7 +6,7 @@ import { getColorForDataType } from "src/app/util/helper-functions";
 export class FilterIntegration {
     private dataBrowser: DataBrowserComponent;
 
-    filterAttributesSSForm: FormGroup;
+    filterAttributesForm: FormGroup;
     filterAttributesSS: string[];
     colorsAttributes: string[] = [];
     uniqueValuesDict: { [key: string]: string[] } = {};
@@ -19,7 +19,7 @@ export class FilterIntegration {
     }
 
     initFilterForm() {
-        this.filterAttributesSSForm = this.formBuilder.group({
+        this.filterAttributesForm = this.formBuilder.group({
             filterAttributes: this.formBuilder.array([]) as FormArray
         });
         this.getFilterAttributesSS().push(this.formBuilder.group({
@@ -36,7 +36,7 @@ export class FilterIntegration {
     }
 
     getFilterAttributesSS() {
-        return this.filterAttributesSSForm.get('filterAttributes') as FormArray;
+        return this.filterAttributesForm.get('filterAttributes') as FormArray;
     }
 
     removeFilterAttributesSS(i: number) {
@@ -143,7 +143,7 @@ export class FilterIntegration {
     clearForm() {
         this.dataBrowser.embeddingSelectSS.nativeElement.value = this.dataBrowser.similarSearchHelper.embeddings[0].id;
         this.dataBrowser.embeddingSelectSS.nativeElement.dispatchEvent(new Event('change'));
-        this.filterAttributesSSForm.reset();
+        this.filterAttributesForm.reset();
     }
 
     checkIfAtLeastOneEmptyField() {
