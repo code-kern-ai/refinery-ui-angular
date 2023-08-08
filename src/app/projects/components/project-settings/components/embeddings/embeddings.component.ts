@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, PLATFORM_ID, SimpleChanges, ViewChild } from '@angular/core';
 import { Subscription, timer } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { Project } from 'src/app/base/entities/project';
@@ -9,7 +9,7 @@ import { DownloadedModel } from '../../entities/downloaded-model.type';
 import { Embedding, EmbeddingPlatform } from '../../entities/embedding.type';
 import { DataHandlerHelper } from '../../helper/data-handler-helper';
 import { SettingModals } from '../../helper/modal-helper';
-import { EmbeddingType, PlatformType, granularityTypesArray, platformNamesDict } from '../../helper/project-settings-helper';
+import { DEFAULT_AZURE_MODEL, DEFAULT_AZURE_TYPE, EmbeddingType, PlatformType, granularityTypesArray, platformNamesDict } from '../../helper/project-settings-helper';
 import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
 import { Organization } from 'src/app/base/entities/organization';
 import { FormGroup } from '@angular/forms';
@@ -34,7 +34,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
   @Input() embeddingPlatforms: EmbeddingPlatform[];
 
   @ViewChild('gdprText') gdprText: ElementRef;
-  downloadedModels: DownloadedModel[];
+  downloadedModels: DownloadedModel[] = [];
   subscriptions$: Subscription[] = [];
   somethingLoading: boolean = false;
   downloadedModelsQuery$: any;
@@ -45,6 +45,8 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
   granularityArray = granularityTypesArray;
   embeddingPlatformsCopy: EmbeddingPlatform[];
   gdprTextHTML: string;
+  azureUrls: string[] = [];
+  azureVersions: string[] = [];
 
   get PlatformType(): typeof PlatformType {
     return PlatformType;
@@ -113,12 +115,26 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
     const form = this.settingModals.embedding.create.embeddingCreationFormGroup;
     const platformValue = form.get('platform').value;
     this.prepareSuggestions(form);
+    if (form.get('model').value != null) {
+      form.get('model').setValue(null);
+    }
     this.initEmbeddingModal(false, platformValue);
     this.selectedPlatform = this.embeddingPlatforms.find((p: EmbeddingPlatform) => p.platform == platformValue);
-    if (platformValue == PlatformType.OPEN_AI || platformValue == PlatformType.COHERE) {
+    if (platformValue == PlatformType.OPEN_AI || platformValue == PlatformType.COHERE || platformValue == PlatformType.AZURE) {
       form.get('granularity').setValue(EmbeddingType.ON_ATTRIBUTE);
+      if (platformValue == PlatformType.AZURE) {
+        const azureUrls = localStorage.getItem('azureUrls');
+        if (azureUrls) {
+          this.azureUrls = JSON.parse(azureUrls);
+        }
+        const azureVersions = localStorage.getItem('azureVersions');
+        if (azureVersions) {
+          this.azureVersions = JSON.parse(azureVersions);
+        }
+      }
     }
     this.checkIfPlatformHasToken();
+    this.checkIfCreateEmbeddingIsDisabled();
   }
 
   prepareSuggestions(form: FormGroup) {
@@ -181,6 +197,13 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
       config.apiToken = embeddingForm.get("apiToken").value;
     } else if (platform == PlatformType.COHERE) {
       config.apiToken = embeddingForm.get("apiToken").value;
+    } else if (platform == PlatformType.AZURE) {
+      config.model = DEFAULT_AZURE_MODEL;
+      config.apiToken = embeddingForm.get("apiToken").value;
+      config.base = embeddingForm.get("base").value;
+      config.type = DEFAULT_AZURE_TYPE;
+      config.version = embeddingForm.get("version").value;
+      this.prepareAzureData(embeddingForm);
     }
 
     this.projectApolloService.createEmbedding(
@@ -252,7 +275,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   private checkStillLoading() {
-    this.somethingLoading = this.useableAttributes == undefined || this.useableAttributes?.length == 0 || this.embeddingHandles == undefined || (this.isManaged && this.downloadedModels?.length == 0);
+    this.somethingLoading = this.useableAttributes == undefined || this.useableAttributes?.length == 0 || this.embeddingHandles == undefined || (this.isManaged && !this.downloadedModels);
   }
 
   handleWebsocketNotification(msgParts) {
@@ -281,6 +304,8 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
     const model = embeddingForm.get("model").value;
     const apiToken = embeddingForm.get("apiToken").value;
     const termsAccepted = embeddingForm.get("termsAccepted").value;
+    const base = embeddingForm.get("base").value;
+    const version = embeddingForm.get("version").value;
     let checkFormFields: boolean = false;
 
     if (platform == PlatformType.HUGGING_FACE || platform == PlatformType.PYTHON) {
@@ -289,6 +314,8 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
       checkFormFields = model == null || apiToken == null || apiToken == "" || !termsAccepted;
     } else if (platform == PlatformType.COHERE) {
       checkFormFields = apiToken == null || apiToken == "" || !termsAccepted;
+    } else if (platform == PlatformType.AZURE) {
+      checkFormFields = apiToken == null || apiToken == "" || base == null || base == "" || version == null || version == "" || !termsAccepted;
     }
     const checkDuplicates = this.dataHandlerHelper.canCreateEmbedding(this.settingModals, this.embeddings, this.attributes);
     this.isCreationOfEmbeddingDisabled = this.settingModals.embedding.create.blocked ||
@@ -304,6 +331,8 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
       form.get("model").setValue(null);
       form.get("apiToken").setValue(null);
       form.get("termsAccepted").setValue(false);
+      form.get("base").setValue(null);
+      form.get("version").setValue(null);
     }
   }
 
@@ -313,7 +342,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   checkIfPlatformHasToken() {
-    if (this.selectedPlatform.platform == PlatformType.COHERE || this.selectedPlatform.platform == PlatformType.OPEN_AI) {
+    if (this.selectedPlatform.platform == PlatformType.COHERE || this.selectedPlatform.platform == PlatformType.OPEN_AI || this.selectedPlatform.platform == PlatformType.AZURE) {
       this.granularityArray = this.granularityArray.filter((g) => g.value != EmbeddingType.ON_TOKEN);
     } else {
       this.granularityArray = this.dataHandlerHelper.granularityTypesArray;
@@ -325,5 +354,34 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
     this.selectedPlatform = this.embeddingPlatforms[0];
     this.prepareSuggestions(this.settingModals.embedding.create.embeddingCreationFormGroup);
     this.checkIfPlatformHasToken();
+  }
+
+  prepareAzureData(form: FormGroup) {
+    const getAzureUrl = localStorage.getItem('azureUrls');
+    const getAzureVersion = localStorage.getItem('azureVersions');
+    const baseValue = form.get('base').value;
+    const versionValue = form.get('version').value;
+    if (getAzureUrl == undefined || !this.azureUrls.includes(baseValue)) {
+      this.azureUrls.push(baseValue);
+      localStorage.setItem('azureUrls', JSON.stringify(this.azureUrls));
+    }
+    if (getAzureVersion == undefined || !this.azureVersions.includes(versionValue)) {
+      this.azureVersions.push(versionValue);
+      localStorage.setItem('azureVersions', JSON.stringify(this.azureVersions));
+    }
+  }
+
+  checkEmbeddingProperty(eventTarget: HTMLInputElement, property: string) {
+    const embeddingForm = this.settingModals.embedding.create.embeddingCreationFormGroup;
+    embeddingForm.get(property).setValue(eventTarget.value);
+    this.checkIfCreateEmbeddingIsDisabled();
+  }
+
+  selectEmbeddingProperty(base: any, inputElement: HTMLInputElement, property: string) {
+    inputElement.value = base;
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+    this.checkEmbeddingProperty(inputElement, property);
   }
 }
