@@ -32,6 +32,8 @@ export class FilterIntegration {
         if (this.filterAttributesSS) {
             this.setFilterDropdownVal(this.filterAttributesSS[0], 0, "name");
             this.setFilterDropdownVal(this.operatorsDict[this.filterAttributesSS[0]][0], 0, "operator");
+        } else {
+            this.dataBrowser.atLeastOneEmptyField = false;
         }
     }
 
