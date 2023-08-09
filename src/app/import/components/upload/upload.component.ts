@@ -320,7 +320,7 @@ export class UploadComponent implements OnInit, OnChanges, OnDestroy {
     let q, vc;
     [q, vc] = this.projectApolloService.getEmbeddingSchema(this.projectId);
     vc.pipe(first()).subscribe((embeddings: Embedding[]) => {
-      const recalculationCosts = embeddings.some((e: Embedding) => e.platform == PlatformType.COHERE || e.platform == PlatformType.OPEN_AI);
+      const recalculationCosts = embeddings.some((e: Embedding) => e.platform == PlatformType.COHERE || e.platform == PlatformType.OPEN_AI || e.platform == PlatformType.AZURE);
       this.uploadSpecificHelper.recalculationCosts = recalculationCosts;
     });
   }

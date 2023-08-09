@@ -341,7 +341,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
       size.forEach((element) => {
         let hasGdpr = false;
         if (element.table == 'embedding tensors') {
-          hasGdpr = this.embeddings.some((e: any) => e.name.split("-")[2] == PlatformType.COHERE || e.name.split("-")[2] == PlatformType.OPEN_AI);
+          hasGdpr = this.embeddings.some((e: any) => e.name.split("-")[2] == PlatformType.COHERE || e.name.split("-")[2] == PlatformType.OPEN_AI || e.name.split("-")[2] == PlatformType.AZURE);
         }
         let group = this.formBuilder.group({
           export: element.default,

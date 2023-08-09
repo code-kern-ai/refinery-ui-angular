@@ -5,7 +5,7 @@ import { ProjectApolloService } from "src/app/base/services/project/project-apol
 import { Attribute } from "../entities/attribute.type";
 import { Embedding, EmbeddingPlatform } from "../entities/embedding.type";
 import { SettingModals } from "./modal-helper";
-import { EmbeddingType, PlatformType, granularityTypesArray } from "./project-settings-helper";
+import { DEFAULT_AZURE_MODEL, EmbeddingType, PlatformType, granularityTypesArray } from "./project-settings-helper";
 
 export class DataHandlerHelper {
 
@@ -76,7 +76,9 @@ export class DataHandlerHelper {
                 granularity: this.granularityTypesArray[0].value,
                 apiToken: null,
                 termsAccepted: false,
-                filterAttributes: this._filterAttributesFormArray(useableNonTextAttributes)
+                filterAttributes: this._filterAttributesFormArray(useableNonTextAttributes),
+                base: null,
+                version: null,
             });
             settingModals.embedding.create.embeddingCreationFormGroup.valueChanges.pipe(debounceTime(200)).subscribe(() =>
                 settingModals.embedding.create.blocked = !this.canCreateEmbedding(settingModals, embeddings, attributes)
@@ -91,7 +93,7 @@ export class DataHandlerHelper {
         const platform = settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value;
         if (platform == PlatformType.HUGGING_FACE || platform == PlatformType.PYTHON) {
             toReturn += "-" + platform + "-" + values.model;
-        } else if (platform == PlatformType.OPEN_AI || platform == PlatformType.COHERE) {
+        } else if (platform == PlatformType.OPEN_AI || platform == PlatformType.COHERE || platform == PlatformType.AZURE) {
             toReturn += this.buildEmbeddingNameWithApiToken(values, platform);
         }
         return toReturn;
@@ -99,9 +101,10 @@ export class DataHandlerHelper {
 
     buildEmbeddingNameWithApiToken(values: any, platform: string) {
         if (values.apiToken == null) return "";
+        if (values.platform == PlatformType.AZURE) values.model = DEFAULT_AZURE_MODEL;
         const platformStr = "-" + platform + "-";
         const apiTokenCut = values.apiToken.substring(0, 3) + "..." + values.apiToken.substring(values.apiToken.length - 4, values.apiToken.length);
-        if (platform == PlatformType.OPEN_AI) return platformStr + values.model + "-" + apiTokenCut;
+        if (platform == PlatformType.OPEN_AI || platform == PlatformType.AZURE) return platformStr + values.model + "-" + apiTokenCut;
         else return platformStr + apiTokenCut;
     }
 

@@ -15,14 +15,16 @@ export enum PlatformType {
     HUGGING_FACE = "huggingface",
     OPEN_AI = "openai",
     COHERE = "cohere",
-    PYTHON = "python"
+    PYTHON = "python",
+    AZURE = "azure"
 }
 
 export const platformNamesDict = {
     [PlatformType.HUGGING_FACE]: "Hugging Face",
     [PlatformType.OPEN_AI]: "Open AI",
     [PlatformType.COHERE]: "Cohere",
-    [PlatformType.PYTHON]: "Python"
+    [PlatformType.PYTHON]: "Python",
+    [PlatformType.AZURE]: "Azure"
 }
 
 export function getMoveRight(tblName: string): boolean {
@@ -45,3 +47,6 @@ export function findFreeAttributeName(attributes: Attribute[]): string {
     }
     return "attribute_" + (counterList.length > 0 ? (Math.max(...counterList) + 1) : (attributes.length + 1));
 }
+
+export const DEFAULT_AZURE_TYPE = 'azure';
+export const DEFAULT_AZURE_MODEL = 'text-embedding-ada-002';
