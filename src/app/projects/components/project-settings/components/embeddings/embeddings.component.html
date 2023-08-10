@@ -263,6 +263,18 @@
                         </div>
                         <input formControlName="apiToken" class="input input-bordered input-sm placeholder-italic"
                             placeholder="Enter api token..." (input)="checkIfCreateEmbeddingIsDisabled()" />
+                        <ng-template [ngIf]="azureEngines.length == 0" [ngIfElse]="azureEnginesSuggestions">
+                            <div class="tooltip tooltip-right"
+                                data-tip="This will be your custom engine name. You can find this in the Azure OpenAI studio in the deployments section.">
+                                <span class="card-title mb-0 label-text flex"><span class="cursor-help underline"
+                                        style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">
+                                        Engine
+                                    </span>
+                                </span>
+                            </div>
+                            <input formControlName="engine" class="input input-bordered input-sm placeholder-italic"
+                                placeholder="Enter Azure engine..." (input)="checkIfCreateEmbeddingIsDisabled()" />
+                        </ng-template>
                         <ng-template [ngIf]="azureUrls.length == 0" [ngIfElse]="azureUrlsSuggestions">
                             <div class="tooltip tooltip-right"
                                 data-tip="This will be your custom URL, which looks like this: https://<your-api-base>.openai.azure.com/">
@@ -274,7 +286,7 @@
 
                             </div>
                             <input formControlName="base" class="input input-bordered input-sm placeholder-italic"
-                                placeholder="Enter azure URL..." (input)="checkIfCreateEmbeddingIsDisabled()" />
+                                placeholder="Enter Azure URL..." (input)="checkIfCreateEmbeddingIsDisabled()" />
                         </ng-template>
                         <ng-template [ngIf]="azureVersions.length == 0" [ngIfElse]="azureVersionsSuggestions">
                             <div class="flex flex-row items-center">
@@ -406,7 +418,7 @@
     </div>
     <div class="dropdown" *ngIf="azureUrls.length > 0">
         <div tabindex="0" class="flex flex-row select select-bordered select-sm pl-0 pr-8">
-            <input #inputAzureUrl type="text" placeholder="Type to search..." class="w-full font-bold input input-sm"
+            <input #inputAzureUrl type="text" placeholder="Enter Azure URL..." class="w-full font-bold input input-sm"
                 style="outline:none; box-shadow:none;height:1.9rem;"
                 [value]="settingModals.embedding.create.embeddingCreationFormGroup.get('base').value"
                 (focus)="$event.target.select()" (input)="checkEmbeddingProperty($event.target, 'base')">
@@ -443,7 +455,7 @@
     </div>
     <div class="dropdown" *ngIf="azureVersions.length > 0">
         <div tabindex="0" class="flex flex-row select select-bordered select-sm pl-0 pr-8">
-            <input #inputAzureVersion type="text" placeholder="Type to search..."
+            <input #inputAzureVersion type="text" placeholder="Enter Azure version..."
                 class="w-full font-bold input input-sm" style="outline:none; box-shadow:none;height:1.9rem;"
                 [value]="settingModals.embedding.create.embeddingCreationFormGroup.get('version').value"
                 (focus)="$event.target.select()" (input)="checkEmbeddingProperty($event.target, 'version')">
@@ -453,6 +465,33 @@
                 <label class="cursor-pointer label"
                     (click)="selectEmbeddingProperty(version,inputAzureVersion, 'version')">
                     {{version}}
+                </label>
+            </li>
+        </ul>
+    </div>
+</ng-template>
+
+
+<ng-template #azureEnginesSuggestions>
+    <div class="tooltip tooltip-right"
+        data-tip="This will be your custom engine name. You can find this in the Azure OpenAI studio in the deployments section.">
+        <span class="card-title mb-0 label-text flex"><span class="cursor-help underline"
+                style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">
+                Engine
+            </span>
+        </span>
+    </div>
+    <div class="dropdown" *ngIf="azureEngines.length > 0">
+        <div tabindex="0" class="flex flex-row select select-bordered select-sm pl-0 pr-8">
+            <input #inputAzureEngine type="text" placeholder="Enter Azure engine..."
+                class="w-full font-bold input input-sm" style="outline:none; box-shadow:none;height:1.9rem;"
+                [value]="settingModals.embedding.create.embeddingCreationFormGroup.get('engine').value"
+                (focus)="$event.target.select()" (input)="checkEmbeddingProperty($event.target, 'engine')">
+        </div>
+        <ul tabindex="0" class="p-2 w-full menu dropdown-content bg-base-100 shadow height-dropdown overflow-y-auto">
+            <li #me *ngFor="let url of azureEngines; let k = index">
+                <label class="cursor-pointer label" (click)="selectEmbeddingProperty(url,inputAzureEngine, 'engine')">
+                    {{url}}
                 </label>
             </li>
         </ul>
