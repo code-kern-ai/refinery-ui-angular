@@ -49,4 +49,3 @@ export function findFreeAttributeName(attributes: Attribute[]): string {
 }
 
 export const DEFAULT_AZURE_TYPE = 'azure';
-export const DEFAULT_AZURE_MODEL = 'text-embedding-ada-002';

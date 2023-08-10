@@ -9,7 +9,7 @@ import { DownloadedModel } from '../../entities/downloaded-model.type';
 import { Embedding, EmbeddingPlatform } from '../../entities/embedding.type';
 import { DataHandlerHelper } from '../../helper/data-handler-helper';
 import { SettingModals } from '../../helper/modal-helper';
-import { DEFAULT_AZURE_MODEL, DEFAULT_AZURE_TYPE, EmbeddingType, PlatformType, granularityTypesArray, platformNamesDict } from '../../helper/project-settings-helper';
+import { DEFAULT_AZURE_TYPE, EmbeddingType, PlatformType, granularityTypesArray, platformNamesDict } from '../../helper/project-settings-helper';
 import { OrganizationApolloService } from 'src/app/base/services/organization/organization-apollo.service';
 import { Organization } from 'src/app/base/entities/organization';
 import { FormGroup } from '@angular/forms';
@@ -46,6 +46,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
   embeddingPlatformsCopy: EmbeddingPlatform[];
   gdprTextHTML: string;
   azureUrls: string[] = [];
+  azureEngines: string[] = [];
   azureVersions: string[] = [];
 
   get PlatformType(): typeof PlatformType {
@@ -131,6 +132,10 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
         if (azureVersions) {
           this.azureVersions = JSON.parse(azureVersions);
         }
+        const azureEngines = localStorage.getItem('azureEngines');
+        if (azureEngines) {
+          this.azureEngines = JSON.parse(azureEngines);
+        }
       }
     }
     this.checkIfPlatformHasToken();
@@ -198,7 +203,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
     } else if (platform == PlatformType.COHERE) {
       config.apiToken = embeddingForm.get("apiToken").value;
     } else if (platform == PlatformType.AZURE) {
-      config.model = DEFAULT_AZURE_MODEL;
+      config.model = embeddingForm.get("engine").value; //note that is handled internally as model so we use the model field for the request
       config.apiToken = embeddingForm.get("apiToken").value;
       config.base = embeddingForm.get("base").value;
       config.type = DEFAULT_AZURE_TYPE;
@@ -306,6 +311,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
     const termsAccepted = embeddingForm.get("termsAccepted").value;
     const base = embeddingForm.get("base").value;
     const version = embeddingForm.get("version").value;
+    const engine = embeddingForm.get("engine").value;
     let checkFormFields: boolean = false;
 
     if (platform == PlatformType.HUGGING_FACE || platform == PlatformType.PYTHON) {
@@ -315,7 +321,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
     } else if (platform == PlatformType.COHERE) {
       checkFormFields = apiToken == null || apiToken == "" || !termsAccepted;
     } else if (platform == PlatformType.AZURE) {
-      checkFormFields = apiToken == null || apiToken == "" || base == null || base == "" || version == null || version == "" || !termsAccepted;
+      checkFormFields = apiToken == null || apiToken == "" || base == null || base == "" || version == null || version == "" || !termsAccepted || !engine;
     }
     const checkDuplicates = this.dataHandlerHelper.canCreateEmbedding(this.settingModals, this.embeddings, this.attributes);
     this.isCreationOfEmbeddingDisabled = this.settingModals.embedding.create.blocked ||
@@ -333,6 +339,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
       form.get("termsAccepted").setValue(false);
       form.get("base").setValue(null);
       form.get("version").setValue(null);
+      form.get("engine").setValue(null);
     }
   }
 
@@ -359,8 +366,10 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
   prepareAzureData(form: FormGroup) {
     const getAzureUrl = localStorage.getItem('azureUrls');
     const getAzureVersion = localStorage.getItem('azureVersions');
+    const getAzureEngine = localStorage.getItem('azureEngines');
     const baseValue = form.get('base').value;
     const versionValue = form.get('version').value;
+    const engineValue = form.get('engine').value;
     if (getAzureUrl == undefined || !this.azureUrls.includes(baseValue)) {
       this.azureUrls.push(baseValue);
       localStorage.setItem('azureUrls', JSON.stringify(this.azureUrls));
@@ -369,6 +378,12 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
       this.azureVersions.push(versionValue);
       localStorage.setItem('azureVersions', JSON.stringify(this.azureVersions));
     }
+
+    if (getAzureEngine == undefined || !this.azureEngines.includes(engineValue)) {
+      this.azureEngines.push(engineValue);
+      localStorage.setItem('azureEngines', JSON.stringify(this.azureEngines));
+    }
+
   }
 
   checkEmbeddingProperty(eventTarget: HTMLInputElement, property: string) {
