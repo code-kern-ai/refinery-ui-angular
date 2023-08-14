@@ -88,7 +88,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
     const projectId = this.activatedRoute.parent.snapshot.paramMap.get('projectId');
     NotificationService.subscribeToNotification(this, {
       projectId: projectId,
-      whitelist: ['tokenization', 'embedding', 'embedding_deleted', 'label_created', 'label_deleted', 'attributes_updated', 'labeling_task_deleted', 'labeling_task_updated', 'labeling_task_created', 'project_update', 'project_export', 'calculate_attribute', 'embedding_updated'],
+      whitelist: ['tokenization', 'embedding', 'embedding_deleted', 'label_created', 'label_deleted', 'attributes_updated', 'labeling_task_deleted', 'labeling_task_updated', 'labeling_task_created', 'project_update', 'project_export', 'calculate_attribute', 'embedding_updated', 'upload_embedding_payload'],
       func: this.handleWebsocketNotification
     });
     this.setUpCommentRequests(projectId);
@@ -200,9 +200,6 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
         return;
       }
       if (msgParts[4] == "INITIALIZING" || msgParts[4] == "WAITING") {
-        if (this.loadingEmbeddingsDict[msgParts[2]] == undefined) {
-          this.loadingEmbeddingsDict[msgParts[2]] = true;
-        }
         timer(100).subscribe(() => this.embeddingQuery$.refetch());
         return;
       }
@@ -210,7 +207,6 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
         if (e.id == msgParts[2]) {
           if (msgParts[3] == "state") {
             if (msgParts[4] == "FINISHED") {
-              this.loadingEmbeddingsDict[msgParts[2]] = false;
               this.embeddingQuery$.refetch();
             }
             else e.state = msgParts[4];
@@ -232,10 +228,10 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
     } else if (msgParts[1] == 'embedding_deleted') {
       if (!this.embeddings) return;
       this.embeddings = this.embeddings.filter(e => e.id != msgParts[2]);
-      delete this.loadingEmbeddingsDict[msgParts[2]];
       return;
     } else if (msgParts[1] == 'embedding_updated') {
-      this.loadingEmbeddingsDict[msgParts[2]] = true;
+      this.loadingEmbeddingsDict[msgParts[2]] = false;
+      delete this.loadingEmbeddingsDict[msgParts[2]];
     } else if (msgParts[1] == 'attributes_updated') {
       this.attributesQuery$.refetch();
     }
@@ -256,6 +252,10 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
         this.attributesQuery$.refetch();
         this.isAcRunning = this.checkIfAcIsRunning();
         if (msgParts[2] == 'finished') timer(500).subscribe(() => this.checkProjectTokenization(this.project.id));
+      }
+    } else if (msgParts[1] == 'upload_embedding_payload') {
+      if (this.loadingEmbeddingsDict[msgParts[2]] == undefined) {
+        this.loadingEmbeddingsDict[msgParts[2]] = true;
       }
     }
   }

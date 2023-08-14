@@ -212,7 +212,6 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   filterIntegration: FilterIntegration;
   uniqueValuesDict: { [key: string]: string[] } = {};
   @ViewChild('embeddingSelectSS') embeddingSelectSS: ElementRef;
-  atLeastOneEmptyField: boolean = false;
 
   getSearchFormArray(groupKey: string): FormArray {
     return this.fullSearch.get(groupKey).get('groupElements') as FormArray;
@@ -2150,8 +2149,10 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
 
   initFilterAttributeData(embeddingId?: string) {
     this.filterIntegration.filterAttributesSS = this.similarSearchHelper.prepareFilterAttributes(embeddingId);
-    this.filterIntegration.prepareOperatorsAndTooltips();
-    this.filterIntegration.initFilterForm();
+    if (this.filterIntegration.filterAttributesSS.length > 0) {
+      this.filterIntegration.prepareOperatorsAndTooltips();
+      this.filterIntegration.initFilterForm();
+    }
   }
 
   requestSimilarSearch() {

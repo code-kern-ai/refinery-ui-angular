@@ -23,18 +23,14 @@ export class FilterIntegration {
             filterAttributes: this.formBuilder.array([]) as FormArray
         });
         this.getFilterAttributesSS().push(this.formBuilder.group({
-            name: this.filterAttributesSS ? this.filterAttributesSS[0] : '',
-            operator: this.filterAttributesSS ? this.operatorsDict[this.filterAttributesSS[0]][0] : '',
+            name: this.filterAttributesSS[0],
+            operator: this.operatorsDict[this.filterAttributesSS[0]][0],
             searchValue: '',
             searchValueBetween: '',
-            addText: this.filterAttributesSS ? getPlaceholderText(getAttributeType(this.dataBrowser.attributesSortOrder, this.filterAttributesSS[0])) : ''
+            addText: getPlaceholderText(getAttributeType(this.dataBrowser.attributesSortOrder, this.filterAttributesSS[0]))
         }));
-        if (this.filterAttributesSS) {
-            this.setFilterDropdownVal(this.filterAttributesSS[0], 0, "name");
-            this.setFilterDropdownVal(this.operatorsDict[this.filterAttributesSS[0]][0], 0, "operator");
-        } else {
-            this.dataBrowser.atLeastOneEmptyField = false;
-        }
+        this.setFilterDropdownVal(this.filterAttributesSS[0], 0, "name");
+        this.setFilterDropdownVal(this.operatorsDict[this.filterAttributesSS[0]][0], 0, "operator");
     }
 
     getFilterAttributesSS() {
@@ -43,7 +39,6 @@ export class FilterIntegration {
 
     removeFilterAttributesSS(i: number) {
         this.getFilterAttributesSS().removeAt(i);
-        this.checkIfAtLeastOneEmptyField();
     }
 
     addFilterAttributesSS() {
@@ -55,7 +50,6 @@ export class FilterIntegration {
             searchValueBetween: '',
             addText: getPlaceholderText(attributeType)
         }));
-        this.checkIfAtLeastOneEmptyField();
     }
 
     setFilterDropdownVal(value: string, index: number, key: string) {
@@ -69,11 +63,9 @@ export class FilterIntegration {
             this.prepareOperatorsAndTooltips();
         }
         getIdxForm.get(key).setValue(value);
-        this.checkIfAtLeastOneEmptyField();
     }
 
     prepareOperatorsAndTooltips() {
-        if (!this.filterAttributesSS) return;
         let operators = [];
         let tooltips = [];
         this.colorsAttributes = [];
@@ -99,7 +91,6 @@ export class FilterIntegration {
         const attributeType = getAttributeType(this.dataBrowser.attributesSortOrder, formControlIdx.get("name").value);
         const operatorValue = formControlIdx.get("operator").value;
         this.dataBrowser.checkDecimalPatterns(attributeType, event, operatorValue);
-        this.checkIfAtLeastOneEmptyField();
     }
 
     prepareAttFilter() {
@@ -147,17 +138,4 @@ export class FilterIntegration {
         this.dataBrowser.embeddingSelectSS.nativeElement.dispatchEvent(new Event('change'));
         this.filterAttributesForm.reset();
     }
-
-    checkIfAtLeastOneEmptyField() {
-        const searchValues = [];
-        this.getFilterAttributesSS().controls.forEach((control) => {
-            if (control.get("operator").value == FilterIntegrationOperator.BETWEEN) {
-                searchValues.push(control.get("searchValue").value == "" || control.get("searchValueBetween").value == "");
-            } else {
-                searchValues.push(control.get("searchValue").value == "");
-            }
-        });
-        this.dataBrowser.atLeastOneEmptyField = searchValues.includes(true);
-    }
-
 }

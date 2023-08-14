@@ -146,7 +146,7 @@
                                                     </ng-template>
                                                     <ng-template [ngSwitchCase]="SearchGroupType.ATTRIBUTES">
                                                         <div
-                                                            class="flex flex-row items-center rounded-md hover:bg-gray-50 mt-2">
+                                                            class="flex flex-row items-center rounded-md hover:bg-gray-50 my-2">
                                                             <div class="flex flex-col">
                                                                 <div class="ml-2 mr-2 h-4 w-4 border-gray-300 border rounded cursor-pointer hover:bg-gray-200"
                                                                     (click)="setActiveNegateGroup(groupItem)"
@@ -1193,11 +1193,10 @@
         style="white-space: pre-wrap; overflow: auto; max-height: 700px; ">{{dataBrowserModals.displaySql.extendedRecordsSql}}</pre>
 </kern-modal>
 
-<kern-modal [isOpen]="dataBrowserModals.similaritySearch.open" [modalBoxStyle]="{'width':'30%'}" closeButton="X"
-    [acceptButton]="{
+<kern-modal [isOpen]="dataBrowserModals.similaritySearch.open" [modalBoxStyle]="{'width':'30%', 'overflow-x':'visible'}"
+    closeButton="X" [acceptButton]="{
     buttonCaption: 'Search',
-    emitObject: this, emitFunction:requestSimilarSearch,
-    disabled: atLeastOneEmptyField
+    emitObject: this, emitFunction:requestSimilarSearch
 }" (optionClicked)="dataBrowserModals.similaritySearch.open = false">
     <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
         Select embedding for similarity search </div>
@@ -1281,7 +1280,6 @@
                                         <input *ngIf="groupItem.get('operator').value != ''"
                                             formControlName="searchValue"
                                             (keydown)="filterIntegration.checkDecimalValue($event, i)"
-                                            (input)="filterIntegration.checkIfAtLeastOneEmptyField()"
                                             [placeholder]="groupItem.get('addText').value"
                                             class="w-full input input-sm input-bordered placeholder-italic">
 
@@ -1291,7 +1289,6 @@
                                         <input *ngIf="groupItem.get('operator').value == 'BETWEEN'"
                                             formControlName="searchValueBetween"
                                             [placeholder]="groupItem.get('addText').value"
-                                            (input)="filterIntegration.checkIfAtLeastOneEmptyField()"
                                             (keydown)="filterIntegration.checkDecimalValue($event, i)"
                                             class="w-full input input-sm input-bordered placeholder-italic">
                                     </ng-template>
