@@ -46,11 +46,11 @@
                                             <div class="tooltip tooltip-top"
                                                 *ngVar="embeddingContainer.filterAttributes as filteredAttributes"
                                                 [attr.data-tip]="filteredAttributes && filteredAttributes.length > 0 ? 'Has filtered attributes': 'No filtered attributes'">
-                                                <div (click)="settingModals.embedding.filteredAttributes.open = true; settingModals.embedding.filteredAttributes.attributeNames = prepareAttributeDataByNames(filteredAttributes);settingModals.embedding.filteredAttributes.saveEmbeddingId=embeddingContainer.id"
-                                                    [ngClass]="filteredAttributes && filteredAttributes.length > 0? 'pointer-events-auto' :'pointer-events-none'">
+                                                <div
+                                                    (click)="settingModals.embedding.filteredAttributes.open = true; settingModals.embedding.filteredAttributes.attributeNames = prepareAttributeDataByNames(filteredAttributes);settingModals.embedding.filteredAttributes.saveEmbeddingId=embeddingContainer.id">
                                                     <svg xmlns="http://www.w3.org/2000/svg"
-                                                        class="icon icon-tabler icon-tabler-notes w-6 h-6 m-auto"
-                                                        [ngClass]="filteredAttributes && filteredAttributes.length > 0 ? 'text-gray-700 cursor-pointer' : 'text-gray-300 cursor-not-allowed'"
+                                                        class="icon icon-tabler icon-tabler-notes w-6 h-6 m-auto cursor-pointer"
+                                                        [ngClass]="filteredAttributes && filteredAttributes.length > 0 ? 'text-gray-700' : 'text-gray-300'"
                                                         viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
                                                         fill="none" stroke-linecap="round" stroke-linejoin="round">
                                                         <path stroke="none" d="M0 0h24v24H0z" fill="none" />
@@ -198,9 +198,8 @@
         corresponding
         tensors!</p>
 </kern-modal>
-<kern-modal [isOpen]="settingModals.embedding.create.open"
-    [modalBoxStyle]="{'overflow-x':'visible', 'max-width':'400px', 'width': 'fit-content'}" closeButton="X"
-    [acceptButton]="{
+<kern-modal [isOpen]="settingModals.embedding.create.open" [modalBoxStyle]="{'overflow-x':'visible'}" closeButton="X"
+    [useDifferentModalWidth]="true" [acceptButton]="{
     buttonCaption: 'Add embedding',
     disabled: isCreationOfEmbeddingDisabled,
     emitObject: this, emitFunction:addEmbedding
@@ -237,8 +236,7 @@
                     hasFullWidth: true,
                     hasCheckboxes: true,
                     keepDropdownOpen: true,
-                    hasSelectAllOption: true,
-                    width: '240px'
+                    hasSelectAllOption: true
                 }" (optionClicked)="toggleActiveGroup($event)">
                 </kern-dropdown>
                 <div class="tooltip tooltip-right" data-tip="Choose the platform to embed records">
@@ -362,7 +360,7 @@
                 </ng-container>
             </div>
             <div *ngIf="settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.COHERE || settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.OPEN_AI || settingModals.embedding.create.embeddingCreationFormGroup.get('platform').value == PlatformType.AZURE"
-                style="text-align: center; margin-top: 12px;">
+                style="text-align: center; margin-top: 12px;" class="gdpr-text">
                 <div class="border border-gray-300 text-xs text-gray-500 p-2.5 rounded-lg text-justify">
                     <label #gdprText className="text-gray-700">
                         {{selectedPlatform.splitTerms[0]}}
@@ -467,13 +465,17 @@
         List of filter attributes selected when creating an embedding</div>
 
     <div class="flex flex-wrap justify-center my-4 gap-y-2">
-        <span *ngFor="let attribute of settingModals.embedding.filteredAttributes.attributeNames"
-            [attr.data-tip]="attribute.dataTypeName" class="tooltip">
-            <div [ngClass]="'bg-'+attribute.color+'-100 text-'+attribute.color+'-700 border border-'+attribute.color+'-400 hover:bg-'+attribute.color+'-200'"
-                class="cursor-pointer border items-center px-2 py-0.5 rounded text-xs font-medium text-center mr-2">
-                {{attribute.name}}
-            </div>
-        </span>
+        <div *ngIf="settingModals.embedding.filteredAttributes.attributeNames.length == 0; else attributesBlock"
+            class="text-xs text-gray-500 text-center italic">No filter attributes selected</div>
+        <ng-template #attributesBlock>
+            <span *ngFor="let attribute of settingModals.embedding.filteredAttributes.attributeNames"
+                [attr.data-tip]="attribute.dataTypeName" class="tooltip">
+                <div [ngClass]="'bg-'+attribute.color+'-100 text-'+attribute.color+'-700 border border-'+attribute.color+'-400 hover:bg-'+attribute.color+'-200'"
+                    class="cursor-pointer border items-center px-2 py-0.5 rounded text-xs font-medium text-center mr-2">
+                    {{attribute.name}}
+                </div>
+            </span>
+        </ng-template>
     </div>
     <ng-template [ngIf]="!showEditOption">
         <div class="text-xs text-gray-500 text-center italic">Add or remove filter attributes and recreate the embedding

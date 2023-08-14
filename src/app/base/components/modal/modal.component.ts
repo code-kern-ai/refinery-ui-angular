@@ -23,6 +23,7 @@ export class ModalComponent implements OnInit, OnChanges {
   @Input() backButton: ModalButton;
   @Input() editButton: ModalButton;
   @Input() modalBoxStyle: {};
+  @Input() useDifferentModalWidth: boolean = false;
 
   @Output() optionClicked = new EventEmitter<string | any>();
   @ViewChild("backdrop") backdrop: ElementRef;

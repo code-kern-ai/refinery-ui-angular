@@ -12,7 +12,8 @@
             }" [ngClass]="buttonClassList" (isMenuOpen)="toggleVisible($event, dropdownOptionsDiv)" appDropdown>
             {{ dropdownOptions.hasCheckboxes?'':dropdownOptions.buttonCaption }}
             <ng-template [ngIf]="dropdownOptions.hasCheckboxes">
-                <label class="truncate cursor-pointer">{{getDropdownDisplayText(dropdownOptions.optionArray,"EMPTY")}}
+                <label
+                    class="truncate cursor-pointer text-sm">{{getDropdownDisplayText(dropdownOptions.optionArray,"EMPTY")}}
                     <span
                         style="color:#2563eb">{{getDropdownDisplayText(dropdownOptions.optionArray,"NOT_NEGATED")}}</span>
                     <span style="color:#ef4444">{{getDropdownDisplayText(dropdownOptions.optionArray,"NEGATED")}}</span>
