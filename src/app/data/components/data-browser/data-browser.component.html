@@ -1199,7 +1199,8 @@
     emitObject: this, emitFunction:requestSimilarSearch
 }" [secondAcceptButton]="{
     'buttonCaption': 'Search without filter',
-    emitObject: this, emitFunction:requestSimilarSearchWithoutFilter
+    emitObject: this, emitFunction:requestSimilarSearchWithoutFilter,
+    useButton: filterIntegration.filterAttributesSS != null
 }" (optionClicked)="dataBrowserModals.similaritySearch.open = false">
     <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
         Select embedding for similarity search </div>

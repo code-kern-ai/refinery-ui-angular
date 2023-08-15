@@ -92,7 +92,7 @@ export class SimilarSearch {
     if (!embeddingId) embeddingId = this.embeddings[0].id;
     const embedding = this.embeddings.find(e => e.id == embeddingId);
     if (!embedding) return null;
-    if (embedding.filterAttributes.length == 0) return null;
+    if (embedding.filterAttributes && embedding.filterAttributes.length == 0) return null;
     return embedding.filterAttributes;
   }
 }
