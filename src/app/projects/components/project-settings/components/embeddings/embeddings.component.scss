@@ -1,0 +1,25 @@
+@media (min-width: 768px) {
+
+    .modal-width,
+    .gdpr-text {
+        max-width: 600px;
+        grid-template-columns: 20% 80%;
+    }
+}
+
+@media (min-width: 992px) {
+
+    .modal-width,
+    .gdpr-text {
+        max-width: 800px;
+    }
+}
+
+@media (min-width: 1200px) {
+
+    .modal-width,
+    .gdpr-text {
+        max-width: 1000px;
+    }
+
+}

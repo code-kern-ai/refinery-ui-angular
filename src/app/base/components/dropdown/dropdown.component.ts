@@ -61,7 +61,7 @@ export class DropdownComponent implements OnChanges {
 
   private buildHelperValues() {
     this.buttonClassList += this.dropdownOptions.isDisabled ? 'opacity-50 cursor-not-allowed ' : 'opacity-100 cursor-pointer ';
-    this.dropdownClassList = this.dropdownOptions.hasCheckboxes ? ' w-80 ' : '';
+    this.dropdownClassList = this.dropdownOptions.hasCheckboxes && !this.dropdownOptions.hasFullWidth ? ' w-80 ' : '';
     this.dropdownClassList += this.dropdownOptions.buttonVersion != 'default' ? 'right-0 width-icon-menues' : '';
     this.buttonClassList += this.dropdownOptions.isButtonSampleProjects ? 'py-2' : 'border-gray-300 py-1.5';
     this.buttonClassList += this.dropdownOptions.hasFullWidth ? ' w-full ' : '';
@@ -218,6 +218,9 @@ export class DropdownComponent implements OnChanges {
         c.get('active').value &&
         (!hasNegate || (hasNegate && !c.get('negate').value))
       ) {
+        if (this.dropdownOptions.hasSelectAllOption) {
+          if (c.get('id').value == 'SELECT_ALL') continue;
+        }
         text += (text == '' ? '' : ', ') + c.get('name').value;
       } else if (
         labelFor == 'NEGATED' &&

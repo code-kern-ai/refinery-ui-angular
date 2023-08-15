@@ -55,6 +55,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
   attributes: Attribute[] = [];
   useableTextAttributes: Attribute[];
   useableAttributes: Attribute[];
+  useableNonTextAttributes: Attribute[];
   embeddings$: any;
   suggestions$: any;
   lh: LabelHelper;
@@ -62,7 +63,8 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
   isAcRunning: boolean = false;
   key: string;
   embeddingPlatforms$: any;
-  embeddingPlatforms: EmbeddingPlatform[]
+  embeddingPlatforms: EmbeddingPlatform[];
+  loadingEmbeddingsDict: { [embeddingId: string]: boolean } = {};
 
   get projectExportArray() {
     return this.settingModals.projectExport.projectExportSchema.get('attributes') as FormArray;
@@ -86,7 +88,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
     const projectId = this.activatedRoute.parent.snapshot.paramMap.get('projectId');
     NotificationService.subscribeToNotification(this, {
       projectId: projectId,
-      whitelist: ['tokenization', 'embedding', 'embedding_deleted', 'label_created', 'label_deleted', 'attributes_updated', 'labeling_task_deleted', 'labeling_task_updated', 'labeling_task_created', 'project_update', 'project_export', 'calculate_attribute'],
+      whitelist: ['tokenization', 'embedding', 'embedding_deleted', 'label_created', 'label_deleted', 'attributes_updated', 'labeling_task_deleted', 'labeling_task_updated', 'labeling_task_created', 'project_update', 'project_export', 'calculate_attribute', 'embedding_updated', 'upload_embedding_payload'],
       func: this.handleWebsocketNotification
     });
     this.setUpCommentRequests(projectId);
@@ -144,11 +146,12 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
 
     this.useableTextAttributes = this.useableTextAttributes.filter((attribute: any) => (attribute.state == AttributeCalculationState.UPLOADED || attribute.state == AttributeCalculationState.AUTOMATICALLY_CREATED || attribute.state == AttributeCalculationState.USABLE) && attribute.dataType == 'TEXT');
     this.useableAttributes = this.attributes.filter((attribute: any) => (attribute.state == AttributeCalculationState.UPLOADED || attribute.state == AttributeCalculationState.AUTOMATICALLY_CREATED || attribute.state == AttributeCalculationState.USABLE));
+    this.useableNonTextAttributes = this.useableAttributes.filter((attribute: any) => attribute.dataType != 'TEXT');
 
     // prepare embedding suggestions
     const onlyTextAttributes = this.attributes.filter(a => a.dataType == 'TEXT');
     this.embeddingPlatforms = this.combineLatestResultBackup[3];
-    this.dataHandlerHelper.prepareEmbeddingFormGroup(onlyTextAttributes, this.settingModals, this.embeddings, this.embeddingPlatforms);
+    this.dataHandlerHelper.prepareEmbeddingFormGroup(onlyTextAttributes, this.settingModals, this.embeddings, this.embeddingPlatforms, this.useableNonTextAttributes);
     this.embeddingHandles = this.dataHandlerHelper.prepareEmbeddingHandles(projectId, onlyTextAttributes, this.project.tokenizer, this.combineLatestResultBackup[2]);
   }
 
@@ -203,7 +206,9 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
       for (let e of this.embeddings) {
         if (e.id == msgParts[2]) {
           if (msgParts[3] == "state") {
-            if (msgParts[4] == "FINISHED") this.embeddingQuery$.refetch();
+            if (msgParts[4] == "FINISHED") {
+              this.embeddingQuery$.refetch();
+            }
             else e.state = msgParts[4];
           }
           else if (msgParts[3] == "progress") e.progress = Number(msgParts[4])
@@ -224,6 +229,9 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
       if (!this.embeddings) return;
       this.embeddings = this.embeddings.filter(e => e.id != msgParts[2]);
       return;
+    } else if (msgParts[1] == 'embedding_updated') {
+      this.loadingEmbeddingsDict[msgParts[2]] = false;
+      delete this.loadingEmbeddingsDict[msgParts[2]];
     } else if (msgParts[1] == 'attributes_updated') {
       this.attributesQuery$.refetch();
     }
@@ -244,6 +252,10 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
         this.attributesQuery$.refetch();
         this.isAcRunning = this.checkIfAcIsRunning();
         if (msgParts[2] == 'finished') timer(500).subscribe(() => this.checkProjectTokenization(this.project.id));
+      }
+    } else if (msgParts[1] == 'upload_embedding_payload') {
+      if (this.loadingEmbeddingsDict[msgParts[2]] == undefined) {
+        this.loadingEmbeddingsDict[msgParts[2]] = true;
       }
     }
   }

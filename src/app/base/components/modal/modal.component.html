@@ -5,10 +5,10 @@
         <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
             <div #modalBox
                 class="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95 modal-content relative transform rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6"
-                [ngStyle]="modalBoxStyle">
+                [ngStyle]="modalBoxStyle" [ngClass]="useDifferentModalWidth ? 'modal-width' :''">
                 <div>
                     <ng-content></ng-content>
-                    <div *ngIf="closeButton?.useButton || acceptButton?.useButton|| abortButton?.useButton || backButton?.useButton"
+                    <div *ngIf="closeButton?.useButton || acceptButton?.useButton || secondAcceptButton?.useButton || abortButton?.useButton || backButton?.useButton || editButton?.useButton"
                         class="mt-2 flex flex-row-reverse justify-start">
                         <!--close button-->
                         <button *ngIf="closeButton.useButton" (click)="clickButton(closeButton)"
@@ -20,6 +20,11 @@
                             [attr.disabled]="acceptButton.disabled?true:null"
                             [ngClass]="acceptButton.disabled ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
                             class="ml-2 bg-green-100 text-green-700 border border-green-400 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer hover:bg-green-200 focus:outline-none">{{acceptButton.buttonCaption}}</button>
+                        <!--second accept button-->
+                        <button *ngIf="secondAcceptButton.useButton" (click)="clickButton(secondAcceptButton)"
+                            [attr.disabled]="secondAcceptButton.disabled?true:null"
+                            [ngClass]="secondAcceptButton.disabled ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
+                            class="ml-2 bg-green-100 text-green-700 border border-green-400 text-xs font-semibold px-4 py-2 rounded-md cursor-pointer hover:bg-green-200 focus:outline-none">{{secondAcceptButton.buttonCaption}}</button>
                         <!--abort button-->
                         <button *ngIf="abortButton.useButton" (click)="clickButton(abortButton)"
                             [attr.disabled]="abortButton.disabled?true:null"
@@ -30,6 +35,11 @@
                             [attr.disabled]="backButton.disabled?true:null"
                             [ngClass]="backButton.disabled ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
                             class="ml-2 bg-white text-gray-700 border border-gray-300 text-xs font-semibold px-4 py-2 rounded cursor-pointer hover:bg-gray-50 focus:outline-none">{{backButton.buttonCaption}}</button>
+                        <!--edit button-->
+                        <button *ngIf="editButton.useButton" (click)="clickButton(editButton)"
+                            [attr.disabled]="editButton.disabled?true:null"
+                            [ngClass]="editButton.disabled ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
+                            class="ml-2 bg-white text-gray-700 border border-gray-300 text-xs font-semibold px-4 py-2 rounded cursor-pointer hover:bg-gray-50 focus:outline-none">{{editButton.buttonCaption}}</button>
                     </div>
                 </div>
             </div>

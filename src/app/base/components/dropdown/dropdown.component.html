@@ -12,7 +12,8 @@
             }" [ngClass]="buttonClassList" (isMenuOpen)="toggleVisible($event, dropdownOptionsDiv)" appDropdown>
             {{ dropdownOptions.hasCheckboxes?'':dropdownOptions.buttonCaption }}
             <ng-template [ngIf]="dropdownOptions.hasCheckboxes">
-                <label class="truncate cursor-pointer">{{getDropdownDisplayText(dropdownOptions.optionArray,"EMPTY")}}
+                <label
+                    class="truncate cursor-pointer text-sm">{{getDropdownDisplayText(dropdownOptions.optionArray,"EMPTY")}}
                     <span
                         style="color:#2563eb">{{getDropdownDisplayText(dropdownOptions.optionArray,"NOT_NEGATED")}}</span>
                     <span style="color:#ef4444">{{getDropdownDisplayText(dropdownOptions.optionArray,"NEGATED")}}</span>
@@ -40,13 +41,14 @@
     </a>
 
     <div #dropdownOptionsDiv
-        class="origin-top-right absolute mt-2 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none hidden"
+        class="origin-top-right mt-2 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none hidden"
         [ngClass]="[dropdownClassList, dropdownOptions.isButtonSampleProjects ? 'width-sample-projects' : '', dropdownOptions.buttonVersion != '...' ? 'min-w-full': '', dropdownOptions.addScrollXDropdownOptions ? 'overflow-x-auto' : '', dropdownOptions.maxWidth ? 'overflow-y-auto' : '']"
         [style.max-height]="dropdownOptions.maxHeight ? dropdownOptions.maxHeight : ''"
         [style.overflow-y]="dropdownOptions.maxHeight ? 'auto' : null"
         [style.max-width]="dropdownOptions.maxWidth ? dropdownOptions.maxWidth : ''" role="menu"
         [style.width]="dropdownOptions.width ? dropdownOptions.width : ''" aria-orientation="vertical"
-        aria-labelledby="menu-button" tabindex="-1">
+        [style.position]="dropdownOptions.useRelativePosOptions ? 'relative' : 'absolute'" aria-labelledby="menu-button"
+        tabindex="-1">
         <div class="py-1 cursor-pointer" role="none">
             <div *ngFor="let caption of dropdownOptionCaptions;let i = index" (click)="performActionOnOption($event,i)"
                 [attr.data-tip]="dropdownOptions.optionTooltips && dropdownOptions.optionTooltips[i]?dropdownOptions.optionTooltips[i]:null"

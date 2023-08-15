@@ -240,6 +240,7 @@ export const queries = {
             count
             platform
             model
+            filterAttributes
           }
         }
       }
@@ -591,5 +592,10 @@ query ($projectId: ID!, $exportOptions: JSONString, $key: String) {
       terms
       link
     }
+  }`,
+
+  GET_UNIQUE_VALUES_BY_ATTRIBUTES: gql`
+  query ($projectId: ID!) {
+    uniqueValuesByAttributes(projectId: $projectId)
   }`,
 };

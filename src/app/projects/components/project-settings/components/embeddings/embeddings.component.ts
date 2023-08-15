@@ -14,6 +14,8 @@ import { OrganizationApolloService } from 'src/app/base/services/organization/or
 import { Organization } from 'src/app/base/entities/organization';
 import { FormGroup } from '@angular/forms';
 import { jsonCopy } from 'submodules/javascript-functions/general';
+import { getColorForDataType } from 'src/app/util/helper-functions';
+import { dataTypes } from 'src/app/util/data-types';
 
 @Component({
   selector: 'kern-embeddings',
@@ -32,6 +34,8 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
   @Input() dataHandlerHelper: DataHandlerHelper;
   @Input() attributes: Attribute[];
   @Input() embeddingPlatforms: EmbeddingPlatform[];
+  @Input() useableNonTextAttributes: Attribute[];
+  @Input() loadingEmbeddingsDict: boolean;
 
   @ViewChild('gdprText') gdprText: ElementRef;
   downloadedModels: DownloadedModel[] = [];
@@ -45,9 +49,12 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
   granularityArray = granularityTypesArray;
   embeddingPlatformsCopy: EmbeddingPlatform[];
   gdprTextHTML: string;
+  dataTypesArray = dataTypes;
+  showEditOption: boolean = true;
   azureUrls: string[] = [];
   azureEngines: string[] = [];
   azureVersions: string[] = [];
+  isSaveButtonDisabled: boolean = false;
 
   get PlatformType(): typeof PlatformType {
     return PlatformType;
@@ -192,7 +199,8 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
       platform: platform,
       termsText: this.gdprText ? this.gdprText.nativeElement.innerHTML : null,
       termsAccepted: embeddingForm.get("termsAccepted").value,
-      embeddingType: embeddingForm.get("granularity").value.substring(3) === "TOKEN" ? EmbeddingType.ON_TOKEN : EmbeddingType.ON_ATTRIBUTE
+      embeddingType: embeddingForm.get("granularity").value.substring(3) === "TOKEN" ? EmbeddingType.ON_TOKEN : EmbeddingType.ON_ATTRIBUTE,
+      filterAttributes: embeddingForm.get("filterAttributes").value.filter((a) => a.active && a.id !== 'SELECT_ALL').map((a) => a.name)
     }
 
     if (platform == PlatformType.HUGGING_FACE || platform == PlatformType.PYTHON) {
@@ -363,6 +371,75 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
     this.checkIfPlatformHasToken();
   }
 
+  toggleActiveGroup(group: FormGroup) {
+    if (group.disabled) return;
+    const formControls = this.settingModals.embedding.create.embeddingCreationFormGroup.get('filterAttributes')['controls'];
+    if (group.get('id').value == 'SELECT_ALL') {
+      for (let control of formControls) {
+        control.get('active').setValue(!group.get('active').value);
+      }
+    } else {
+      group.get('active').setValue(!group.get('active').value);
+      let atLeastOneActive = false;
+      for (let control of formControls) {
+        if (control.get('active').value) {
+          atLeastOneActive = true;
+          break;
+        }
+      }
+      if (atLeastOneActive) formControls[formControls.length - 1].get('active').setValue(false);
+    }
+    this.isSaveButtonDisabled = this.checkIfSaveButtonIsDisabled();
+  }
+
+  prepareAttributeDataByNames(attributesNames: string[]) {
+    if (!attributesNames) return [];
+    const attributes = [];
+    for (let name of attributesNames) {
+      const attribute = this.attributes.find((a) => a.name == name);
+      attribute.color = getColorForDataType(attribute.dataType);
+      attribute.dataTypeName = this.dataTypesArray.find((type) => type.value === attribute.dataType).name;
+      attributes.push(attribute);
+    }
+    return attributes;
+  }
+
+  toggleEditOption() {
+    if (this.showEditOption) {
+      const formControls = this.settingModals.embedding.create.embeddingCreationFormGroup.get('filterAttributes')['controls'];
+      for (let attribute of this.settingModals.embedding.filteredAttributes.attributeNames) {
+        const control = formControls.find((c) => c.get('name').value == attribute.name);
+        if (control) control.get('active').setValue(true);
+      }
+    }
+    this.showEditOption = !this.showEditOption;
+    this.isSaveButtonDisabled = this.checkIfSaveButtonIsDisabled();
+  }
+
+  saveFilteredAttributes() {
+    const form = this.settingModals.embedding.create.embeddingCreationFormGroup.get("filterAttributes").value;
+    const filterAttributes = form.filter((a) => a.active && a.id !== 'SELECT_ALL').map((a) => a.name)
+    this.projectApolloService.updateEmbeddingPayload(
+      this.project.id,
+      this.settingModals.embedding.filteredAttributes.saveEmbeddingId,
+      JSON.stringify(filterAttributes)
+    ).pipe(first()).subscribe(() => { });
+  }
+
+  optionClicked(button: string) {
+    if (button == 'CLOSE') {
+      this.settingModals.embedding.filteredAttributes.open = false;
+      this.showEditOption = true;
+    }
+    else if (button == 'ACCEPT') {
+      this.saveFilteredAttributes();
+      this.settingModals.embedding.filteredAttributes.open = false;
+      this.showEditOption = true;
+    } else if (button === 'EDIT') {
+      this.toggleEditOption();
+    }
+  }
+
   prepareAzureData(form: FormGroup) {
     const getAzureUrl = localStorage.getItem('azureUrls');
     const getAzureVersion = localStorage.getItem('azureVersions');
@@ -398,5 +475,12 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
       document.activeElement.blur();
     }
     this.checkEmbeddingProperty(inputElement, property);
+  }
+
+  checkIfSaveButtonIsDisabled(): boolean {
+    const attributeNames = this.settingModals.embedding.filteredAttributes.attributeNames.map((a) => a.name);
+    const form = this.settingModals.embedding.create.embeddingCreationFormGroup.get("filterAttributes").value;
+    const activeAttributes = form.filter((a) => a.active && a.id !== 'SELECT_ALL').map((a) => a.name);
+    return attributeNames.length === activeAttributes.length && attributeNames.every(element => activeAttributes.includes(element))
   }
 }

@@ -3,3 +3,21 @@
     max-width: 80%;
     overflow-x: auto;
 }
+
+@media (min-width: 768px) {
+    .modal-width {
+        max-width: 600px;
+    }
+}
+
+@media (min-width: 992px) {
+    .modal-width {
+        max-width: 800px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .modal-width {
+        max-width: 1000px;
+    }
+}

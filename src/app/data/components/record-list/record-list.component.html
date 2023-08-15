@@ -31,7 +31,8 @@
         </ng-template>
         <div class="mt-3">
             <div class="float-left">
-                <ng-template [ngIf]="recordListOptions.similarSearchHelper.embeddings?.length==0">
+                <ng-template [ngIf]="recordListOptions.similarSearchHelper.embeddings?.length==0"
+                    [ngIfElse]="similaritySearchModal">
                     <div data-tip="Add an embedding in the project settings"
                         class="tooltip tooltip-right relative z-50">
                         <label class="text-gray-700 text-sm font-medium">
@@ -41,29 +42,9 @@
                         </label>
                     </div>
                 </ng-template>
-                <ng-template [ngIf]="recordListOptions.similarSearchHelper.embeddings?.length==1">
+                <ng-template #similaritySearchModal>
                     <label
-                        (click)="recordListOptions.dataBrowserModals.similaritySearch.recordId = record.id; requestSimilarSearch()"
-                        class="text-green-700 hover:text-green-500 text-sm font-medium cursor-pointer">
-                        <span class="leading-5">Find similar
-                            records
-                            <svg xmlns="http://www.w3.org/2000/svg"
-                                class="icon icon-tabler icon-tabler-angle inline-block" width="24" height="24"
-                                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                                stroke-linecap="round" stroke-linejoin="round">
-                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                <path d="M21 19h-18l9 -15"></path>
-                                <path d="M20.615 15.171h.015"></path>
-                                <path d="M19.515 11.771h.015"></path>
-                                <path d="M17.715 8.671h.015"></path>
-                                <path d="M15.415 5.971h.015"></path>
-                            </svg>
-                        </span>
-                    </label>
-                </ng-template>
-                <ng-template [ngIf]="recordListOptions.similarSearchHelper.embeddings?.length > 1">
-                    <label
-                        (click)="recordListOptions.dataBrowserModals.similaritySearch.open = true; recordListOptions.similarSearchHelper.rememberedRecordId = record.id; recordListOptions.dataBrowserModals.similaritySearch.recordId = record.id"
+                        (click)="recordListOptions.dataBrowserModals.similaritySearch.open = true; recordListOptions.similarSearchHelper.rememberedRecordId = record.id; recordListOptions.dataBrowserModals.similaritySearch.recordId = record.id;setInitFilterAttributeData()"
                         class="text-green-700 hover:text-green-500 text-sm font-medium cursor-pointer">
                         <span class="leading-5">Find similar
                             records

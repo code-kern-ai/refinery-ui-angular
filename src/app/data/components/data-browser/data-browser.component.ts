@@ -1,7 +1,7 @@
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
-  Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChildren,
+  Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren,
 } from '@angular/core';
 import {
   AbstractControl,
@@ -65,6 +65,7 @@ import { LabelingLinkType } from 'src/app/labeling-suite/helper/manager/session'
 import { ConfigManager } from 'src/app/base/services/config-service';
 import { dateAsUTCDate } from 'submodules/javascript-functions/date-parser';
 import { copyToClipboard } from 'submodules/javascript-functions/general';
+import { FilterIntegration } from './helper-classes/filter-integration';
 
 
 type DataSlice = {
@@ -92,6 +93,7 @@ type CurrentSearchRequest = {
     recordId?: string,
     offset?: number,
     limit?: number,
+    attFilter?: string
   }
   func: (variables) => any
 };
@@ -207,6 +209,9 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   isManaged: boolean = true;
   saveAttributeType: string = "";
   calledOnce: boolean = false;
+  filterIntegration: FilterIntegration;
+  uniqueValuesDict: { [key: string]: string[] } = {};
+  @ViewChild('embeddingSelectSS') embeddingSelectSS: ElementRef;
 
   getSearchFormArray(groupKey: string): FormArray {
     return this.fullSearch.get(groupKey).get('groupElements') as FormArray;
@@ -247,6 +252,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     this.userFilter = new UserFilter(this, this.organizationApolloService);
     this.updateSearchParameters = new UpdateSearchParameters(this);
     this.commentsFilter = new CommentsFilter(this, this.projectApolloService);
+    this.filterIntegration = new FilterIntegration(this, this.formBuilder);
 
     let preparationTasks$ = [];
     preparationTasks$.push(this.userFilter.prepareUserRequest());
@@ -263,6 +269,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       });
     this.prepareDataSlicesRequest();
     this.checkIfManagedVersion();
+    this.getUniqueValues();
 
     NotificationService.subscribeToNotification(this, {
       projectId: this.projectId,
@@ -2097,8 +2104,12 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
 
   checkIfDecimals(event: any, i: number, key: string) {
     const attributeType = getAttributeType(this.attributesSortOrder, this.getSearchFormArray(key).controls[i].get("name").value);
+    const operatorValue = this.getSearchFormArray(key).controls[i].get("operator").value;
+    this.checkDecimalPatterns(attributeType, event, operatorValue);
+  }
+
+  checkDecimalPatterns(attributeType: string, event: any, operatorValue: string) {
     if (attributeType == "INTEGER" || attributeType == "FLOAT") {
-      const operatorValue = this.getSearchFormArray(key).controls[i].get("operator").value;
       let pattern;
       if (attributeType == "INTEGER") {
         if (this.dataBrowserModals.configuration.separator == '-') {
@@ -2133,9 +2144,21 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
 
   setEmbeddingIdSimilaritySearch(selectedIndex: string) {
     this.dataBrowserModals.similaritySearch.embeddingId = this.similarSearchHelper.embeddings[selectedIndex].id;
+    this.initFilterAttributeData(this.dataBrowserModals.similaritySearch.embeddingId);
+  }
+
+  initFilterAttributeData(embeddingId?: string) {
+    this.filterIntegration.filterAttributesSS = this.similarSearchHelper.prepareFilterAttributes(embeddingId);
+    this.filterIntegration.prepareOperatorsAndTooltips();
+    this.filterIntegration.initFilterForm();
   }
 
   requestSimilarSearch() {
+    const saveSimilaritySearch = this.dataBrowserModals.similaritySearch;
+    this.similarSearchHelper.requestSimilarSearch(saveSimilaritySearch.embeddingId, saveSimilaritySearch.recordId, true);
+  }
+
+  requestSimilarSearchWithoutFilter() {
     const saveSimilaritySearch = this.dataBrowserModals.similaritySearch;
     this.similarSearchHelper.requestSimilarSearch(saveSimilaritySearch.embeddingId, saveSimilaritySearch.recordId);
   }
@@ -2176,5 +2199,18 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
 
   setSliceName(sliceName: string) {
     this.dataBrowserModals.filter.name = sliceName;
+  }
+
+  getUniqueValues() {
+    this.projectApolloService.getUniqueValuesByAttributes(this.projectId).pipe(first()).subscribe((uniqueValues: string) => {
+      this.uniqueValuesDict = JSON.parse(uniqueValues);
+      for (let key in this.uniqueValuesDict) {
+        const attributeType = getAttributeType(this.attributesSortOrder, key);
+        if (attributeType == 'TEXT') {
+          delete this.uniqueValuesDict[key];
+        }
+      }
+      this.filterIntegration.uniqueValuesDict = this.uniqueValuesDict;
+    });
   }
 }

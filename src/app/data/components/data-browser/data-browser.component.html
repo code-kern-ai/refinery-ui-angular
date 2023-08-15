@@ -146,7 +146,7 @@
                                                     </ng-template>
                                                     <ng-template [ngSwitchCase]="SearchGroupType.ATTRIBUTES">
                                                         <div
-                                                            class="flex flex-row items-center rounded-md hover:bg-gray-50 mt-2">
+                                                            class="flex flex-row items-center rounded-md hover:bg-gray-50 my-2">
                                                             <div class="flex flex-col">
                                                                 <div class="ml-2 mr-2 h-4 w-4 border-gray-300 border rounded cursor-pointer hover:bg-gray-200"
                                                                     (click)="setActiveNegateGroup(groupItem)"
@@ -198,23 +198,41 @@
                                                                     </div>
                                                                 </div>
 
-                                                                <div class="my-2 flex-grow flex flex-row items-center">
-                                                                    <input *ngIf="groupItem.get('operator').value != ''"
-                                                                        formControlName="searchValue"
-                                                                        (keydown)="checkIfDecimals($event, i, group.key)"
-                                                                        [placeholder]="groupItem.get('addText').value"
-                                                                        class="w-full input input-sm input-bordered">
+                                                                <ng-template
+                                                                    [ngIf]="uniqueValuesDict[groupItem.get('name').value] && groupItem.get('operator').value != '' && groupItem.get('operator').value != 'BETWEEN' && groupItem.get('operator').value != 'IN' && groupItem.get('operator').value != 'IN WC'"
+                                                                    [ngIfElse]="searchInputs">
+                                                                    <div class="my-2">
+                                                                        <kern-dropdown [dropdownOptions]="{
+                                                                            optionArray: uniqueValuesDict[groupItem.get('name').value],
+                                                                            buttonCaption: groupItem.get('searchValue').value ? groupItem.get('searchValue').value : 'Select value',
+                                                                            fontClass: 'font-dmMono',
+                                                                            hasFullWidth: true
+                                                                        }"
+                                                                            (optionClicked)="selectValueDropdown($event, i, 'searchValue', group.key)"></kern-dropdown>
+                                                                    </div>
+                                                                </ng-template>
 
-                                                                    <span class="text-sm text-gray-500 mx-1"
-                                                                        *ngIf="groupItem.get('operator').value == 'BETWEEN'">AND</span>
+                                                                <ng-template #searchInputs>
+                                                                    <div
+                                                                        class="my-2 flex-grow flex flex-row items-center">
+                                                                        <input
+                                                                            *ngIf="groupItem.get('operator').value != ''"
+                                                                            formControlName="searchValue"
+                                                                            (keydown)="checkIfDecimals($event, i, group.key)"
+                                                                            [placeholder]="groupItem.get('addText').value"
+                                                                            class="w-full input input-sm input-bordered">
 
-                                                                    <input
-                                                                        *ngIf="groupItem.get('operator').value == 'BETWEEN'"
-                                                                        formControlName="searchValueBetween"
-                                                                        (keydown)="checkIfDecimals($event, i, group.key)"
-                                                                        [placeholder]="groupItem.get('addText').value"
-                                                                        class="w-full input input-sm input-bordered">
-                                                                </div>
+                                                                        <span class="text-sm text-gray-500 mx-1"
+                                                                            *ngIf="groupItem.get('operator').value == 'BETWEEN'">AND</span>
+
+                                                                        <input
+                                                                            *ngIf="groupItem.get('operator').value == 'BETWEEN'"
+                                                                            formControlName="searchValueBetween"
+                                                                            (keydown)="checkIfDecimals($event, i, group.key)"
+                                                                            [placeholder]="groupItem.get('addText').value"
+                                                                            class="w-full input input-sm input-bordered">
+                                                                    </div>
+                                                                </ng-template>
 
                                                                 <label
                                                                     class="text-xs text-gray-500 cursor-pointer flex items-center pb-2"
@@ -806,7 +824,7 @@
                 </ng-template>
                 <button *ngIf="activeSlice || activeSearchParams.length > 0 || similarSearchHelper.recordsInDisplay"
                     class="mr-1 inline-flex items-center px-2.5 py-2 border border-gray-300 shadow-sm text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none cursor-pointer"
-                    (click)="clearFilters()">
+                    (click)="clearFilters();filterIntegration.clearForm()">
                     <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 icon icon-tabler icon-tabler-filter-off"
                         width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
                         stroke-linecap="round" stroke-linejoin="round">
@@ -898,6 +916,7 @@
                     isTextHighlightNeeded: isTextHighlightNeeded,
                     similarSearchHelper: similarSearchHelper
                 }" (similaritySearchRequested)="requestSimilarSearch()"
+                    (initFilterAttributeData)="initFilterAttributeData()"
                     (recordClicked)="storePreliminaryRecordIds($event)">
                 </kern-record-list>
             </div>
@@ -1174,26 +1193,134 @@
         style="white-space: pre-wrap; overflow: auto; max-height: 700px; ">{{dataBrowserModals.displaySql.extendedRecordsSql}}</pre>
 </kern-modal>
 
-<ng-template [ngIf]="similarSearchHelper.embeddings?.length>1">
-    <kern-modal [isOpen]="dataBrowserModals.similaritySearch.open" closeButton="X" [acceptButton]="{
-        buttonCaption: 'Search',
-        emitObject: this, emitFunction:requestSimilarSearch
-    }" (optionClicked)="dataBrowserModals.similaritySearch.open = false">
-        <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium"
-            *ngIf="similarSearchHelper.embeddings?.length>1">
-            Select embedding for similarity search </div>
-        <div *ngIf="activeSearchParams.length > 0 || similarSearchHelper.recordsInDisplay">
-            <div class="text-red-500 mb-2 flex flex-grow justify-center text-sm">
-                Warning: your current filter selection will be removed!</div>
+<kern-modal [isOpen]="dataBrowserModals.similaritySearch.open" [modalBoxStyle]="{'width':'50%', 'overflow-x':'visible'}"
+    closeButton="X" [acceptButton]="{
+    buttonCaption: 'Search',
+    emitObject: this, emitFunction:requestSimilarSearch
+}" [secondAcceptButton]="{
+    'buttonCaption': 'Search without filter',
+    emitObject: this, emitFunction:requestSimilarSearchWithoutFilter,
+    useButton: filterIntegration.filterAttributesSS != null
+}" (optionClicked)="dataBrowserModals.similaritySearch.open = false">
+    <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
+        Select embedding for similarity search </div>
+    <div *ngIf="activeSearchParams.length > 0 || similarSearchHelper.recordsInDisplay">
+        <div class="text-red-500 mb-2 flex flex-grow justify-center text-sm">
+            Warning: your current filter selection will be removed!</div>
+    </div>
+    <select #embeddingSelectSS class="select select-bordered select-sm w-full mt-4"
+        (change)="setEmbeddingIdSimilaritySearch(embeddingSelectSS.selectedIndex)">
+        <option *ngFor="let embedding of similarSearchHelper.embeddings" [value]="embedding.id">
+            {{embedding.name }}
+        </option>
+    </select>
+
+    <ng-template [ngIf]="filterIntegration.filterAttributesSS && filterIntegration.filterAttributesSS.length > 0">
+        <div class="flex flex-col justify-start mt-4">
+            <div class="pr-2 bg-white text-md font-medium text-gray-900">Filter attributes</div>
+            <div class="text-sm text-gray-400">You can filter similarity search based on the attributes selected when
+                creating the embedding</div>
         </div>
-        <select #embeddingSelectSS class="select select-bordered select-sm w-full mt-4"
-            (change)="setEmbeddingIdSimilaritySearch(embeddingSelectSS.selectedIndex)">
-            <option *ngFor="let embedding of similarSearchHelper.embeddings" [value]="embedding.id">
-                {{embedding.name }}
-            </option>
-        </select>
-    </kern-modal>
-</ng-template>
+
+        <form [formGroup]="filterIntegration.filterAttributesForm">
+            <div formArrayName="filterAttributes">
+                <ng-container
+                    *ngFor="let groupItem of filterIntegration.getFilterAttributesSS().controls; let i = index">
+                    <div [formGroupName]="i" class="contents mx-2">
+                        <div class="flex flex-row items-center rounded-md hover:bg-gray-50 mt-2">
+                            <div class="flex flex-col">
+                                <div *ngIf="filterIntegration.getFilterAttributesSS().controls.length > 1"
+                                    (click)="filterIntegration.removeFilterAttributesSS(i)"
+                                    class="cursor-pointer btn hover:border-transparent hover:bg-transparent border-transparent bg-transparent btn-xs px-0"
+                                    style="margin-top:-8px">
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                        class="text-black inline-block w-4 h-4 stroke-current" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="flex-grow flex flex-col mt-2 ml-2">
+                                <div class="flex-grow flex flex-row gap-2">
+                                    <div style="width: 50%;">
+                                        <kern-dropdown [dropdownOptions]="{
+                                            optionArray: filterIntegration.filterAttributesSS,
+                                            buttonCaption: groupItem.get('name').value,
+                                            fontClass: 'font-dmMono',
+                                            backgroundColors: filterIntegration.colorsAttributes,
+                                            hasFullWidth: true
+                                        }"
+                                            (optionClicked)="filterIntegration.setFilterDropdownVal($event, i, 'name')"></kern-dropdown>
+                                    </div>
+                                    <div style="width: 49%;">
+                                        <kern-dropdown [dropdownOptions]="{
+                                            optionArray: filterIntegration.operatorsDict[groupItem.get('name').value],
+                                            buttonCaption: groupItem.get('operator').value,
+                                            fontClass: 'font-dmMono',
+                                            hasFullWidth: true,
+                                            optionTooltips: filterIntegration.tooltipsDict[groupItem.get('name').value],
+                                            buttonTooltipPosition: 'left',
+                                            tooltipMaxWidthClass: 'tooltip_max_width_150'
+                                        }"
+                                            (optionClicked)="filterIntegration.setFilterDropdownVal($event, i, 'operator')"></kern-dropdown>
+                                    </div>
+                                </div>
+
+                                <div class="my-2 flex-grow flex flex-row items-center">
+                                    <ng-template
+                                        [ngIf]="filterIntegration.uniqueValuesDict[groupItem.get('name').value] && groupItem.get('operator').value != '' && groupItem.get('operator').value == 'EQUAL'"
+                                        [ngIfElse]="searchInputs">
+                                        <div class="w-full">
+                                            <kern-dropdown [dropdownOptions]="{
+                                            optionArray: filterIntegration.uniqueValuesDict[groupItem.get('name').value],
+                                            buttonCaption: groupItem.get('searchValue').value ? groupItem.get('searchValue').value: 'Select value',
+                                            fontClass: 'font-dmMono',
+                                            hasFullWidth: true
+                                        }" (optionClicked)="filterIntegration.setFilterDropdownVal($event, i, 'searchValue')"></kern-dropdown>
+                                        </div>
+                                    </ng-template>
+                                    <ng-template #searchInputs>
+                                        <input *ngIf="groupItem.get('operator').value != ''"
+                                            formControlName="searchValue"
+                                            (keydown)="filterIntegration.checkDecimalValue($event, i)"
+                                            [placeholder]="groupItem.get('addText').value"
+                                            class="w-full input input-sm input-bordered placeholder-italic">
+
+                                        <span class="text-sm text-gray-500 mx-1"
+                                            *ngIf="groupItem.get('operator').value == 'BETWEEN'">AND</span>
+
+                                        <input *ngIf="groupItem.get('operator').value == 'BETWEEN'"
+                                            formControlName="searchValueBetween"
+                                            [placeholder]="groupItem.get('addText').value"
+                                            (keydown)="filterIntegration.checkDecimalValue($event, i)"
+                                            class="w-full input input-sm input-bordered placeholder-italic">
+                                    </ng-template>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="w-full flex justify-center">
+                            <ng-template [ngIf]="i == filterIntegration.getFilterAttributesSS().controls.length-1">
+                                <label
+                                    class="inline-flex items-center px-0.5 py-0.5 border border-gray-200 shadow-sm text-xs font-medium rounded text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer"
+                                    (click)="filterIntegration.addFilterAttributesSS()">
+                                    <div>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 4v16m8-8H4" />
+                                        </svg>
+                                    </div>
+                                </label>
+                            </ng-template>
+                        </div>
+                    </div>
+                </ng-container>
+            </div>
+        </form>
+    </ng-template>
+</kern-modal>
 
 <kern-modal [isOpen]="dataBrowserModals.recordComments.open" closeButton="X"
     [modalBoxStyle]="{'min-width':'25rem', 'max-width':'40rem'}"

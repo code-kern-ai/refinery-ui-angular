@@ -777,6 +777,25 @@ export class ProjectApolloService {
     });
   }
 
+  updateEmbeddingPayload(projectId: string, embeddingId: string, filterAttributes: string) {
+    return this.apollo.mutate({
+      mutation: mutations.UPDATE_EMBEDDING_PAYLOAD,
+      variables: {
+        projectId: projectId,
+        embeddingId: embeddingId,
+        filterAttributes: filterAttributes,
+      },
+      refetchQueries: [
+        {
+          query: queries.GET_EMBEDDING_SCHEMA_BY_PROJECT_ID,
+          variables: {
+            projectId: projectId,
+          },
+        },
+      ],
+    });
+  }
+
   deleteFromTaskQueue(projectId: string, taskId: string) {
     return this.apollo.mutate({
       mutation: mutations.DELETE_FROM_TASK_QUEUE,
@@ -1507,5 +1526,19 @@ export class ProjectApolloService {
           return result['data']['embeddingPlatforms'];
         })
       );
+  }
+
+  getUniqueValuesByAttributes(projectId: string) {
+    return this.apollo.query({
+      query: queries.GET_UNIQUE_VALUES_BY_ATTRIBUTES,
+      variables: {
+        projectId: projectId
+      },
+      fetchPolicy: 'no-cache',
+    }).pipe(
+      map((result) => {
+        return result['data']['uniqueValuesByAttributes'];
+      }
+      ));
   }
 }

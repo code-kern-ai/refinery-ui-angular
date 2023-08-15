@@ -38,10 +38,13 @@ export class SimilarSearch {
     const projectId = this.dataBrowser.projectId;
     let q$, vc$;
     [q$, vc$] = this.projectApolloService.getEmbeddingSchema(projectId);
-    vc$.pipe(first()).subscribe((embeddings) => this.embeddings = embeddings.filter((e) => e.state == "FINISHED" && e.type == "ON_ATTRIBUTE"));
+    vc$.pipe(first()).subscribe((embeddings) => {
+      this.embeddings = embeddings.filter((e) => e.state == "FINISHED" && e.type == "ON_ATTRIBUTE");
+      this.dataBrowser.initFilterAttributeData();
+    });
   }
 
-  requestSimilarSearch(embeddingId: string, recordId: string) {
+  requestSimilarSearch(embeddingId: string, recordId: string, hasFilter: boolean = false) {
     if (!this.embeddings || this.embeddings.length == 0) {
       console.log("no embeddings known");
       return;
@@ -57,6 +60,7 @@ export class SimilarSearch {
         projectId: this.dataBrowser.projectId,
         embeddingId: embeddingId,
         recordId: recordId,
+        attFilter: hasFilter ? this.dataBrowser.filterIntegration.prepareAttFilter() : null,
       },
 
       func: this.recordApolloService.getSimilarRecords
@@ -81,5 +85,14 @@ export class SimilarSearch {
     this.projectApolloService.createOutlierSlice(this.dataBrowser.projectId, embeddingId).pipe(first()).subscribe(() => {
       this.dataBrowser.dataSlicesQuery$.refetch();
     });
+  }
+
+  prepareFilterAttributes(embeddingId?: string) {
+    if (!this.embeddings || this.embeddings.length == 0) return null;
+    if (!embeddingId) embeddingId = this.embeddings[0].id;
+    const embedding = this.embeddings.find(e => e.id == embeddingId);
+    if (!embedding) return null;
+    if (embedding.filterAttributes && embedding.filterAttributes.length == 0) return null;
+    return embedding.filterAttributes;
   }
 }

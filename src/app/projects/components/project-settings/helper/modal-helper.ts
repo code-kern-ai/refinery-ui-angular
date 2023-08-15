@@ -1,11 +1,13 @@
 import { FormGroup } from "@angular/forms";
 import { DownloadState } from "src/app/import/services/s3.enums";
+import { Attribute } from "../entities/attribute.type";
 
 export type SettingModals = {
     attribute: AttributeModal;
     embedding: {
         create: CreateEmbeddingModal;
         delete: DeleteEmbeddingModal;
+        filteredAttributes: FilteredAttributesModal;
     };
     projectExport: ProjectExportModal;
     label: {
@@ -74,6 +76,12 @@ export type DeleteLabelingTaskModal = {
     taskId: string;
 };
 
+export type FilteredAttributesModal = {
+    open: boolean;
+    attributeNames: Attribute[];
+    saveEmbeddingId: string;
+};
+
 export function createDefaultSettingModals(): SettingModals {
     return {
         attribute: {
@@ -93,6 +101,11 @@ export function createDefaultSettingModals(): SettingModals {
                 open: false,
                 id: null,
                 isQueueElement: false
+            },
+            filteredAttributes: {
+                open: false,
+                attributeNames: [],
+                saveEmbeddingId: null
             }
         },
         projectExport: {

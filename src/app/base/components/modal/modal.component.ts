@@ -19,9 +19,12 @@ export class ModalComponent implements OnInit, OnChanges {
   //set to true if you want to use the default button
   @Input() closeButton: ModalButton;
   @Input() acceptButton: ModalButton;
+  @Input() secondAcceptButton: ModalButton;
   @Input() abortButton: ModalButton;
   @Input() backButton: ModalButton;
+  @Input() editButton: ModalButton;
   @Input() modalBoxStyle: {};
+  @Input() useDifferentModalWidth: boolean = false;
 
   @Output() optionClicked = new EventEmitter<string | any>();
   @ViewChild("backdrop") backdrop: ElementRef;
@@ -55,6 +58,12 @@ export class ModalComponent implements OnInit, OnChanges {
       else if (typeof this.acceptButton == "boolean") this.acceptButton = { useButton: this.acceptButton };
       if (this.acceptButton) this.initButton(this.acceptButton, ModalButtonType.ACCEPT);
     }
+    if (this.secondAcceptButton == undefined) this.secondAcceptButton = { useButton: false };
+    else {
+      if (typeof this.secondAcceptButton == "string") this.secondAcceptButton = { useButton: isStringTrue(this.secondAcceptButton as string) };
+      else if (typeof this.secondAcceptButton == "boolean") this.secondAcceptButton = { useButton: this.secondAcceptButton };
+      if (this.secondAcceptButton) this.initButton(this.secondAcceptButton, ModalButtonType.ACCEPT);
+    }
     if (this.abortButton == undefined) this.abortButton = { useButton: false };
     else {
       if (typeof this.abortButton == "string") this.abortButton = { useButton: isStringTrue(this.abortButton as string) };
@@ -66,6 +75,12 @@ export class ModalComponent implements OnInit, OnChanges {
       if (typeof this.backButton == "string") this.backButton = { useButton: isStringTrue(this.backButton as string) };
       else if (typeof this.backButton == "boolean") this.backButton = { useButton: this.backButton };
       if (this.backButton) this.initButton(this.backButton, ModalButtonType.BACK);
+    }
+    if (this.editButton == undefined) this.editButton = { useButton: false };
+    else {
+      if (typeof this.editButton == "string") this.editButton = { useButton: isStringTrue(this.editButton as string) };
+      else if (typeof this.editButton == "boolean") this.editButton = { useButton: this.editButton };
+      if (this.editButton) this.initButton(this.editButton, ModalButtonType.EDIT);
     }
   }
   private initButton(button: ModalButton, buttonType: ModalButtonType) {
