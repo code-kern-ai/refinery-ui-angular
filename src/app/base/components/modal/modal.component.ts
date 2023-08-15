@@ -19,6 +19,7 @@ export class ModalComponent implements OnInit, OnChanges {
   //set to true if you want to use the default button
   @Input() closeButton: ModalButton;
   @Input() acceptButton: ModalButton;
+  @Input() secondAcceptButton: ModalButton;
   @Input() abortButton: ModalButton;
   @Input() backButton: ModalButton;
   @Input() editButton: ModalButton;
@@ -56,6 +57,12 @@ export class ModalComponent implements OnInit, OnChanges {
       if (typeof this.acceptButton == "string") this.acceptButton = { useButton: isStringTrue(this.acceptButton as string) };
       else if (typeof this.acceptButton == "boolean") this.acceptButton = { useButton: this.acceptButton };
       if (this.acceptButton) this.initButton(this.acceptButton, ModalButtonType.ACCEPT);
+    }
+    if (this.secondAcceptButton == undefined) this.secondAcceptButton = { useButton: false };
+    else {
+      if (typeof this.secondAcceptButton == "string") this.secondAcceptButton = { useButton: isStringTrue(this.secondAcceptButton as string) };
+      else if (typeof this.secondAcceptButton == "boolean") this.secondAcceptButton = { useButton: this.secondAcceptButton };
+      if (this.secondAcceptButton) this.initButton(this.secondAcceptButton, ModalButtonType.ACCEPT);
     }
     if (this.abortButton == undefined) this.abortButton = { useButton: false };
     else {

@@ -2149,13 +2149,16 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
 
   initFilterAttributeData(embeddingId?: string) {
     this.filterIntegration.filterAttributesSS = this.similarSearchHelper.prepareFilterAttributes(embeddingId);
-    if (this.filterIntegration.filterAttributesSS.length > 0) {
-      this.filterIntegration.prepareOperatorsAndTooltips();
-      this.filterIntegration.initFilterForm();
-    }
+    this.filterIntegration.prepareOperatorsAndTooltips();
+    this.filterIntegration.initFilterForm();
   }
 
   requestSimilarSearch() {
+    const saveSimilaritySearch = this.dataBrowserModals.similaritySearch;
+    this.similarSearchHelper.requestSimilarSearch(saveSimilaritySearch.embeddingId, saveSimilaritySearch.recordId, true);
+  }
+
+  requestSimilarSearchWithoutFilter() {
     const saveSimilaritySearch = this.dataBrowserModals.similaritySearch;
     this.similarSearchHelper.requestSimilarSearch(saveSimilaritySearch.embeddingId, saveSimilaritySearch.recordId);
   }

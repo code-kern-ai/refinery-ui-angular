@@ -23,14 +23,16 @@ export class FilterIntegration {
             filterAttributes: this.formBuilder.array([]) as FormArray
         });
         this.getFilterAttributesSS().push(this.formBuilder.group({
-            name: this.filterAttributesSS[0],
-            operator: this.operatorsDict[this.filterAttributesSS[0]][0],
+            name: this.filterAttributesSS ? this.filterAttributesSS[0] : '',
+            operator: this.filterAttributesSS ? this.operatorsDict[this.filterAttributesSS[0]][0] : '',
             searchValue: '',
             searchValueBetween: '',
-            addText: getPlaceholderText(getAttributeType(this.dataBrowser.attributesSortOrder, this.filterAttributesSS[0]))
+            addText: this.filterAttributesSS ? getPlaceholderText(getAttributeType(this.dataBrowser.attributesSortOrder, this.filterAttributesSS[0])) : ''
         }));
-        this.setFilterDropdownVal(this.filterAttributesSS[0], 0, "name");
-        this.setFilterDropdownVal(this.operatorsDict[this.filterAttributesSS[0]][0], 0, "operator");
+        if (this.filterAttributesSS) {
+            this.setFilterDropdownVal(this.filterAttributesSS[0], 0, "name");
+            this.setFilterDropdownVal(this.operatorsDict[this.filterAttributesSS[0]][0], 0, "operator");
+        }
     }
 
     getFilterAttributesSS() {
@@ -66,6 +68,7 @@ export class FilterIntegration {
     }
 
     prepareOperatorsAndTooltips() {
+        if (!this.filterAttributesSS) return;
         let operators = [];
         let tooltips = [];
         this.colorsAttributes = [];

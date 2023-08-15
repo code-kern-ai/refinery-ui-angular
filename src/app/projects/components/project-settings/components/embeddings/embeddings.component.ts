@@ -54,6 +54,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
   azureUrls: string[] = [];
   azureEngines: string[] = [];
   azureVersions: string[] = [];
+  isSaveButtonDisabled: boolean = false;
 
   get PlatformType(): typeof PlatformType {
     return PlatformType;
@@ -388,6 +389,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
       }
       if (atLeastOneActive) formControls[formControls.length - 1].get('active').setValue(false);
     }
+    this.isSaveButtonDisabled = this.checkIfSaveButtonIsDisabled();
   }
 
   prepareAttributeDataByNames(attributesNames: string[]) {
@@ -411,6 +413,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
       }
     }
     this.showEditOption = !this.showEditOption;
+    this.isSaveButtonDisabled = this.checkIfSaveButtonIsDisabled();
   }
 
   saveFilteredAttributes() {
@@ -472,5 +475,12 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
       document.activeElement.blur();
     }
     this.checkEmbeddingProperty(inputElement, property);
+  }
+
+  checkIfSaveButtonIsDisabled(): boolean {
+    const attributeNames = this.settingModals.embedding.filteredAttributes.attributeNames.map((a) => a.name);
+    const form = this.settingModals.embedding.create.embeddingCreationFormGroup.get("filterAttributes").value;
+    const activeAttributes = form.filter((a) => a.active && a.id !== 'SELECT_ALL').map((a) => a.name);
+    return attributeNames.length === activeAttributes.length && attributeNames.every(element => activeAttributes.includes(element))
   }
 }

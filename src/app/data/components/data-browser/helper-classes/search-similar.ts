@@ -44,7 +44,7 @@ export class SimilarSearch {
     });
   }
 
-  requestSimilarSearch(embeddingId: string, recordId: string) {
+  requestSimilarSearch(embeddingId: string, recordId: string, hasFilter: boolean = false) {
     if (!this.embeddings || this.embeddings.length == 0) {
       console.log("no embeddings known");
       return;
@@ -60,7 +60,7 @@ export class SimilarSearch {
         projectId: this.dataBrowser.projectId,
         embeddingId: embeddingId,
         recordId: recordId,
-        attFilter: this.dataBrowser.filterIntegration.prepareAttFilter()
+        attFilter: hasFilter ? this.dataBrowser.filterIntegration.prepareAttFilter() : null,
       },
 
       func: this.recordApolloService.getSimilarRecords
@@ -88,10 +88,11 @@ export class SimilarSearch {
   }
 
   prepareFilterAttributes(embeddingId?: string) {
-    if (!this.embeddings || this.embeddings.length == 0) return [];
+    if (!this.embeddings || this.embeddings.length == 0) return null;
     if (!embeddingId) embeddingId = this.embeddings[0].id;
     const embedding = this.embeddings.find(e => e.id == embeddingId);
-    if (!embedding) return [];
+    if (!embedding) return null;
+    if (embedding.filterAttributes.length == 0) return null;
     return embedding.filterAttributes;
   }
 }

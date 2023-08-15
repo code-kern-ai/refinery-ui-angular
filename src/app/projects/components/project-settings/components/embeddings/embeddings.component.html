@@ -47,7 +47,7 @@
                                                 *ngVar="embeddingContainer.filterAttributes as filteredAttributes"
                                                 [attr.data-tip]="filteredAttributes && filteredAttributes.length > 0 ? 'Has filtered attributes': 'No filtered attributes'">
                                                 <div
-                                                    (click)="settingModals.embedding.filteredAttributes.open = true; settingModals.embedding.filteredAttributes.attributeNames = prepareAttributeDataByNames(filteredAttributes);settingModals.embedding.filteredAttributes.saveEmbeddingId=embeddingContainer.id">
+                                                    (click)="settingModals.embedding.filteredAttributes.open = true; settingModals.embedding.filteredAttributes.attributeNames = prepareAttributeDataByNames(filteredAttributes);settingModals.embedding.filteredAttributes.saveEmbeddingId=embeddingContainer.id;">
                                                     <svg xmlns="http://www.w3.org/2000/svg"
                                                         class="icon icon-tabler icon-tabler-notes w-6 h-6 m-auto cursor-pointer"
                                                         [ngClass]="filteredAttributes && filteredAttributes.length > 0 ? 'text-gray-700' : 'text-gray-300'"
@@ -452,7 +452,8 @@
 <kern-modal [isOpen]="settingModals.embedding.filteredAttributes.open" [acceptButton]="{
     buttonCaption:'Save',
     useButton: !showEditOption,
-    closeAfterClick: false
+    closeAfterClick: false,
+    disabled: isSaveButtonDisabled
 }" [editButton]="{
     buttonCaption:'Edit',
     useButton: showEditOption,
@@ -478,8 +479,7 @@
         </ng-template>
     </div>
     <ng-template [ngIf]="!showEditOption">
-        <div class="text-xs text-gray-500 text-center italic">Add or remove filter attributes and recreate the embedding
-        </div>
+        <div class="text-xs text-gray-500 text-center italic">Add or remove filter attributes</div>
         <kern-dropdown [dropdownOptions]="{
             optionArray: settingModals.embedding.create.embeddingCreationFormGroup.get('filterAttributes').controls,
             hasFullWidth: true,
