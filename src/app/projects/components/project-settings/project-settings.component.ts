@@ -53,7 +53,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
   settingModals: SettingModals = createDefaultSettingModals();
   dataHandlerHelper: DataHandlerHelper;
   attributes: Attribute[] = [];
-  useableTextAttributes: Attribute[];
+  useableEmbedableAttributes: Attribute[];
   useableAttributes: Attribute[];
   useableNonTextAttributes: Attribute[];
   embeddings$: any;
@@ -132,7 +132,9 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
   private prepareCombineLatestResults(projectId: string) {
     // prepare attributes
     this.attributes = this.combineLatestResultBackup[0];
-    this.useableTextAttributes = this.combineLatestResultBackup[0];
+    this.useableEmbedableAttributes = this.combineLatestResultBackup[0].filter((attribute: any) =>
+      (attribute.state == AttributeCalculationState.UPLOADED || attribute.state == AttributeCalculationState.AUTOMATICALLY_CREATED || attribute.state == AttributeCalculationState.USABLE)
+      && (attribute.dataType == 'TEXT' || attribute.dataType == 'EMBEDDING_LIST'));
     this.attributes.forEach((attribute) => {
       attribute.dataTypeName = this.dataTypesArray.find((type) => type.value === attribute?.dataType).name;
       attribute.visibilityIndex = this.attributeVisibilityStates.findIndex((type) => type.value === attribute?.visibility);
@@ -144,15 +146,14 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
     this.embeddings = jsonCopy(this.combineLatestResultBackup[1]);
     this.dataHandlerHelper.extendQueuedEmbeddings(projectId, this.embeddings);
 
-    this.useableTextAttributes = this.useableTextAttributes.filter((attribute: any) => (attribute.state == AttributeCalculationState.UPLOADED || attribute.state == AttributeCalculationState.AUTOMATICALLY_CREATED || attribute.state == AttributeCalculationState.USABLE) && attribute.dataType == 'TEXT');
     this.useableAttributes = this.attributes.filter((attribute: any) => (attribute.state == AttributeCalculationState.UPLOADED || attribute.state == AttributeCalculationState.AUTOMATICALLY_CREATED || attribute.state == AttributeCalculationState.USABLE));
     this.useableNonTextAttributes = this.useableAttributes.filter((attribute: any) => attribute.dataType != 'TEXT' && attribute.dataType != 'EMBEDDING_LIST');
 
     // prepare embedding suggestions
-    const onlyEmendableAttributes = this.attributes.filter(a => a.dataType == 'TEXT' || a.dataType == 'EMBEDDING_LIST');
+    // const onlyEmendableAttributes = this.attributes.filter(a => a.dataType == 'TEXT' || a.dataType == 'EMBEDDING_LIST');
     this.embeddingPlatforms = this.combineLatestResultBackup[3];
-    this.dataHandlerHelper.prepareEmbeddingFormGroup(onlyEmendableAttributes, this.settingModals, this.embeddings, this.embeddingPlatforms, this.useableNonTextAttributes);
-    this.embeddingHandles = this.dataHandlerHelper.prepareEmbeddingHandles(projectId, onlyEmendableAttributes, this.project.tokenizer, this.combineLatestResultBackup[2]);
+    this.dataHandlerHelper.prepareEmbeddingFormGroup(this.useableEmbedableAttributes, this.settingModals, this.embeddings, this.embeddingPlatforms, this.useableNonTextAttributes);
+    this.embeddingHandles = this.dataHandlerHelper.prepareEmbeddingHandles(projectId, this.useableEmbedableAttributes, this.project.tokenizer, this.combineLatestResultBackup[2]);
   }
 
   private setUpCommentRequests(projectId: string) {

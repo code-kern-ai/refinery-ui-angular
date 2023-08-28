@@ -25,7 +25,7 @@ import { dataTypes } from 'src/app/util/data-types';
 export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
 
   @Input() project: Project;
-  @Input() useableTextAttributes: Attribute[];
+  @Input() useableEmbedableAttributes: Attribute[];
   @Input() useableAttributes: Attribute[];
   @Input() settingModals: SettingModals;
   @Input() isManaged: boolean;
@@ -333,7 +333,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
     }
     const checkDuplicates = this.dataHandlerHelper.canCreateEmbedding(this.settingModals, this.embeddings, this.attributes);
     this.isCreationOfEmbeddingDisabled = this.settingModals.embedding.create.blocked ||
-      !(this.useableTextAttributes && this.settingModals.embedding.create.embeddingCreationFormGroup) || checkFormFields || !checkDuplicates;
+      !(this.useableEmbedableAttributes && this.settingModals.embedding.create.embeddingCreationFormGroup) || checkFormFields || !checkDuplicates;
   }
 
   initEmbeddingModal(fullInit: boolean = false, defaultPlatform: PlatformType = PlatformType.HUGGING_FACE) {

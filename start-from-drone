@@ -1,0 +1,23 @@
+#!/bin/bash
+
+WANTED_BRANCH="$@"
+
+if [ -z "$WANTED_BRANCH" ]
+then
+    WANTED_BRANCH=dev
+fi
+
+trap "echo -ne '\nstopping container...' && docker rm -f refinery-ui > /dev/null 2>&1 && echo -ne '\t\t [done]\n'" EXIT
+
+echo trying to start with branch $BRANCH
+
+docker run --rm -d \
+--name refinery-ui \
+-p 7050:80 \
+--mount type=bind,source="$(pwd)"/,target=/app \
+--network dev-setup_default \
+registry.dev.onetask.ai/code-kern-ai/refinery-ui:"$WANTED_BRANCH"
+
+
+
+docker logs -f refinery-ui
