@@ -4,4 +4,5 @@ export const dataTypes = [
   { name: 'Integer', value: 'INTEGER' },
   { name: 'Float', value: 'FLOAT' },
   { name: 'Boolean', value: 'BOOLEAN' },
+  { name: 'Embedding List', value: 'EMBEDDING_LIST' },
 ];

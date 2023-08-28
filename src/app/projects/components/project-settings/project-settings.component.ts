@@ -146,13 +146,13 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
 
     this.useableTextAttributes = this.useableTextAttributes.filter((attribute: any) => (attribute.state == AttributeCalculationState.UPLOADED || attribute.state == AttributeCalculationState.AUTOMATICALLY_CREATED || attribute.state == AttributeCalculationState.USABLE) && attribute.dataType == 'TEXT');
     this.useableAttributes = this.attributes.filter((attribute: any) => (attribute.state == AttributeCalculationState.UPLOADED || attribute.state == AttributeCalculationState.AUTOMATICALLY_CREATED || attribute.state == AttributeCalculationState.USABLE));
-    this.useableNonTextAttributes = this.useableAttributes.filter((attribute: any) => attribute.dataType != 'TEXT');
+    this.useableNonTextAttributes = this.useableAttributes.filter((attribute: any) => attribute.dataType != 'TEXT' && attribute.dataType != 'EMBEDDING_LIST');
 
     // prepare embedding suggestions
-    const onlyTextAttributes = this.attributes.filter(a => a.dataType == 'TEXT');
+    const onlyEmendableAttributes = this.attributes.filter(a => a.dataType == 'TEXT' || a.dataType == 'EMBEDDING_LIST');
     this.embeddingPlatforms = this.combineLatestResultBackup[3];
-    this.dataHandlerHelper.prepareEmbeddingFormGroup(onlyTextAttributes, this.settingModals, this.embeddings, this.embeddingPlatforms, this.useableNonTextAttributes);
-    this.embeddingHandles = this.dataHandlerHelper.prepareEmbeddingHandles(projectId, onlyTextAttributes, this.project.tokenizer, this.combineLatestResultBackup[2]);
+    this.dataHandlerHelper.prepareEmbeddingFormGroup(onlyEmendableAttributes, this.settingModals, this.embeddings, this.embeddingPlatforms, this.useableNonTextAttributes);
+    this.embeddingHandles = this.dataHandlerHelper.prepareEmbeddingHandles(projectId, onlyEmendableAttributes, this.project.tokenizer, this.combineLatestResultBackup[2]);
   }
 
   private setUpCommentRequests(projectId: string) {

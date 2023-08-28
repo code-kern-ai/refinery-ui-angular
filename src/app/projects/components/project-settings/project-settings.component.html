@@ -148,6 +148,15 @@
                     hasFullWidth: true
                 }" (optionClicked)="updateDataType($event)"></kern-dropdown>
     </div>
+    <ng-template [ngIf]="settingModals.attribute.type == 'Embedding List'">
+        <div class="border border-gray-300 text-xs text-gray-500 p-2.5 rounded-lg text-justify mt-2 max-w-2xl"
+            style="max-width:500px">
+            <label className="text-gray-700">
+                Embedding lists are special. They can only be used for similarity search. If a list
+                entry is matched, the whole record is considered matched.
+            </label>
+        </div>
+    </ng-template>
 </kern-modal>
 
 <kern-modal [isOpen]="settingModals.projectExport.open" (optionClicked)="settingModals.projectExport.open = false">
