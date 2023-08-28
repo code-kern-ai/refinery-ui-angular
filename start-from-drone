@@ -11,6 +11,8 @@ trap "echo -ne '\nstopping container...' && docker rm -f refinery-ui > /dev/null
 
 echo trying to start with branch $BRANCH
 
+docker pull registry.dev.onetask.ai/code-kern-ai/refinery-ui:"$WANTED_BRANCH"
+
 docker run --rm -d \
 --name refinery-ui \
 -p 7050:80 \
