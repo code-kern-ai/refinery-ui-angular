@@ -2151,6 +2151,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   }
 
   initFilterAttributeData(embeddingId?: string, c: number = 0) {
+    console.log("initFilterAttributeData called with", embeddingId, c)
     if (!this.fullAttributeList || !this.extendedRecords) {
       if (c > 25) throw new Error("Attribute list not loaded");
       timer(100).subscribe(() => this.initFilterAttributeData(embeddingId, ++c));
@@ -2164,6 +2165,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
         if (!record) this.similarSearchHelper.embeddingListAttributeData = [];
         else this.similarSearchHelper.embeddingListAttributeData = record.data[embeddingAttribute.name].map((a, i) => { return { idx: i, text: a.length > 100 ? a.substring(0, 100) + "..." : a } });
       }
+      console.log(this.similarSearchHelper.embeddingListAttributeData, embeddingAttribute)
     }
     this.filterIntegration.filterAttributesSS = this.similarSearchHelper.prepareFilterAttributes(embeddingId);
     this.filterIntegration.prepareOperatorsAndTooltips();

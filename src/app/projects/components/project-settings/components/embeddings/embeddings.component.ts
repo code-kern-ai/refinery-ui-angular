@@ -372,7 +372,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
     if (attribute?.dataType == 'EMBEDDING_LIST') {
       this.granularityArray = this.granularityArray.filter((g) => g.value != EmbeddingType.ON_TOKEN);
       if (form.get('granularity').value != EmbeddingType.ON_ATTRIBUTE) form.get('granularity').setValue(EmbeddingType.ON_ATTRIBUTE);
-    }
+    } else this.checkIfPlatformHasToken();
   }
 
   resetEmbeddingCreationAndPlatform() {
