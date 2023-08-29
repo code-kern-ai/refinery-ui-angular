@@ -2157,6 +2157,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       timer(100).subscribe(() => this.initFilterAttributeData(embeddingId, ++c));
       return;
     }
+    if (this.similarSearchHelper.embeddings.length > 0 && !embeddingId) embeddingId = this.dataBrowserModals.similaritySearch.embeddingId;
     if (embeddingId) {
       const embeddingAttribute = this.fullAttributeList.find(a => a.id == this.similarSearchHelper.embeddings.find(e => e.id == embeddingId).attributeId);
       this.similarSearchHelper.isEmbeddingListAttribute = embeddingAttribute?.dataType == 'EMBEDDING_LIST'
