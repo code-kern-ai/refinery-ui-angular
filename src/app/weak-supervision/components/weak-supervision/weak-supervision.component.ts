@@ -510,17 +510,6 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
     if (!this.embeddings || !this.attributes || !this.labelingTaskId) return;
 
     this.embeddingsFiltered = this.embeddings.filter(e => this.embeddingRelevant(e));
-    // const matching = this.labelingTasks.filter(e => e.id == this.labelingTaskId)
-    // if (matching.length != 1) return;
-    // const onlyAttribute = matching[0].taskType === LabelingTask.MULTICLASS_CLASSIFICATION;
-
-
-    // this.embeddingsFiltered = this.embeddings.filter((e=>(e.type == 'ON_ATTRIBUTE' && onlyAttribute) || (e.type != 'ON_ATTRIBUTE' && !onlyAttribute)) && e.)
-    // for (const e of this.embeddings) {
-    //   if ((e.type == 'ON_ATTRIBUTE' && onlyAttribute) || (e.type != 'ON_ATTRIBUTE' && !onlyAttribute)) {
-    //     this.embeddingsFiltered.push(e);
-    //   }
-    // }
     this.heuristicsModals.createActiveLearning.embedding = this.embeddingsFiltered.length !== 0 ? this.embeddingsFiltered[0].name : '';
   }
 

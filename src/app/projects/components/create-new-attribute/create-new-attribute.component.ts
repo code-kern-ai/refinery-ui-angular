@@ -306,7 +306,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
         this.currentAttributeQuery$.refetch();
         if (this.currentAttribute.dataType == 'EMBEDDING_LIST') {
           //parse to actual list for easy loop
-          this.sampleRecords.calculatedAttributes.map((record: string) => JSON.parse(record));
+          this.sampleRecords.calculatedAttributesList = this.sampleRecords.calculatedAttributes.map((record: string) => JSON.parse(record));
         }
       }, (error) => {
         this.testerRequestedSomething = false;
