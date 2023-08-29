@@ -72,7 +72,8 @@
                                     <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
                                         <div
                                             class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
-                                            {{embeddingContainer.type == 'ON_ATTRIBUTE'?
+                                            {{embeddingContainer.state == 'QUEUED'?'':embeddingContainer.type ==
+                                            'ON_ATTRIBUTE'?
                                             'Attribute Specific' : 'Token Specific'}}
                                         </div>
                                     </td>

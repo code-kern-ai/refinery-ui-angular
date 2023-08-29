@@ -70,15 +70,20 @@
                     </kern-dropdown>
                 </div>
                 <div class="text-sm leading-5 font-medium text-gray-700 inline-block">Data type</div>
-                <div class="tooltip tooltip-right w-max"
-                    [attr.data-tip]="currentAttribute.state == AttributeCalculationState.USABLE || currentAttribute.state == AttributeCalculationState.RUNNING ? 'Cannot edit data type' : 'Edit your data type'">
-                    <kern-dropdown [dropdownOptions]="{
+                <div class="flex flex-row items-center gap-x-2">
+                    <div class="tooltip tooltip-right w-max"
+                        [attr.data-tip]="currentAttribute.state == AttributeCalculationState.USABLE || currentAttribute.state == AttributeCalculationState.RUNNING ? 'Cannot edit data type' : 'Edit your data type'">
+                        <kern-dropdown [dropdownOptions]="{
                             optionArray: dataTypesArray,
                             buttonCaption: attributeDataType,
                             valuePropertyPath: 'value',
                             isDisabled: currentAttribute.state == AttributeCalculationState.USABLE || currentAttribute.state == AttributeCalculationState.RUNNING
                         }" (optionClicked)="updateDataType($event)">
-                    </kern-dropdown>
+                        </kern-dropdown>
+                    </div>
+                    <span *ngIf="currentAttribute.dataType == 'EMBEDDING_LIST'" class="text-gray-700 text-sm">Only
+                        useable for similarity
+                        search</span>
                 </div>
                 <div class="text-sm leading-5 font-medium text-gray-700 inline-block">Attributes</div>
                 <div class="flex flex-row items-center">
@@ -360,7 +365,18 @@
         <div class="text-sm leading-5 text-left text-gray-900 font-bold">
             Calculated value</div>
         <div class="text-sm leading-5 text-left text-gray-500 font-normal">
-            {{sampleRecords.calculatedAttributes[attributeCalculationModals.attributeDetails.currentRecordIdx]}}
+            <ng-template [ngIf]="currentAttribute.dataType != 'EMBEDDING_LIST'" [ngIfElse]="showList">
+                {{sampleRecords.calculatedAttributes[attributeCalculationModals.attributeDetails.currentRecordIdx]}}
+            </ng-template>
+            <ng-template #showList>
+                <div class="flex flex-col items-center">
+                    <div
+                        *ngFor="let item of sampleRecords.calculatedAttributes[attributeCalculationModals.attributeDetails.currentRecordIdx]">
+                        {{item}}
+                    </div>
+                </div>
+            </ng-template>
+
         </div>
     </div>
     <ng-template #requestingData>

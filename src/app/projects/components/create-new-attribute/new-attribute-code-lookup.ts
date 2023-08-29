@@ -46,8 +46,8 @@ export class AttributeCodeLookup {
                     `}
                     case 'EMBEDDING_LIST': return {
                         code: `def ac(record):
-    # e.g. split on every .
-    return [r.text for r in record["headline"].sents]
+    # e.g. use spacy sentences to create a list
+    return [r.text for r in record["str_attribute"].sents]
                     `
                     }
                     default: return {

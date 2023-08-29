@@ -428,7 +428,7 @@
     disabled: heuristicsModals.functionName == '',
     emitObject: this, emitFunction: createLabelingFunction
 }" (optionClicked)="heuristicsModals.createLabelingFunction.open = false">
-    <h1 class="text-lg text-gray-900 mb-2 text-center mb-4">Add new labeling function</h1>
+    <h1 class="text-lg text-gray-900 text-center mb-4">Add new labeling function</h1>
 
     <div *ngIf="attributes && labelingTasksClassification" class="grid grid-cols-2 gap-2 items-center"
         style="grid-template-columns: max-content auto;">
@@ -467,7 +467,7 @@
     disabled: heuristicsModals.functionName == '' || heuristicsModals.createActiveLearning.embedding == '',
     emitObject: this, emitFunction: createActiveLearning
 }" (optionClicked)="heuristicsModals.createActiveLearning.open = false">
-    <h1 class="text-lg text-gray-900 mb-2 text-center mb-4">Add new active learning</h1>
+    <h1 class="text-lg text-gray-900 text-center mb-4">Add new active learning</h1>
 
     <div *ngIf="attributes && labelingTasksClassification" class="grid grid-cols-2 gap-2 items-center"
         style="grid-template-columns: max-content auto;">
@@ -521,7 +521,7 @@
     disabled: heuristicsModals.functionName == '',
     emitObject: this, emitFunction: createCrowdLabelerInformationSource
 }" (optionClicked)="heuristicsModals.createCrowdLabeling.open = false">
-    <h1 class="text-lg text-gray-900 mb-2 text-center mb-4">Add new crowd labeler</h1>
+    <h1 class="text-lg text-gray-900 text-center mb-4">Add new crowd labeler</h1>
 
     <div *ngIf="labelingTasksClassification" class="grid grid-cols-2 gap-2 items-center"
         style="grid-template-columns: max-content auto;">
@@ -561,7 +561,7 @@
     disabled: heuristicsModals.createZeroShot.value == '' || heuristicsModals.createZeroShot.value == null,
     emitObject: this, emitFunction: createZeroShotInformationSource
     }" (optionClicked)="heuristicsModals.createZeroShot.open = false">
-        <h1 class="text-lg text-gray-900 mb-2 text-center mb-4">Add new zero shot classification</h1>
+        <h1 class="text-lg text-gray-900 text-center mb-4">Add new zero shot classification</h1>
 
         <div *ngIf="attributes && labelingTasksClassification" class="grid grid-cols-2 gap-2 items-center"
             style="grid-template-columns: max-content auto;">
