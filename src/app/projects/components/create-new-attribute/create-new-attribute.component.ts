@@ -400,7 +400,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
       attributes.sort((a, b) => a.relativePosition - b.relativePosition);
       this.attributes = attributes;
       this.attributesNames = attributes.map((attribute) => attribute.name);
-      this.attributesUsableUploaded = attributesAll.filter((attribute) => attribute.state == AttributeCalculationState.UPLOADED || attribute.state == AttributeCalculationState.USABLE || attribute.state == AttributeCalculationState.AUTOMATICALLY_CREATED);
+      this.attributesUsableUploaded = attributesAll.filter((attribute) => (attribute.state == AttributeCalculationState.UPLOADED || attribute.state == AttributeCalculationState.USABLE || attribute.state == AttributeCalculationState.AUTOMATICALLY_CREATED) && attribute.dataType != 'EMBEDDING_LIST');
       this.attributesUsableUploaded.forEach(attribute => {
         attribute.color = getColorForDataType(attribute.dataType);
         attribute.dataTypeName = this.dataTypesArray.find((type) => type.value === attribute.dataType).name;

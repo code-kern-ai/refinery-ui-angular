@@ -351,7 +351,7 @@ export class WeakSourceDetailsComponent
   private embeddingRelevant(embedding: any): boolean {
     if (!embedding) return false;
     const attributeType = this.attributes.find(a => a.id == embedding.attributeId)?.dataType;
-    if (attributeType !== 'TEXT') return false;
+    if (attributeType != 'TEXT') return false;
     const onlyAttribute = this.labelingTasks.get(this.labelingTaskControl.value).taskType == LabelingTask.MULTICLASS_CLASSIFICATION;
     return (embedding.type == 'ON_ATTRIBUTE' && onlyAttribute) || (embedding.type != 'ON_ATTRIBUTE' && !onlyAttribute)
   }
@@ -629,7 +629,7 @@ export class WeakSourceDetailsComponent
     this.subscriptions$.push(attributes$.subscribe((attributes) => {
       this.attributesView = attributes.filter((a) => a.visibility != AttributeVisibility.HIDE);
       attributes.sort((a, b) => a.relativePosition - b.relativePosition);
-      this.attributes = attributes;
+      this.attributes = attributes.filter(a => a.dataType != 'EMBEDDING_LIST');
       this.attributes.forEach(attribute => {
         attribute.color = getColorForDataType(attribute.dataType);
         attribute.dataTypeName = this.dataTypesArray.find((type) => type.value === attribute.dataType).name;
