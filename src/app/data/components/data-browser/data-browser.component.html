@@ -1221,7 +1221,7 @@
             <div class="text-sm text-gray-400">You can find similar records based on one of the embedding list entries
             </div>
             <select #subKeySelect class="select select-bordered select-sm w-full"
-                (change)="similarSearchHelper.embeddingListAttributeCurrentSubKey= similarSearchHelper.embeddingListAttributeData[select.selectedIndex].idx">
+                (change)="similarSearchHelper.embeddingListAttributeCurrentSubKey = similarSearchHelper.embeddingListAttributeData[subKeySelect.selectedIndex].idx">
                 <option *ngFor="let entry of similarSearchHelper.embeddingListAttributeData" [value]="entry.idx">
                     {{entry.text }}
                 </option>
