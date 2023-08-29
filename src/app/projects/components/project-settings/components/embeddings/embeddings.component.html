@@ -222,7 +222,7 @@
                             Attribute</span></span>
                 </div>
                 <select formControlName="targetAttribute" class="select select-bordered select-sm max-w-xs"
-                    (change)="prepareSuggestions(settingModals.embedding.create.embeddingCreationFormGroup)">
+                    (change)="prepareSuggestions(settingModals.embedding.create.embeddingCreationFormGroup);checkIfAttributeHasToken();">
                     <option *ngFor="let attribute of useableEmbedableAttributes" [value]="attribute.id">
                         {{attribute.name}}
                     </option>

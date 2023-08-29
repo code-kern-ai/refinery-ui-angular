@@ -366,11 +366,12 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   checkIfAttributeHasToken() {
-    const attributeId = this.settingModals.embedding.create.embeddingCreationFormGroup.get('targetAttribute').value;
+    const form = this.settingModals.embedding.create.embeddingCreationFormGroup;
+    const attributeId = form.get('targetAttribute').value;
     const attribute = this.attributes.find((a) => a.id == attributeId);
-    console.log(this.attributes.find((a) => a.id == attributeId).dataType)
     if (attribute?.dataType == 'EMBEDDING_LIST') {
       this.granularityArray = this.granularityArray.filter((g) => g.value != EmbeddingType.ON_TOKEN);
+      if (form.get('granularity').value != EmbeddingType.ON_ATTRIBUTE) form.get('granularity').setValue(EmbeddingType.ON_ATTRIBUTE);
     }
   }
 
