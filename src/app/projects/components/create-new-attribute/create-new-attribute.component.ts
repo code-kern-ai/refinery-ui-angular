@@ -308,6 +308,7 @@ export class CreateNewAttributeComponent implements OnInit, OnDestroy {
           //parse to actual list for easy loop
           this.sampleRecords.calculatedAttributesList = this.sampleRecords.calculatedAttributes.map((record: string) => JSON.parse(record));
         }
+        console.log(this.sampleRecords)
       }, (error) => {
         this.testerRequestedSomething = false;
         this.currentAttributeQuery$.refetch();
