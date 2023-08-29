@@ -346,7 +346,6 @@ export class WeakSourceDetailsComponent
     this.embeddingsFiltered = [];
     if (!this.embeddings || !this.labelingTasks.size || !this.labelingTaskControl.value) return;
     this.embeddingsFiltered = this.embeddings.filter(e => this.embeddingRelevant(e));
-    console.log(this.embeddingsFiltered)
   }
 
   private embeddingRelevant(embedding: any): boolean {
