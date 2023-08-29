@@ -9,7 +9,7 @@ fi
 
 trap "echo -ne '\nstopping container...' && docker rm -f refinery-ui > /dev/null 2>&1 && echo -ne '\t\t [done]\n'" EXIT
 
-echo trying to start with branch $BRANCH
+echo trying to start with branch $WANTED_BRANCH
 
 docker pull registry.dev.onetask.ai/code-kern-ai/refinery-ui:"$WANTED_BRANCH"
 
