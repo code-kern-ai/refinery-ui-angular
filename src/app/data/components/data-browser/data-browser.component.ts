@@ -93,7 +93,8 @@ type CurrentSearchRequest = {
     recordId?: string,
     offset?: number,
     limit?: number,
-    attFilter?: string
+    attFilter?: string,
+    recordSubKey?: number
   }
   func: (variables) => any
 };
@@ -129,6 +130,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   projectId: string;
   attributesQuery$: any;
   attributes: Attributes;
+  fullAttributeList: any[];
   attributesSortOrder = [];
 
   labelingTaskWait: { isWaiting: boolean } = { isWaiting: false };
@@ -335,6 +337,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     let firstReturn$ = vc$.pipe(first());
 
     this.subscriptions$.push(vc$.subscribe((attributes) => {
+      this.fullAttributeList = attributes;
       attributes = attributes.filter((a) => a.visibility == AttributeVisibility.DO_NOT_HIDE);
       attributes.sort((a, b) => a.relativePosition - b.relativePosition);
       this.attributes = Object.fromEntries(attributes.map((attribute) => [attribute.id, attribute]));
@@ -2142,12 +2145,26 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     this.dataBrowserModals.findOutliers.embeddingId = this.similarSearchHelper.embeddings[selectedValue].id;
   }
 
-  setEmbeddingIdSimilaritySearch(selectedIndex: string) {
+  setEmbeddingIdSimilaritySearch(selectedIndex: number) {
     this.dataBrowserModals.similaritySearch.embeddingId = this.similarSearchHelper.embeddings[selectedIndex].id;
     this.initFilterAttributeData(this.dataBrowserModals.similaritySearch.embeddingId);
   }
 
-  initFilterAttributeData(embeddingId?: string) {
+  initFilterAttributeData(embeddingId?: string, c: number = 0) {
+    if (!this.fullAttributeList) {
+      if (c > 25) throw new Error("Attribute list not loaded");
+      timer(100).subscribe(() => this.initFilterAttributeData(embeddingId, ++c));
+      return;
+    }
+    if (embeddingId) {
+      const embeddingAttribute = this.fullAttributeList.find(a => a.id == this.similarSearchHelper.embeddings.find(e => e.id == embeddingId).attributeId);
+      this.similarSearchHelper.isEmbeddingListAttribute = embeddingAttribute?.dataType == 'EMBEDDING_LIST'
+      if (this.similarSearchHelper.isEmbeddingListAttribute && embeddingAttribute) {
+        const record = this.extendedRecords.recordList.find(r => r.id == this.dataBrowserModals.similaritySearch.recordId);
+        if (!record) this.similarSearchHelper.embeddingListAttributeData = [];
+        else this.similarSearchHelper.embeddingListAttributeData = record.data[embeddingAttribute.name].map((a, i) => { return { idx: i, text: a.length > 100 ? a.substring(0, 100) + "..." : a } });
+      }
+    }
     this.filterIntegration.filterAttributesSS = this.similarSearchHelper.prepareFilterAttributes(embeddingId);
     this.filterIntegration.prepareOperatorsAndTooltips();
     this.filterIntegration.initFilterForm();
