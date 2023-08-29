@@ -150,7 +150,6 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
     this.useableNonTextAttributes = this.useableAttributes.filter((attribute: any) => attribute.dataType != 'TEXT' && attribute.dataType != 'EMBEDDING_LIST');
 
     // prepare embedding suggestions
-    // const onlyEmendableAttributes = this.attributes.filter(a => a.dataType == 'TEXT' || a.dataType == 'EMBEDDING_LIST');
     this.embeddingPlatforms = this.combineLatestResultBackup[3];
     this.dataHandlerHelper.prepareEmbeddingFormGroup(this.useableEmbedableAttributes, this.settingModals, this.embeddings, this.embeddingPlatforms, this.useableNonTextAttributes);
     this.embeddingHandles = this.dataHandlerHelper.prepareEmbeddingHandles(projectId, this.useableEmbedableAttributes, this.project.tokenizer, this.combineLatestResultBackup[2]);

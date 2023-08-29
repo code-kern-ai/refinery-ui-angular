@@ -2151,7 +2151,7 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   }
 
   initFilterAttributeData(embeddingId?: string, c: number = 0) {
-    if (!this.fullAttributeList) {
+    if (!this.fullAttributeList || !this.extendedRecords) {
       if (c > 25) throw new Error("Attribute list not loaded");
       timer(100).subscribe(() => this.initFilterAttributeData(embeddingId, ++c));
       return;

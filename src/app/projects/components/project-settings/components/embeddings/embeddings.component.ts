@@ -146,6 +146,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
       }
     }
     this.checkIfPlatformHasToken();
+    this.checkIfAttributeHasToken();
     this.checkIfCreateEmbeddingIsDisabled();
   }
 
@@ -364,11 +365,21 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
     }
   }
 
+  checkIfAttributeHasToken() {
+    const attributeId = this.settingModals.embedding.create.embeddingCreationFormGroup.get('targetAttribute').value;
+    const attribute = this.attributes.find((a) => a.id == attributeId);
+    console.log(this.attributes.find((a) => a.id == attributeId).dataType)
+    if (attribute?.dataType == 'EMBEDDING_LIST') {
+      this.granularityArray = this.granularityArray.filter((g) => g.value != EmbeddingType.ON_TOKEN);
+    }
+  }
+
   resetEmbeddingCreationAndPlatform() {
     this.initEmbeddingModal();
     this.selectedPlatform = this.embeddingPlatforms[0];
     this.prepareSuggestions(this.settingModals.embedding.create.embeddingCreationFormGroup);
     this.checkIfPlatformHasToken();
+    this.checkIfAttributeHasToken();
   }
 
   toggleActiveGroup(group: FormGroup) {
