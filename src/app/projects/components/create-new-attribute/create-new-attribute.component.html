@@ -369,8 +369,8 @@
                 {{sampleRecords.calculatedAttributes[attributeCalculationModals.attributeDetails.currentRecordIdx]}}
             </ng-template>
             <ng-template #showList>
-                <div class="flex flex-col gap-y-2">
-                    <span
+                <div class="flex flex-col gap-y-2 divide-y">
+                    <span class="pt-1"
                         *ngFor="let item of sampleRecords.calculatedAttributesList[attributeCalculationModals.attributeDetails.currentRecordIdx]">
                         {{item}}
                     </span>
