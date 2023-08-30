@@ -72,7 +72,8 @@
                                     <td class="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
                                         <div
                                             class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
-                                            {{embeddingContainer.type == 'ON_ATTRIBUTE'?
+                                            {{embeddingContainer.state == 'QUEUED'?'':embeddingContainer.type ==
+                                            'ON_ATTRIBUTE'?
                                             'Attribute Specific' : 'Token Specific'}}
                                         </div>
                                     </td>
@@ -207,12 +208,12 @@
     <div class="flex flex-grow justify-center text-lg leading-6 text-gray-900 font-medium">
         Add an embedding </div>
     <div class="mb-2 flex flex-grow justify-center text-sm text-gray-500"
-        *ngIf="useableTextAttributes && settingModals.embedding.create.embeddingCreationFormGroup">
+        *ngIf="useableEmbedableAttributes && settingModals.embedding.create.embeddingCreationFormGroup">
         Pick from the below solutions to build a vector representation</div>
     <div class="mb-2 flex flex-grow justify-center text-sm text-gray-500"
-        *ngIf="!(useableTextAttributes && settingModals.embedding.create.embeddingCreationFormGroup)">
+        *ngIf="!(useableEmbedableAttributes && settingModals.embedding.create.embeddingCreationFormGroup)">
         No usable text attributes to embed exist</div>
-    <div *ngIf="useableTextAttributes && settingModals.embedding.create.embeddingCreationFormGroup">
+    <div *ngIf="useableEmbedableAttributes && settingModals.embedding.create.embeddingCreationFormGroup">
         <form [formGroup]="settingModals.embedding.create.embeddingCreationFormGroup">
             <div class="grid grid-cols-2 gap-2 items-center" style="grid-template-columns: max-content auto;">
                 <div class="tooltip tooltip-right" data-tip="Choose attribute that will be encoded">
@@ -221,8 +222,8 @@
                             Attribute</span></span>
                 </div>
                 <select formControlName="targetAttribute" class="select select-bordered select-sm max-w-xs"
-                    (change)="prepareSuggestions(settingModals.embedding.create.embeddingCreationFormGroup)">
-                    <option *ngFor="let attribute of useableTextAttributes" [value]="attribute.id">
+                    (change)="prepareSuggestions(settingModals.embedding.create.embeddingCreationFormGroup);checkIfAttributeHasToken();">
+                    <option *ngFor="let attribute of useableEmbedableAttributes" [value]="attribute.id">
                         {{attribute.name}}
                     </option>
                 </select>

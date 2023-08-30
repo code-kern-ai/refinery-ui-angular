@@ -81,6 +81,7 @@ export function getColorForDataType(dataType): string {
         case 'BOOLEAN': return 'cyan';
         case 'INTEGER': return 'indigo';
         case 'FLOAT': return 'purple';
+        case 'EMBEDDING_LIST': return 'gray';
         default: return 'gray';
     }
 }

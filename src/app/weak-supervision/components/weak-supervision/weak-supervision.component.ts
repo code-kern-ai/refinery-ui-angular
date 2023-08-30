@@ -507,17 +507,23 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
 
   filterEmbeddingsForCurrentTask() {
     this.embeddingsFiltered = [];
-    if (!this.embeddings || !this.labelingTaskId) return;
-    const matching = this.labelingTasks.filter(e => e.id == this.labelingTaskId)
-    if (matching.length != 1) return;
-    const onlyAttribute = matching[0].taskType === LabelingTask.MULTICLASS_CLASSIFICATION
+    if (!this.embeddings || !this.attributes || !this.labelingTaskId) return;
 
-    for (const e of this.embeddings) {
-      if ((e.type == 'ON_ATTRIBUTE' && onlyAttribute) || (e.type != 'ON_ATTRIBUTE' && !onlyAttribute)) {
-        this.embeddingsFiltered.push(e);
-      }
-    }
+    this.embeddingsFiltered = this.embeddings.filter(e => this.embeddingRelevant(e));
     this.heuristicsModals.createActiveLearning.embedding = this.embeddingsFiltered.length !== 0 ? this.embeddingsFiltered[0].name : '';
+  }
+
+  private embeddingRelevant(embedding: any): boolean {
+    if (!embedding) return false;
+    if (!this.labelingTaskId) return false;
+    const matching = this.labelingTasks.filter(e => e.id == this.labelingTaskId)
+    if (matching.length != 1) return false;
+    const onlyAttribute = matching[0].taskType === LabelingTask.MULTICLASS_CLASSIFICATION;
+
+    const attributeType = this.attributes.find(a => a.id == embedding.attributeId)?.dataType;
+    if (attributeType !== 'TEXT') return false;
+
+    return (embedding.type == 'ON_ATTRIBUTE' && onlyAttribute) || (embedding.type != 'ON_ATTRIBUTE' && !onlyAttribute)
   }
 
   changeInformationSourceName(event) {

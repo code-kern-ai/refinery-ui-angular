@@ -444,7 +444,8 @@ export class RecordApolloService {
       projectId: string,
       embeddingId: string,
       recordId: string,
-      attFilter: string
+      attFilter: string,
+      recordSubKey: string
     }
   ): any {
     return this.apollo.query({

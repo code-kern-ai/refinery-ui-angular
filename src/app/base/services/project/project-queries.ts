@@ -241,6 +241,7 @@ export const queries = {
             platform
             model
             filterAttributes
+            attributeId
           }
         }
       }

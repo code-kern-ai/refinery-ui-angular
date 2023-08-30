@@ -44,6 +44,12 @@ export class AttributeCodeLookup {
     sum_word_lengths = sum([len(word) for word in words])
     return sum_word_lengths / num_words
                     `}
+                    case 'EMBEDDING_LIST': return {
+                        code: `def ac(record):
+    # e.g. use spacy sentences to create a list
+    return [r.text for r in record["str_attribute"].sents]
+                    `
+                    }
                     default: return {
                         code: ''
                     }

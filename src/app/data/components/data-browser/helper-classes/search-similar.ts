@@ -14,6 +14,9 @@ export class SimilarSearch {
   public rememberedRecordId: any;
   public recordsRequested: boolean = false;
   public recordsInDisplay: boolean = false;
+  public isEmbeddingListAttribute: boolean = false;
+  public embeddingListAttributeData: any;
+  public embeddingListAttributeCurrentSubKey: any;
 
   constructor(dataBrowser: DataBrowserComponent, recordApolloService: RecordApolloService, projectApolloService: ProjectApolloService) {
     this.dataBrowser = dataBrowser;
@@ -40,7 +43,8 @@ export class SimilarSearch {
     [q$, vc$] = this.projectApolloService.getEmbeddingSchema(projectId);
     vc$.pipe(first()).subscribe((embeddings) => {
       this.embeddings = embeddings.filter((e) => e.state == "FINISHED" && e.type == "ON_ATTRIBUTE");
-      this.dataBrowser.initFilterAttributeData();
+      if (this.embeddings.length == 0) this.dataBrowser.initFilterAttributeData();
+      else this.dataBrowser.setEmbeddingIdSimilaritySearch(0);
     });
   }
 
@@ -61,6 +65,7 @@ export class SimilarSearch {
         embeddingId: embeddingId,
         recordId: recordId,
         attFilter: hasFilter ? this.dataBrowser.filterIntegration.prepareAttFilter() : null,
+        recordSubKey: this.isEmbeddingListAttribute ? this.embeddingListAttributeCurrentSubKey : null,
       },
 
       func: this.recordApolloService.getSimilarRecords

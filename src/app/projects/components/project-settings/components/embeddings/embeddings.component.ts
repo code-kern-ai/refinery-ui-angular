@@ -25,7 +25,7 @@ import { dataTypes } from 'src/app/util/data-types';
 export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
 
   @Input() project: Project;
-  @Input() useableTextAttributes: Attribute[];
+  @Input() useableEmbedableAttributes: Attribute[];
   @Input() useableAttributes: Attribute[];
   @Input() settingModals: SettingModals;
   @Input() isManaged: boolean;
@@ -146,6 +146,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
       }
     }
     this.checkIfPlatformHasToken();
+    this.checkIfAttributeHasToken();
     this.checkIfCreateEmbeddingIsDisabled();
   }
 
@@ -333,7 +334,7 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
     }
     const checkDuplicates = this.dataHandlerHelper.canCreateEmbedding(this.settingModals, this.embeddings, this.attributes);
     this.isCreationOfEmbeddingDisabled = this.settingModals.embedding.create.blocked ||
-      !(this.useableTextAttributes && this.settingModals.embedding.create.embeddingCreationFormGroup) || checkFormFields || !checkDuplicates;
+      !(this.useableEmbedableAttributes && this.settingModals.embedding.create.embeddingCreationFormGroup) || checkFormFields || !checkDuplicates;
   }
 
   initEmbeddingModal(fullInit: boolean = false, defaultPlatform: PlatformType = PlatformType.HUGGING_FACE) {
@@ -364,11 +365,22 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
     }
   }
 
+  checkIfAttributeHasToken() {
+    const form = this.settingModals.embedding.create.embeddingCreationFormGroup;
+    const attributeId = form.get('targetAttribute').value;
+    const attribute = this.attributes.find((a) => a.id == attributeId);
+    if (attribute?.dataType == 'EMBEDDING_LIST') {
+      this.granularityArray = this.granularityArray.filter((g) => g.value != EmbeddingType.ON_TOKEN);
+      if (form.get('granularity').value != EmbeddingType.ON_ATTRIBUTE) form.get('granularity').setValue(EmbeddingType.ON_ATTRIBUTE);
+    } else this.checkIfPlatformHasToken();
+  }
+
   resetEmbeddingCreationAndPlatform() {
     this.initEmbeddingModal();
     this.selectedPlatform = this.embeddingPlatforms[0];
     this.prepareSuggestions(this.settingModals.embedding.create.embeddingCreationFormGroup);
     this.checkIfPlatformHasToken();
+    this.checkIfAttributeHasToken();
   }
 
   toggleActiveGroup(group: FormGroup) {
