@@ -24,14 +24,14 @@ export class KnowledgeBasesComponent implements OnInit, OnDestroy {
   subscriptions$: Subscription[] = [];
   lookuplistsModals: LookuplistsModals = createDefaultLookuplistsModals();
 
-  REACT_URL: SafeResourceUrl;
+  reactUrl: SafeResourceUrl;
 
   constructor(
     private activatedRoute: ActivatedRoute,
     private routeService: RouteService,
     private knowledgeBaseApollo: KnowledgeBasesApolloService,
     private router: Router,
-    private urlSanatizer: DomSanitizer
+    private urlSanatizer: DomSanitizer,
   ) { }
 
   ngOnDestroy(): void {
@@ -46,7 +46,13 @@ export class KnowledgeBasesComponent implements OnInit, OnDestroy {
 
     this.projectId = this.activatedRoute.parent.snapshot.paramMap.get('projectId');
     const saveUrl = 'http://localhost:7068/refinery/projects/' + this.projectId + '/lookup-lists';
-    this.REACT_URL = this.urlSanatizer.bypassSecurityTrustResourceUrl(saveUrl);
+    this.reactUrl = this.urlSanatizer.bypassSecurityTrustResourceUrl(saveUrl);
+
+    window.addEventListener('message', function (event) {
+      if (event.origin === 'http://localhost:7068') {
+        window.location.href = event.data.newURL;
+      }
+    }.bind(this));
 
     [this.knowledgeBasesQuery$, this.knowledgeBases$] = this.knowledgeBaseApollo.getKnowledgeBasesByProjectId(this.projectId);
     NotificationService.subscribeToNotification(this, {
