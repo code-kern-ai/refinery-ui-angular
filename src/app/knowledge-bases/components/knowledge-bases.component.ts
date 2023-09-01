@@ -8,6 +8,7 @@ import { Subscription } from 'rxjs';
 import { UserManager } from 'src/app/util/user-manager';
 import { CommentDataManager, CommentType } from 'src/app/base/components/comment/comment-helper';
 import { createDefaultLookuplistsModals, LookuplistsModals } from './knowlegde-bases-helper';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'kern-knowledge-bases',
@@ -23,11 +24,14 @@ export class KnowledgeBasesComponent implements OnInit, OnDestroy {
   subscriptions$: Subscription[] = [];
   lookuplistsModals: LookuplistsModals = createDefaultLookuplistsModals();
 
+  REACT_URL: SafeResourceUrl;
+
   constructor(
     private activatedRoute: ActivatedRoute,
     private routeService: RouteService,
     private knowledgeBaseApollo: KnowledgeBasesApolloService,
-    private router: Router
+    private router: Router,
+    private urlSanatizer: DomSanitizer
   ) { }
 
   ngOnDestroy(): void {
@@ -41,6 +45,9 @@ export class KnowledgeBasesComponent implements OnInit, OnDestroy {
     this.routeService.updateActivatedRoute(this.activatedRoute);
 
     this.projectId = this.activatedRoute.parent.snapshot.paramMap.get('projectId');
+    const saveUrl = 'http://localhost:7068/refinery/projects/' + this.projectId + '/lookup-lists';
+    this.REACT_URL = this.urlSanatizer.bypassSecurityTrustResourceUrl(saveUrl);
+
     [this.knowledgeBasesQuery$, this.knowledgeBases$] = this.knowledgeBaseApollo.getKnowledgeBasesByProjectId(this.projectId);
     NotificationService.subscribeToNotification(this, {
       projectId: this.projectId,
