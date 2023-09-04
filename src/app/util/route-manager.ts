@@ -19,7 +19,7 @@ export class RouteManager {
 
     public static routeColor = {
         overview: { active: false, checkFor: ['overview'] },
-        data: { active: false, checkFor: ['data'] },
+        data: { active: false, checkFor: ['data', 'edit-records'] },
         labeling: { active: false, checkFor: ['labeling', 'record-ide'] },
         heuristics: { active: false, checkFor: ['heuristics', 'lookup-lists', 'model-callbacks', 'zero-shot', 'crowd-labeler'] },
         settings: { active: false, checkFor: ['settings', 'attributes', 'upload-records'] },

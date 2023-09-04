@@ -1,0 +1,366 @@
+<div *ngIf="erd.projectId" class="h-full bg-white flex flex-col">
+    <ng-container [ngTemplateOutlet]="navigationBarTop"></ng-container>
+    <div class="grid items-center p-2 gap-2 {{erd.columnClass}} flex-grow overflow-y-auto auto-rows-max"
+        style="max-height:calc(100vh - 95px);">
+
+        <ng-template [ngIf]="erd.data">
+            <div *ngFor="let record of erd.displayRecords; let i = index"
+                class="bg-white overflow-hidden shadow rounded-lg border relative w-full"
+                (dblclick)="erd.editRecordId!=record.id?erd.editRecordId=record.id:erd.editRecordId=null"
+                style="scroll-margin-top: 2rem;" [id]="record.id == erd.data.selectedRecordId?'flash-it':null">
+                <div *ngVar="record.id == erd.editRecordId as editRecord">
+                    <div class="px-4 py-5 sm:p-6">
+                        <div *ngFor="let attribute of erd.data.attributes; let k = index">
+                            <div *ngVar="editRecord && !attribute.isPrimaryKey as canEdit">
+                                <div class="font-semibold text-sm text-gray-800">
+                                    <div class="flex flex-row items-center">
+                                        <span class="font-dmMono">{{attribute.name}}</span>
+                                    </div>
+                                </div>
+                                <div class="text-gray-800 text-sm mb-4 overflow-anywhere flex">
+                                    <ng-template [ngIf]="attribute.dataType == 'EMBEDDING_LIST'"
+                                        [ngIfElse]="normalDisplay">
+                                        <div class="flex flex-col gap-y-1 divide-y w-full">
+                                            <div *ngFor="let item of record.data[attribute.name];let subKey=index"
+                                                class="pt-1">
+                                                <ng-template [ngIf]="canEdit" [ngIfElse]="displayList">
+                                                    <ng-container [ngTemplateOutlet]="editField"
+                                                        [ngTemplateOutletContext]="{attribute:attribute, record:record, subKey:subKey}">
+                                                    </ng-container>
+                                                </ng-template>
+                                                <ng-template #displayList>
+                                                    <span class="whitespace-pre-wrap"
+                                                        *ngIf="item != null && item !== ''; else notPresent">
+                                                        <span>{{item}}</span>
+                                                    </span>
+                                                </ng-template>
+                                            </div>
+                                        </div>
+                                    </ng-template>
+                                    <ng-template #normalDisplay>
+                                        <ng-template [ngIf]="canEdit" [ngIfElse]="displayItem">
+                                            <ng-container [ngTemplateOutlet]="editField"
+                                                [ngTemplateOutletContext]="{attribute:attribute, record:record}">
+                                            </ng-container>
+                                        </ng-template>
+                                        <ng-template #displayItem>
+                                            <span class="whitespace-pre-wrap relative"
+                                                *ngIf="record.data[attribute.name] != null && record.data[attribute.name] !== ''; else notPresent">
+                                                <span>{{record.data[attribute.name]}}</span>
+                                                <ng-template
+                                                    [ngIf]="erd.cachedRecordChanges[buildAccessKey(record.id,attribute.name)]">
+                                                    <div class="absolute -left-5 top-0 text-yellow-500">
+                                                        <div data-tip="Cached values - not yet synchronized with backend"
+                                                            class="tooltip tooltip-right">
+                                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                                class="icon icon-tabler icon-tabler-alert-triangle-filled"
+                                                                width="14" height="14" viewBox="0 0 24 24"
+                                                                stroke-width="2" stroke="currentColor" fill="none"
+                                                                stroke-linecap="round" stroke-linejoin="round">
+                                                                <path stroke="none" d="M0 0h24v24H0z" fill="none">
+                                                                </path>
+                                                                <path
+                                                                    d="M11.94 2a2.99 2.99 0 0 1 2.45 1.279l.108 .164l8.431 14.074a2.989 2.989 0 0 1 -2.366 4.474l-.2 .009h-16.856a2.99 2.99 0 0 1 -2.648 -4.308l.101 -.189l8.425 -14.065a2.989 2.989 0 0 1 2.555 -1.438zm.07 14l-.127 .007a1 1 0 0 0 0 1.986l.117 .007l.127 -.007a1 1 0 0 0 0 -1.986l-.117 -.007zm-.01 -8a1 1 0 0 0 -.993 .883l-.007 .117v4l.007 .117a1 1 0 0 0 1.986 0l.007 -.117v-4l-.007 -.117a1 1 0 0 0 -.993 -.883z"
+                                                                    stroke-width="0" fill="currentColor"></path>
+                                                            </svg>
+                                                        </div>
+                                                    </div>
+                                                </ng-template>
+                                            </span>
+                                        </ng-template>
+                                    </ng-template>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="absolute top-2 right-2 flex flex-row flex-nowrap items-center gap-x-2">
+                            <ng-template [ngIf]="record.rla_data">
+                                <div data-tip="Has label associations" class="tooltip tooltip-left">
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                        class="icon icon-tabler icon-tabler-alert-triangle" width="18" height="18"
+                                        viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <path
+                                            d="M10.24 3.957l-8.422 14.06a1.989 1.989 0 0 0 1.7 2.983h16.845a1.989 1.989 0 0 0 1.7 -2.983l-8.423 -14.06a1.989 1.989 0 0 0 -3.4 0z">
+                                        </path>
+                                        <path d="M12 9v4"></path>
+                                        <path d="M12 17h.01"></path>
+                                    </svg>
+                                </div>
+                            </ng-template>
+                        </div>
+                        <div class="absolute left-1 top-1 p-1 cursor-pointer"
+                            (click)="editRecord?erd.editRecordId=null:erd.editRecordId=record.id">
+                            <ng-template [ngIf]="editRecord" [ngIfElse]="editRecordBtn">
+                                <div data-tip="Stop editing record" class="tooltip tooltip-right">
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                        class="icon icon-tabler icon-tabler-ballpen-off" width="18" height="18"
+                                        viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <path d="M14 6l7 7l-2 2"></path>
+                                        <path d="M10 10l-4.172 4.172a2.828 2.828 0 1 0 4 4l4.172 -4.172"></path>
+                                        <path
+                                            d="M16 12l4.414 -4.414a2 2 0 0 0 0 -2.829l-1.171 -1.171a2 2 0 0 0 -2.829 0l-4.414 4.414">
+                                        </path>
+                                        <path d="M4 20l1.768 -1.768"></path>
+                                        <path d="M3 3l18 18"></path>
+                                    </svg>
+                                </div>
+                            </ng-template>
+                            <ng-template #editRecordBtn>
+                                <div data-tip="Editing record" class="tooltip tooltip-right">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-ballpen"
+                                        width="18" height="18" viewBox="0 0 24 24" stroke-width="2"
+                                        stroke="currentColor" fill="none" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <path d="M14 6l7 7l-4 4"></path>
+                                        <path
+                                            d="M5.828 18.172a2.828 2.828 0 0 0 4 0l10.586 -10.586a2 2 0 0 0 0 -2.829l-1.171 -1.171a2 2 0 0 0 -2.829 0l-10.586 10.586a2.828 2.828 0 0 0 0 4z">
+                                        </path>
+                                        <path d="M4 20l1.768 -1.768"></path>
+                                    </svg>
+                                </div>
+                            </ng-template>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </ng-template>
+    </div>
+
+</div>
+
+
+
+
+
+
+<ng-template #navigationBarTop>
+    <div class="w-full px-4 border-gray-200 border-b h-16">
+        <div class="relative flex-shrink-0 bg-white shadow-sm flex justify-between items-center h-full">
+            <div class="flex flex-row flex-nowrap items-center">
+                <div class="flex justify-center overflow-visible">
+                    <div data-tip="Go to the browser" class="tooltip tooltip-bottom relative">
+                        <button [routerLink]="['../../data']"
+                            class="bg-white text-gray-700 text-xs font-semibold mr-3 px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none">
+                            Data browser
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-row flex-nowrap items-center">
+                <div class="flex justify-center overflow-visible items-center">
+                    <div class="tooltip tooltip-left" data-tip="Persist changes">
+                        <button tabindex="0" (click)="openSyncModal();"
+                            class="bg-white text-gray-700 text-xs font-semibold mr-3 px-4 py-1.5 rounded-md border gap-x-1 border-gray-300 whitespace-nowrap inline-flex items-center hover:bg-gray-50 focus:outline-none">
+                            Synchronize with DB
+                        </button>
+                    </div>
+                    <div class="text-sm leading-5 text-gray-500 flex-shrink-0 mr-3 my-3">
+                        <div data-tip="If want different records, you can select new filters in the browser"
+                            class="tooltip tooltip-bottom relative">
+                            <span class="cursor-help underline"
+                                style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">
+                                {{erd.navBar.positionString}} current session
+                            </span>
+                        </div>
+                    </div>
+                    <div class="tooltip tooltip-left" data-tip="switch column count">
+                        <button tabindex="0" (click)="nextColumnClass()"
+                            class="bg-white text-gray-700 text-xs font-semibold mr-3 px-4 py-1.5 rounded-md border gap-x-1 border-gray-300 whitespace-nowrap inline-flex items-center hover:bg-gray-50 focus:outline-none">Switch
+                            to
+                            <ng-template [ngIf]="erd.columnClass == 'grid-cols-3'">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-columns-1"
+                                    width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+                                    fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path
+                                        d="M5 3m0 1a1 1 0 0 1 1 -1h12a1 1 0 0 1 1 1v16a1 1 0 0 1 -1 1h-12a1 1 0 0 1 -1 -1z">
+                                    </path>
+                                </svg></ng-template>
+                            <ng-template [ngIf]="erd.columnClass == 'grid-cols-1'">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-columns-2"
+                                    width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+                                    fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path
+                                        d="M3 3m0 1a1 1 0 0 1 1 -1h16a1 1 0 0 1 1 1v16a1 1 0 0 1 -1 1h-16a1 1 0 0 1 -1 -1zm9 -1v18">
+                                    </path>
+                                </svg></ng-template>
+                            <ng-template [ngIf]="erd.columnClass == 'grid-cols-2'">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-columns-3"
+                                    width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+                                    fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path
+                                        d="M3 3m0 1a1 1 0 0 1 1 -1h16a1 1 0 0 1 1 1v16a1 1 0 0 1 -1 1h-16a1 1 0 0 1 -1 -1zm6 -1v18m6 -18v18">
+                                    </path>
+                                </svg></ng-template>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</ng-template>
+
+<kern-modal [isOpen]="erd.modals.explainModalOpen" [modalBoxStyle]="{'text-align':'center'}">
+    <h1 class="text-lg text-gray-900 mb-2 text-center">Warning
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block text-yellow-400" viewBox="0 0 20 20"
+            fill="currentColor">
+            <path fill-rule="evenodd"
+                d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                clip-rule="evenodd" />
+        </svg>
+    </h1>
+    <div class="text-sm text-gray-700 flex flex-col gap-y-2 my-2 font-medium">
+        <div class="">Changing records directly should only be done in edge cases! </div>
+        <div class="">This changes your data without the change being reproducible.</div>
+    </div>
+    <h1 class="text-lg text-gray-900 text-center inline-flex items-center gap-x-1">Info
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-info-circle-filled text-blue-400"
+            width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+            <path
+                d="M12 2c5.523 0 10 4.477 10 10a10 10 0 0 1 -19.995 .324l-.005 -.324l.004 -.28c.148 -5.393 4.566 -9.72 9.996 -9.72zm0 9h-1l-.117 .007a1 1 0 0 0 0 1.986l.117 .007v3l.007 .117a1 1 0 0 0 .876 .876l.117 .007h1l.117 -.007a1 1 0 0 0 .876 -.876l.007 -.117l-.007 -.117a1 1 0 0 0 -.764 -.857l-.112 -.02l-.117 -.006v-3l-.007 -.117a1 1 0 0 0 -.876 -.876l-.117 -.007zm.01 -3l-.127 .007a1 1 0 0 0 0 1.986l.117 .007l.127 -.007a1 1 0 0 0 0 -1.986l-.117 -.007z"
+                stroke-width="0" fill="currentColor"></path>
+        </svg>
+    </h1>
+    <div class="text-sm text-gray-700 flex flex-col gap-y-2 my-2 font-medium">
+        <div class="">Currently your changes are only <b>cached</b>. This means they aren't persisted/updated yet.</div>
+        <div class="">To persist the changes you need to <b>Synchronize with DB</b>. </div>
+        <div class="">Note that this will rerun tokenization & embedding calculation for changed records.</div>
+        <div class="">Further, already set labels for information extraction will be removed.</div>
+        <div class="">Attribute calculation, Weak Supervision and Heuristics are <b>NOT</b> rerun.</div>
+    </div>
+    <div class="flex flex-row justify-end">
+        <button (click)="erd.modals.explainModalOpen = false"
+            class="ml-2 bg-white text-gray-700 border border-gray-300 text-xs font-semibold px-4 py-2 rounded cursor-pointer hover:bg-gray-50 focus:outline-none">Close</button>
+        <button (click)="closeModalAndNeverShowAgain()"
+            class="ml-2 bg-white text-gray-700 border border-gray-300 text-xs font-semibold px-4 py-2 rounded cursor-pointer hover:bg-gray-50 focus:outline-none">Close
+            and never show again</button>
+    </div>
+
+</kern-modal>
+
+<kern-modal [isOpen]="erd.modals.syncModalOpen" [modalBoxStyle]="{'text-align':'center'}" closeButton="X"
+    (optionClicked)="$event == 'CLOSE' ?erd.modals.syncModalOpen=false:syncChanges()" [acceptButton]="{
+    buttonCaption:'Synchronize',
+    disabled:erd.modals.syncModalAmount == 0,
+    closeAfterClick:false
+}">
+    <h1 class="text-lg text-gray-900 mb-2 text-center inline-flex items-center gap-x-1">Info
+        <ng-template [ngIf]="erd.syncing" [ngIfElse]="infoIcon">
+            <kern-loading color="blue"></kern-loading>
+        </ng-template>
+        <ng-template #infoIcon>
+            <svg xmlns="http://www.w3.org/2000/svg"
+                class="icon icon-tabler icon-tabler-info-circle-filled text-blue-400" width="24" height="24"
+                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                <path
+                    d="M12 2c5.523 0 10 4.477 10 10a10 10 0 0 1 -19.995 .324l-.005 -.324l.004 -.28c.148 -5.393 4.566 -9.72 9.996 -9.72zm0 9h-1l-.117 .007a1 1 0 0 0 0 1.986l.117 .007v3l.007 .117a1 1 0 0 0 .876 .876l.117 .007h1l.117 -.007a1 1 0 0 0 .876 -.876l.007 -.117l-.007 -.117a1 1 0 0 0 -.764 -.857l-.112 -.02l-.117 -.006v-3l-.007 -.117a1 1 0 0 0 -.876 -.876l-.117 -.007zm.01 -3l-.127 .007a1 1 0 0 0 0 1.986l.117 .007l.127 -.007a1 1 0 0 0 0 -1.986l-.117 -.007z"
+                    stroke-width="0" fill="currentColor"></path>
+            </svg>
+        </ng-template>
+    </h1>
+    <div class="text-sm text-gray-700 flex flex-col gap-y-2 mb-2 font-medium">
+        <div class=""> {{erd.modals.syncModalAmount}} changes to be synchronized: </div>
+        <ng-template [ngIf]="erd.modals.syncModalOpen">
+            <div class="grid gap-px p-px bg-gray-200 rounded-lg"
+                style="grid-template-columns: minmax(auto,100px) max-content minmax(auto,300px) minmax(auto,300px) 50px;">
+                <span class="bg-white font-bold h-full w-full inline-flex items-center justify-center">Record
+                    ({{erd.data.attributes[0].name}})</span>
+                <span class="bg-white font-bold h-full w-full inline-flex items-center justify-center">Attribute</span>
+                <span class="bg-white font-bold h-full w-full inline-flex items-center justify-center">Old value</span>
+                <span class="bg-white font-bold h-full w-full inline-flex items-center justify-center">New value</span>
+                <span class="bg-white h-full w-full"></span>
+
+                <div *ngFor="let item of erd.cachedRecordChanges | keyvalue" class="contents">
+                    <span
+                        class="bg-white h-full w-full p-1 inline-flex items-center justify-center">{{item.value.display.record}}</span>
+                    <span
+                        class="bg-white h-full w-full p-1 inline-flex items-center justify-center">{{item.value.attributeName}}{{item.value.subKeyAdd}}</span>
+                    <span
+                        class="bg-white h-full w-full p-1 inline-flex items-center justify-center">{{item.value.display.oldValue}}</span>
+                    <span
+                        class="bg-white h-full w-full p-1 inline-flex items-center justify-center">{{item.value.newValue}}</span>
+                    <div class="bg-white h-full w-full p-1 inline-flex items-center justify-center cursor-pointer"
+                        (click)="removeFromCache(item.key)">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-trash" width="24"
+                            height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                            <path d="M4 7l16 0"></path>
+                            <path d="M10 11l0 6"></path>
+                            <path d="M14 11l0 6"></path>
+                            <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"></path>
+                            <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+        </ng-template>
+    </div>
+
+</kern-modal>
+
+<ng-template #notPresent>
+    <svg xmlns="http://www.w3.org/2000/svg"
+        class="icon icon-tabler icon-tabler-alert-circle text-yellow-700 inline-block" width="20" height="20"
+        viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
+        stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <circle cx="12" cy="12" r="9"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+    </svg>
+    <span class="text-gray-500 text-sm font-normal italic">Not present in the
+        record</span>
+</ng-template>
+
+
+
+
+
+<ng-template #editField let-attribute="attribute" let-record="record" let-subKey="subKey">
+    <ng-template [ngIf]="attribute.dataType == 'TEXT'">
+        <textarea #textInput (blur)="addCache(record.id,attribute.name,textInput.value)"
+            class="textarea placeholder-italic w-full p-2 line-height-textarea focus:outline-none border border-gray-300"
+            [ngStyle]="{'height':(textInput.scrollHeight+2) + 'px','overflow-y':textInput.scrollHeight < 400 ? 'hidden':'auto'}">{{record.data[attribute.name]}}</textarea>
+    </ng-template>
+    <ng-template [ngIf]="attribute.dataType == 'CATEGORY'">
+        <input #categoryInput type="text" class="input input-sm input-bordered w-full"
+            (blur)="addCache(record.id,attribute.name,categoryInput.value)" [value]="record.data[attribute.name]"
+            autocomplete="off">
+    </ng-template>
+    <ng-template [ngIf]="attribute.dataType == 'INTEGER'">
+        <input #integerInput type="number" class="input input-sm input-bordered w-full" step="1"
+            (blur)="addCache(record.id,attribute.name,integerInput.value)" [value]="record.data[attribute.name]"
+            autocomplete="off">
+    </ng-template>
+    <ng-template [ngIf]="attribute.dataType == 'FLOAT'">
+        <input #floatInput type="number" class="input input-sm input-bordered w-full" step="any"
+            (blur)="addCache(record.id,attribute.name,floatInput.value)" [value]="record.data[attribute.name]"
+            autocomplete="off">
+    </ng-template>
+    <ng-template [ngIf]="attribute.dataType == 'BOOLEAN'">
+        <input #booleanInput type="checkbox" class="input input-sm w-6"
+            (blur)="addCache(record.id,attribute.name,booleanInput.checked)" [checked]="record.data[attribute.name]"
+            autocomplete="off">
+    </ng-template>
+    <ng-template [ngIf]="attribute.dataType == 'EMBEDDING_LIST'">
+        <!--Loop is outside this-->
+        <textarea #listInput (blur)="addCache(record.id,attribute.name,listInput.value,subKey)"
+            class="textarea placeholder-italic w-full p-2 line-height-textarea focus:outline-none border border-gray-300"
+            [ngStyle]="{'height':(listInput.scrollHeight+2) + 'px','overflow-y':listInput.scrollHeight < 400 ? 'hidden':'auto'}">{{record.data[attribute.name][subKey]}}</textarea>
+
+    </ng-template>
+</ng-template>

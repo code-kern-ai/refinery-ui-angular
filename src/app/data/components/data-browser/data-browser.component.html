@@ -917,7 +917,8 @@
                     similarSearchHelper: similarSearchHelper
                 }" (similaritySearchRequested)="requestSimilarSearch()"
                     (initFilterAttributeData)="initFilterAttributeData()"
-                    (recordClicked)="storePreliminaryRecordIds($event)">
+                    (recordClicked)="storePreliminaryRecordIds($event)"
+                    (editClicked)="storePreliminaryRecordIds($event,true)">
                 </kern-record-list>
             </div>
         </div>
