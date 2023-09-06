@@ -28,11 +28,10 @@ export class EditRecordsComponent implements OnInit, OnDestroy, CanDeactivateGua
   constructor(
     private activatedRoute: ActivatedRoute,
     private routeService: RouteService,
-    // private projectApolloService: ProjectApolloService,
     private recordApolloService: RecordApolloService,
     private router: Router
   ) { }
-  // since our managed app has 15 comments in total & only 1 on a record ill skip comment integration for the moment
+  // since our managed app has 15 comments in total & only 1 on a record comment integration skipped
   ngOnDestroy(): void {
     this.subscriptions$.forEach((subscription) => subscription.unsubscribe());
     NotificationService.unsubscribeFromNotification(this, this.erd.projectId);
@@ -75,9 +74,7 @@ export class EditRecordsComponent implements OnInit, OnDestroy, CanDeactivateGua
     this.erd.displayRecords = jsonCopy(this.erd.data.records);
     this.erd.editRecordId = this.erd.data.selectedRecordId;
     this.erd.navBar.positionString = this.erd.data.records.length + " records in";
-    console.log(this.erd)
     scrollElementIntoView("flash-it", 50);
-    // this.collectAttributes();
   }
 
   nextColumnClass() {
@@ -132,7 +129,6 @@ export class EditRecordsComponent implements OnInit, OnDestroy, CanDeactivateGua
     } else {
       this.erd.cachedRecordChanges[accessKey].newValue = newValue;
     }
-    console.log(this.erd.cachedRecordChanges)
     if (subKey != undefined) this.erd.displayRecords[idx2].data[attributeName][subKey] = newValue;
     else this.erd.displayRecords[idx2].data[attributeName] = newValue;
 
@@ -150,25 +146,30 @@ export class EditRecordsComponent implements OnInit, OnDestroy, CanDeactivateGua
   }
 
   syncChanges() {
-    console.log("sync called", this.erd.cachedRecordChanges)
     this.erd.errors = null;
     this.erd.syncing = true;
     const changes = jsonCopy(this.erd.cachedRecordChanges);
 
     for (const key in changes) delete changes[key].display;
 
-    this.recordApolloService.editRecords(this.erd.projectId, JSON.stringify(changes)).pipe(first()).subscribe((result: any) => {
-      const tmp = result?.data?.editRecords;
-      if (tmp?.ok) {
-        this.erd.data.records = jsonCopy(this.erd.displayRecords);
-        this.erd.cachedRecordChanges = {};
-        this.erd.modals.syncModalAmount = Object.keys(this.erd.cachedRecordChanges).length;
-      } else {
-        if (tmp) this.erd.errors = tmp.error
-        else this.erd.errors = ["Request didn't go through"]
-      }
-      this.erd.syncing = false;
-    });
+    this.recordApolloService.editRecords(this.erd.projectId, JSON.stringify(changes)).pipe(first()).subscribe(
+      {
+        next: (result: any) => {
+          const tmp = result?.data?.editRecords;
+          if (tmp?.ok) {
+            this.erd.data.records = jsonCopy(this.erd.displayRecords);
+            this.erd.cachedRecordChanges = {};
+            this.erd.modals.syncModalAmount = Object.keys(this.erd.cachedRecordChanges).length;
+          } else {
+            if (tmp) this.erd.errors = tmp.errors;
+            else this.erd.errors = ["Request didn't go through"];
+          }
+          this.erd.syncing = false;
+        }, error: (error: any) => {
+          this.erd.errors = ["Request didn't go through"];
+          this.erd.syncing = false;
+        }
+      });
   }
 
   openSyncModal() {
