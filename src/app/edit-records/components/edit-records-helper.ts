@@ -25,6 +25,7 @@ export type EditRecordComponentData = {
     editRecordId?: string,
     displayRecords?: any[],
     syncing: boolean,
+    errors: string[],
     cachedRecordChanges: {
         [accessKey: string]: {
             recordId: string,
@@ -49,6 +50,7 @@ export function createDefaultEditRecordComponentData(): EditRecordComponentData 
         projectId: null,
         loading: true,
         syncing: false,
+        errors: null,
         columnClass: columnClass,
         modals: {
             explainModalOpen: false,

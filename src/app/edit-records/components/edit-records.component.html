@@ -249,9 +249,10 @@
 </kern-modal>
 
 <kern-modal [isOpen]="erd.modals.syncModalOpen" [modalBoxStyle]="{'text-align':'center'}" closeButton="X"
-    (optionClicked)="$event == 'CLOSE' ?erd.modals.syncModalOpen=false:syncChanges()" [acceptButton]="{
+    (optionClicked)="$event == 'CLOSE' ?(erd.modals.syncModalOpen=false && this.erd.errors = null):syncChanges()"
+    [acceptButton]="{
     buttonCaption:'Synchronize',
-    disabled:erd.modals.syncModalAmount == 0,
+    disabled:erd.modals.syncModalAmount == 0 || erd.syncing,
     closeAfterClick:false
 }">
     <h1 class="text-lg text-gray-900 mb-2 text-center inline-flex items-center gap-x-1">Info
@@ -286,7 +287,7 @@
                     <span
                         class="bg-white h-full w-full p-1 inline-flex items-center justify-center">{{item.value.display.record}}</span>
                     <span
-                        class="bg-white h-full w-full p-1 inline-flex items-center justify-center">{{item.value.attributeName}}{{item.value.subKeyAdd}}</span>
+                        class="bg-white h-full w-full p-1 inline-flex items-center justify-center">{{item.value.attributeName}}{{item.value.display.subKeyAdd}}</span>
                     <span
                         class="bg-white h-full w-full p-1 inline-flex items-center justify-center">{{item.value.display.oldValue}}</span>
                     <span
@@ -309,6 +310,21 @@
 
         </ng-template>
     </div>
+    <ng-template [ngIf]="erd.errors">
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative flex flex-col"
+            role="alert">
+            <div class="self-center flex flex-row flex-nowrap items-center -mt-1 mb-1">
+                <strong class="font-bold">Errors while syncing changes</strong>
+                <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                    fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                        clip-rule="evenodd" />
+                </svg>
+            </div>
+            <span *ngFor="let e of erd.errors" class="text-sm overflow-x-auto">{{e}}</span>
+        </div>
+    </ng-template>
 
 </kern-modal>
 

@@ -151,18 +151,21 @@ export class EditRecordsComponent implements OnInit, OnDestroy, CanDeactivateGua
 
   syncChanges() {
     console.log("sync called", this.erd.cachedRecordChanges)
+    this.erd.errors = null;
     this.erd.syncing = true;
     const changes = jsonCopy(this.erd.cachedRecordChanges);
 
     for (const key in changes) delete changes[key].display;
 
     this.recordApolloService.editRecords(this.erd.projectId, JSON.stringify(changes)).pipe(first()).subscribe((result: any) => {
-      if (result?.data?.editRecords?.ok) {
+      const tmp = result?.data?.editRecords;
+      if (tmp?.ok) {
         this.erd.data.records = jsonCopy(this.erd.displayRecords);
         this.erd.cachedRecordChanges = {};
         this.erd.modals.syncModalAmount = Object.keys(this.erd.cachedRecordChanges).length;
       } else {
-        console.error("Error while syncing changes")
+        if (tmp) this.erd.errors = tmp.error
+        else this.erd.errors = ["Request didn't go through"]
       }
       this.erd.syncing = false;
     });

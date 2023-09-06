@@ -29,6 +29,7 @@ export const mutations = {
   mutation ($projectId: ID!, $changes: JSONString!) {
     editRecords(projectId: $projectId, changes: $changes) {
       ok
+      errors
     }
   }
   `,
