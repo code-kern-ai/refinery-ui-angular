@@ -87,8 +87,13 @@ export class EditRecordsComponent implements OnInit, OnDestroy, CanDeactivateGua
 
     localStorage.setItem("ERcolumnClass", this.erd.columnClass);
     this.erd.data.selectedRecordId = null;
-    if (this.erd.editRecordId) timer(100).subscribe(() => this.erd.data.selectedRecordId = this.erd.editRecordId);
-    scrollElementIntoView("flash-it", 50);
+    if (this.erd.editRecordId) {
+      timer(100).subscribe(() => {
+        this.erd.data.selectedRecordId = this.erd.editRecordId;
+        scrollElementIntoView("flash-it", 50);
+      });
+    } else scrollElementIntoView("flash-it", 50);
+
   }
 
   addCache(recordId: string, attributeName: string, newValue: any, subKey?: number) {

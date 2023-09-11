@@ -62,8 +62,8 @@ const routes: Routes = [
       { path: 'labeling', component: LabelingSuiteComponent, data: { name: 'LabelingSuiteComponent' } },
       { path: 'labeling/:id', component: LabelingSuiteComponent, data: { name: 'LabelingSuiteComponent' } },
       // works with session id from data browser
-      { path: 'edit-records/:id', component: EditRecordsComponent, data: { name: 'EditRecordsComponent' }, canDeactivate: [CanDeactivateGuard] },
       { path: 'record-ide/:id', component: RecordIDEComponent, data: { name: 'RecordIDEComponent' } },
+      { path: 'edit-records', component: EditRecordsComponent, data: { name: 'EditRecordsComponent' }, canDeactivate: [CanDeactivateGuard] },
       { path: 'lookup-lists', component: KnowledgeBasesComponent, data: { name: 'KnowledgeBasesComponent' } },
       {
         path: 'lookup-lists/:knowledgeBaseId',

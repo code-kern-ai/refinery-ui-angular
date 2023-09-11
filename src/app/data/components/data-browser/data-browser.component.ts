@@ -2190,8 +2190,8 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
         selectedRecordId: this.extendedRecords.recordList[index].id,
         attributes: this.fullAttributeList,
       };
-      this.router.navigate(['../edit-records/' + this.extendedRecords.sessionId],
-        { queryParams: { pos: index + 1 }, relativeTo: this.route });
+      this.router.navigate(['../edit-records'],
+        { relativeTo: this.route });
     }
     else {
       const huddleData: any = {
