@@ -15,9 +15,12 @@ export class HighlightComponent implements OnInit {
 
   @Input() searchForExtended: HighlightSearch[] = [];
   @Input() highlightClass: string = 'bg-yellow-300';
+  @Input() additionalClasses: string[] = [];
 
   parts: RegexDisplay[] = [];
   finalRegex: RegExp[];
+
+  addClassString: string = '';
 
   constructor() {
   }
@@ -28,6 +31,7 @@ export class HighlightComponent implements OnInit {
 
   ngOnChanges(changes: SimpleChanges): void {
     this.buildEverything();
+    if (changes.additionalClasses) this.addClassString = this.additionalClasses.join(' ');
   }
 
   private buildEverything() {
