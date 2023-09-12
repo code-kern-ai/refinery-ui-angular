@@ -25,6 +25,14 @@ export const mutations = {
     }
   }
 `,
+  EDIT_RECORDS: gql`
+  mutation ($projectId: ID!, $changes: JSONString!) {
+    editRecords(projectId: $projectId, changes: $changes) {
+      ok
+      errors
+    }
+  }
+  `,
   DELETE_RECORD_LABEL_ASSOCIATION_BY_ID: gql`
   mutation($projectId: ID!, $recordId: ID!, $associationIds: [ID]){
     deleteRecordLabelAssociationByIds( 

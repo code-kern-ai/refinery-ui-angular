@@ -21,6 +21,8 @@ import { ModelCallbackComponent } from './model-callbacks/components/model-callb
 import { UsersComponent } from './users/components/users.component';
 import { CrowdLabelerDetailsComponent } from './weak-supervision/components/crowd-labeler-details/component/crowd-labeler-details.component';
 import { ProjectAdminComponent } from './project-admin/component/project-admin.component';
+import { EditRecordsComponent } from './edit-records/components/edit-records.component';
+import { CanDeactivateGuard } from './util/CanComponentDeactivate';
 
 const routes: Routes = [
   {
@@ -59,7 +61,9 @@ const routes: Routes = [
       { path: 'admin', component: ProjectAdminComponent, data: { name: 'ProjectAdminComponent' } },
       { path: 'labeling', component: LabelingSuiteComponent, data: { name: 'LabelingSuiteComponent' } },
       { path: 'labeling/:id', component: LabelingSuiteComponent, data: { name: 'LabelingSuiteComponent' } },
+      // works with session id from data browser
       { path: 'record-ide/:id', component: RecordIDEComponent, data: { name: 'RecordIDEComponent' } },
+      { path: 'edit-records', component: EditRecordsComponent, data: { name: 'EditRecordsComponent' }, canDeactivate: [CanDeactivateGuard] },
       { path: 'lookup-lists', component: KnowledgeBasesComponent, data: { name: 'KnowledgeBasesComponent' } },
       {
         path: 'lookup-lists/:knowledgeBaseId',

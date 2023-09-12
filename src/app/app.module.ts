@@ -25,6 +25,8 @@ import { ModelDownloadModule } from './model-download/model-download.module';
 import { ModelCallbackModule } from './model-callbacks/model-callbacks.module';
 import { UsersModule } from './users/users.module';
 import { ProjectAdminModule } from './project-admin/project-admin.module';
+import { EditRecordsModule } from './edit-records/edit-records.module';
+import { CanDeactivateGuard } from './util/CanComponentDeactivate';
 
 @NgModule({
   declarations: [AppComponent],
@@ -50,12 +52,14 @@ import { ProjectAdminModule } from './project-admin/project-admin.module';
     ProjectAdminModule,
     MonacoEditorModule.forRoot(),
     KnowledgeBasesModule,
+    EditRecordsModule,
     ConfigModule,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: ExceptionInterceptor, multi: true },
     { provide: ErrorHandler, useClass: GlobalErrorHandler },
     NotificationService,
+    CanDeactivateGuard
   ],
   bootstrap: [AppComponent],
 })

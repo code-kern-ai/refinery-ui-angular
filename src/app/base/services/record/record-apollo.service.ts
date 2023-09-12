@@ -58,6 +58,17 @@ export class RecordApolloService {
     });
   }
 
+  //changes is a stringified json object
+  editRecords(projectId: string, changes: string) {
+    return this.apollo.mutate({
+      mutation: mutations.EDIT_RECORDS,
+      variables: {
+        projectId: projectId,
+        changes: changes,
+      },
+    });
+  }
+
   getNextRecordId(projectId, accessStrategy) {
     return this.apollo
       .watchQuery({

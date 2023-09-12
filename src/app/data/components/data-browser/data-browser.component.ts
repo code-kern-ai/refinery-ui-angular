@@ -66,6 +66,7 @@ import { ConfigManager } from 'src/app/base/services/config-service';
 import { dateAsUTCDate } from 'submodules/javascript-functions/date-parser';
 import { copyToClipboard } from 'submodules/javascript-functions/general';
 import { FilterIntegration } from './helper-classes/filter-integration';
+import { EditRecordsComponent } from 'src/app/edit-records/components/edit-records.component';
 
 
 type DataSlice = {
@@ -2181,24 +2182,35 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     this.similarSearchHelper.requestSimilarSearch(saveSimilaritySearch.embeddingId, saveSimilaritySearch.recordId);
   }
 
-  storePreliminaryRecordIds(index: number) {
-    const huddleData = {
-      recordIds: this.extendedRecords.recordList.map((record) => record.id),
-      partial: true,
-      linkData: {
-        projectId: this.projectId,
-        id: this.extendedRecords.sessionId,
-        requestedPos: index,
-        linkType: LabelingLinkType.SESSION
-      },
-      allowedTask: null,
-      canEdit: true,
-      checkedAt: { db: null, local: new Date() }
+  storePreliminaryRecordIds(index: number, forEdit: boolean = false) {
 
+    if (forEdit) {
+      EditRecordsComponent.sessionData = {
+        records: this.extendedRecords.recordList,
+        selectedRecordId: this.extendedRecords.recordList[index].id,
+        attributes: this.fullAttributeList,
+      };
+      this.router.navigate(['../edit-records'],
+        { relativeTo: this.route });
     }
-    localStorage.setItem('huddleData', JSON.stringify(huddleData));
-    this.router.navigate(['../labeling/' + this.extendedRecords.sessionId],
-      { queryParams: { pos: index + 1, type: 'SESSION' }, relativeTo: this.route });
+    else {
+      const huddleData: any = {
+        recordIds: this.extendedRecords.recordList.map((record) => record.id),
+        partial: true,
+        linkData: {
+          projectId: this.projectId,
+          id: this.extendedRecords.sessionId,
+          requestedPos: index,
+          linkType: LabelingLinkType.SESSION,
+        },
+        allowedTask: null,
+        canEdit: true,
+        checkedAt: { db: null, local: new Date() },
+      }
+      localStorage.setItem('huddleData', JSON.stringify(huddleData));
+      this.router.navigate(['../labeling/' + this.extendedRecords.sessionId],
+        { queryParams: { pos: index + 1, type: 'SESSION' }, relativeTo: this.route });
+    }
   }
 
   checkIfManagedVersion() {
