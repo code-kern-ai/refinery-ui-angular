@@ -68,6 +68,7 @@ export class DataHandlerHelper {
     }
 
     prepareEmbeddingFormGroup(attributes: Attribute[], settingModals: SettingModals, embeddings: Embedding[], embeddingPlatforms: EmbeddingPlatform[], useableNonTextAttributes: Attribute[]) {
+        if (settingModals.embedding.create.embeddingCreationFormGroup) return;
         if (attributes.length > 0) {
             settingModals.embedding.create.embeddingCreationFormGroup = this.formBuilder.group({
                 targetAttribute: attributes[0].id,
