@@ -12,6 +12,8 @@
                     recordDisplayOptions.isTextHighlightNeeded[attribute.key] &&                     item"
                         [ngIfElse]="noHighlightL">
                         <kern-highlight [text]="item.toString()"
+                            [additionalClasses]="[recordDisplayOptions.dataBrowserModals.configuration.lineBreaks == LineBreaksType.NORMAL ? '': 
+                        (recordDisplayOptions.dataBrowserModals.configuration.lineBreaks == LineBreaksType.IS_PRE_WRAP ? 'whitespace-pre-wrap' : 'whitespace-pre-line')]"
                             [searchForExtended]="recordDisplayOptions.textHighlightArrayKern[attribute.key]"></kern-highlight>
                     </ng-template>
                     <ng-template #noHighlightL>
@@ -30,6 +32,8 @@
             recordDisplayOptions.isTextHighlightNeeded[attribute.key] &&
                 record.data[attributes[attribute.key].name]" [ngIfElse]="noHighlight">
                 <kern-highlight [text]="record.data[attributes[attribute.key].name].toString()"
+                    [additionalClasses]="[recordDisplayOptions.dataBrowserModals.configuration.lineBreaks == LineBreaksType.NORMAL ? '': 
+                (recordDisplayOptions.dataBrowserModals.configuration.lineBreaks == LineBreaksType.IS_PRE_WRAP ? 'whitespace-pre-wrap' : 'whitespace-pre-line')]"
                     [searchForExtended]="recordDisplayOptions.textHighlightArrayKern[attribute.key]"></kern-highlight>
             </ng-template>
             <ng-template #noHighlight>
