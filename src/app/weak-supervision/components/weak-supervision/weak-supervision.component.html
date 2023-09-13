@@ -237,16 +237,15 @@
             <ng-template #informationSourcesList>
                 <div class="overflow-y-auto" style="max-height: 93%;">
                     <div class="mt-8"
-                        [ngClass]="filteredSourcesList.length > 3 ? 'flex_container' : filteredSourcesList.length == 3 ? 'flex_container_2' : 'grid gap-6 grid-cols-3'">
+                        [ngClass]="filteredSourcesList.length > 3 ? 'flex_container' : 'grid gap-6 grid-cols-3'">
                         <ng-template [ngIf]="filteredSourcesList.length == 0">
                             <span class="text-gray-500 text-base leading-6 font-normal mt-4">No heuristics for this
                                 labeling task</span>
                         </ng-template>
                         <div *ngFor="let source of filteredSourcesList; let i = index">
                             <div class="relative flex space-x-3 items-center rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm hover:border-gray-400"
-                                [ngStyle]="{'height': getHeightInPx(source.stats)}"
                                 [ngClass]="filteredSourcesList.length > 2 ? 'item' : ''">
-                                <div class="h-full flex flex-col gap-2 items-center">
+                                <div class="h-full flex flex-col gap-2 items-center self-start">
                                     <label (click)="toggleInformationSource(project.id, source.id)"
                                         class="cursor-pointer flex justify-center">
                                         <input type="checkbox" class="cursor-pointer" [checked]='source.selected'>
