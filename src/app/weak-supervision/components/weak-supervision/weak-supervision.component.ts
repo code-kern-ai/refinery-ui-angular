@@ -480,14 +480,6 @@ export class WeakSupervisionComponent implements OnInit, OnDestroy {
     return `hover:bg-${color}-200`
   }
 
-  getHeightInPx(stats) {
-    const numLabels = stats[0].label == '-' ? 0 : stats.length;
-    const numLabelsPx = (numLabels * 70) + "px";
-    let additionalPx = 0 + "px";
-    if (stats.length > 3) additionalPx = 20 + "px";
-    return parseInt("88px", 10) + parseInt(numLabelsPx, 10) + parseInt(additionalPx, 10) + "px";
-  }
-
   setAllInformationSources(value: boolean) {
     this.informationSourceApolloService.setAllInformationSources(this.project.id, value)
       .pipe(first())

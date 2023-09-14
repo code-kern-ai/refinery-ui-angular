@@ -226,6 +226,11 @@ export class EmbeddingsComponent implements OnInit, OnDestroy, OnChanges {
       JSON.stringify(config)
     ).pipe(first()).subscribe(() => {
       this.resetEmbeddingCreationAndPlatform();
+      const filterAttributes = embeddingForm.get('filterAttributes').value;
+      for (let i = 0; i < filterAttributes.length; i++) {
+        filterAttributes[i].active = false;
+      }
+      this.settingModals.embedding.create.embeddingCreationFormGroup.get('filterAttributes').setValue(filterAttributes);
     });
   }
 

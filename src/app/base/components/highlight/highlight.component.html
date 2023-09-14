@@ -1,3 +1,3 @@
 <ng-template ngFor let-v [ngForOf]="parts" let-i="index">
-    <span [ngClass]="v.isMatch?highlightClass:null">{{v.text}}</span>
+    <span [ngClass]="v.isMatch?highlightClass:null" class="{{addClassString}}">{{v.text}}</span>
 </ng-template>

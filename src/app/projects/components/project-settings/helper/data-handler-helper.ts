@@ -6,6 +6,7 @@ import { Attribute } from "../entities/attribute.type";
 import { Embedding, EmbeddingPlatform } from "../entities/embedding.type";
 import { SettingModals } from "./modal-helper";
 import { EmbeddingType, PlatformType, granularityTypesArray } from "./project-settings-helper";
+import { jsonCopy } from "submodules/javascript-functions/general";
 
 export class DataHandlerHelper {
 
@@ -68,6 +69,10 @@ export class DataHandlerHelper {
     }
 
     prepareEmbeddingFormGroup(attributes: Attribute[], settingModals: SettingModals, embeddings: Embedding[], embeddingPlatforms: EmbeddingPlatform[], useableNonTextAttributes: Attribute[]) {
+        let storeFormGroup = null;
+        if (settingModals.embedding.create.embeddingCreationFormGroup) {
+            storeFormGroup = settingModals.embedding.create.embeddingCreationFormGroup.getRawValue();
+        }
         if (attributes.length > 0) {
             settingModals.embedding.create.embeddingCreationFormGroup = this.formBuilder.group({
                 targetAttribute: attributes[0].id,
@@ -84,6 +89,19 @@ export class DataHandlerHelper {
             settingModals.embedding.create.embeddingCreationFormGroup.valueChanges.pipe(debounceTime(200)).subscribe(() =>
                 settingModals.embedding.create.blocked = !this.canCreateEmbedding(settingModals, embeddings, attributes)
             )
+            if (storeFormGroup) {
+                const prevFilterAttributes = jsonCopy(storeFormGroup.filterAttributes);
+                delete storeFormGroup.filterAttributes;
+                settingModals.embedding.create.embeddingCreationFormGroup.patchValue(storeFormGroup);
+                const filterAttributes = settingModals.embedding.create.embeddingCreationFormGroup.getRawValue().filterAttributes;
+                for (let i = 0; i < filterAttributes.length; i++) {
+                    const findPrev = prevFilterAttributes.find(f => f.id == filterAttributes[i].id);
+                    if (findPrev) {
+                        filterAttributes[i] = findPrev;
+                    }
+                }
+                settingModals.embedding.create.embeddingCreationFormGroup.patchValue({ filterAttributes: filterAttributes });
+            }
         }
     }
 

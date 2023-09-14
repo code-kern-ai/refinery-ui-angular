@@ -21,7 +21,7 @@ export enum PlatformType {
 
 export const platformNamesDict = {
     [PlatformType.HUGGING_FACE]: "Hugging Face",
-    [PlatformType.OPEN_AI]: "Open AI",
+    [PlatformType.OPEN_AI]: "OpenAI",
     [PlatformType.COHERE]: "Cohere",
     [PlatformType.PYTHON]: "Python",
     [PlatformType.AZURE]: "Azure"
