@@ -323,7 +323,8 @@
                         clip-rule="evenodd" />
                 </svg>
             </div>
-            <span *ngFor="let e of erd.errors" class="text-sm overflow-x-auto">{{e}}</span>
+            <span *ngFor="let e of erd.errors" class="text-sm overflow-x-auto m-auto"
+                style="max-width: 600px;">{{e}}</span>
         </div>
     </ng-template>
 
