@@ -290,9 +290,9 @@
                     <span
                         class="bg-white h-full w-full p-1 inline-flex items-center justify-center">{{item.value.attributeName}}{{item.value.display.subKeyAdd}}</span>
                     <span
-                        class="bg-white h-full w-full p-1 inline-flex items-center justify-center">{{item.value.display.oldValue}}</span>
+                        class="h-full w-full p-1 inline-flex items-center justify-center bg-red-200">{{item.value.display.oldValue}}</span>
                     <span
-                        class="bg-white h-full w-full p-1 inline-flex items-center justify-center">{{item.value.newValue}}</span>
+                        class="h-full w-full p-1 inline-flex items-center justify-center bg-green-200">{{item.value.newValue}}</span>
                     <div class="bg-white h-full w-full p-1 inline-flex items-center justify-center cursor-pointer"
                         (click)="removeFromCache(item.key)">
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-trash" width="24"
