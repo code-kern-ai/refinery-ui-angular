@@ -108,7 +108,7 @@
 </kern-modal>
 
 <kern-modal [isOpen]="modals.createTokenOpen"
-    (optionClicked)="$event == 'CLOSE' ? closeTokenModal() : createPersonalAccessToken(tokenName.value,tokenExpirationTime.value, tokenScope.value); tokenName.value = '';"
+    (optionClicked)="$event == 'CLOSE' ? closeTokenModal() : createPersonalAccessToken(tokenName.value,tokenExpirationTime.value); tokenName.value = '';"
     closeButton="X" [acceptButton]="{
         buttonCaption:'Add token',
         disabled: tokenName.value.trim() == '' || tokenNameIsDuplicated,
@@ -123,14 +123,6 @@
         </div>
     </div>
     <div class="grid grid-cols-2 gap-2 items-center max-w-sm" style="grid-template-columns: max-content auto;">
-        <div class="tooltip tooltip-right" data-tip="Choose scope of your token">
-            <span class="cursor-help card-title mb-0 label-text flex"><span class="underline"
-                    style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Scope</span></span>
-        </div>
-        <select #tokenScope class="select select-bordered select-sm">
-            <option value="READ" selected="selected">Read only</option>
-            <option value="READ_WRITE">Read and write</option>
-        </select>
         <div class="tooltip tooltip-right" data-tip="Choose expiration time of your token">
             <span class="cursor-help card-title mb-0 label-text flex"><span class="underline"
                     style="text-decoration-style: dotted;text-underline-offset: 2px;text-decoration-color: #22c55e">Expiration
