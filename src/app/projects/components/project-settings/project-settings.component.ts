@@ -146,7 +146,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy {
     this.embeddings = jsonCopy(this.combineLatestResultBackup[1]);
     this.dataHandlerHelper.extendQueuedEmbeddings(projectId, this.embeddings);
 
-    this.useableAttributes = this.attributes.filter((attribute: any) => (attribute.state == AttributeCalculationState.UPLOADED || attribute.state == AttributeCalculationState.AUTOMATICALLY_CREATED || attribute.state == AttributeCalculationState.USABLE));
+    this.useableAttributes = this.attributes.filter((attribute: any) => (attribute.state == AttributeCalculationState.UPLOADED || attribute.state == AttributeCalculationState.AUTOMATICALLY_CREATED || attribute.state == AttributeCalculationState.USABLE) && attribute.dataType != 'EMBEDDING_LIST');
     this.useableNonTextAttributes = this.useableAttributes.filter((attribute: any) => attribute.dataType != 'TEXT' && attribute.dataType != 'EMBEDDING_LIST');
 
     // prepare embedding suggestions
