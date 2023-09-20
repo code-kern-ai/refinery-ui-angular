@@ -105,7 +105,7 @@ export class BricksCodeParser {
             if (inputV.optional) variable.optional = isStringTrue(inputV.optional);
             if (inputV.acceptsMultiple) variable.canMultipleValues = isStringTrue(inputV.acceptsMultiple);
             if (inputV.defaultValue && inputV.addInfo) {
-                if (!inputV.addInfo.some(x => !canHaveDefaultValue(x.toUpperCase() as BricksVariableType))) {
+                if (!inputV.addInfo.some(x => !canHaveDefaultValue(x.toUpperCase() as BricksVariableType)) && canHaveDefaultValue(variable.type)) {
                     variable.values[0] = inputV.defaultValue;
                 }
             }

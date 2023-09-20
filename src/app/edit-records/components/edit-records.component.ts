@@ -82,7 +82,7 @@ export class EditRecordsComponent implements OnInit, OnDestroy, CanDeactivateGua
       case "grid-cols-1": this.erd.columnClass = "grid-cols-2"; break;
       case "grid-cols-2": this.erd.columnClass = "grid-cols-3"; break;
       case "grid-cols-3": this.erd.columnClass = "grid-cols-1"; break;
-      default: this.erd.columnClass = "grid-cols-3";
+      default: this.erd.columnClass = "grid-cols-3"; break;
     }
 
     localStorage.setItem("ERcolumnClass", this.erd.columnClass);

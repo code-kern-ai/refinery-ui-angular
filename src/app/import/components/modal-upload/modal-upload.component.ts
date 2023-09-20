@@ -67,11 +67,6 @@ export class ModalUploadComponent implements OnInit, OnChanges {
 
   setFile(file: File): void {
     this.file = file;
-    if (this.file) {
-      if (this.projectName === '') this.projectName = this.file.name.split('.')[0];
-    } else {
-      this.projectName = '';
-    }
     this.uploadOptions.projectName = this.projectName;
     this.checkIfProjectNameDuplicate();
   }

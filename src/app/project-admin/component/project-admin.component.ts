@@ -15,7 +15,6 @@ import { copyToClipboard } from 'submodules/javascript-functions/general';
   templateUrl: './project-admin.component.html',
   styleUrls: ['./project-admin.component.scss']
 })
-
 export class ProjectAdminComponent implements OnInit, OnDestroy {
 
   projectName = new FormControl('');
@@ -26,7 +25,6 @@ export class ProjectAdminComponent implements OnInit, OnDestroy {
   tokenCopied: boolean = false;
   tokenNameIsDuplicated: boolean;
   subscriptions$: Subscription[] = [];
-
 
   modals = {
     deleteTokenOpen: false,
@@ -98,7 +96,8 @@ export class ProjectAdminComponent implements OnInit, OnDestroy {
       .pipe(first()).subscribe();
   }
 
-  createPersonalAccessToken(name: string, expiresAt: string, scope: string) {
+  createPersonalAccessToken(name: string, expiresAt: string) {
+    const scope = "READ_WRITE";
     if (!this.isTokenNameDuplicated(name)) this.projectApolloService.createPersonalAccessToken(this.projectId, name, expiresAt, scope).pipe(first()).subscribe((token) => this.newToken = token);
   }
 
