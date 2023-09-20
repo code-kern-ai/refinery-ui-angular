@@ -40,13 +40,10 @@ export type EditRecordComponentData = {
             }
         }
     },
-    numberOfColumns: string | number,
-
 }
 
 export function createDefaultEditRecordComponentData(): EditRecordComponentData {
     const columnClass = localStorage.getItem("ERcolumnClass") ?? "grid-cols-3";
-    const numberOfColumns = localStorage.getItem("ERnumberOfColumns") ?? 3;
     const hideExplainModal = localStorage.getItem("ERhideExplainModal");
     return {
         projectId: null,
@@ -66,7 +63,6 @@ export function createDefaultEditRecordComponentData(): EditRecordComponentData 
             positionString: null,
         },
         cachedRecordChanges: {},
-        numberOfColumns: numberOfColumns,
     };
 }
 
