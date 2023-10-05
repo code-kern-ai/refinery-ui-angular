@@ -286,10 +286,4 @@ export const queries = {
     runRecordIde(projectId:$projectId, recordId:$recordId, code:$code)
   }
   `,
-
-  IS_ANY_RECORD_MANUALLY_LABELED: gql`
-  query($projectId:ID!){
-    isAnyRecordManuallyLabeled(projectId:$projectId)
-  }
-  `
 };

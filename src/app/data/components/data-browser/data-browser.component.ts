@@ -175,7 +175,6 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
   activeSlice: DataSlice = null;
   dataSliceFilter: string = "";
   lastActiveSliceId: string = ""; // used for activating correct slice after refetching
-  anyRecordManuallyLabeled: boolean = false;
   initializingFilter: Boolean = false;
   displayOutdatedWarning: Boolean = false;
   displayChangedValuesWarning: Boolean = false;
@@ -250,7 +249,6 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
     this.project$ = this.projectApolloService.getProjectById(this.projectId);
     this.similarSearchHelper = new SimilarSearch(this, this.recordApolloService, this.projectApolloService);
     this.similarSearchHelper.refreshEmbeddings();
-    this.refreshAnyRecordManuallyLabeled(this.projectId);
     this.filterParser = new DataBrowserFilterParser(this);
     this.userFilter = new UserFilter(this, this.organizationApolloService);
     this.updateSearchParameters = new UpdateSearchParameters(this);
@@ -1896,12 +1894,6 @@ export class DataBrowserComponent implements OnInit, OnDestroy {
       }
     }
     if (rerequestNeeded && !anythingActive) this.requestExtendedSearch(true);
-  }
-
-  refreshAnyRecordManuallyLabeled(projectId: string) {
-    this.recordApolloService.isAnyRecordManuallyLabeled(this.projectId).pipe(first()).subscribe((anyRecordManuallyLabeled) => {
-      this.anyRecordManuallyLabeled = anyRecordManuallyLabeled;
-    });
   }
 
   checkNameExists(value: string) {
