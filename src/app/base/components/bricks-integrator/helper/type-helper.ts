@@ -29,7 +29,8 @@ export enum RefineryDataType {
     TEXT = "text",
     INTEGER = "integer",
     FLOAT = "float",
-    BOOLEAN = "boolean",
+    BOOLEAN = "boolean",    
+    EMBEDDING_LIST = "embedding_list"
 }
 export enum SelectionType {
     STRING = "string",
