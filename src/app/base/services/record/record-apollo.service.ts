@@ -470,20 +470,6 @@ export class RecordApolloService {
     );
   }
 
-  isAnyRecordManuallyLabeled(projectId: string): any {
-    return this.apollo.query({
-      query: queries.IS_ANY_RECORD_MANUALLY_LABELED,
-      variables: {
-        projectId: projectId,
-      },
-      fetchPolicy: 'no-cache',
-    }).pipe(
-      map((result) => {
-        return result['data']['isAnyRecordManuallyLabeled'];
-      })
-    );
-  }
-
   getRecordsByStaticSlice(
     variables: { projectId: string, sliceId: string, orderBy: string, offset: number, limit: number }
   ): any {
