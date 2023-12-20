@@ -168,7 +168,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     this.subscriptions$.push(tmp.subscribe((projectList) => {
       this.projectList = projectList;
       this.projectList.sort((a, b) => a.name.localeCompare(b.name));
-      this.projectList = this.projectList.filter(a => a.status != ProjectStatus.IN_DELETION);
+      this.projectList = this.projectList.filter(a => a.status != ProjectStatus.IN_DELETION && a.status != ProjectStatus.HIDDEN);
       this.projectList = this.projectList.map((project) => {
         const projectItemCopy = jsonCopy(project);
         projectItemCopy.timeStamp = parseUTC(projectItemCopy.createdAt);
