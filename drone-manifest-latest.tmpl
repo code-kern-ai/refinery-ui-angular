@@ -1,12 +1,12 @@
-image: kernai/refinery-ui:latest
+image: kernai/refinery-ui-angular:latest
 manifests:
   -
-    image: kernai/refinery-ui:{{#if build.tag}}{{build.tag}}-{{/if}}drone-amd64
+    image: kernai/refinery-ui-angular:{{#if build.tag}}{{build.tag}}-{{/if}}drone-amd64
     platform:
       architecture: amd64
       os: linux
   -
-    image: kernai/refinery-ui:{{#if build.tag}}{{build.tag}}-{{/if}}drone-arm64
+    image: kernai/refinery-ui-angular:{{#if build.tag}}{{build.tag}}-{{/if}}drone-arm64
     platform:
       architecture: arm64
       os: linux
